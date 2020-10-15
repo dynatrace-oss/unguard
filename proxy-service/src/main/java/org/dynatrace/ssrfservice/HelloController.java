@@ -1,9 +1,8 @@
 package org.dynatrace.ssrfservice;
 
-//import com.uber.jaeger.Configuration;
+
 import com.uber.jaeger.httpclient.Constants;
 import com.uber.jaeger.httpclient.TracingInterceptors;
-import com.uber.jaeger.httpclient.TracingRequestInterceptor;
 import io.jaegertracing.Configuration;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
 @RestController
@@ -42,7 +40,8 @@ public class HelloController {
     @RequestMapping("/")
     public String callService(@RequestParam String url, @RequestParam String header) throws IOException {
 
-        // attackerControlledValue = "1\u560d\u560aX-But-Not-This-One: oh no!";
+        /* can add additional headers by sending something like "1\u560d\u560aX-But-Not-This-One: oh no!"
+           in the header field */
         logger.info(url);
 
         CloseableHttpResponse execute = null;
@@ -124,6 +123,7 @@ public class HelloController {
         int exitCode = process.exitValue();
         logger.info("curl exit code: " + exitCode);
         curlSpan.log("curl exit code: " + exitCode);
+
         // finally destroy the process
         process.destroy();
         curlSpan.finish();
