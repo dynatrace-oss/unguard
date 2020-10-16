@@ -3,7 +3,6 @@ package org.dynatrace.ssrfservice;
 
 import com.uber.jaeger.httpclient.Constants;
 import com.uber.jaeger.httpclient.TracingInterceptors;
-import io.jaegertracing.Configuration;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
@@ -17,28 +16,30 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.nio.charset.Charset;
 
 @RestController
-public class HelloController {
+public class ProxyController {
 
     CloseableHttpClient httpclient;
-    Tracer tracer;
-    Logger logger = LoggerFactory.getLogger(HelloController.class);
+    private final Tracer tracer;
+    Logger logger = LoggerFactory.getLogger(ProxyController.class);
 
-    public HelloController() {
-        tracer = Configuration.fromEnv().getTracer();
+    @Autowired
+    public ProxyController(Tracer tracer) {
+        this.tracer = tracer;
         HttpClientBuilder clientBuilder = HttpClients.custom();
         httpclient = TracingInterceptors
-                .addTo(clientBuilder, tracer)
+                .addTo(clientBuilder, this.tracer)
                 .build();
     }
 
     @RequestMapping("/")
-    public String callService(@RequestParam String url, @RequestParam String header) throws IOException {
+    public String proxyUrlWithHttpClient(@RequestParam String url, @RequestParam String header) throws IOException {
 
         /* can add additional headers by sending something like "1\u560d\u560aX-But-Not-This-One: oh no!"
            in the header field */
@@ -74,19 +75,19 @@ public class HelloController {
                 clientSpan.log(e.getMessage());
                 clientSpan.finish();
             } else {
-                logger.warn(
-                        "The ResponseInterceptor did not find a clientSpan. "
-                                + "Verify that the RequestInterceptor is correctly set up.");
+                logger.warn("The ResponseInterceptor did not find a clientSpan.");
             }
         } catch (Exception ex) {
-            logger.error("Could not finish errored client tracing span.", ex);
+            logger.error("Could not finish client tracing span with error.", ex);
         }
     }
 
     @PostMapping("/curl")
-    public String curl(@RequestBody() String url) throws IOException, InterruptedException {
-        // VULVERABLE CODE BELOW
-        // it's never a good idea to not sanitize a user controlled URL
+    public String proxyUrlWithCurl(@RequestBody() String url) throws IOException, InterruptedException {
+        /*
+         VULNERABLE CODE BELOW
+         it's never a good idea to not sanitize a user controlled URL
+        */
         Span curlSpan = tracer.buildSpan("/curl").withTag("url", url).start();
 
         String[] command = {"curl", "--silent", "-S", url, "--max-time", "10"};
@@ -117,6 +118,7 @@ public class HelloController {
          * situations
          */
         process.waitFor();
+
         /* exit code can be obtained only after process completes, 0
          * indicates a successful completion
          */

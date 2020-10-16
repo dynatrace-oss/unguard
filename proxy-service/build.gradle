@@ -23,6 +23,10 @@ dependencies {
 	implementation 'com.uber.jaeger:jaeger-apachehttpclient:0.27.0'
 	implementation 'io.jaegertracing:jaeger-client:1.4.0'
 
+	// https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-spring-jaeger-web-starter
+	implementation group: 'io.opentracing.contrib', name: 'opentracing-spring-jaeger-web-starter', version: '3.2.2'
+
+
 	// https://mvnrepository.com/artifact/commons-io/commons-io
 	implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
 
