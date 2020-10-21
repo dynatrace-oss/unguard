@@ -16,7 +16,7 @@
     "winston": "^3.3.3"
   },
   "scripts": {
-    "run": "node app.js",
+    "start": "node app.js",
     "dev": "nodemon app.js"
   }
 }

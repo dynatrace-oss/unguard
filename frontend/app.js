@@ -81,7 +81,7 @@ app.use((req, res, next) => {
 
 app.get('/', site.index);
 
-// TODO replace with real paths
+// TODO CASP-5994 replace with calls to microblog-service
 app.get('/some/path', (req, res) => {
   req.API.get('http://example.com').then((response) => res.end(response.data));
 });
