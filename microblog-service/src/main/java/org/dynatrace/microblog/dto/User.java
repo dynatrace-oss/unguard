@@ -1,8 +1,8 @@
 package org.dynatrace.microblog.dto;
 
 public class User {
-    private int userId;
-    private String userName;
+    private final int userId;
+    private final String userName;
 
     public User(int userId, String userName) {
         this.userId = userId;

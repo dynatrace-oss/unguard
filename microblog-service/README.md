@@ -1,6 +1,6 @@
 # microblog-service
 
-Contains a RESTful web-service that exposes funcitonality to login/register, view/create posts and follow other users.
+Contains a RESTful web-service that exposes functionality to login/register, view/create posts and follow other users.
 
 ## Building with gradle
 
