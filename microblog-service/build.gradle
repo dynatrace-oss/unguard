@@ -1,0 +1,40 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.2.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'java'
+}
+
+group = 'org.dynatrace'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// tracing
+	implementation 'io.jaegertracing:jaeger-client:1.4.0'
+	implementation group: 'io.opentracing.contrib', name: 'opentracing-spring-jaeger-web-starter', version: '3.2.2'
+
+	// https://mvnrepository.com/artifact/redis.clients/jedis
+	compile group: 'redis.clients', name: 'jedis', version: '3.3.0'
+	// https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-redis-jedis3
+	compile group: 'io.opentracing.contrib', name: 'opentracing-redis-jedis3', version: '0.1.16'
+
+//	implementation "org.springframework.data:spring-data-redis:2.3.4.RELEASE"
+
+	// https://mvnrepository.com/artifact/commons-io/commons-io
+	implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.testng:testng:6.14.3'
+	implementation 'org.testng:testng:6.14.3'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
