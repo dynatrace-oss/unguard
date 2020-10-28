@@ -1,0 +1,37 @@
+<!--- \\\\\\\Post-->
+<div class="card gedf-card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="mr-2">
+                    <img class="rounded-circle" width="60" src="//robohash.org/{{ post.username }}.png?set=set1&size=60x60" alt="{{ post.username }}">
+                </div>
+                <div class="ml-2">
+                    <a href="/user/{{post.username}}">
+                        <div class="h5 m-0">{{ post.username }}</div>
+                    </a>
+                    <div class="h7 text-muted">{{ post.timestamp }}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            {% if (post.imageUrl) %}
+                <div class="col-auto">
+                    <img src="{{ post.imageUrl }}" height="150px" alt="">
+                </div>
+            {% endif %}
+            <div class="col">
+                <h5 class="card-title">{{ post.body }}</h5>
+            </div>
+        </div>
+    </div>
+{#    <div class="card-footer">#}
+{#        <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>#}
+{#        <a href="#" class="card-link"><i class="fa fa-comment"></i> Comment</a>#}
+{#        <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>#}
+{#    </div>#}
+</div>

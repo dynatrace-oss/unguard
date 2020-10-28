@@ -2,12 +2,13 @@ package org.dynatrace.microblog.form;
 
 public class PostForm {
     private String content;
+    private String imageUrl;
 
     public String getContent() {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: microblog-frontend
+spec:
+  ports:
+    - port: 3000
+  type: LoadBalancer
+  selector:
+    app: microblog-frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node
+spec:
+  selector:
+    matchLabels:
+      app: microblog-frontend
+  template:
+    metadata:
+      labels:
+        app: microblog-frontend
+    spec:
+      containers:
+        - name: node
+          image: microblog-frontend
+          ports:
+            - containerPort: 3000
+          env:
+            - name: JAEGER_SAMPLER_TYPE
+              value: "const"
+            - name: JAEGER_SAMPLER_PARAM
+              value: "1"
+            - name: MICROBLOG_SERVICE_ADDRESS
+              value: "localhost:7000"

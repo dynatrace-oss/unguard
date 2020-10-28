@@ -125,7 +125,7 @@ public class MicroblogController {
         if (currentUser == null) {
             throw new UnauthorizedException();
         }
-        redisClient.newPost(currentUser, postForm.getContent());
+        redisClient.newPost(currentUser, postForm.getContent(), postForm.getImageUrl());
     }
 
     @PreDestroy

@@ -47,19 +47,22 @@ public class RedisClient {
         jedis.close();
     }
 
-    public void newPost(String username, String body) throws InvalidUserException {
+    public void newPost(String username, String body, String imageUrl) throws InvalidUserException {
         String userId = getUserIdFromUsername(username);
         if (userId == null) {
             throw new InvalidUserException();
         }
-        newPostWithUserId(userId, body);
+        newPostWithUserId(userId, body, imageUrl);
     }
 
-    private void newPostWithUserId(String userId, String body) {
+    private void newPostWithUserId(@NonNull String userId, @NonNull String body, @Nullable String imageUrl) {
         String postId = String.valueOf(jedis.incr(POST_ID_KEY));
 
         Map<String, String> map = new HashMap<>();
         map.put("body", body);
+        if(imageUrl != null) {
+            map.put("imageUrl", imageUrl);
+        }
         map.put("userId", String.valueOf(userId));
         map.put("time", String.valueOf(new Date().getTime()));
 
@@ -115,9 +118,10 @@ public class RedisClient {
         Map<String, String> postMap = jedis.hgetAll(getCombinedKey(POST_KEY_PREFIX, postId));
         String userName = getUserName(postMap.get("userId"));
         String body = postMap.get("body");
+        String imageUrl = postMap.get("imageUrl");
         Date timestamp = new Date(Long.parseLong(postMap.get("time")));
 
-        return new Post(userName, body, timestamp);
+        return new Post(userName, body, imageUrl, timestamp);
     }
 
     public List<Post> getTimeline() {

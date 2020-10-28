@@ -3,6 +3,12 @@
 {% block content %}
   <div>
     <h1>{{ title }}</h1>
+
+    {% include "compose.njk" %}
+
+    {% for post in data %}
+      {% include "post.njk" %}
+    {% endfor %}
   </div>
 
 {% endblock %}
