@@ -1,5 +1,4 @@
 const {handleError} = require("./errorhandler");
-const nodeHtmlToImage = require('node-html-to-image');
 const cheerio = require('cheerio')
 const express = require('express');
 const router = express.Router();
@@ -16,8 +15,10 @@ router.post('/user/:username/follow', followUser)
 router.post('/post', createPost)
 // Logout
 router.post('/logout', doLogout)
-// Logout
+// Login
 router.post('/login', doLogin)
+// Register
+router.post('/register', registerUser)
 
 function showGlobalTimeline(req, res) {
     req.API.get('/timeline').then((response) => {
@@ -33,8 +34,6 @@ function showGlobalTimeline(req, res) {
     });
 }
 
-
-
 function showPersonalTimeline(req, res) {
     req.API.get('/mytimeline').then((response) => {
         let data = {
@@ -48,7 +47,6 @@ function showPersonalTimeline(req, res) {
         res.render('error.njk', handleError(reason));
     });
 }
-
 
 function showUserProfile(req, res) {
     const usernameProfile = req.params.username;
@@ -65,12 +63,10 @@ function showUserProfile(req, res) {
     });
 }
 
-
 function doLogout(req, res) {
     res.clearCookie('username');
     res.redirect('/')
 }
-
 
 function doLogin(req, res) {
     const usernameToLogin = req.body.username;
@@ -86,6 +82,25 @@ function doLogin(req, res) {
         // in a real application we would probably use the response here to
         // set a real cookie, but the username will do here as the backend expects just that
         res.cookie("username", usernameToLogin)
+        res.redirect('/')
+    }).catch(reason => {
+        res.render('error.njk', handleError(reason));
+    });
+}
+
+function registerUser(req, res) {
+    const usernameToLogin = req.body.username;
+    if (!usernameToLogin) {
+        res.render('error.njk', {error: "Username must be supplied to register"});
+        return;
+    }
+    req.API.post('/register', null, {
+        params: {
+            username: usernameToLogin
+        }
+    }).then((response) => {
+        // in a real application we would probably use the response here to
+        // set a real cookie, but the username will do here as the backend expects just that
         res.redirect('/')
     }).catch(reason => {
         res.render('error.njk', handleError(reason));

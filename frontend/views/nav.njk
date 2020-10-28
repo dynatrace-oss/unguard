@@ -39,11 +39,13 @@
                     <button class="btn btn-warning my-2 my-sm-0" type="submit">Logout</button>
                 </form>
             {% else %}
-                <form class="form-inline my-2 my-lg-0" action="/login" method="post">
+                <form class="form-inline my-2 my-lg-0"  method="post">
                     <input class="form-control mr-sm-2" type="text" placeholder="Username" aria-label="Username"
                            name="username">
-                    <button class="btn btn-primary my-2 my-sm-0" type="submit">Login</button>
+                    <button class="btn btn-primary my-2 my-sm-0" formaction="/login" type="submit">Login</button>
+                    <button class="btn btn-dark my-2 my-sm-0" formaction="/register" type="submit">Register</button>
                 </form>
+
             {% endif %}
         </ul>
     </div>
