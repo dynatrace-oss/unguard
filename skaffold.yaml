@@ -1,0 +1,20 @@
+apiVersion: skaffold/v2beta8
+kind: Config
+build:
+  artifacts:
+    # image tags are relative; to specify an image repo (e.g. GCR), you
+    # must provide a "default repo" using one of the methods described
+    # here:
+    # https://skaffold.dev/docs/concepts/#image-repository-handling
+    - image: vogelgrippe-frontend
+      context: frontend
+    - image: vogelgrippe-microblog-service
+      context: microblog-service
+    - image: vogelgrippe-proxy-service
+      context: proxy-service
+  tagPolicy:
+    gitCommit: {}
+deploy:
+  kubectl:
+    manifests:
+      - ./k8s-manifests/**.yaml

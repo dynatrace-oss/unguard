@@ -35,6 +35,27 @@ if (process.env.NODE_ENV !== 'production') {
   }));
 }
 
+// set default environment variables if not set
+
+if (!process.env.JAEGER_SERVICE_NAME) {
+  process.env.JAEGER_SERVICE_NAME = "frontend";
+}
+
+if (!process.env.JAEGER_SAMPLER_TYPE) {
+  process.env.JAEGER_SAMPLER_TYPE = "const";
+}
+
+if (!process.env.MICROBLOG_SERVICE_ADDRESS) {
+  process.env.MICROBLOG_SERVICE_ADDRESS = "localhost:8080";
+}
+
+if (!process.env.PROXY_SERVICE_ADDRESS) {
+  process.env.PROXY_SERVICE_ADDRESS = "localhost:8081";
+}
+
+logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS)
+logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS)
+
 let app = express()
 
 nunjucks.configure('views', {
@@ -53,11 +74,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 // Setup tracer
 const tracer = initTracerFromEnv({
-  serviceName: 'frontend',
+  serviceName: process.env.JAEGER_SERVICE_NAME,
 }, {
-  tags: {
-    'frontend.version': '0.0.1',
-  },
   logger: logger,
 });
 // using global tracer
@@ -99,6 +117,4 @@ app.use('/', site);
 const server = http.createServer(app)
 server.listen('3000', () => {
   logger.info('Listening on port 3000')
-  logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS)
-  logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS)
 })

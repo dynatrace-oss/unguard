@@ -38,6 +38,7 @@ public class MicroblogController {
             logger.warn("No REDIS_SERVICE_ADDRESS environment variable defined, falling back to localhost.");
         }
 
+        tracer.buildSpan("starting service");
         this.redisClient = new RedisClient(redisServiceAddress, tracer);
     }
 
