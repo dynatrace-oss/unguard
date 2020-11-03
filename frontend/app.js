@@ -11,8 +11,6 @@ const path = require('path')
 const sassMiddleware = require('node-sass-middleware')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
-const multer = require('multer');
-const upload = multer();
 const winston = require('winston');
 
 const site = require("./site");

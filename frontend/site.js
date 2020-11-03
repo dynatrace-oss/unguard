@@ -135,8 +135,6 @@ function createPost(req, res) {
                 // fall back to twitter meta image if no opengraph image is set
                 metaImgSrc = $('meta[property="twitter:image"]').attr('content')
             }
-            console.log(metaImgSrc)
-
 
             let metaTitle = $('meta[property="og:title"]').attr('content')
             if (!metaTitle) {
@@ -145,16 +143,7 @@ function createPost(req, res) {
             }
             if (!metaTitle) {
                 metaTitle = $('title').text()
-                console.log(metaTitle)
             }
-
-            const nodeHtmlToImage = require('node-html-to-image')
-
-            nodeHtmlToImage({
-                output: './image.png',
-                html: response.data
-            })
-                .then(() => console.log('The image was created successfully!'))
 
             req.API.post('/post', {
                 content: `${metaTitle} ${req.body.urlmessage}`,
