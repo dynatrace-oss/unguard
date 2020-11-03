@@ -37,7 +37,7 @@ which will generate the jar in ```build/libs``` which you can simply execute by 
 java -jar build/libs/proxy-service-{{VERSION}}.jar
 ```
 
-Before running it, make sure to start a Redis instance in the same network and set all the required environment variables.
+Before running it, make sure to set all the required environment variables.
 
 Running the application should start a webserver accessible on [localhost:8081](http://localhost:8081)
 
@@ -45,10 +45,11 @@ Running the application should start a webserver accessible on [localhost:8081](
 
 To get more information about the JAEGER config options, see https://www.jaegertracing.io/docs/1.19/client-features/
 
-|         Name         | Example Value | Description |
-|----------------------|-------|-------------|
-| JAEGER_AGENT_HOST  | localhost | Change to hostname/IP of your Jaeger agent
+|         Name         | Example Value | Description                               |
+|----------------------|---------------|-------------------------------------------|
+| SERVER_PORT          | 8081          | The port that the server will run on
+| JAEGER_AGENT_HOST    | localhost     | Change to hostname/IP of your Jaeger agent
 | JAEGER_SERVICE_NAME  | proxy-service |
-| JAEGER_SAMPLER_TYPE  | const | (optional)
-| JAEGER_SAMPLER_PARAM | 1     | (optional)
+| JAEGER_SAMPLER_TYPE  | const         | (optional) Set to const to get all traces
+| JAEGER_SAMPLER_PARAM | 1             | (optional) Set to 1 while sampler is const to get all traces
 

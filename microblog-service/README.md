@@ -48,11 +48,11 @@ Running the application should start a webserver accessible on [localhost:8080](
 
 To get more information about the JAEGER config options, see https://www.jaegertracing.io/docs/1.19/client-features/
 
-|         Name         | Example Value | Description |
-|----------------------|-------|-------------|
-| REDIS_SERVICE_ADDRESS | localhost     | Change to hostname/IP of your Redis instance
-| JAEGER_AGENT_HOST  | localhost | Change to hostname/IP of your Jaeger agent
-| JAEGER_SERVICE_NAME  | microblog-service |
-| JAEGER_SAMPLER_TYPE  | const | (optional)
-| JAEGER_SAMPLER_PARAM | 1     | (optional)
-
+|         Name          | Example Value     | Description                                |
+|-----------------------|-------------------|--------------------------------------------|
+| SERVER_PORT           | 8080              | The port that the server will run on
+| REDIS_SERVICE_ADDRESS | localhost         | Change to hostname/IP of your Redis instance
+| JAEGER_AGENT_HOST     | localhost         | Change to hostname/IP of your Jaeger agent
+| JAEGER_SERVICE_NAME   | microblog-service | Name that will be used for the service in the Jaeger traces
+| JAEGER_SAMPLER_TYPE   | const             | (optional) Set to const to get all traces
+| JAEGER_SAMPLER_PARAM  | 1                 | (optional) Set to 1 while sampler is const to get all traces
