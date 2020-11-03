@@ -49,7 +49,8 @@ public class ProxyController {
         HttpContext httpContext = new BasicHttpContext();
         try {
             HttpGet httpget = new HttpGet(url);
-            httpget.addHeader("X-I-Expect-This-Header", header);
+            // let the user chose their own language here
+            httpget.addHeader("Accept-Language", header);
 
             execute = httpclient.execute(httpget, httpContext);
             InputStream content = execute.getEntity().getContent();

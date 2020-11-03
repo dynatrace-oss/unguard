@@ -1,0 +1,16 @@
+{% extends "base.njk" %}
+
+{% block content %}
+    <div class="error-bg">
+        <h3>Whoops! Something broke...</h3>
+        <h4>{{ error }}</h4>
+        {% if (message) %}
+            <div class="card">
+                <div class="card-body">
+<pre><code>{% for index, elem in message %}{{ index }}: {{ elem }}
+{% endfor %}</code></pre>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -6,10 +6,12 @@ public class Post {
     private final String username;
     private final String body;
     private final Date timestamp;
+    private final String imageUrl;
 
-    public Post(String username, String body, Date timestamp) {
+    public Post(String username, String body, String imageUrl, Date timestamp) {
         this.username = username;
         this.body = body;
+        this.imageUrl = imageUrl;
         this.timestamp = timestamp;
     }
 
@@ -23,5 +25,9 @@ public class Post {
 
     public Date getTimestamp() {
         return timestamp;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

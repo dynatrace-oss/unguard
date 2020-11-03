@@ -3,15 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Microblog SSRF - {{ title }}</title>
+    <title>Vogelgrippe - {{ title }}</title>
     <link rel="stylesheet" href="/style.css">
-</head>
-<body>
+<body {% if (error) %}
+    class="error-bg"
+        {% endif %}>
+
 {% include "nav.njk" %}
 
 <main role="main" class="container">
-{% block content %}
-{% endblock %}
+    {% block content %}
+    {% endblock %}
 </main>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

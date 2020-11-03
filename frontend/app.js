@@ -9,19 +9,17 @@ const http = require('http')
 const nunjucks = require('nunjucks')
 const path = require('path')
 const sassMiddleware = require('node-sass-middleware')
-const site = require("./site");
-
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser');
 const winston = require('winston');
+
+const site = require("./site");
 
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
   defaultMeta: { service: 'frontend' },
   transports: [
-    //
-    // - Write all logs with level `error` and below to `error.log`
-    // - Write all logs with level `info` and below to `combined.log`
-    //
     new winston.transports.File({ filename: 'error.log', level: 'error' }),
     new winston.transports.File({ filename: 'combined.log' }),
   ],
@@ -67,26 +65,40 @@ const applyTracingInterceptors = createAxiosTracing(tracer);
 
 app.use(expressOpentracing({tracer}));
 
+// enable cookie parsing
+app.use(cookieParser())
+// for parsing application/xwww-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// setup 2 custom axios instance that are configured to talk to our
+// two other microservices (MICROBLOG and PROXY) and have Jaeger tracing enabled
 app.use((req, res, next) => {
   const API = axios.create({
-    baseURL: 'https://example.com'
+    baseURL: "http://" + process.env.MICROBLOG_SERVICE_ADDRESS,
+    // forward username cookie
+    headers: req.cookies.username ? { "Cookie": "username=" + req.cookies.username } : {}
+  });
+
+  const PROXY = axios.create({
+    baseURL: "http://" + process.env.PROXY_SERVICE_ADDRESS
   });
 
   applyTracingInterceptors(API, {span: req.span});
+  applyTracingInterceptors(PROXY, {span: req.span});
 
   req.API = API;
+  req.PROXY = PROXY;
+  req.LOGGER = logger;
 
   next();
 });
 
-app.get('/', site.index);
+// register all the routes
+app.use('/', site);
 
-// TODO CASP-5994 replace with calls to microblog-service
-app.get('/some/path', (req, res) => {
-  req.API.get('http://example.com').then((response) => res.end(response.data));
-});
-
-let server = http.createServer(app)
+const server = http.createServer(app)
 server.listen('3000', () => {
   logger.info('Listening on port 3000')
+  logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS)
+  logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS)
 })
