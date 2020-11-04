@@ -45,6 +45,10 @@ if (!process.env.JAEGER_SAMPLER_TYPE) {
   process.env.JAEGER_SAMPLER_TYPE = "const";
 }
 
+if (!process.env.JAEGER_SAMPLER_PARAM) {
+  process.env.JAEGER_SAMPLER_PARAM = "1";
+}
+
 if (!process.env.MICROBLOG_SERVICE_ADDRESS) {
   process.env.MICROBLOG_SERVICE_ADDRESS = "localhost:8080";
 }
