@@ -1,43 +1,41 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: vogelgrippe-frontend
+  name: vogelgrippe-proxy-service
 spec:
   ports:
-    - targetPort: 3000
+    - targetPort: 8081
       port: 80
   type: ClusterIP
   selector:
-    app: vogelgrippe-frontend
+    app: vogelgrippe-proxy-service
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vogelgrippe-frontend
+  name: vogelgrippe-proxy-service
 spec:
   selector:
     matchLabels:
-      app: vogelgrippe-frontend
+      app: vogelgrippe-proxy-service
   template:
     metadata:
       labels:
-        app: vogelgrippe-frontend
+        app: vogelgrippe-proxy-service
     spec:
       containers:
-        - name: frontend
-          image: vogelgrippe-frontend
+        - name: proxy-service
+          image: vogelgrippe-proxy-service
           ports:
-            - containerPort: 3000
+            - containerPort: 8081
           env:
+            - name: SERVER_PORT
+              value: "8081"
             - name: JAEGER_SERVICE_NAME
-              value: "vogelgrippe-frontend"
+              value: "vogelgrippe-proxy-service"
             - name: JAEGER_AGENT_HOST
               value: "jaeger-agent" # change depending on your jaeger deployment
             - name: JAEGER_SAMPLER_TYPE
               value: "const"
             - name: JAEGER_SAMPLER_PARAM
               value: "1"
-            - name: MICROBLOG_SERVICE_ADDRESS
-              value: "vogelgrippe-microblog-service"
-            - name: PROXY_SERVICE_ADDRESS
-              value: "vogelgrippe-proxy-service"
