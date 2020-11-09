@@ -1,0 +1,184 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vogelgrippe-frontend
+spec:
+  ports:
+    - targetPort: 3000
+      port: 80
+  type: ClusterIP
+  selector:
+    app: vogelgrippe-frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vogelgrippe-frontend
+spec:
+  selector:
+    matchLabels:
+      app: vogelgrippe-frontend
+  template:
+    metadata:
+      labels:
+        app: vogelgrippe-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: registry.lab.dynatrace.org/casp/vogelgrippe-frontend
+          ports:
+            - containerPort: 3000
+          env:
+            - name: JAEGER_SERVICE_NAME
+              value: "vogelgrippe-frontend"
+            - name: JAEGER_AGENT_HOST
+              value: "jaeger-agent" # change depending on your jaeger deployment
+            - name: JAEGER_SAMPLER_TYPE
+              value: "const"
+            - name: JAEGER_SAMPLER_PARAM
+              value: "1"
+            - name: MICROBLOG_SERVICE_ADDRESS
+              value: "vogelgrippe-microblog-service"
+            - name: PROXY_SERVICE_ADDRESS
+              value: "vogelgrippe-proxy-service"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vogelgrippe-microblog-service
+spec:
+  ports:
+    - targetPort: 8080
+      port: 80
+  type: ClusterIP
+  selector:
+    app: vogelgrippe-microblog-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vogelgrippe-microblog-service
+spec:
+  selector:
+    matchLabels:
+      app: vogelgrippe-microblog-service
+  template:
+    metadata:
+      labels:
+        app: vogelgrippe-microblog-service
+    spec:
+      containers:
+        - name: microblog-service
+          image: registry.lab.dynatrace.org/casp/vogelgrippe-microblog-service
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: JAEGER_SERVICE_NAME
+              value: "vogelgrippe-microblog-service"
+            - name: JAEGER_AGENT_HOST
+              value: "jaeger-agent" # change depending on your jaeger deployment
+            - name: JAEGER_ENDPOINT
+              value: "http://jaeger-collector:14268/api/traces"
+            - name: JAEGER_SAMPLER_TYPE
+              value: "const"
+            - name: JAEGER_SAMPLER_PARAM
+              value: "1"
+            - name: REDIS_SERVICE_ADDRESS
+              value: "vogelgrippe-redis"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vogelgrippe-proxy-service
+spec:
+  ports:
+    - targetPort: 8081
+      port: 80
+  type: ClusterIP
+  selector:
+    app: vogelgrippe-proxy-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vogelgrippe-proxy-service
+spec:
+  selector:
+    matchLabels:
+      app: vogelgrippe-proxy-service
+  template:
+    metadata:
+      labels:
+        app: vogelgrippe-proxy-service
+    spec:
+      containers:
+        - name: proxy-service
+          image: registry.lab.dynatrace.org/casp/vogelgrippe-proxy-service
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SERVER_PORT
+              value: "8081"
+            - name: JAEGER_SERVICE_NAME
+              value: "vogelgrippe-proxy-service"
+            - name: JAEGER_AGENT_HOST
+              value: "jaeger-agent" # change depending on your jaeger deployment
+            - name: JAEGER_SAMPLER_TYPE
+              value: "const"
+            - name: JAEGER_SAMPLER_PARAM
+              value: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vogelgrippe-redis
+spec:
+  selector:
+    matchLabels:
+      app: vogelgrippe-redis
+  template:
+    metadata:
+      labels:
+        app: vogelgrippe-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:alpine
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            periodSeconds: 5
+            tcpSocket:
+              port: 6379
+          livenessProbe:
+            periodSeconds: 5
+            tcpSocket:
+              port: 6379
+          volumeMounts:
+            - mountPath: /data
+              name: redis-data
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 125m
+            requests:
+              cpu: 70m
+              memory: 200Mi
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vogelgrippe-redis
+spec:
+  type: ClusterIP
+  selector:
+    app: vogelgrippe-redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
