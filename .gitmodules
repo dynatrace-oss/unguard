@@ -1,0 +1,3 @@
+[submodule "exploits/redis_payloads/redis-rogue-server/RedisModules-ExecuteCommand"]
+	path = exploits/redis_payloads/redis-rogue-server/RedisModules-ExecuteCommand
+	url = https://github.com/n0b0dyCN/RedisModules-ExecuteCommand.git

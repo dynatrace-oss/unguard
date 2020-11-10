@@ -85,8 +85,8 @@ Jaeger tracing.**
     This is the recommended way as exposing the service to external traffic would be a bad idea.
     
     ```
-    # Exposes the frontend on localhost:3001
-    kubectl port-forward service/vogelgrippe-frontend 3001:80
+    # Exposes the frontend on localhost:3000
+    kubectl port-forward service/vogelgrippe-frontend 3000:80
     ```
     
     To make non-blind SSRF exploits, you can expose the proxy-service as well.
