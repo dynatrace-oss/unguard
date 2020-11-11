@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
+beautifulsoup4==4.9.3     # via -r requirements.in
 certifi==2018.11.29       # via geventhttpclient, requests
 chardet==3.0.4            # via requests
 click==7.0                # via flask
@@ -23,6 +24,7 @@ psutil==5.7.3             # via locust
 pyzmq==17.0.0             # via locust
 requests==2.21.0          # via locust
 six==1.12.0               # via geventhttpclient
+soupsieve==2.0.1          # via beautifulsoup4
 urllib3==1.24.2           # via requests
 werkzeug==1.0.1           # via flask, locust
 zope.event==4.5.0         # via gevent

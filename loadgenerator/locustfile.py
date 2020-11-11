@@ -1,6 +1,6 @@
 import random
-import time
 
+import time
 from bs4 import BeautifulSoup
 from locust import HttpUser, task, between, tag
 
@@ -115,5 +115,12 @@ class VogelgrippeUser(HttpUser):
 
     def on_start(self):
         user_data = {"username": self.get_running_username()}
-        self.client.post("/register", data=user_data)
-        self.client.post("/login", data=user_data)
+        cookie_set = False
+        while not cookie_set:
+            self.client.post("/register", data=user_data)
+            self.client.post("/login", data=user_data)
+            cookie_set = self.client.cookies.get('username') is not None
+            if not cookie_set:
+                # wait a bit for deployments to stabilize
+                # so we can retry logging in
+                time.sleep(5)
