@@ -23,7 +23,7 @@ Vogelgrippe consists of 3 main services and a Redis key-value store used as a da
     * Holds all the user data
 * proxy-service (Java Spring)
     * Serves REST API for proxying requests from fronend 
-    (SSRF vulnerable, does not sanitization on the entered URL)
+    (SSRF vulnerable, does not do sanitization on the entered URL)
 
 
 ![Vogelgrippe Architecture](images/architecture_vogelgrippe.png)
