@@ -85,7 +85,7 @@ public class RedisClient {
         List<String> postIds;
         try (Jedis jedis = jedisPool.getResource()) {
             // Get the timeline of the user
-            postIds = jedis.lrange(getCombinedKey(TIMELINE_KEY, userId), 0, -1);
+            postIds = jedis.lrange(getCombinedKey(TIMELINE_KEY, userId), 0, 10);
 
             List<Post> posts = new ArrayList<>();
             for (String postId : postIds) {
