@@ -61,7 +61,7 @@ class VogelgrippeUser(HttpUser):
     def get_running_username(self):
         global USER_INDEX
         USER_INDEX += 1
-        return "simuser_" + str(USER_INDEX);
+        return "simuser_" + str(USER_INDEX)
 
     def browse_to_random_profile_on_page(self, page: BeautifulSoup):
         user_links = []
