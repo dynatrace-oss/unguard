@@ -12,6 +12,8 @@ build:
       context: microblog-service
     - image: vogelgrippe-proxy-service
       context: proxy-service
+    - image: vogelgrippe-loadgenerator
+      context: loadgenerator
   tagPolicy:
     gitCommit: {}
 deploy:

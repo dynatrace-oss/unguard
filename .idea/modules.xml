@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/exploits/exploits.iml" filepath="$PROJECT_DIR$/exploits/exploits.iml" />
       <module fileurl="file://$PROJECT_DIR$/frontend/frontend.iml" filepath="$PROJECT_DIR$/frontend/frontend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/loadgenerator/loadgenerator.iml" filepath="$PROJECT_DIR$/loadgenerator/loadgenerator.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/microservices-ssrf.iml" filepath="$PROJECT_DIR$/.idea/microservices-ssrf.iml" />
     </modules>
   </component>
