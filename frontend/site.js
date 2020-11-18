@@ -1,4 +1,4 @@
-const {handleError} = require("./errorhandler");
+const {handleError, statusCodeForError} = require("./errorhandler");
 const cheerio = require('cheerio')
 const express = require('express');
 const router = express.Router();
@@ -30,7 +30,7 @@ function showGlobalTimeline(req, res) {
 
         res.render('index.njk', data)
     }).catch(reason => {
-        res.render('error.njk', handleError(reason));
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 }
 
@@ -44,7 +44,7 @@ function showPersonalTimeline(req, res) {
 
         res.render('index.njk', data)
     }).catch(reason => {
-        res.render('error.njk', handleError(reason));
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 }
 
@@ -59,7 +59,7 @@ function showUserProfile(req, res) {
 
         res.render('profile.njk', data)
     }).catch(reason => {
-        res.render('error.njk', handleError(reason));
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 }
 
@@ -84,7 +84,7 @@ function doLogin(req, res) {
         res.cookie("username", usernameToLogin)
         res.redirect('/')
     }).catch(reason => {
-        res.render('error.njk', handleError(reason));
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 }
 
@@ -103,17 +103,16 @@ function registerUser(req, res) {
         // set a real cookie, but the username will do here as the backend expects just that
         res.redirect('/')
     }).catch(reason => {
-        res.render('error.njk', handleError(reason));
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 }
 
 function followUser(req, res) {
     const usernameProfile = req.params.username;
     req.API.post(`/users/${usernameProfile}/follow`).then((response) => {
-        console.log(usernameProfile)
         res.redirect(`/user/${usernameProfile}`);
     }).catch(reason => {
-        res.render('error.njk', handleError(reason));
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 }
 
@@ -151,10 +150,10 @@ function createPost(req, res) {
             }).then((response) => {
                 res.redirect('/')
             }).catch(reason => {
-                res.render('error.njk', handleError(reason));
+                res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
             });
         }).catch(reason => {
-            res.render('error.njk', handleError(reason));
+            res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
     } else if (req.body.message) {
         // this is a normal message
@@ -163,7 +162,7 @@ function createPost(req, res) {
         }).then((response) => {
             res.redirect('/')
         }).catch(reason => {
-            res.render('error.njk', handleError(reason));
+            res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
     } else {
         // when nothing is set, just redirect back

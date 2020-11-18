@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PreDestroy;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
@@ -126,10 +125,5 @@ public class MicroblogController {
             throw new UnauthorizedException();
         }
         redisClient.newPost(currentUser, postForm.getContent(), postForm.getImageUrl());
-    }
-
-    @PreDestroy
-    public void destroy() {
-        redisClient.close();
     }
 }

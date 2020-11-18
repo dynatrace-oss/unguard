@@ -30,19 +30,28 @@ const logger = winston.createLogger({
 // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
 //
 if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple(),
-  }));
+    logger.add(new winston.transports.Console({
+        format: winston.format.simple(),
+    }));
+}
+
+// Override the base console log with winston
+
+console.error = function () {
+    return logger.error.apply(logger, arguments)
+}
+console.info = function () {
+    return logger.warn.apply(logger, arguments)
 }
 
 // set default environment variables if not set
 
 if (!process.env.JAEGER_SERVICE_NAME) {
-  process.env.JAEGER_SERVICE_NAME = "frontend";
+    process.env.JAEGER_SERVICE_NAME = "frontend";
 }
 
 if (!process.env.JAEGER_SAMPLER_TYPE) {
-  process.env.JAEGER_SAMPLER_TYPE = "const";
+    process.env.JAEGER_SAMPLER_TYPE = "const";
 }
 
 if (!process.env.JAEGER_SAMPLER_PARAM) {
