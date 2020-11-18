@@ -28,13 +28,17 @@ public class RedisClient {
 
     private final String USERNAME_FIELD = "userName";
 
+    private final int REDIS_PORT = 6379;
+
     private final JedisPool jedisPool;
     private final Logger logger = LoggerFactory.getLogger(RedisClient.class);
 
     public RedisClient(String host, Tracer tracer) {
-        TracingConfiguration tracingConfiguration = new TracingConfiguration.Builder(tracer).build();
+        TracingConfiguration tracingConfiguration = new TracingConfiguration.Builder(tracer)
+                .extensionTag("peer.address", host + ":" + REDIS_PORT)
+                .build();
 
-        jedisPool = new TracingJedisPool(host, tracingConfiguration);
+        jedisPool = new TracingJedisPool(host, REDIS_PORT, tracingConfiguration);
     }
 
     private String getCombinedKey(String keyPrefix, String value) {
