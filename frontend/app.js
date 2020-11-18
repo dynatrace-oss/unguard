@@ -1,9 +1,9 @@
 const express = require('express');
 
 const axios = require('axios');
-const expressOpentracing = require('express-opentracing').default;
+const expressOpentracing = require('@w3d3/express-opentracing').default;
 const {initTracerFromEnv} = require('jaeger-client');
-const createAxiosTracing = require('axios-opentracing').default;
+const createAxiosTracing = require('@w3d3/axios-opentracing').default;
 
 const http = require('http')
 const nunjucks = require('nunjucks')
@@ -94,6 +94,7 @@ const tracer = initTracerFromEnv({
 // using global tracer
 const applyTracingInterceptors = createAxiosTracing(tracer);
 
+// enable express server side tracing
 app.use(expressOpentracing({tracer}));
 
 // enable cookie parsing
