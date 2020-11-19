@@ -2,7 +2,7 @@ package org.dynatrace.ssrfservice;
 
 
 import com.uber.jaeger.httpclient.Constants;
-import com.uber.jaeger.httpclient.TracingInterceptors;
+import com.uber.jaeger.httpclient.TracingResponseInterceptor;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
@@ -14,6 +14,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.dynatrace.ssrfservice.tracing.EnhancedTracingRequestInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,17 +34,21 @@ public class ProxyController {
     public ProxyController(Tracer tracer) {
         this.tracer = tracer;
         HttpClientBuilder clientBuilder = HttpClients.custom();
-        httpclient = TracingInterceptors
-                .addTo(clientBuilder, this.tracer)
+
+        httpclient = clientBuilder
+                .addInterceptorFirst(new EnhancedTracingRequestInterceptor(tracer))
+                .addInterceptorFirst(new TracingResponseInterceptor())
                 .build();
     }
 
     @RequestMapping("/")
-    public String proxyUrlWithHttpClient(@RequestParam String url, @RequestParam String header) throws IOException {
+    public String proxyUrlWithHttpClient(@RequestHeader("Host") String host, @RequestParam String url, @RequestParam String header) throws IOException {
 
         /* can add additional headers by sending something like "1\u560d\u560aX-But-Not-This-One: oh no!"
            in the header field */
         logger.info(url);
+
+        tracer.activeSpan().setTag("http.host", host);
 
         CloseableHttpResponse execute = null;
         HttpContext httpContext = new BasicHttpContext();

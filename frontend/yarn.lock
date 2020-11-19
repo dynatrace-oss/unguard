@@ -28,6 +28,18 @@
   dependencies:
     "@types/node" "*"
 
+"@w3d3/axios-opentracing@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@w3d3/axios-opentracing/-/axios-opentracing-0.1.5.tgz#decce1d4856b5b4e863ccec8dfdf318583d2af44"
+  integrity sha512-K7eumjtxv1FZ6bzoUQOHWGvqaHq2mdzW+0kKg5VVMcTLkYNQKHd96tDO9z/whqThs6CdW28AtFNbilE/FfhFDg==
+
+"@w3d3/express-opentracing@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@w3d3/express-opentracing/-/express-opentracing-0.1.5.tgz#c2338d178ee2f740504c04a8092eefa2c91f8f93"
+  integrity sha512-m4BfhYE3/Xx15jtqKuyCdZopOnQRMhgV5hyS+DlyDBmBOfON2kDQ9vIVBpoBjjuL8rWsIsqgOFYh518T4hq+jA==
+  dependencies:
+    opentracing "^0.14.0"
+
 a-sync-waterfall@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/a-sync-waterfall/-/a-sync-waterfall-1.0.1.tgz#75b6b6aa72598b497a125e7a2770f14f4c8a1fa7"
@@ -175,11 +187,6 @@ aws4@^1.8.0:
   version "1.10.1"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.10.1.tgz#e1e82e4f3e999e2cfd61b161280d16a111f86428"
   integrity sha512-zg7Hz2k5lI8kb7U32998pRRFin7zJlkfezGJjUc2heaD4Pw2wObakCDVzkKztTm/Ln7eiVvYsjqak0Ed4LkMDA==
-
-axios-opentracing@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/axios-opentracing/-/axios-opentracing-0.1.3.tgz#6707a49cdf93ef247df971365ccfcb7a4614703a"
-  integrity sha512-1KP5lYiZ8VRU7iy1qCdyOLoqJOL9oZNsvMeTEYF7NgGoZFtwICenXb8sSUUAuNJnKEU9H9xms2X+3Qj7acGcMA==
 
 axios@^0.20.0:
   version "0.20.0"
@@ -1021,11 +1028,6 @@ has-unicode@^2.0.0:
   resolved "https://registry.yarnpkg.com/has-unicode/-/has-unicode-2.0.1.tgz#e0e6fe6a28cf51138855e086d1691e771de2a8b9"
   integrity sha1-4Ob+aijPUROIVeCG0Wkedx3iqLk=
 
-he@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
-  integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
-
 hexer@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/hexer/-/hexer-1.5.0.tgz#b86ce808598e8a9d1892c571f3cedd86fc9f0653"
@@ -1475,13 +1477,6 @@ node-gyp@^3.8.0:
     semver "~5.3.0"
     tar "^2.0.0"
     which "1"
-
-node-html-parser@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/node-html-parser/-/node-html-parser-1.4.2.tgz#391f5a9a13fa152b67bab6dc951327adc5965e30"
-  integrity sha512-Vpau3BwNoJZFBshIUbceT1SYPYAxlPOawbn2xXneMjQd4G+Qu4BQ2+gFiENQ4Dr2fI/j2iCC45P//qBtfkdZGg==
-  dependencies:
-    he "1.2.0"
 
 node-html-to-image@^3.1.0:
   version "3.1.0"
