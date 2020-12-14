@@ -75,11 +75,20 @@ Jaeger tracing.**
 3. **Run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
 
     ```
+    # LINUX - Terminal
     # Use docker environment of you cluster
     eval $(minikube -p vogelgrippe docker-env)
     # Run the application
     skaffold run --detect-minikube
     ```
+   
+   ```
+   # WINDOWS - Powershell
+   # Use docker environment of you cluster
+   & minikube -p vogelgrippe docker-env | Invoke-Expression
+   # Run the application
+   skaffold run --detect-minikube
+   ```
     
     To access the frontend, you can use port-fowarding.
     This is the recommended way as exposing the service to external traffic would be a bad idea.
