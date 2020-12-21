@@ -44,5 +44,6 @@ module.exports = app;
  */
 async function initDb() {
   console.log("Initialize database.")
-  await database.dbConnection.query(database.createTableQuery)
+  await database.dbConnection.query(database.createUserTableQuery)
+  await database.dbConnection.query(database.createTokenTableQuery)
 }
