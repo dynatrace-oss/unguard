@@ -59,15 +59,20 @@ if (!process.env.JAEGER_SAMPLER_PARAM) {
 }
 
 if (!process.env.MICROBLOG_SERVICE_ADDRESS) {
-  process.env.MICROBLOG_SERVICE_ADDRESS = "localhost:8080";
+  process.env.MICROBLOG_SERVICE_ADDRESS = "localhost:7070";
 }
 
 if (!process.env.PROXY_SERVICE_ADDRESS) {
   process.env.PROXY_SERVICE_ADDRESS = "localhost:8081";
 }
 
+if (!process.env.AUTH_SERVICE_ADDRESS) {
+  process.env.AUTH_SERVICE_ADDRESS = "localhost:9091";
+}
+
 logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS)
 logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS)
+logger.info("AUTH_SERVICE_ADDRESS is set to "+ process.env.AUTH_SERVICE_ADDRESS)
 
 let app = express()
 
@@ -108,7 +113,7 @@ app.use((req, res, next) => {
   const API = axios.create({
     baseURL: "http://" + process.env.MICROBLOG_SERVICE_ADDRESS,
     // forward username cookie
-    headers: req.cookies.username ? { "Cookie": "username=" + req.cookies.username } : {}
+    headers: req.cookies.jwt ? { "Cookie": "jwt=" + req.cookies.jwt } : {}
   });
 
   const PROXY = axios.create({

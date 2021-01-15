@@ -2,6 +2,8 @@ const {handleError, statusCodeForError} = require("./errorhandler");
 const cheerio = require('cheerio')
 const express = require('express');
 const router = express.Router();
+const axios = require('axios')
+
 
 // Global Timeline route
 router.get('/', showGlobalTimeline)
@@ -25,7 +27,7 @@ function showGlobalTimeline(req, res) {
         let data = {
             data: response.data,
             title: 'Timeline',
-            username: req.cookies.username
+            username: req.cookies.username,
         }
 
         res.render('index.njk', data)
@@ -39,7 +41,7 @@ function showPersonalTimeline(req, res) {
         let data = {
             data: response.data,
             title: 'My Timeline',
-            username: req.cookies.username
+            username: req.cookies.username,
         }
 
         res.render('index.njk', data)
@@ -65,6 +67,7 @@ function showUserProfile(req, res) {
 
 function doLogout(req, res) {
     res.clearCookie('username');
+    res.clearCookie('jwt')
     res.redirect('/')
 }
 
@@ -74,18 +77,21 @@ function doLogin(req, res) {
         res.render('error.njk', {error: "Username must be supplied to login"});
         return;
     }
-    req.API.post('/login', null, {
-        params: {
-            username: usernameToLogin
-        }
-    }).then((response) => {
-        // in a real application we would probably use the response here to
-        // set a real cookie, but the username will do here as the backend expects just that
-        res.cookie("username", usernameToLogin)
-        res.redirect('/')
-    }).catch(reason => {
-        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
-    });
+    axios
+        .post("http://"+process.env.AUTH_SERVICE_ADDRESS+"/user/login", {
+            "username": usernameToLogin,
+            "password": usernameToLogin
+        })
+        .then(response => {
+            // in a real application we would probably use the response here to
+            // set a real cookie, but the username will do here as the backend expects just that
+            res.cookie("username", usernameToLogin)
+            res.cookie("jwt", response.data.jwt)
+            res.redirect('/')
+        })
+        .catch(error => {
+            res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+        })
 }
 
 function registerUser(req, res) {
@@ -94,17 +100,17 @@ function registerUser(req, res) {
         res.render('error.njk', {error: "Username must be supplied to register"});
         return;
     }
-    req.API.post('/register', null, {
-        params: {
-            username: usernameToLogin
-        }
-    }).then((response) => {
-        // in a real application we would probably use the response here to
-        // set a real cookie, but the username will do here as the backend expects just that
-        res.redirect('/')
-    }).catch(reason => {
-        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
-    });
+    axios
+        .post("http://"+process.env.AUTH_SERVICE_ADDRESS+"/user/register", {
+            "username": req.body.username,
+            "password": req.body.username
+        })
+        .then(response => {
+            res.redirect('/')
+        })
+        .catch(error => {
+            res.status(statusCodeForError(error)).render('error.njk', handleError(error));
+        })
 }
 
 function followUser(req, res) {
@@ -145,6 +151,7 @@ function createPost(req, res) {
             }
 
             req.API.post('/post', {
+                jwt: req.cookies.jwt,
                 content: `${metaTitle} ${req.body.urlmessage}`,
                 imageUrl: metaImgSrc
             }).then((response) => {
@@ -158,6 +165,7 @@ function createPost(req, res) {
     } else if (req.body.message) {
         // this is a normal message
         req.API.post('/post', {
+            jwt: req.cookies.jwt,
             content: req.body.message
         }).then((response) => {
             res.redirect('/')
