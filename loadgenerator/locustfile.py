@@ -119,7 +119,7 @@ class VogelgrippeUser(HttpUser):
         while not cookie_set:
             self.client.post("/register", data=user_data)
             self.client.post("/login", data=user_data)
-            cookie_set = self.client.cookies.get('username') is not None
+            cookie_set = self.client.cookies.get('jwt') is not None
             if not cookie_set:
                 # wait a bit for deployments to stabilize
                 # so we can retry logging in
