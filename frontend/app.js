@@ -59,7 +59,7 @@ if (!process.env.JAEGER_SAMPLER_PARAM) {
 }
 
 if (!process.env.MICROBLOG_SERVICE_ADDRESS) {
-  process.env.MICROBLOG_SERVICE_ADDRESS = "localhost:7070";
+  process.env.MICROBLOG_SERVICE_ADDRESS = "localhost:8080";
 }
 
 if (!process.env.PROXY_SERVICE_ADDRESS) {
@@ -120,12 +120,20 @@ app.use((req, res, next) => {
     baseURL: "http://" + process.env.PROXY_SERVICE_ADDRESS
   });
 
+  const USER_AUTH_API = axios.create({
+    baseURL: "http://" + process.env.AUTH_SERVICE_ADDRESS,
+    // forward username cookie
+    headers: req.cookies.jwt ? { "Cookie": "jwt=" + req.cookies.jwt } : {}
+  });
+
   applyTracingInterceptors(API, {span: req.span});
   applyTracingInterceptors(PROXY, {span: req.span});
+  applyTracingInterceptors(USER_AUTH_API, {span: req.span})
 
   req.API = API;
   req.PROXY = PROXY;
   req.LOGGER = logger;
+  req.USER_AUTH_API = USER_AUTH_API;
 
   next();
 });

@@ -77,14 +77,13 @@ function doLogin(req, res) {
         res.render('error.njk', {error: "Username must be supplied to login"});
         return;
     }
-    axios
-        .post("http://"+process.env.AUTH_SERVICE_ADDRESS+"/user/login", {
+    req.USER_AUTH_API
+        .post("/user/login", {
             "username": usernameToLogin,
             "password": usernameToLogin
         })
         .then(response => {
             // in a real application we would probably use the response here to
-            // set a real cookie, but the username will do here as the backend expects just that
             res.cookie("username", usernameToLogin)
             res.cookie("jwt", response.data.jwt)
             res.redirect('/')
@@ -100,8 +99,8 @@ function registerUser(req, res) {
         res.render('error.njk', {error: "Username must be supplied to register"});
         return;
     }
-    axios
-        .post("http://"+process.env.AUTH_SERVICE_ADDRESS+"/user/register", {
+    req.USER_AUTH_API
+        .post("/user/register", {
             "username": req.body.username,
             "password": req.body.username
         })
@@ -165,7 +164,6 @@ function createPost(req, res) {
     } else if (req.body.message) {
         // this is a normal message
         req.API.post('/post', {
-            jwt: req.cookies.jwt,
             content: req.body.message
         }).then((response) => {
             res.redirect('/')
