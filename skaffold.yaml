@@ -14,6 +14,8 @@ build:
       context: proxy-service
     - image: vogelgrippe-loadgenerator
       context: loadgenerator
+    - image: vogelgrippe-user-auth-service
+      context: user-auth-service
   tagPolicy:
     gitCommit: {}
 deploy:
