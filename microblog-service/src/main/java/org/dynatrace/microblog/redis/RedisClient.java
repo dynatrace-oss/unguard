@@ -3,10 +3,11 @@ package org.dynatrace.microblog.redis;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.redis.common.TracingConfiguration;
 import io.opentracing.contrib.redis.jedis3.TracingJedisPool;
+import org.dynatrace.microblog.authservice.UserAuthServiceClient;
 import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.User;
 import org.dynatrace.microblog.exceptions.InvalidUserException;
-import org.dynatrace.microblog.exceptions.UserAlreadyExistsException;
+import org.dynatrace.microblog.exceptions.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -23,33 +24,34 @@ public class RedisClient {
     private final String POST_ID_KEY = "post_id";
     private final String POST_KEY_PREFIX = "post";
     private final String POSTS_KEY_PREFIX = "posts";
-    private final String USERS_KEY = "users";
     private final String FOLLOWERS_KEY_PREFIX = "followers";
 
-    private final String USERNAME_FIELD = "userName";
-
     private final int REDIS_PORT = 6379;
-
+    
     private final JedisPool jedisPool;
     private final Logger logger = LoggerFactory.getLogger(RedisClient.class);
 
-    public RedisClient(String host, Tracer tracer) {
+    private UserAuthServiceClient userAuthServiceClient;
+    
+    
+    /*
+    Redis works with userIds we abstract usernames away, they get handled by the user-auth-service.
+    */
+
+    public RedisClient(String host, UserAuthServiceClient userAuthServiceClient, Tracer tracer) {
         TracingConfiguration tracingConfiguration = new TracingConfiguration.Builder(tracer)
                 .extensionTag("peer.address", host + ":" + REDIS_PORT)
                 .build();
 
         jedisPool = new TracingJedisPool(host, REDIS_PORT, tracingConfiguration);
+        this.userAuthServiceClient = userAuthServiceClient;
     }
 
     private String getCombinedKey(String keyPrefix, String value) {
         return String.format("%s:%s", keyPrefix, value);
     }
 
-    public void newPost(String username, String body, String imageUrl) throws InvalidUserException {
-        String userId = getUserIdFromUsername(username);
-        if (userId == null) {
-            throw new InvalidUserException();
-        }
+    public void newPost(String userId, String body, String imageUrl) throws InvalidUserException {
         newPostWithUserId(userId, body, imageUrl);
     }
 
@@ -85,7 +87,7 @@ public class RedisClient {
         }
     }
 
-    public List<Post> getUserTimeline(String userId) {
+    public List<Post> getUserTimeline(String jwtToken, String userId) {
         List<String> postIds;
         try (Jedis jedis = jedisPool.getResource()) {
             // Get the timeline of the user
@@ -93,7 +95,7 @@ public class RedisClient {
 
             List<Post> posts = new ArrayList<>();
             for (String postId : postIds) {
-                posts.add(getPostById(postId, jedis));
+                posts.add(getPostById(jwtToken, postId, jedis));
             }
             return posts;
         } catch (Exception e) {
@@ -108,17 +110,17 @@ public class RedisClient {
      * @param limit maximum amount of posts returned
      * @return list of posts of the user
      */
-    public List<Post> getUserPosts(String userName, int limit) {
-        return getUserPostsById(getUserIdFromUsername(userName), 0, limit);
+    public List<Post> getUserPosts(String jwt, String userName, int limit) throws UserNotFoundException {
+        return getUserPostsById(jwt, this.userAuthServiceClient.getUserIdFromUsername(jwt, userName), 0, limit);
     }
 
-    private List<Post> getUserPostsById(String userId, int start, int count) {
+    private List<Post> getUserPostsById(String jwtToken, String userId, int start, int count) {
         List<Post> posts;
         try (Jedis jedis = jedisPool.getResource()) {
             List<String> postIds = jedis.lrange(getCombinedKey(POSTS_KEY_PREFIX, userId), start, start + count);
             posts = new ArrayList<>();
             for (String postId : postIds) {
-                posts.add(getPostById(postId, jedis));
+                posts.add(getPostById(jwtToken, postId, jedis));
             }
         } catch (Exception e) {
             logger.error("Could not get posts", e);
@@ -127,9 +129,9 @@ public class RedisClient {
         return posts;
     }
 
-    private Post getPostById(String postId, Jedis jedis) {
+    private Post getPostById(String jwtToken, String postId, Jedis jedis) throws UserNotFoundException {
         Map<String, String> postMap = jedis.hgetAll(getCombinedKey(POST_KEY_PREFIX, postId));
-        String userName = getUserName(postMap.get("userId"), jedis);
+        String userName = this.userAuthServiceClient.getUserNameForUserId(jwtToken, postMap.get("userId"));
         String body = postMap.get("body");
         String imageUrl = postMap.get("imageUrl");
         Date timestamp = new Date(Long.parseLong(postMap.get("time")));
@@ -137,23 +139,19 @@ public class RedisClient {
         return new Post(userName, body, imageUrl, timestamp);
     }
 
-    public List<Post> getTimeline() {
+    public List<Post> getTimeline(String jwtToken) {
         List<Post> posts;
         try (Jedis jedis = jedisPool.getResource()) {
             List<String> postIds = jedis.lrange(TIMELINE_KEY, 0, 50);
             posts = new ArrayList<>();
             for (String postId : postIds) {
-                posts.add(getPostById(postId, jedis));
+                posts.add(getPostById(jwtToken, postId, jedis));
             }
         } catch (Exception e) {
             logger.error("Could not get timeline", e);
             throw new RuntimeException("Could not get timeline");
         }
         return posts;
-    }
-
-    private String getUserName(String userId, Jedis jedis) {
-        return jedis.hget(getCombinedKey(USERS_KEY, userId), USERNAME_FIELD);
     }
 
     public void follow(String currentUserId, String userId) {
@@ -184,58 +182,19 @@ public class RedisClient {
         }
     }
 
-    @Nullable
-    public String getUserIdFromUsername(@NonNull String userName) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            return jedis.hget(USERS_KEY, userName);
-        } catch (Exception e) {
-            logger.error("Could not get User id for username", e);
-            throw new RuntimeException("Could not get User id for username");
-        }
-    }
-
-    /**
-     * Creates a new user
-     *
-     * @param userName name of the user
-     * @return user Id of the new user
-     */
-    public String newUser(String userName) throws UserAlreadyExistsException {
-        if (getUserIdFromUsername(userName) != null) {
-            throw new UserAlreadyExistsException();
-        }
-        Long userId;
-        try (Jedis jedis = jedisPool.getResource()) {
-            userId = jedis.incr("userId");
-            Map<String, String> userMap = new HashMap<>();
-            userMap.put("userName", userName);
-
-            // this userMap is for future proofing, i.e. could add profile pic, birthday etc.
-            jedis.hmset(getCombinedKey(USERS_KEY, String.valueOf(userId)), userMap);
-
-            // add to (username => id) map
-            jedis.hset(USERS_KEY, userName, String.valueOf(userId));
-        } catch (Exception e) {
-            logger.error("User could not be created", e);
-            throw new RuntimeException("User could not be created");
-        }
-
-        return String.valueOf(userId);
-    }
-
-    public Collection<User> getFollowers(String userId) {
+    public Collection<User> getFollowers(String jwtToken, String userId) {
         Set<User> followers;
         try (Jedis jedis = jedisPool.getResource()) {
             Set<String> followerIds = jedis.zrange("followers:" + userId, 0, -1);
             if (followerIds.isEmpty()) {
-                logger.info(String.format("No followers for %s", getUserName(userId, jedis)));
+                logger.info(String.format("No followers for %s", this.userAuthServiceClient.getUserNameForUserId(jwtToken, userId)));
                 return Collections.emptyList();
             }
             followers = new HashSet<>();
             for (String followerId : followerIds) {
-                User user = new User(Integer.parseInt(followerId), getUserName(followerId, jedis));
+                User user = new User(Integer.parseInt(followerId), this.userAuthServiceClient.getUserNameForUserId(jwtToken, followerId));
                 followers.add(user);
-                logger.info(String.format("follower of %s = %s", getUserName(userId, jedis), user.getUserName()));
+                logger.info(String.format("follower of %s = %s", this.userAuthServiceClient.getUserNameForUserId(jwtToken, userId), user.getUserName()));
             }
         } catch (Exception e) {
             logger.error("Could not get followers from redis", e);
@@ -245,7 +204,7 @@ public class RedisClient {
     }
 
     // UNUSED CURRENTLY
-    public Collection<User> getFollowersInCommon(String userId, String otherUserId) {
+    public Collection<User> getFollowersInCommon(String jwtToken, String userId, String otherUserId) {
         Set<User> commonFollowers;
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.zinterstore("common",
@@ -257,9 +216,9 @@ public class RedisClient {
             }
             commonFollowers = new HashSet<>();
             for (String followerId : followers) {
-                User user = new User(Integer.parseInt(followerId), getUserName(followerId, jedis));
+                User user = new User(Integer.parseInt(followerId), this.userAuthServiceClient.getUserNameForUserId(jwtToken, followerId));
                 commonFollowers.add(user);
-                logger.info(String.format("common followers of %s and %s = %s", getUserName(userId, jedis), getUserName(otherUserId, jedis), user.getUserName()));
+                logger.info(String.format("common followers of %s and %s = %s", this.userAuthServiceClient.getUserNameForUserId(jwtToken, userId), this.userAuthServiceClient.getUserNameForUserId(jwtToken, otherUserId), user.getUserName()));
             }
         } catch (Exception e) {
             logger.error("Could not get followers in common from redis", e);
