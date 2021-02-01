@@ -66,8 +66,13 @@ if (!process.env.PROXY_SERVICE_ADDRESS) {
   process.env.PROXY_SERVICE_ADDRESS = "localhost:8081";
 }
 
+if (!process.env.AUTH_SERVICE_ADDRESS) {
+  process.env.AUTH_SERVICE_ADDRESS = "localhost:9091";
+}
+
 logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS)
 logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS)
+logger.info("AUTH_SERVICE_ADDRESS is set to "+ process.env.AUTH_SERVICE_ADDRESS)
 
 let app = express()
 
@@ -108,19 +113,27 @@ app.use((req, res, next) => {
   const API = axios.create({
     baseURL: "http://" + process.env.MICROBLOG_SERVICE_ADDRESS,
     // forward username cookie
-    headers: req.cookies.username ? { "Cookie": "username=" + req.cookies.username } : {}
+    headers: req.cookies.jwt ? { "Cookie": "jwt=" + req.cookies.jwt } : {}
   });
 
   const PROXY = axios.create({
     baseURL: "http://" + process.env.PROXY_SERVICE_ADDRESS
   });
 
+  const USER_AUTH_API = axios.create({
+    baseURL: "http://" + process.env.AUTH_SERVICE_ADDRESS,
+    // forward username cookie
+    headers: req.cookies.jwt ? { "Cookie": "jwt=" + req.cookies.jwt } : {}
+  });
+
   applyTracingInterceptors(API, {span: req.span});
   applyTracingInterceptors(PROXY, {span: req.span});
+  applyTracingInterceptors(USER_AUTH_API, {span: req.span})
 
   req.API = API;
   req.PROXY = PROXY;
   req.LOGGER = logger;
+  req.USER_AUTH_API = USER_AUTH_API;
 
   next();
 });
