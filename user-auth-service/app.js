@@ -85,7 +85,8 @@ function tracingMiddleWare (req, res, next) {
   // Use the setTag api to capture standard span tags for http traces
   span.setTag(opentracing.Tags.HTTP_METHOD, req.method)
   span.setTag(opentracing.Tags.SPAN_KIND, opentracing.Tags.SPAN_KIND_RPC_SERVER)
-  span.setTag(opentracing.Tags.HTTP_URL, req.path)
+  const baseUrl = req.protocol + "://"+ req.headers["host"]+req.path
+  span.setTag(opentracing.Tags.HTTP_URL, baseUrl)
 
   // include trace ID in headers so that we can debug slow requests we see in
   // the browser by looking up the trace ID found in response headers
