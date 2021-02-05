@@ -62,14 +62,14 @@ router.post('/login', async function(req, res){
 
 router.post('/username', async function(req, res){
   if(!req.body)
-    return res.sendStatus(403)
+    return res.sendStatus(400)
 
   var jwtToken = req.body.jwt;
   var userId = req.body.userid;
 
   jwt.verify(jwtToken, jwtUtil.JwtSecret, async function (err, user) {
     if(err) {
-      return res.sendStatus(401);
+      return res.sendStatus(403);
     }
 
     // get userId for username
@@ -78,21 +78,21 @@ router.post('/username', async function(req, res){
     if(result[0].length != 0){
       res.send({username: result[0][0].username})
     }else{
-      res.sendStatus(400)
+      res.sendStatus(404)
     }
   });
 });
 
 router.post('/useridForName', async function(req, res){
   if(!req.body)
-    return res.sendStatus(403)
+    return res.sendStatus(400)
 
   var jwtToken = req.body.jwt;
   var username = req.body.username;
 
   jwt.verify(jwtToken, jwtUtil.JwtSecret, async function (err, user) {
     if(err) {
-      return res.sendStatus(401);
+      return res.sendStatus(403);
     }
 
     // get userId for username
@@ -101,7 +101,7 @@ router.post('/useridForName', async function(req, res){
     if(result[0].length != 0){
       res.send({userId: result[0][0].id})
     }else{
-      res.sendStatus(400)
+      res.sendStatus(404)
     }
   });
 });
