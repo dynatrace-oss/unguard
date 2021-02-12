@@ -16,4 +16,4 @@ RUN npm install
 COPY . .
 
 EXPOSE 9091
-CMD [ "node", "app.js" ]
+CMD [ "node", "bin/www" ]

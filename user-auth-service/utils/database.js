@@ -1,6 +1,6 @@
 var mysql      = require('mysql2/promise');
 var connection = mysql.createPool({
-    host     : 'localhost',
+    host     : process.env.MARIADB_SERVICE,
     database : 'my_database',
     port     : '3306',
     user     : 'root',
