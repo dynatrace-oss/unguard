@@ -56,3 +56,4 @@ To get more information about the JAEGER config options, see https://www.jaegert
 | JAEGER_SERVICE_NAME   | microblog-service | Name that will be used for the service in the Jaeger traces
 | JAEGER_SAMPLER_TYPE   | const             | (optional) Set to const to get all traces
 | JAEGER_SAMPLER_PARAM  | 1                 | (optional) Set to 1 while sampler is const to get all traces
+/ USER_AUTH_SERVICE_ADDRESS / vogelgrippe-user-auth-service / Change to hostname/IP of user-auth-service instance

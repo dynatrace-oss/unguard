@@ -39,7 +39,3 @@ spec:
               value: "const"
             - name: JAEGER_SAMPLER_PARAM
               value: "1"
-            - name: REDIS_SERVICE_ADDRESS
-              value: "vogelgrippe-redis"
-            - name: USER_AUTH_SERVICE_ADDRESS
-              value: "vogelgrippe-user-auth-service:9091"
