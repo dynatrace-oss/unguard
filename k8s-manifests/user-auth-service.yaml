@@ -43,3 +43,8 @@ spec:
               value: "vogelgrippe-redis"
             - name: MARIADB_SERVICE
               value: "mariadb-release"
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-release
+                  key: mariadb-root-password
