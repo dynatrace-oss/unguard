@@ -36,7 +36,7 @@ public class UserAuthServiceClient {
 
     }
 
-    public String getUserNameForUserId(String jwt, String userId) throws InvalidJwtException, UserNotFoundException {
+    public String getUserNameForUserId(String jwt, String userId) throws InvalidJwtException, UserNotFoundException, IOException {
         // build json request
         JsonObject obj = new JsonObject();
         obj.addProperty("jwt", jwt);
@@ -69,11 +69,12 @@ public class UserAuthServiceClient {
             }
         } catch (IOException e) {
             logger.error("Request response error", e);
+            throw e;
         }
     }
 
 
-    public String getUserIdFromUsername(String jwt, String username) throws UserNotFoundException {
+    public String getUserIdFromUsername(String jwt, String username) throws UserNotFoundException, IOException, InvalidJwtException {
         // build json request
         JsonObject obj = new JsonObject();
         obj.addProperty("jwt", jwt);
@@ -105,6 +106,7 @@ public class UserAuthServiceClient {
             }
         } catch (Exception e) {
             logger.error("Request response error", e);
+            throw e;
         }
     }
 

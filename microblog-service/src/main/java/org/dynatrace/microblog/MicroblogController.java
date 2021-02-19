@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -65,7 +67,7 @@ public class MicroblogController {
 
     @PostMapping("/users/{user}/follow")
     public void follow(@CookieValue(value = "jwt") String currentUserJwt,
-                       @PathVariable("user") String userToFollow) throws FollowYourselfException, InvalidJwtException, InvalidUserException, UserNotFoundException {
+                       @PathVariable("user") String userToFollow) throws FollowYourselfException, InvalidJwtException, InvalidUserException, UserNotFoundException, IOException {
 
         if(!userAuthServiceClient.checkTokenValidity(currentUserJwt)) throw new InvalidJwtException();
 
@@ -85,7 +87,7 @@ public class MicroblogController {
 
     @GetMapping("/users/{user}/posts")
     public List<Post> getUserPosts(@PathVariable("user") String user,
-                                   @RequestParam(defaultValue = "10") String limit, @CookieValue(value="jwt") String jwt) throws UserNotFoundException, InvalidJwtException {
+                                   @RequestParam(defaultValue = "10") String limit, @CookieValue(value="jwt") String jwt) throws UserNotFoundException, InvalidJwtException, IOException {
 
         if(!userAuthServiceClient.checkTokenValidity(jwt)) throw new InvalidJwtException();
 
@@ -93,7 +95,7 @@ public class MicroblogController {
     }
 
     @GetMapping("/users/{user}/followers")
-    public Collection<User> getFollowers(@PathVariable("user") String user, @CookieValue(value="jwt") String jwt) throws UserNotFoundException, InvalidJwtException {
+    public Collection<User> getFollowers(@PathVariable("user") String user, @CookieValue(value="jwt") String jwt) throws UserNotFoundException, InvalidJwtException, IOException {
         if(!userAuthServiceClient.checkTokenValidity(jwt)) throw new InvalidJwtException();
 
         String userId = userAuthServiceClient.getUserIdFromUsername(jwt, user);

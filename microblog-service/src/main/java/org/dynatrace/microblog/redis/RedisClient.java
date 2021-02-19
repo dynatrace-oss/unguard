@@ -16,6 +16,7 @@ import org.springframework.lang.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.io.IOException;
 import java.util.*;
 
 public class RedisClient {
@@ -111,7 +112,7 @@ public class RedisClient {
      * @param limit maximum amount of posts returned
      * @return list of posts of the user
      */
-    public List<Post> getUserPosts(String jwt, String userName, int limit) throws UserNotFoundException {
+    public List<Post> getUserPosts(String jwt, String userName, int limit) throws UserNotFoundException, IOException, InvalidJwtException {
         return getUserPostsById(jwt, this.userAuthServiceClient.getUserIdFromUsername(jwt, userName), 0, limit);
     }
 
@@ -130,7 +131,7 @@ public class RedisClient {
         return posts;
     }
 
-    private Post getPostById(String jwtToken, String postId, Jedis jedis) throws UserNotFoundException, InvalidJwtException {
+    private Post getPostById(String jwtToken, String postId, Jedis jedis) throws UserNotFoundException, InvalidJwtException, IOException {
         Map<String, String> postMap = jedis.hgetAll(getCombinedKey(POST_KEY_PREFIX, postId));
         String userName = this.userAuthServiceClient.getUserNameForUserId(jwtToken, postMap.get("userId"));
         String body = postMap.get("body");
