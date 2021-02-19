@@ -8,6 +8,11 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
 var authRouter = require('./routes/auth');
 
+// set environment variables if not set
+if (!process.env.MARIADB_SERVICE) {
+  process.env.MARIADB_SERVICE = "localhost";
+}
+
 const tracer = initTracer('user-auth-service');
 const opentracing = require('opentracing')
 opentracing.initGlobalTracer(tracer);
@@ -68,9 +73,10 @@ function initTracer (serviceName) {
  * @param param
  */
 async function initDb() {
-  console.log("Initialize database.")
+  console.log("Start initializing database.")
   await database.dbConnection.query(database.createUserTableQuery)
   await database.dbConnection.query(database.createTokenTableQuery)
+  console.log("Finished initializing database.")
 }
 
 function tracingMiddleWare (req, res, next) {

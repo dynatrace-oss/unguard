@@ -10,9 +10,10 @@ fi
 
 set -x
 
+# code 000 is the response from curl if the service is not available
 # if one request to the frontend fails, then exit
 STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" http://${FRONTEND_ADDR})
-if test $STATUSCODE -ne 200; then
+if test $STATUSCODE -e 000; then
   echo "Error: Could not reach frontend - Status code: ${STATUSCODE}"
   exit 1
 fi

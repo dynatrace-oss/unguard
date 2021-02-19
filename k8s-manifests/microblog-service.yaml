@@ -44,4 +44,4 @@ spec:
             - name: REDIS_SERVICE_ADDRESS
               value: "vogelgrippe-redis"
             - name: USER_AUTH_SERVICE_ADDRESS
-              value: "vogelgrippe-user-auth-service:9091"
+              value: "vogelgrippe-user-auth-service"

@@ -66,13 +66,13 @@ if (!process.env.PROXY_SERVICE_ADDRESS) {
   process.env.PROXY_SERVICE_ADDRESS = "localhost:8081";
 }
 
-if (!process.env.AUTH_SERVICE_ADDRESS) {
-  process.env.AUTH_SERVICE_ADDRESS = "localhost:9091";
+if (!process.env.USER_AUTH_SERVICE_ADDRESS) {
+  process.env.USER_AUTH_SERVICE_ADDRESS = "localhost:9091";
 }
 
 logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS)
 logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS)
-logger.info("AUTH_SERVICE_ADDRESS is set to "+ process.env.AUTH_SERVICE_ADDRESS)
+logger.info("USER_AUTH_SERVICE_ADDRESS is set to "+ process.env.USER_AUTH_SERVICE_ADDRESS)
 
 let app = express()
 
@@ -121,7 +121,7 @@ app.use((req, res, next) => {
   });
 
   const USER_AUTH_API = axios.create({
-    baseURL: "http://" + process.env.AUTH_SERVICE_ADDRESS,
+    baseURL: "http://" + process.env.USER_AUTH_SERVICE_ADDRESS,
     // forward username cookie
     headers: req.cookies.jwt ? { "Cookie": "jwt=" + req.cookies.jwt } : {}
   });
