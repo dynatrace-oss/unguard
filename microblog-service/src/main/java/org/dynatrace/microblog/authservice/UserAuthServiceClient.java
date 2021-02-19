@@ -48,11 +48,13 @@ public class UserAuthServiceClient {
                 throw new InvalidJwtException();
             } else if (response.code() == 404) {
                 throw new UserNotFoundException();
+            } else {
+                throw new RuntimeException("Theoretically Should never reach this path, because we checked all status codes " +
+                        "which could be returned by the user-auth backend.");
             }
         } catch (IOException e) {
             logger.error("Request response error", e);
         }
-        throw new RuntimeException("Theoretically Should never reach this path.");
     }
 
 
@@ -82,12 +84,13 @@ public class UserAuthServiceClient {
                 throw new InvalidJwtException();
             } else if (response.code() == 404) {
                 throw new UserNotFoundException();
+            } else {
+                throw new RuntimeException("Theoretically Should never reach this path, because we checked all status codes " +
+                        "which could be returned by the user-auth backend.");
             }
         } catch (Exception e) {
             logger.error("Request response error", e);
         }
-        throw new RuntimeException("Theoretically Should never reach this path, because we checked all status codes " +
-                "which could be returned by the user-auth backend.");
     }
 
     public boolean checkTokenValidity(String jwtToken) {
