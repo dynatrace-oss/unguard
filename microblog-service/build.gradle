@@ -17,6 +17,10 @@ dependencies {
 	implementation 'io.jaegertracing:jaeger-client:1.4.0'
 	implementation group: 'io.opentracing.contrib', name: 'opentracing-spring-jaeger-web-starter', version: '3.2.2'
 
+	// https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-okhttp3
+	compile group: 'io.opentracing.contrib', name: 'opentracing-okhttp3', version: '3.0.0'
+
+
 	// https://mvnrepository.com/artifact/redis.clients/jedis
 	compile group: 'redis.clients', name: 'jedis', version: '3.3.0'
 	// https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-redis-jedis3

@@ -39,3 +39,12 @@ spec:
               value: "const"
             - name: JAEGER_SAMPLER_PARAM
               value: "1"
+            - name: REDIS_SERVICE_ADDRESS
+              value: "vogelgrippe-redis"
+            - name: MARIADB_SERVICE
+              value: "mariadb-release"
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-release
+                  key: mariadb-root-password

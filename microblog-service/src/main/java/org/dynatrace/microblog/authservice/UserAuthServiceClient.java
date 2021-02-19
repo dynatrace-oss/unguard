@@ -1,6 +1,9 @@
 package org.dynatrace.microblog.authservice;
 
 import com.google.gson.JsonObject;
+import io.opentracing.contrib.okhttp3.OkHttpClientSpanDecorator;
+import io.opentracing.contrib.okhttp3.TracingInterceptor;
+import io.opentracing.util.GlobalTracer;
 import okhttp3.*;
 import org.dynatrace.microblog.exceptions.InvalidJwtException;
 import org.dynatrace.microblog.exceptions.UserNotFoundException;
@@ -10,15 +13,27 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import java.util.Arrays;
+
 public class UserAuthServiceClient {
 
-    private final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client;
     private final Logger logger = LoggerFactory.getLogger(UserAuthServiceClient.class);
 
     private String userAuthServiceHost;
 
     public UserAuthServiceClient(String userAuthServiceHost) {
         this.userAuthServiceHost = userAuthServiceHost;
+
+        // setup tracing
+        TracingInterceptor tracingInterceptor = new TracingInterceptor(
+                GlobalTracer.get(),
+                Arrays.asList(OkHttpClientSpanDecorator.STANDARD_TAGS));
+        client = new OkHttpClient.Builder()
+                .addInterceptor(tracingInterceptor)
+                .addNetworkInterceptor(tracingInterceptor)
+                .build();
+
     }
 
     public String getUserNameForUserId(String jwt, String userId) throws InvalidJwtException, UserNotFoundException {
