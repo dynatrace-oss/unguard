@@ -41,8 +41,25 @@ Jaeger tracing.**
     minikube start --addons=ingress --profile vogelgrippe --kubernetes-version=v1.19.2
     ```
 
+2. **Install MariaDB**
 
-2. **Install Jaeger**
+    Install MariaDB with [helm](https://helm.sh/docs/intro/install/):
+    
+    ```
+   # Add the repo
+   helm repo add bitnami https://charts.bitnami.com/bitnami
+   # Install the helm-chart
+   helm install mariadb-release bitnami/mariadb
+   
+   # Update the mariadb_password
+   helm upgrade mariadb-release bitnami/mariadb --set auth.rootPassword=new_password
+   ```
+   
+   Next step is to update the password in the user-auth-service, to allow the service to connect to the MariaDB database.
+   
+   TODO: Give instructions! 
+    
+3. **Install Jaeger**
 
     Install the Jaeger operator with [helm](https://helm.sh/docs/intro/install/):
     
@@ -72,14 +89,23 @@ Jaeger tracing.**
     > adjust all the ```JAEGER_AGENT_HOST``` environment variables in 
     > ```/k8s-manifests``` to be of format ```{YOUR-NAME}-agent```
 
-3. **Run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
+4. **Run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
 
     ```
+    # LINUX - Terminal
     # Use docker environment of you cluster
     eval $(minikube -p vogelgrippe docker-env)
     # Run the application
     skaffold run --detect-minikube
     ```
+   
+   ```
+   # WINDOWS - Powershell
+   # Use docker environment of you cluster
+   & minikube -p vogelgrippe docker-env | Invoke-Expression
+   # Run the application
+   skaffold run --detect-minikube
+   ```
     
     To access the frontend, you can use port-fowarding.
     This is the recommended way as exposing the service to external traffic would be a bad idea.

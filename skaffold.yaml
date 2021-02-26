@@ -16,9 +16,16 @@ build:
       jib: { }
     - image: vogelgrippe-loadgenerator
       context: loadgenerator
+    - image: vogelgrippe-user-auth-service
+      context: user-auth-service
   tagPolicy:
     gitCommit: {}
 deploy:
   kubectl:
     manifests:
       - ./k8s-manifests/**.yaml
+  helm:
+    releases:
+      - name: mariadb-release
+        chartPath: bitnami/mariadb
+        remote: true

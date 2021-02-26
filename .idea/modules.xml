@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/frontend/frontend.iml" filepath="$PROJECT_DIR$/frontend/frontend.iml" />
       <module fileurl="file://$PROJECT_DIR$/loadgenerator/loadgenerator.iml" filepath="$PROJECT_DIR$/loadgenerator/loadgenerator.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/microservices-ssrf.iml" filepath="$PROJECT_DIR$/.idea/microservices-ssrf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user-auth-service/user-auth-service.iml" filepath="$PROJECT_DIR$/user-auth-service/user-auth-service.iml" />
     </modules>
   </component>
 </project>
