@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/logout',  async function(req, res){
     if(!req.body)
-        return res.sendStatus(403)
+        return res.sendStatus(400)
 
     var jwtToken = req.body.jwt;
 
@@ -24,15 +24,15 @@ router.post('/logout',  async function(req, res){
         const result = await database.dbConnection.query(database.insertTokenQuery, [jwtToken])
 
         if(result[0].insertId != null && result[0].insertId != -1){
-            res.send('{"result": "successfully logged out!"}')
+            res.json({ result: 'successfully logged out!'})
         }else
-            return res.sendStatus(401)
+            return res.sendStatus(404)
     });
 });
 
 router.post('/isValid', function(req, res){
     if (!req.body)
-        return res.sendStatus(403);
+        return res.sendStatus(400);
 
     var jwtToken = req.body.jwt;
 
@@ -43,9 +43,9 @@ router.post('/isValid', function(req, res){
        // check if token is not banned
         const result = await database.dbConnection.query(database.checkTokenExistsQuery, [jwtToken]);
         if(result[0].length > 0){
-            return res.sendStatus(401)
+            return res.sendStatus(403) // Maybe 404 is not optimal, but found no better status-code, which fits this purpose
         }
-       return res.send('{"result": "token is valid"}')
+        return res.json({result: 'token is valid'})
     });
 });
 

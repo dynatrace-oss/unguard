@@ -8,6 +8,11 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
 var authRouter = require('./routes/auth');
 
+// set environment variables if not set
+if (!process.env.MARIADB_SERVICE) {
+  process.env.MARIADB_SERVICE = "localhost";
+}
+
 const tracer = initTracer('user-auth-service');
 const opentracing = require('opentracing')
 opentracing.initGlobalTracer(tracer);
@@ -68,9 +73,10 @@ function initTracer (serviceName) {
  * @param param
  */
 async function initDb() {
-  console.log("Initialize database.")
+  console.log("Start initializing database.")
   await database.dbConnection.query(database.createUserTableQuery)
   await database.dbConnection.query(database.createTokenTableQuery)
+  console.log("Finished initializing database.")
 }
 
 function tracingMiddleWare (req, res, next) {
@@ -85,7 +91,8 @@ function tracingMiddleWare (req, res, next) {
   // Use the setTag api to capture standard span tags for http traces
   span.setTag(opentracing.Tags.HTTP_METHOD, req.method)
   span.setTag(opentracing.Tags.SPAN_KIND, opentracing.Tags.SPAN_KIND_RPC_SERVER)
-  span.setTag(opentracing.Tags.HTTP_URL, req.path)
+  const baseUrl = req.protocol + "://"+ req.headers["host"]+req.path
+  span.setTag(opentracing.Tags.HTTP_URL, baseUrl)
 
   // include trace ID in headers so that we can debug slow requests we see in
   // the browser by looking up the trace ID found in response headers

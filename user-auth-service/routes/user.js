@@ -17,22 +17,22 @@ router.post('/register', async function(req, res){
   // check if user already exists
   const result = await database.dbConnection.query(database.checkUserExistsQuery, [username]);
   if(result[0].length > 0){
-    res.send({error: "user already exists!"})
+    res.json({error: "user already exists!"})
     return
   }
 
   bcrypt.hash(password, 10, async function(err, hash) {
     if(err){
-      res.send({error: "Password can not be hashed."})
+      res.json({error: "Password can not be hashed."})
       return
     }
     // register in database
     const result = await database.dbConnection.query(database.insertUserQuery, [username, hash])
 
     if(result[0].insertId != null && result[0].insertId != -1){
-      res.send({result: 'successfully registered user'})
+      res.json({result: 'successfully registered user'})
     }else{
-      res.send({error: 'error, while creating user!'})
+      res.json({error: 'error, while creating user!'})
     }
   });
 });
@@ -44,7 +44,7 @@ router.post('/login', async function(req, res){
   // check if user exists
   const result = await database.dbConnection.query(database.checkUserExistsQuery, [username]);
   if(result[0].length < 1){
-    res.send({error: "user does not exists!"})
+    res.json({error: "user does not exists!"})
     return
   }
 
@@ -52,17 +52,17 @@ router.post('/login', async function(req, res){
 
   bcrypt.compare(password, hash, function(err, compareResult){
     if(compareResult){
-      res.send({result: "successfully logged in!", jwt: jwtUtil.generateJwtAccessToken(username, result[0][0].id)})
+      res.json({result: "successfully logged in!", jwt: jwtUtil.generateJwtAccessToken(username, result[0][0].id)})
       return
     }else{
-      res.send({error: 'error, wrong password!'})
+      res.json({error: 'error, wrong password!'})
     }
   });
 });
 
 router.post('/username', async function(req, res){
   if(!req.body)
-    return res.sendStatus(403)
+    return res.sendStatus(400)
 
   var jwtToken = req.body.jwt;
   var userId = req.body.userid;
@@ -76,16 +76,16 @@ router.post('/username', async function(req, res){
     const result = await database.dbConnection.query(database.selectUserNameQuery, [userId])
 
     if(result[0].length != 0){
-      res.send({username: result[0][0].username})
+      res.json({username: result[0][0].username})
     }else{
-      res.sendStatus(400)
+      res.sendStatus(404)
     }
   });
 });
 
 router.post('/useridForName', async function(req, res){
   if(!req.body)
-    return res.sendStatus(403)
+    return res.sendStatus(400)
 
   var jwtToken = req.body.jwt;
   var username = req.body.username;
@@ -99,9 +99,9 @@ router.post('/useridForName', async function(req, res){
     const result = await database.dbConnection.query(database.selectIdForName, [username])
 
     if(result[0].length != 0){
-      res.send({userId: result[0][0].id})
+      res.json({userId: result[0][0].id})
     }else{
-      res.sendStatus(400)
+      res.sendStatus(404)
     }
   });
 });

@@ -41,3 +41,5 @@ spec:
               value: "vogelgrippe-microblog-service"
             - name: PROXY_SERVICE_ADDRESS
               value: "vogelgrippe-proxy-service"
+            - name: USER_AUTH_SERVICE_ADDRESS
+              value: "vogelgrippe-user-auth-service"
