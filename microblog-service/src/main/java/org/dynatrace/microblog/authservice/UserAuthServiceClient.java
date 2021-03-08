@@ -1,7 +1,6 @@
 package org.dynatrace.microblog.authservice;
 
 import com.google.gson.JsonObject;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.opentracing.contrib.okhttp3.OkHttpClientSpanDecorator;
 import io.opentracing.contrib.okhttp3.TracingInterceptor;
 import io.opentracing.util.GlobalTracer;
