@@ -2,8 +2,7 @@ const {handleError, statusCodeForError} = require("./errorhandler");
 const cheerio = require('cheerio')
 const express = require('express');
 const router = express.Router();
-const axios = require('axios')
-
+const jwt_decode = require("jwt-decode");
 
 // Global Timeline route
 router.get('/', showGlobalTimeline)
@@ -17,31 +16,43 @@ router.post('/user/:username/follow', followUser)
 router.post('/post', createPost)
 // Logout
 router.post('/logout', doLogout)
+
 // Login
+router.get('/login', showLogin)
 router.post('/login', doLogin)
 // Register
 router.post('/register', registerUser)
+
+function getLoggedInUser(req) {
+    if (req.cookies.jwt) {
+        return jwt_decode(req.cookies.jwt)["username"];
+    }
+
+    return null;
+}
 
 function showGlobalTimeline(req, res) {
     req.API.get('/timeline').then((response) => {
         let data = {
             data: response.data,
             title: 'Timeline',
-            username: req.cookies.username,
+            username: getLoggedInUser(req),
         }
 
         res.render('index.njk', data)
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
+
 }
 
 function showPersonalTimeline(req, res) {
     req.API.get('/mytimeline').then((response) => {
+
         let data = {
             data: response.data,
             title: 'My Timeline',
-            username: req.cookies.username,
+            username: getLoggedInUser(req)
         }
 
         res.render('index.njk', data)
@@ -56,7 +67,7 @@ function showUserProfile(req, res) {
         let data = {
             data: response.data,
             profileName: usernameProfile,
-            username: req.cookies.username
+            username: getLoggedInUser(req)
         }
 
         res.render('profile.njk', data)
@@ -66,30 +77,42 @@ function showUserProfile(req, res) {
 }
 
 function doLogout(req, res) {
-    res.clearCookie('username');
     res.clearCookie('jwt')
     res.redirect('/')
 }
 
+function showLogin(req, res) {
+    const data = {
+        reg_success: req.query.reg_success,
+        login_fail: req.query.login_fail
+    }
+    res.render('login.njk', data)
+}
+
 function doLogin(req, res) {
     const usernameToLogin = req.body.username;
-    if (!usernameToLogin) {
-        res.render('error.njk', {error: "Username must be supplied to login"});
+    const passwordToLogin = req.body.password;
+    if (!usernameToLogin || !passwordToLogin) {
+        res.render('error.njk', {error: "Username and password must be supplied to login"});
         return;
     }
+
     req.USER_AUTH_API
         .post("/user/login", {
             "username": usernameToLogin,
-            "password": usernameToLogin
+            "password": passwordToLogin
         })
         .then(response => {
-            // in a real application we would probably use the response here to
-            res.cookie("username", usernameToLogin)
-            res.cookie("jwt", response.data.jwt)
-            res.redirect('/')
+            if (response.data.jwt) {
+                res.cookie("jwt", response.data.jwt)
+                res.redirect('/')
+            } else {
+                res.redirect('/login')
+            }
         })
         .catch(error => {
-            res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+            console.log(error)
+            res.status(statusCodeForError(error)).render('error.njk', handleError(error));
         })
 }
 
@@ -102,10 +125,10 @@ function registerUser(req, res) {
     req.USER_AUTH_API
         .post("/user/register", {
             "username": req.body.username,
-            "password": req.body.username
+            "password": req.body.password
         })
         .then(response => {
-            res.redirect('/')
+            res.redirect('/login')
         })
         .catch(error => {
             res.status(statusCodeForError(error)).render('error.njk', handleError(error));

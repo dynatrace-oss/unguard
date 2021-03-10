@@ -17,13 +17,13 @@ router.post('/register', async function(req, res){
   // check if user already exists
   const result = await database.dbConnection.query(database.checkUserExistsQuery, [username]);
   if(result[0].length > 0){
-    res.json({error: "user already exists!"})
+    res.status(409).json({message: "user already exists!"})
     return
   }
 
   bcrypt.hash(password, 10, async function(err, hash) {
     if(err){
-      res.json({error: "Password can not be hashed."})
+      res.status(500).json({message: "Password can not be hashed."})
       return
     }
     // register in database
@@ -32,7 +32,7 @@ router.post('/register', async function(req, res){
     if(result[0].insertId != null && result[0].insertId != -1){
       res.json({result: 'successfully registered user'})
     }else{
-      res.json({error: 'error, while creating user!'})
+      res.status(500).json({message: 'error, while creating user!'})
     }
   });
 });
@@ -44,7 +44,7 @@ router.post('/login', async function(req, res){
   // check if user exists
   const result = await database.dbConnection.query(database.checkUserExistsQuery, [username]);
   if(result[0].length < 1){
-    res.json({error: "user does not exists!"})
+    res.status(404).json({message: "Given user does not exists!"})
     return
   }
 
@@ -55,7 +55,7 @@ router.post('/login', async function(req, res){
       res.json({result: "successfully logged in!", jwt: jwtUtil.generateJwtAccessToken(username, result[0][0].id)})
       return
     }else{
-      res.json({error: 'error, wrong password!'})
+      res.status(401).json({message: 'Wrong password!'})
     }
   });
 });

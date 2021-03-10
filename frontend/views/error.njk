@@ -1,8 +1,15 @@
 {% extends "base.njk" %}
 
 {% block content %}
+    {% set status = message["status"] | int %}
+    {% if status == 401 or status == 403 %}
+        <div>
+            <h3>Unauthorized</h3>
+            <h4>Log in to see this content.</h4>
+        </div>
+    {% else %}
     <div class="error-bg">
-        <h3>Whoops! Something broke...</h3>
+        <h3>Error</h3>
         <h4>{{ error }}</h4>
         {% if (message) %}
             <div class="card">
@@ -13,4 +20,6 @@
             </div>
         {% endif %}
     </div>
+    {% endif %}
 {% endblock %}
+

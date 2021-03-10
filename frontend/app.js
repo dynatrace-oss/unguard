@@ -89,6 +89,8 @@ app.use(sassMiddleware({
 }))
 
 app.use(express.static(path.join(__dirname, 'public')))
+// for non generated content, serve the static folder
+app.use(express.static(path.join(__dirname, 'static')))
 
 // Setup tracer
 const tracer = initTracerFromEnv({
