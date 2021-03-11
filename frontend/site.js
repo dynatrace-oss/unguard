@@ -184,11 +184,30 @@ function createPost(req, res) {
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
+    } else if (req.body.imgurl) {
+        // the image post calls a different endpoint that has a different ssrf vulnerability
+        req.PROXY.get("/image", {
+            params: {
+                url: req.body.imgurl
+            }
+        }).then((response) => {
+            req.API.post('/post', {
+                jwt: req.cookies.jwt,
+                content: req.body.message,
+                imageUrl: response.data
+            }).then(() => {
+                res.redirect('/')
+            }).catch(reason => {
+                res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+            });
+        }).catch(reason => {
+            res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+        });
     } else if (req.body.message) {
         // this is a normal message
         req.API.post('/post', {
             content: req.body.message
-        }).then((response) => {
+        }).then(() => {
             res.redirect('/')
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));

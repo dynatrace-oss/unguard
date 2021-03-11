@@ -18,10 +18,13 @@ import org.dynatrace.ssrfservice.tracing.EnhancedTracingRequestInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.Base64;
 
 @RestController
 public class ProxyController {
@@ -88,30 +91,53 @@ public class ProxyController {
         }
     }
 
-    @PostMapping("/curl")
-    public String proxyUrlWithCurl(@RequestBody() String url) throws IOException, InterruptedException {
+    private static String encodeBase64(byte[] imageBytes) {
+        String imageString = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            Base64.Encoder encoder = Base64.getEncoder();
+            imageString = encoder.encodeToString(imageBytes);
+
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageString;
+    }
+
+    /**
+     * Will fetch a jpg image from an URL and return the base64 image representation
+     * WARNING: We never check if what we fetch is actually a valid image.
+     *
+     * @param url the URL to fetch data from
+     * @return base64 jpg image
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @GetMapping(
+            value = "/image",
+            produces = MediaType.IMAGE_JPEG_VALUE
+    )
+    public @ResponseBody
+    String proxyUrlWithCurl(@RequestParam String url) throws IOException, InterruptedException {
+        File temporaryJpgFile = new File(String.format("/tmp/img-%d.jpg", System.currentTimeMillis()));
         /*
          VULNERABLE CODE BELOW
          it's never a good idea to not sanitize a user controlled URL
         */
-        Span curlSpan = tracer.buildSpan("/curl").withTag("url", url).start();
+        Span curlSpan = tracer.buildSpan("/image").withTag("url", url).start();
 
-        String[] command = {"curl", "--silent", "-S", url, "--max-time", "10"};
+        String[] command = {"curl", "--silent", "-S", url, "--max-time", "10", "--output", temporaryJpgFile.getAbsolutePath()};
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.directory(new File("/home/"));
         Process process = processBuilder.start();
         BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        StringBuilder responseString = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            logger.debug(line);
-            responseString.append(line).append("\n");
-        }
 
         BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         String errline;
         while ((errline = err.readLine()) != null) {
-            logger.info("ERR:" + errline);
+            logger.warn("ERR: {}", errline);
         }
 
         // close the buffered readers
@@ -129,14 +155,21 @@ public class ProxyController {
          * indicates a successful completion
          */
         int exitCode = process.exitValue();
-        logger.info("curl exit code: " + exitCode);
+        logger.info("curl exit code: {}", exitCode);
         curlSpan.log("curl exit code: " + exitCode);
 
         // finally destroy the process
         process.destroy();
         curlSpan.finish();
 
-        return responseString.toString();
+        FileInputStream fis = new FileInputStream(temporaryJpgFile);
+
+        byte[] bytes = IOUtils.toByteArray(fis);
+
+        String base64Image = encodeBase64(bytes);
+        Files.deleteIfExists(temporaryJpgFile.toPath());
+
+        return String.format("data:image/jpg;base64,%s", base64Image);
     }
 
 }

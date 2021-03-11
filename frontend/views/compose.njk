@@ -7,8 +7,12 @@
                    aria-controls="posts" aria-selected="true">Share Text</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="images-tab" data-toggle="tab" role="tab" aria-controls="url"
+                <a class="nav-link" id="url-tab" data-toggle="tab" role="tab" aria-controls="url"
                    aria-selected="false" href="#url">Share URL</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="image-tab" data-toggle="tab" role="tab" aria-controls="image"
+                   aria-selected="false" href="#image">Share Image</a>
             </li>
         </ul>
     </div>
@@ -34,6 +38,17 @@
                             <label class="sr-only" for="header">post</label>
                             <textarea class="form-control" name="header" id="header" rows="1"
                                       placeholder="Preferred Language (e.g. en-US)"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="image-tab">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label class="sr-only" for="imgurl">post</label>
+                            <textarea class="form-control" name="imgurl" id="imgurl" rows="1"
+                                      placeholder="Link to an image here"></textarea>
+                            <textarea type="text" class="form-control" name="message" id="message" rows="3"
+                                      placeholder="Image description"></textarea>
                         </div>
                     </div>
                 </div>
