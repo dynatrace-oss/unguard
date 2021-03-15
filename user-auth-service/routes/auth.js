@@ -17,6 +17,8 @@ router.post('/logout', async function (req, res) {
 
     let decoded;
     try {
+        // Vulnerable, because no algorithm is enforced for decoding
+        // https://www.cvedetails.com/cve/CVE-2016-10555/
         decoded = jwt.decode(jwtToken, jwtUtil.JwtPublic);
     } catch (ex) {
         return res.sendStatus(401);
@@ -39,6 +41,8 @@ router.post('/isValid', async function (req, res) {
 
     let decoded;
     try {
+        // Vulnerable, because no algorithm is enforced for decoding
+        // https://www.cvedetails.com/cve/CVE-2016-10555/
         decoded = jwt.decode(jwtToken, jwtUtil.JwtPublic)
     } catch (ex) {
         return res.sendStatus(401);
