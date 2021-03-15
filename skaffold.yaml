@@ -29,3 +29,8 @@ deploy:
       - name: mariadb-release
         chartPath: bitnami/mariadb
         remote: true
+        wait: true
+        overrides:
+          primary:
+            persistence:
+              enabled: false
