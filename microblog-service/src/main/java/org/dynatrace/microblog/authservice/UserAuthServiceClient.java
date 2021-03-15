@@ -53,25 +53,16 @@ public class UserAuthServiceClient {
 
 
         Call call = client.newCall(request);
-        try {
-            Response response = call.execute();
+        try (Response response = call.execute()) {
 
             if (response.code() == 200) {
                 JSONObject responseObject = new JSONObject(response.body().string());
-
-                response.close();
                 return responseObject.getString("username");
             } else if (response.code() == 401) {
-
-                response.close();
                 throw new InvalidJwtException();
             } else if (response.code() == 404) {
-
-                response.close();
                 throw new UserNotFoundException();
             } else {
-
-                response.close();
                 throw new RuntimeException("Theoretically Should never reach this path, because we checked all status codes " +
                         "which could be returned by the user-auth backend.");
             }
@@ -98,25 +89,16 @@ public class UserAuthServiceClient {
                 .build();
 
         Call call = client.newCall(request);
-        try {
-            Response response = call.execute();
+        try (Response response = call.execute()) {
 
             if (response.code() == 200) {
                 JSONObject responseObject = new JSONObject(response.body().string());
-
-                response.close();
                 return String.valueOf(responseObject.getInt("userId"));
             } else if (response.code() == 401) {
-
-                response.close();
                 throw new InvalidJwtException();
             } else if (response.code() == 404) {
-
-                response.close();
                 throw new UserNotFoundException();
             } else {
-
-                response.close();
                 throw new RuntimeException("Theoretically Should never reach this path, because we checked all status codes " +
                         "which could be returned by the user-auth backend.");
             }
@@ -141,12 +123,8 @@ public class UserAuthServiceClient {
                 .build();
 
         Call call = client.newCall(request);
-        try {
-            Response response = call.execute();
-            Boolean validResponse = response.code() == 200;
-
-            response.close();
-            return validResponse;
+        try (Response response = call.execute()) {
+            return response.code() == 200;
         } catch (Exception e) {
             logger.error("Request response error", e);
         }
