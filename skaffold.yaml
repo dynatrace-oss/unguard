@@ -10,10 +10,10 @@ build:
       context: frontend
     - image: vogelgrippe-microblog-service
       context: microblog-service
-      jib: { }
+      jib: {}
     - image: vogelgrippe-proxy-service
       context: proxy-service
-      jib: { }
+      jib: {}
     - image: vogelgrippe-loadgenerator
       context: loadgenerator
     - image: vogelgrippe-user-auth-service
