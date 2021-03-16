@@ -42,6 +42,14 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     * [helm](https://helm.sh/docs/intro/install/)
     * [skaffold](https://skaffold.dev/docs/install/)
 
+    Add the necessary helm repositories and fetch updates:
+
+    ```
+    helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+    helm repo update
+    ```
+
 2.  **Start a new or existing minikube cluster with the ingress add-on enabled**
 
     This will create a new minikube profile (i.e. cluster) named "vogelgrippe".
@@ -50,35 +58,28 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     minikube start --addons=ingress --profile vogelgrippe
     ```
 
-3.  **Install MariaDB**
+3.  **Install [Jaeger](https://www.jaegertracing.io/)**
 
-    Add the Helm repo and add the chart for MariaDB.
-
-    ```
-    helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm install mariadb-release bitnami/mariadb
-    ```
-
-4.  **Install [Jaeger](https://www.jaegertracing.io/)**
-
-    Add the Helm repo and add the chart for Jaeger.
+    First, add the Jaeger operator to the cluster
 
     ```
-    helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
     helm install jaeger-operator jaegertracing/jaeger-operator
     ```
 
-    After installing the operator, apply it to your running cluster
+    Next, apply it to your running cluster.
+    We do this manually to avoid having skaffold attempt to redeploy Jaeger every time.
 
     ```
-    kubectl apply -f k8s-manifests/jaeger.yaml
+    kubectl apply -f k8s-manifests/extra/jaeger.yaml
     ```
 
     > Note: Make sure to name your Jaeger instance `jaeger` or
     > adjust all the `JAEGER_AGENT_HOST` environment variables in
     > `/k8s-manifests` to be of format `{YOUR-NAME}-agent`
 
-5.  **Run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
+4.  **Build and run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
+
+    We grab the docker daemon from the cluster first, so that we push the built images already into the cluster.
 
     On Linux, use the following
 
@@ -94,7 +95,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     skaffold run --detect-minikube
     ```
 
-6.  **(Optionally) Expose the application to your local machine**
+5.  **(Optionally) Expose the application to your local machine**
 
     To access the frontend, you can use port-fowarding.
     This is the recommended way as exposing the service to external traffic would be a bad idea.
@@ -112,36 +113,16 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     kubectl port-forward service/vogelgrippe-proxy-service 8081:80
     ```
 
-7.  **(Optionally) Expose the application to the internet**
+6.  **(Optionally) Expose the application to the internet**
 
-    Make a file `ingress.yaml` where you specify an ingress to the frontend with your public hostname.
-
-    ```
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    metadata:
-      name: vogelgrippe-ingress
-    spec:
-      rules:
-        - host: put.your.external.hostname.here.com
-          http:
-            paths:
-              - path: /
-                pathType: Prefix
-                backend:
-                  service:
-                    name: vogelgrippe-frontend
-                    port:
-                      number: 80
-    ```
-
-    Apply it like so
+    Use the [`k8s-manifests/extra/ingress.yaml`](./k8s-manifests/extra/ingress.yaml) as a template
+    and possibly change the `vogelgrippe.kube` hostname to match the hostname of your deployment before applying it.
 
     ```
-    kubectl apply -f ingress.yaml
+    kubectl apply -f k8s-manifests/extra/ingress.yaml
     ```
 
-    Finally, you have to forward requests from your machine on port 80 to your minikube on port 80.
+    Finally, you have to forward incoming requests to your machine on port 80 to your minikube on port 80.
     One way to do this is with the help of `socat` that you can start in a background `tmux` sessions.
     Make sure that your local firewall also allows connections on port 80, if you have one.
 
