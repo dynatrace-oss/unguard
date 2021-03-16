@@ -14,9 +14,10 @@ router.get('/user/:username', showUserProfile)
 router.post('/user/:username/follow', followUser)
 // Create post
 router.post('/post', createPost)
+// get single post
+router.get('/post/:postid', getPost)
 // Logout
 router.post('/logout', doLogout)
-
 // Login
 router.get('/login', showLogin)
 router.post('/login', doLogin)
@@ -176,8 +177,8 @@ function createPost(req, res) {
                 jwt: req.cookies.jwt,
                 content: `${metaTitle} ${req.body.urlmessage}`,
                 imageUrl: metaImgSrc
-            }).then((response) => {
-                res.redirect('/')
+            }).then((post_response) => {
+                res.redirect(`/post/${post_response.data.postId}`)
             }).catch(reason => {
                 res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
             });
@@ -193,10 +194,10 @@ function createPost(req, res) {
         }).then((response) => {
             req.API.post('/post', {
                 jwt: req.cookies.jwt,
-                content: req.body.message,
+                content: req.body.description,
                 imageUrl: response.data
-            }).then(() => {
-                res.redirect('/')
+            }).then((post_response) => {
+                res.redirect(`/post/${post_response.data.postId}`)
             }).catch(reason => {
                 res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
             });
@@ -207,8 +208,8 @@ function createPost(req, res) {
         // this is a normal message
         req.API.post('/post', {
             content: req.body.message
-        }).then(() => {
-            res.redirect('/')
+        }).then((post_response) => {
+            res.redirect(`/post/${post_response.data.postId}`)
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
@@ -217,5 +218,20 @@ function createPost(req, res) {
         res.redirect('/')
     }
 }
+
+function getPost(req, res) {
+    const postId = req.params.postid;
+    req.API.get(`/post/${postId}`).then((response) => {
+        let data = {
+            post: response.data,
+            username: getLoggedInUser(req)
+        }
+
+        res.render('singlepost.njk', data)
+    }).catch(reason => {
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+    });
+}
+
 
 module.exports = router;

@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.opentracing.Tracer;
 import org.dynatrace.microblog.authservice.UserAuthServiceClient;
 import org.dynatrace.microblog.dto.Post;
+import org.dynatrace.microblog.dto.PostId;
 import org.dynatrace.microblog.dto.User;
 import org.dynatrace.microblog.exceptions.*;
 import org.dynatrace.microblog.form.PostForm;
@@ -103,12 +104,20 @@ public class MicroblogController {
     }
 
     @PostMapping("/post")
-    public void post(@RequestBody PostForm postForm, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidUserException, InvalidJwtException, NotLoggedInException {
+    public PostId post(@RequestBody PostForm postForm, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidUserException, InvalidJwtException, NotLoggedInException {
         checkJwt(jwt);
 
         // decode JWT
         Claims claims = JwtTokensUtils.decodeTokenClaims(jwt);
-        redisClient.newPost(claims.get("userid").toString(), postForm.getContent(), postForm.getImageUrl());
+        String postId = redisClient.newPost(claims.get("userid").toString(), postForm.getContent(), postForm.getImageUrl());
+        return new PostId(postId);
+    }
+
+    @GetMapping("/post/{postid}")
+    public Post getPost(@PathVariable("postid") String postId, @CookieValue(value="jwt", required = false) String jwt) throws UserNotFoundException, InvalidJwtException, IOException, NotLoggedInException {
+        checkJwt(jwt);
+
+        return redisClient.getPost(jwt, postId);
     }
 
     public void checkJwt(String jwt) throws InvalidJwtException, NotLoggedInException {
