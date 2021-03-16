@@ -5,7 +5,6 @@
   "author": "Christoph Wedenig",
   "license": "MIT",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.2",
     "@w3d3/axios-opentracing": "^0.1.5",
     "@w3d3/express-opentracing": "^0.1.5",
     "axios": "^0.20.0",
