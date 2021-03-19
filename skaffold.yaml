@@ -20,6 +20,9 @@ build:
       context: user-auth-service
   tagPolicy:
     gitCommit: {}
+  local:
+    useDockerCLI: true
+    useBuildkit: true
 deploy:
   kubectl:
     manifests:
