@@ -122,12 +122,17 @@ public class ProxyController {
     public @ResponseBody
     String proxyUrlWithCurl(@RequestParam String url) throws IOException, InterruptedException {
         File temporaryJpgFile = new File(String.format("/tmp/img-%d.jpg", System.currentTimeMillis()));
-        /*
-         VULNERABLE CODE BELOW
-         it's never a good idea to not sanitize a user controlled URL
-        */
-        Span curlSpan = tracer.buildSpan("/image").withTag("url", url).start();
 
+        Span curlSpan = tracer.buildSpan("/image")
+                .withTag("peer.address", url) // we use this instead of url because it technically does not need to be one
+                .withTag(Tags.COMPONENT, "curl")
+                .withTag(Tags.SPAN_KIND, Tags.SPAN_KIND_CLIENT)
+                .start();
+
+        /*
+         * VULNERABLE CODE BELOW
+         * it's never a good idea to not sanitize a user controlled URL
+         */
         String[] command = {"curl", "--silent", "-S", url, "--max-time", "10", "--output", temporaryJpgFile.getAbsolutePath()};
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.directory(new File("/home/"));
@@ -160,6 +165,9 @@ public class ProxyController {
 
         // finally destroy the process
         process.destroy();
+        if (exitCode != 0) {
+            curlSpan.setTag(Tags.ERROR, true);
+        }
         curlSpan.finish();
 
         FileInputStream fis = new FileInputStream(temporaryJpgFile);
