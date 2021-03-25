@@ -119,14 +119,15 @@ function doLogin(req, res) {
 
 function registerUser(req, res) {
     const usernameToLogin = req.body.username;
-    if (!usernameToLogin) {
-        res.render('error.njk', {error: "Username must be supplied to register"});
+    const passwordToLogin = req.body.password;
+    if (!usernameToLogin || !passwordToLogin) {
+        res.render('error.njk', {error: "Username and password must be supplied to register"});
         return;
     }
     req.USER_AUTH_API
         .post("/user/register", {
-            "username": req.body.username,
-            "password": req.body.password
+            "username": usernameToLogin,
+            "password": passwordToLogin
         })
         .then(response => {
             res.redirect('/login')
