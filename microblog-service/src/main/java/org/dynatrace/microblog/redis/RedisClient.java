@@ -7,7 +7,6 @@ import org.dynatrace.microblog.authservice.UserAuthServiceClient;
 import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.User;
 import org.dynatrace.microblog.exceptions.InvalidJwtException;
-import org.dynatrace.microblog.exceptions.InvalidUserException;
 import org.dynatrace.microblog.exceptions.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +28,13 @@ public class RedisClient {
     private final String FOLLOWERS_KEY_PREFIX = "followers";
 
     private final int REDIS_PORT = 6379;
-    
+
     private final JedisPool jedisPool;
     private final Logger logger = LoggerFactory.getLogger(RedisClient.class);
 
     private UserAuthServiceClient userAuthServiceClient;
-    
-    
+
+
     /*
     Redis works with userIds we abstract usernames away, they get handled by the user-auth-service.
     */
@@ -53,11 +52,11 @@ public class RedisClient {
         return String.format("%s:%s", keyPrefix, value);
     }
 
-    public void newPost(String userId, String body, String imageUrl) throws InvalidUserException {
-        newPostWithUserId(userId, body, imageUrl);
+    public String newPost(String userId, String body, String imageUrl) {
+        return newPostWithUserId(userId, body, imageUrl);
     }
 
-    private void newPostWithUserId(@NonNull String userId, @NonNull String body, @Nullable String imageUrl) {
+    private String newPostWithUserId(@NonNull String userId, @NonNull String body, @Nullable String imageUrl) {
         try (Jedis jedis = jedisPool.getResource()) {
             String postId = String.valueOf(jedis.incr(POST_ID_KEY));
 
@@ -86,6 +85,8 @@ public class RedisClient {
             // add to global timeline
             jedis.lpush(TIMELINE_KEY, postId);
             jedis.ltrim(TIMELINE_KEY, 0, 10);
+
+            return postId;
         }
     }
 
@@ -129,6 +130,12 @@ public class RedisClient {
             throw new RuntimeException("Could not get posts");
         }
         return posts;
+    }
+
+    public Post getPost(String jwtToken, String postId) throws UserNotFoundException, IOException, InvalidJwtException {
+        try (Jedis jedis = jedisPool.getResource()) {
+            return getPostById(jwtToken, postId, jedis);
+        }
     }
 
     private Post getPostById(String jwtToken, String postId, Jedis jedis) throws UserNotFoundException, InvalidJwtException, IOException {

@@ -13,7 +13,6 @@ build:
       jib: {}
     - image: vogelgrippe-proxy-service
       context: proxy-service
-      jib: {}
     - image: vogelgrippe-loadgenerator
       context: loadgenerator
     - image: vogelgrippe-user-auth-service
