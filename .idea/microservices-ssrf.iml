@@ -11,7 +11,7 @@
       <excludeFolder url="file://$MODULE_DIR$/exploits/venv" />
       <excludeFolder url="file://$MODULE_DIR$/exploits/vogelgrippe_exploit.egg-info" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (microservices-ssrf)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
