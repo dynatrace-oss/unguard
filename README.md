@@ -14,17 +14,20 @@ The URL preview feature is SSRF vulnerable on purpose.
 
 ## Architecture
 
-Vogelgrippe consists of 3 main services and a Redis key-value store used as a database:
+Vogelgrippe consists of 4 main services, a Redis key-value store and a relational MariaDB database:
 * frontend (NodeJS Express app)
     * Serves HTML to the user to interact with the application
 * microblog-service (Java Spring)
     * Serves REST API for fronend, saves data into redis
 * redis (Redis key-value store)
     * Holds all the user data
+* MariaDB (Relational Database)
+    * Holds user-auth-data
 * proxy-service (Java Spring)
     * Serves REST API for proxying requests from fronend 
     (SSRF vulnerable, does not do sanitization on the entered URL)
-
+* user-auth-service (NodeJS)
+    * Provides a user-authentication backend and token validity checks
 
 ![Vogelgrippe Architecture](images/architecture_vogelgrippe.png)
 
