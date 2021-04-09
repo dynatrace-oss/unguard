@@ -10,6 +10,9 @@ exports.handleError = function (err) {
             console.error(`${err.response.data.path} failed (Status: ${err.response.data.status}) with message: ${message}`)
         } else if (err.response.data.path) {
             console.error(`${err.response.data.path} failed with status: ${err.response.data.status}`)
+        } else if (err.response.data.message) {
+            console.error(`Failed with message: ${err.response.data.message}`)
+            message = err.response.data.message;
         }
     } else {
         console.error(err)

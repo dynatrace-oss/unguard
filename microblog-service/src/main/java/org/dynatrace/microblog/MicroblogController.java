@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.opentracing.Tracer;
 import org.dynatrace.microblog.authservice.UserAuthServiceClient;
 import org.dynatrace.microblog.dto.Post;
+import org.dynatrace.microblog.dto.PostId;
 import org.dynatrace.microblog.dto.User;
 import org.dynatrace.microblog.exceptions.*;
 import org.dynatrace.microblog.form.PostForm;
@@ -32,44 +33,44 @@ public class MicroblogController {
         String userAuthServiceAddress;
         if (System.getenv("REDIS_SERVICE_ADDRESS") != null) {
             redisServiceAddress = System.getenv("REDIS_SERVICE_ADDRESS");
-            logger.info("REDIS_SERVICE_ADDRESS set to " + redisServiceAddress);
+            logger.info("REDIS_SERVICE_ADDRESS set to {}", redisServiceAddress);
         } else {
             redisServiceAddress = "localhost";
             logger.warn("No REDIS_SERVICE_ADDRESS environment variable defined, falling back to localhost.");
         }
 
-        if(System.getenv("USER_AUTH_SERVICE_ADDRESS") != null) {
+        if (System.getenv("USER_AUTH_SERVICE_ADDRESS") != null) {
             userAuthServiceAddress = System.getenv("USER_AUTH_SERVICE_ADDRESS");
-            logger.info("USER_AUTH_SERVICE_ADDRESS set to " + userAuthServiceAddress);
-        }else {
+            logger.info("USER_AUTH_SERVICE_ADDRESS set to {}", userAuthServiceAddress);
+        } else {
             userAuthServiceAddress = "localhost:9091";
             logger.warn("No USER_AUTH_SERVICE_ADDRESS environment variable defined, falling back to localhost:9091.");
         }
-        
+
         this.userAuthServiceClient = new UserAuthServiceClient(userAuthServiceAddress);
         this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
     }
 
     @RequestMapping("/timeline")
-    public List<Post> timeline(@CookieValue(value = "jwt") String jwtToken) throws InvalidJwtException {
-        if(!userAuthServiceClient.checkTokenValidity(jwtToken)) throw new InvalidJwtException();
+    public List<Post> timeline(@CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
+        checkJwt(jwt);
 
-        return redisClient.getTimeline(jwtToken);
+        return redisClient.getTimeline(jwt);
     }
 
     @RequestMapping("/mytimeline")
-    public List<Post> myTimeline(@CookieValue(value = "jwt") String jwtToken) throws InvalidJwtException {
-        if(!userAuthServiceClient.checkTokenValidity(jwtToken)) throw new InvalidJwtException();
+    public List<Post> myTimeline(@CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
+        checkJwt(jwt);
 
-        Claims claims = JwtTokensUtils.decodeTokenClaims(jwtToken);
-        return redisClient.getUserTimeline(jwtToken, claims.get("userid").toString());
+        Claims claims = JwtTokensUtils.decodeTokenClaims(jwt);
+        return redisClient.getUserTimeline(jwt, claims.get("userid").toString());
     }
 
     @PostMapping("/users/{user}/follow")
-    public void follow(@CookieValue(value = "jwt") String currentUserJwt,
-                       @PathVariable("user") String userToFollow) throws FollowYourselfException, InvalidJwtException, InvalidUserException, UserNotFoundException, IOException {
+    public void follow(@CookieValue(value = "jwt", required = false) String currentUserJwt,
+                       @PathVariable("user") String userToFollow) throws FollowYourselfException, InvalidJwtException, InvalidUserException, UserNotFoundException, IOException, NotLoggedInException {
 
-        if(!userAuthServiceClient.checkTokenValidity(currentUserJwt)) throw new InvalidJwtException();
+        checkJwt(currentUserJwt);
 
         Claims claims = JwtTokensUtils.decodeTokenClaims(currentUserJwt);
 
@@ -87,7 +88,7 @@ public class MicroblogController {
 
     @GetMapping("/users/{user}/posts")
     public List<Post> getUserPosts(@PathVariable("user") String user,
-                                   @RequestParam(defaultValue = "10") String limit, @CookieValue(value="jwt") String jwt) throws UserNotFoundException, InvalidJwtException, IOException {
+                                   @RequestParam(defaultValue = "10") String limit, @CookieValue(value="jwt", required = false) String jwt) throws UserNotFoundException, InvalidJwtException, IOException {
 
         if(!userAuthServiceClient.checkTokenValidity(jwt)) throw new InvalidJwtException();
 
@@ -95,21 +96,35 @@ public class MicroblogController {
     }
 
     @GetMapping("/users/{user}/followers")
-    public Collection<User> getFollowers(@PathVariable("user") String user, @CookieValue(value="jwt") String jwt) throws UserNotFoundException, InvalidJwtException, IOException {
-        if(!userAuthServiceClient.checkTokenValidity(jwt)) throw new InvalidJwtException();
+    public Collection<User> getFollowers(@PathVariable("user") String user, @CookieValue(value="jwt", required = false) String jwt) throws UserNotFoundException, InvalidJwtException, IOException, NotLoggedInException {
+        checkJwt(jwt);
 
         String userId = userAuthServiceClient.getUserIdFromUsername(jwt, user);
         return redisClient.getFollowers(jwt, userId);
     }
 
     @PostMapping("/post")
-    public void post(@RequestBody PostForm postForm, @CookieValue(value="jwt") String jwt) throws InvalidUserException, InvalidJwtException {
-        if(!userAuthServiceClient.checkTokenValidity(jwt)) throw new InvalidJwtException();
-
+    public PostId post(@RequestBody PostForm postForm, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidUserException, InvalidJwtException, NotLoggedInException {
+        checkJwt(jwt);
 
         // decode JWT
         Claims claims = JwtTokensUtils.decodeTokenClaims(jwt);
-        redisClient.newPost(claims.get("userid").toString(), postForm.getContent(), postForm.getImageUrl());
+        String postId = redisClient.newPost(claims.get("userid").toString(), postForm.getContent(), postForm.getImageUrl());
+        return new PostId(postId);
     }
-    
+
+    @GetMapping("/post/{postid}")
+    public Post getPost(@PathVariable("postid") String postId, @CookieValue(value="jwt", required = false) String jwt) throws UserNotFoundException, InvalidJwtException, IOException, NotLoggedInException {
+        checkJwt(jwt);
+
+        return redisClient.getPost(jwt, postId);
+    }
+
+    public void checkJwt(String jwt) throws InvalidJwtException, NotLoggedInException {
+        if (jwt == null) {
+            throw new NotLoggedInException();
+        }
+        if (!userAuthServiceClient.checkTokenValidity(jwt)) throw new InvalidJwtException();
+    }
+
 }

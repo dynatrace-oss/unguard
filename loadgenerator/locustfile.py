@@ -56,7 +56,7 @@ TEXTS = [
 
 
 class VogelgrippeUser(HttpUser):
-    wait_time = between(1, 10)
+    wait_time = between(10, 30)
 
     def get_running_username(self):
         global USER_INDEX
@@ -114,7 +114,9 @@ class VogelgrippeUser(HttpUser):
         time.sleep(1)
 
     def on_start(self):
-        user_data = {"username": self.get_running_username()}
+        curr_user = self.get_running_username()
+        # super secure passwords :)
+        user_data = {"username": curr_user, "password": curr_user}
         cookie_set = False
         while not cookie_set:
             self.client.post("/register", data=user_data)

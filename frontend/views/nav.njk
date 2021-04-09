@@ -1,7 +1,5 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <img height="30px"
-         src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2aWV3Qm94PSIxLjE3MSAxNy4zNCA3MC4wOTkgMzYuMzIzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGQ9Ik0gNjYuNzY2IDMxLjg5MyBMIDY5LjEyNCAyMS45MTkgTCA2MS40MzEgMjguNzc2IEwgNTQuMjYgMTcuMzQgQyA1NC4yMzggMTcuMzI0IDU1LjQ3NiAyNi42NzUgNTUuNDU0IDI2LjY1OCBDIDQyLjM2OCAxOS40MDUgMjMuNDI4IDIzLjg0NSAxNC42NTggMzYuMzg3IEMgMTAuMDIzIDQzLjAxNiAxLjE3MSA1My42NjMgMS4xNzEgNTMuNjYzIEMgNy44MTMgNTAuNDQ5IDYzLjkzNiA1My4wMDcgNTcuNzk4IDUzLjAwMyBDIDU3Ljc1OCA1My4wMDMgNjEuMjQ2IDUyLjg5IDYxLjI4NiA1Mi44ODcgQyA2Mi43NTYgNTIuODU3IDYzLjc4NCA1Mi40MzMgNjUuMTQzIDUxLjg2MyBDIDY2LjUzNyA1MS4yNzggNjcuMzAyIDUwLjYzMiA2OC40MDMgNDkuNTE4IEMgNjguODU2IDQ5LjA2IDY5LjI4IDQ4LjU2MiA2OS42NjMgNDguMDE2IEMgNzAuMDQgNDcuNDc1IDcwLjQ0NSA0Ni45NDggNzAuNjI3IDQ2LjMzNyBDIDcyLjE3OCA0MS4xMjMgNzAuOTM0IDM1LjMxMyA2Ni43NjYgMzEuODkzIFogTSA2MS43NzEgNDIuMDQxIEwgNjAuMjYgNDMuNTUgTCA1Ny45ODEgNDEuMjcxIEwgNTUuNzAxIDQzLjU1IEwgNTQuMTkyIDQyLjA0MSBMIDU2LjQ3MiAzOS43NjEgTCA1NC4xOTIgMzcuNDgyIEwgNTUuNzAxIDM1Ljk3MiBMIDU3Ljk4MSAzOC4yNTEgTCA2MC4yNiAzNS45NzIgTCA2MS43NzEgMzcuNDgyIEwgNTkuNDkxIDM5Ljc2MSBMIDYxLjc3MSA0Mi4wNDEgWiIgc3R5bGU9ImZpbGw6IHJnYigyNTUsIDI1NSwgMjU1KTsiLz4KPC9zdmc+">
-    <a class="navbar-brand" href="#">Vogelgrippe</a>
+    <img height="30px" src="/img/logo.svg" class="nav-logo"> <a class="navbar-brand" href="/">Vogelgrippe</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
             aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -43,12 +41,9 @@
                     <button class="btn btn-warning my-2 my-sm-0" type="submit">Logout</button>
                 </form>
             {% else %}
-                <form class="form-inline my-2 my-lg-0" method="post">
-                    <input class="form-control mr-sm-2" type="text" placeholder="Username" aria-label="Username"
-                           name="username">
-                    <button class="btn btn-primary my-2 my-sm-0" formaction="/login" type="submit">Login</button>
-                    <button class="btn btn-dark my-2 my-sm-0" formaction="/register" type="submit">Register</button>
-                </form>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login/Register</a>
+                </li>
             {% endif %}
         </ul>
     </div>

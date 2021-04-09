@@ -53,8 +53,7 @@ public class UserAuthServiceClient {
 
 
         Call call = client.newCall(request);
-        try {
-            Response response = call.execute();
+        try (Response response = call.execute()) {
 
             if (response.code() == 200) {
                 JSONObject responseObject = new JSONObject(response.body().string());
@@ -90,8 +89,7 @@ public class UserAuthServiceClient {
                 .build();
 
         Call call = client.newCall(request);
-        try {
-            Response response = call.execute();
+        try (Response response = call.execute()) {
 
             if (response.code() == 200) {
                 JSONObject responseObject = new JSONObject(response.body().string());
@@ -125,8 +123,7 @@ public class UserAuthServiceClient {
                 .build();
 
         Call call = client.newCall(request);
-        try {
-            Response response = call.execute();
+        try (Response response = call.execute()) {
             return response.code() == 200;
         } catch (Exception e) {
             logger.error("Request response error", e);
