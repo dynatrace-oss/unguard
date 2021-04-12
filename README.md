@@ -12,7 +12,7 @@ It allows users to
 - view user profiles
 - follow other users
 
-## Architecture
+## 🏗️ Architecture
 
 Vogelgrippe consists of four main services, a load generator, two databases, and Jaeger for tracing:
 
@@ -29,7 +29,7 @@ Vogelgrippe consists of four main services, a load generator, two databases, and
 
 ![Vogelgrippe Architecture](images/architecture_vogelgrippe.png)
 
-## Running on minikube
+## ⛵ Kubernetes Deployment
 
 This is the recommended way of running Vogelgrippe and requires you to have [minikube](https://minikube.sigs.k8s.io/docs/) installed.
 
@@ -37,8 +37,8 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     Follow the instructions to install the following on your system:
 
+    * [minikube](https://minikube.sigs.k8s.io/docs/start/) or [kind](https://kind.sigs.k8s.io/)
     * [kubectl](https://kubernetes.io/docs/tasks/tools/)
-    * [minikube](https://minikube.sigs.k8s.io/docs/start/)
     * [helm](https://helm.sh/docs/intro/install/)
     * [skaffold](https://skaffold.dev/docs/install/)
 
@@ -56,6 +56,12 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     ```
     minikube start --addons=ingress --profile vogelgrippe
+    ```
+
+    Alternatively, create a new kind cluster named "vogelgrippe".
+
+    ```
+    kind create cluster --name vogelgrippe
     ```
 
 3.  **Install [Jaeger](https://www.jaegertracing.io/)**
@@ -77,10 +83,8 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     > adjust all the `JAEGER_AGENT_HOST` environment variables in
     > `/k8s-manifests` to be of format `{YOUR-NAME}-agent`
 
-4.  **Build and run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
 4.  **(Optionally) Add image pull secrets to your cluster service accounts**
 
-    We grab the docker daemon from the cluster first, so that we push the built images already into the cluster.
     Due to the great number of image pulls required you might need to set secrets for
     an authenticated image repository to avoid being [rate-limited by DockerHub](https://www.docker.com/increase-rate-limits).
 
@@ -115,19 +119,27 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     We grab the docker daemon from the cluster first, so that we push the built images already into the cluster.
 
     On Linux with minikube, use the following
+
     ```
     eval $(minikube -p vogelgrippe docker-env)
     skaffold run --detect-minikube
     ```
 
-    On Windows, use the following with PowerShell
+    On Windows with minikube, use the following with PowerShell
 
     ```
     & minikube -p vogelgrippe docker-env | Invoke-Expression
     skaffold run --detect-minikube
     ```
 
-5.  **(Optionally) Expose the application to your local machine**
+    With a kind cluster, simply run the following.
+    Built images will be moved to the kind cluster automatically.
+
+    ```
+    skaffold run
+    ```
+
+6.  **(Optionally) Expose the application to your local machine**
 
     To access the frontend, you can use port-fowarding.
     This is the recommended way as exposing the service to external traffic would be a bad idea.
@@ -145,7 +157,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     kubectl port-forward service/vogelgrippe-proxy-service 8081:80
     ```
 
-6.  **(Optionally) Expose the application to the internet**
+7.  **(Optionally) Expose the application to the internet**
 
     Use the [`k8s-manifests/extra/ingress.yaml`](./k8s-manifests/extra/ingress.yaml) as a template
     and possibly change the `vogelgrippe.kube` hostname to match the hostname of your deployment before applying it.
@@ -164,9 +176,11 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     > Note: This will not expose the proxy-service.
 
-## Running locally
+## 🖥️ Local Deployment
 
-### Requirements
+A local deployment is not recommended because our services rely on the K8S domain name service.
+
+### Install [Jaeger](https://www.jaegertracing.io/)
 
 Beside the microservices, a Jaeger deployment is recommended as all the services send traces.
 
@@ -187,7 +201,7 @@ docker run -d --name jaeger \
   jaegertracing/all-in-one:1.20
 ```
 
-### Start microservices
+### Install the microservices
 
 Follow instructions in the READMEs of the individual services to run them locally.
 
