@@ -78,11 +78,43 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     > `/k8s-manifests` to be of format `{YOUR-NAME}-agent`
 
 4.  **Build and run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
+4.  **(Optionally) Add image pull secrets to your cluster service accounts**
 
     We grab the docker daemon from the cluster first, so that we push the built images already into the cluster.
+    Due to the great number of image pulls required you might need to set secrets for
+    an authenticated image repository to avoid being [rate-limited by DockerHub](https://www.docker.com/increase-rate-limits).
+
+    ```
+    kubectl create secret docker-registry vogelgrippe-docker-hub-secrets
+        --docker-server=docker.io \
+        --docker-username=DUMMY_USERNAME \
+        --docker-password=DUMMY_DOCKER_ACCESS_TOKEN \
+        --docker-email=DUMMY_DOCKER_EMAIL
+    ```
+
+    Patch the default service account (and the one used by the Jaeger operator) to use these pull secrets.
 
     On Linux, use the following
 
+    ```
+    kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "vogelgrippe-docker-hub-secrets"}]}'
+    kubectl patch serviceaccount jaeger-operator -p '{"imagePullSecrets": [{"name": "vogelgrippe-docker-hub-secrets"}]}'
+    ```
+
+    On Windows, use the following
+
+    ```
+    kubectl patch serviceaccount default -p '{\"imagePullSecrets\": [{\"name\": \"vogelgrippe-docker-hub-secrets\"}]}'
+    kubectl patch serviceaccount jaeger-operator -p '{\"imagePullSecrets\": [{\"name\": \"vogelgrippe-docker-hub-secrets\"}]}'
+    ```
+
+    > Note: This needs to be done every time you re-create the cluster.
+
+5.  **Build and run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
+
+    We grab the docker daemon from the cluster first, so that we push the built images already into the cluster.
+
+    On Linux with minikube, use the following
     ```
     eval $(minikube -p vogelgrippe docker-env)
     skaffold run --detect-minikube
