@@ -113,6 +113,8 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     ```
 
     > Note: This needs to be done every time you re-create the cluster.
+    > You might need to repeat those steps once you deploy additional charts,
+    > e.g. for `jaeger`, `jaeger-operator`, `mariadb-release` at the moment.
 
 5.  **Build and run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
 
