@@ -1,16 +1,15 @@
-apiVersion: skaffold/v2beta8
+apiVersion: skaffold/v2beta14
 kind: Config
 build:
   artifacts:
     # image tags are relative; to specify an image repo (e.g. GCR), you
     # must provide a "default repo" using one of the methods described
-    # here:
-    # https://skaffold.dev/docs/concepts/#image-repository-handling
+    # here: https://skaffold.dev/docs/concepts/#image-repository-handling
     - image: vogelgrippe-frontend
       context: frontend
     - image: vogelgrippe-microblog-service
       context: microblog-service
-      jib: {}
+      jib: { }
     - image: vogelgrippe-proxy-service
       context: proxy-service
     - image: vogelgrippe-loadgenerator
@@ -18,21 +17,25 @@ build:
     - image: vogelgrippe-user-auth-service
       context: user-auth-service
   tagPolicy:
-    gitCommit: {}
+    gitCommit: { }
   local:
     useDockerCLI: true
     useBuildkit: true
 deploy:
-  kubectl:
-    manifests:
-      - ./k8s-manifests/**.yaml
   helm:
     releases:
       - name: mariadb-release
-        chartPath: bitnami/mariadb
-        remote: true
+        remoteChart: bitnami/mariadb
+        namespace: vogelgrippe
+        createNamespace: true
         wait: true
         overrides:
           primary:
             persistence:
               enabled: false
+  kubectl:
+    manifests:
+      - ./k8s-manifests/**.yaml
+    flags:
+      global:
+        [ "--namespace=vogelgrippe" ]

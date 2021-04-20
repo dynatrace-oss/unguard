@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: vogelgrippe-ingress
+  namespace: vogelgrippe
 spec:
   rules:
     - host: vogelgrippe.kube

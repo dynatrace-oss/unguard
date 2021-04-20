@@ -29,7 +29,7 @@ Vogelgrippe consists of four main services, a load generator, two databases, and
 
 ![Vogelgrippe Architecture](images/architecture_vogelgrippe.png)
 
-## ⛵ Kubernetes Deployment
+## ⛵ Minikube Deployment
 
 This is the recommended way of running Vogelgrippe and requires you to have [minikube](https://minikube.sigs.k8s.io/docs/) installed.
 
@@ -44,7 +44,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     Add the necessary helm repositories and fetch updates:
 
-    ```
+    ```sh
     helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm repo update
@@ -54,13 +54,15 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     This will create a new minikube profile (i.e. cluster) named "vogelgrippe".
 
-    ```
+    ```sh
     minikube start --addons=ingress --profile vogelgrippe
+    # 🍎 for macOS a vm-based driver is needed (https://github.com/kubernetes/minikube/issues/7332)
+    minikube start --vm=true --addons=ingress --profile vogelgrippe
     ```
 
     Alternatively, create a new kind cluster named "vogelgrippe".
 
-    ```
+    ```sh
     kind create cluster --name vogelgrippe
     ```
 
@@ -68,27 +70,25 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     First, add the Jaeger operator to the cluster
 
-    ```
-    helm install jaeger-operator jaegertracing/jaeger-operator
+    ```sh
+    helm install -n vogelgrippe --create-namespace jaeger-operator jaegertracing/jaeger-operator
     ```
 
     Next, apply it to your running cluster.
     We do this manually to avoid having skaffold attempt to redeploy Jaeger every time.
 
-    ```
+    ```sh
     kubectl apply -f k8s-manifests/extra/jaeger.yaml
     ```
 
-    > Note: Make sure to name your Jaeger instance `jaeger` or
-    > adjust all the `JAEGER_AGENT_HOST` environment variables in
-    > `/k8s-manifests` to be of format `{YOUR-NAME}-agent`
+    > Note: Make sure to name your Jaeger instance `jaeger` or adjust all the `JAEGER_AGENT_HOST` environment variables in `/k8s-manifests` to be of format `{YOUR-NAME}-agent`
 
 4.  **(Optionally) Add image pull secrets to your cluster service accounts**
 
     Due to the great number of image pulls required you might need to set secrets for
     an authenticated image repository to avoid being [rate-limited by DockerHub](https://www.docker.com/increase-rate-limits).
 
-    ```
+    ```sh
     kubectl create secret docker-registry vogelgrippe-docker-hub-secrets
         --docker-server=docker.io \
         --docker-username=DUMMY_USERNAME \
@@ -98,38 +98,42 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     Patch the default service account (and the one used by the Jaeger operator) to use these pull secrets.
 
-    On Linux, use the following
+    🐧 On Linux, use the following
 
-    ```
+    ```sh
     kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "vogelgrippe-docker-hub-secrets"}]}'
     kubectl patch serviceaccount jaeger-operator -p '{"imagePullSecrets": [{"name": "vogelgrippe-docker-hub-secrets"}]}'
     ```
 
-    On Windows, use the following
+    💻 On Windows, use the following
 
-    ```
+    ```sh
     kubectl patch serviceaccount default -p '{\"imagePullSecrets\": [{\"name\": \"vogelgrippe-docker-hub-secrets\"}]}'
     kubectl patch serviceaccount jaeger-operator -p '{\"imagePullSecrets\": [{\"name\": \"vogelgrippe-docker-hub-secrets\"}]}'
     ```
 
-    > Note: This needs to be done every time you re-create the cluster.
-    > You might need to repeat those steps once you deploy additional charts,
-    > e.g. for `jaeger`, `jaeger-operator`, `mariadb-release` at the moment.
+    > Note: This needs to be done every time you re-create the cluster. You might need to repeat those steps once you deploy additional charts, e.g. for `jaeger`, `jaeger-operator`, `mariadb-release` at the moment.
 
 5.  **Build and run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
 
     We grab the docker daemon from the cluster first, so that we push the built images already into the cluster.
 
-    On Linux with minikube, use the following
+    🐧 On Linux with minikube, use the following
 
-    ```
+    ```sh
     eval $(minikube -p vogelgrippe docker-env)
     skaffold run --detect-minikube
     ```
+    🍎 On macOS with minikube, use the following
 
-    On Windows with minikube, use the following with PowerShell
-
+    ```sh
+    source <(minikube docker-env -p vogelgrippe)
+    skaffold run --detect-minikube
     ```
+
+    💻 On Windows with minikube, use the following with PowerShell
+
+    ```sh
     & minikube -p vogelgrippe docker-env | Invoke-Expression
     skaffold run --detect-minikube
     ```
@@ -137,7 +141,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     With a kind cluster, simply run the following.
     Built images will be moved to the kind cluster automatically.
 
-    ```
+    ```sh
     skaffold run
     ```
 
@@ -146,17 +150,23 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     To access the frontend, you can use port-fowarding.
     This is the recommended way as exposing the service to external traffic would be a bad idea.
 
-    ```
+    ```sh
     # exposes the frontend on localhost:3000
-    kubectl port-forward service/vogelgrippe-frontend 3000:80
+    kubectl port-forward -n vogelgrippe service/vogelgrippe-frontend 3000:80
     ```
 
     To make non-blind SSRF exploits, you can expose the proxy-service as well.
     This would be common practice with applications where the browser makes the requests (like Angular / React / Vue etc.).
 
-    ```
+    ```sh
     # exposes the proxy-service on localhost:8081
-    kubectl port-forward service/vogelgrippe-proxy-service 8081:80
+    kubectl port-forward -n vogelgrippe service/vogelgrippe-proxy-service 8081:80
+    ```
+    
+    To access the Jeager UI you can expose it as well.
+    ```sh
+    # exposes the Jaeger UI on localhost:16686
+    kubectl port-forward -n vogelgrippe service/jaeger-query 16686:16686
     ```
 
 7.  **(Optionally) Expose the application to the internet**
@@ -164,7 +174,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     Use the [`k8s-manifests/extra/ingress.yaml`](./k8s-manifests/extra/ingress.yaml) as a template
     and possibly change the `vogelgrippe.kube` hostname to match the hostname of your deployment before applying it.
 
-    ```
+    ```sh
     kubectl apply -f k8s-manifests/extra/ingress.yaml
     ```
 
@@ -172,7 +182,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     One way to do this is with the help of `socat` that you can start in a background `tmux` sessions.
     Make sure that your local firewall also allows connections on port 80, if you have one.
 
-    ```
+    ```sh
     sudo socat TCP-LISTEN:80,fork TCP:$(minikube ip):80
     ```
 
@@ -189,7 +199,7 @@ Beside the microservices, a Jaeger deployment is recommended as all the services
 For setting up Jaeger, please see their [documentation](https://www.jaegertracing.io/docs/1.20/getting-started/).
 The simplest way to start all needed Jaeger components is with Docker:
 
-```
+```sh
 docker run -d --name jaeger \
   -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
   -p 5775:5775/udp \
