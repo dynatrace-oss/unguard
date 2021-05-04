@@ -77,3 +77,8 @@ fabric.properties
 
 # Ticket helper config
 .idea/TicketHelperConfig.xml
+
+### Terraform
+**/.terraform
+**/terraform.tfstate
+**/terraform.tfstate.backup

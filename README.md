@@ -147,7 +147,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
 6.  **(Optionally) Expose the application to your local machine**
 
-    To access the frontend, you can use port-fowarding.
+    To access the frontend, you can use port-forwarding.
     This is the recommended way as exposing the service to external traffic would be a bad idea.
 
     ```sh
@@ -163,7 +163,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     kubectl port-forward -n vogelgrippe service/vogelgrippe-proxy-service 8081:80
     ```
     
-    To access the Jeager UI you can expose it as well.
+    To access the Jaeger UI you can expose it as well.
     ```sh
     # exposes the Jaeger UI on localhost:16686
     kubectl port-forward -n vogelgrippe service/jaeger-query 16686:16686
@@ -187,6 +187,23 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     ```
 
     > Note: This will not expose the proxy-service.
+
+## ☁ AWS Deployment
+
+1. Ensure that the ECR repositories are already created 
+
+```sh
+terraform -chdir=infrastructure init
+terraform -chdir=infrastructure apply -auto-approve
+```
+
+2. Deploy to AWS
+
+The AWS profile already comes with built-in Jaeger and an ingress which is only reachable from the Dynatrace VPN.
+
+```sh
+skaffold run -p aws --default-repo <myrepo>
+```
 
 ## 🖥️ Local Deployment
 
