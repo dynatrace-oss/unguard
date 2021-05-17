@@ -218,6 +218,12 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     skaffold run -p aws,falco --default-repo <aws_account_id.dkr.ecr.region.amazonaws.com>
     ```
 
+### 🔼 Push to Dynatrace Registry
+
+```sh
+skaffold run --default-repo registry.lab.dynatrace.org/casp
+```
+
 ## 🖥️ Local Deployment
 
 A local deployment is not recommended because our services rely on the K8S domain name service.
