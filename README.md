@@ -29,7 +29,23 @@ Vogelgrippe consists of four main services, a load generator, two databases, and
 
 ![Vogelgrippe Architecture](images/architecture_vogelgrippe.png)
 
-## ⛵ Minikube Deployment
+## ☸️ Kubernetes Deployment
+
+### 🗒️ Requirements
+* [kubectl](https://kubernetes.io/docs/tasks/tools/)
+* [helm](https://helm.sh/docs/intro/install/)
+* [skaffold](https://skaffold.dev/docs/install/)
+
+Add the necessary helm repositories and fetch updates:
+
+```sh
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add falcosecurity https://falcosecurity.github.io/charts
+helm repo update
+```
+
+### ⛵ Minikube Deployment
 
 This is the recommended way of running Vogelgrippe and requires you to have [minikube](https://minikube.sigs.k8s.io/docs/) installed.
 
@@ -38,17 +54,6 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     Follow the instructions to install the following on your system:
 
     * [minikube](https://minikube.sigs.k8s.io/docs/start/) or [kind](https://kind.sigs.k8s.io/)
-    * [kubectl](https://kubernetes.io/docs/tasks/tools/)
-    * [helm](https://helm.sh/docs/intro/install/)
-    * [skaffold](https://skaffold.dev/docs/install/)
-
-    Add the necessary helm repositories and fetch updates:
-
-    ```sh
-    helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
-    helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm repo update
-    ```
 
 2.  **Start a new or existing minikube cluster with the ingress add-on enabled**
 
@@ -188,22 +193,30 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     > Note: This will not expose the proxy-service.
 
-## ☁ AWS Deployment
+### ☁ AWS Deployment
 
-1. Ensure that the ECR repositories are already created 
+1. **Ensure that the ECR repositories are already created**
 
-```sh
-terraform -chdir=infrastructure init
-terraform -chdir=infrastructure apply -auto-approve
-```
+    ```sh
+    terraform -chdir=infrastructure init
+    terraform -chdir=infrastructure apply -auto-approve
+    ```
 
-2. Deploy to AWS
+2. **Login to ECR**
 
-The AWS profile already comes with built-in Jaeger and an ingress which is only reachable from the Dynatrace VPN.
+    ```sh
+    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com
+    ```
 
-```sh
-skaffold run -p aws --default-repo <myrepo>
-```
+3. **Deploy to AWS**
+
+    The AWS profile already comes with built-in Jaeger and an ingress which is only reachable from the Dynatrace VPN.
+    
+    ```sh
+    skaffold run -p aws --default-repo <aws_account_id.dkr.ecr.region.amazonaws.com>
+    # For Falco add the corresponding profile
+    skaffold run -p aws,falco --default-repo <aws_account_id.dkr.ecr.region.amazonaws.com>
+    ```
 
 ## 🖥️ Local Deployment
 

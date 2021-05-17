@@ -5,7 +5,7 @@ provider "aws" {
 }
 
 resource "aws_ecr_repository" "vogelgrippe-frontend" {
-  name                 = "${var.prefix}-vogelgrippe-frontend"
+  name                 = "${var.prefix}-frontend"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
