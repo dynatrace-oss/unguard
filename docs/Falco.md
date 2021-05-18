@@ -1,5 +1,19 @@
 # Falco
 
+> The cloud-native runtime security project, is the de facto Kubernetes threat detection engine.
+
+[Falco](https://falco.org/) was created by Sysdig in 2016 and is the first runtime security project to join CNCF as an incubation-level project. Falco detects unexpected application behavior and alerts on threats at runtime.
+
+## ⚙️ Installation
+
+Use the `falco` profile when calling Skaffold.
+
+```sh
+skaffold run -p falco
+```
+
+## 🖥️ Usage
+
 1. Port-forward Falcosidekick UI
 
 ```sh

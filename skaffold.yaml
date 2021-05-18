@@ -66,7 +66,7 @@ profiles:
         value:
           name: jaeger-operator
           remoteChart: jaegertracing/jaeger-operator
-          namespace: jaeger-operator
+          namespace: vogelgrippe
           createNamespace: true
       - op: add
         path: /deploy/kubectl/manifests/-
