@@ -1,4 +1,4 @@
-# ![Vogelgrippe logo](images/vogelgrippe_small.png) Vogelgrippe
+# ![Vogelgrippe logo](.bitbucket/vogelgrippe_small.png) Vogelgrippe
 
 A SSRF vulnerable twitter-clone consisting of several microservices designed to run on Kubernetes.
 It comes with Jaeger traces and a bunch of vulnerabilities built-in.
@@ -27,7 +27,7 @@ Vogelgrippe consists of four main services, a load generator, two databases, and
 | maria-db                                 |                 | Relational database that holds user and token data                                                           |
 | jaeger                                   |                 | The [Jaeger](https://www.jaegertracing.io/) stack for distributed tracing                                    |
 
-![Vogelgrippe Architecture](images/architecture_vogelgrippe.png)
+![Vogelgrippe Architecture](.bitbucket/architecture_vogelgrippe.png)
 
 ## ☸️ Kubernetes Deployment
 
