@@ -62,16 +62,6 @@ profiles:
         path: /deploy/kustomize/paths/0
         value: "./k8s-manifests/aws"
       - op: add
-        path: /deploy/helm/releases/-
-        value:
-          name: jaeger-operator
-          remoteChart: jaegertracing/jaeger-operator
-          namespace: vogelgrippe
-          createNamespace: true
-      - op: add
-        path: /deploy/kubectl/manifests/-
-        value: ./k8s-manifests/extra/jaeger.yaml
-      - op: add
         path: /deploy/kubectl/manifests/-
         value: ./k8s-manifests/aws/ingress.aws.yaml
   - name: falco
@@ -84,3 +74,15 @@ profiles:
           setValues:
             falcosidekick.enabled: true
             falcosidekick.webui.enabled: true
+  - name: jaeger
+    patches:
+      - op: add
+        path: /deploy/helm/releases/-
+        value:
+          name: jaeger-operator
+          remoteChart: jaegertracing/jaeger-operator
+          namespace: vogelgrippe
+          createNamespace: true
+      - op: add
+        path: /deploy/kubectl/manifests/-
+        value: ./k8s-manifests/extra/jaeger.yaml

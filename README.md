@@ -205,7 +205,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 2. **Login to ECR**
 
     ```sh
-    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com
+    aws ecr get-login-password --region us-east-1 --profile dtRoleAccountAdmin | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com
     ```
 
 3. **Deploy to AWS**
@@ -214,8 +214,8 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     
     ```sh
     skaffold run -p aws --default-repo <aws_account_id.dkr.ecr.region.amazonaws.com>
-    # For Falco add the corresponding profile
-    skaffold run -p aws,falco --default-repo <aws_account_id.dkr.ecr.region.amazonaws.com>
+    # For Falco and Jaeger add the corresponding profile
+    skaffold run -p aws,falco,jaeger --default-repo <aws_account_id.dkr.ecr.region.amazonaws.com>
     ```
 
 ### 🔼 Push to Dynatrace Registry

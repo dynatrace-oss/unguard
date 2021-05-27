@@ -32,6 +32,6 @@ cat /etc/shadow
 cd /tmp; curl -L -o amicontained https://github.com/genuinetools/amicontained/releases/download/v0.4.7/amicontained-linux-amd64; chmod 555 amicontained; ./amicontained
 ```
 
-3. Open [localhost:27017/ui/events](localhost:27017/ui/events)
+3. Open [localhost:27017/ui/#/events](localhost:27017/ui/#/events)
 
 ![](../.bitbucket/falcosidekick-ui.png)
