@@ -86,7 +86,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     kubectl apply -f k8s-manifests/extra/jaeger.yaml
     ```
 
-    > Note: Make sure to name your Jaeger instance `jaeger` or adjust all the `JAEGER_AGENT_HOST` environment variables in `/k8s-manifests` to be of format `{YOUR-NAME}-agent`
+    > Note: Make sure to name your Jaeger instance `jaeger` or adjust all the `JAEGER_AGENT_HOST` environment variables in `/k8s-manifests/base` to be of format `{YOUR-NAME}-agent`
 
 4.  **(Optionally) Add image pull secrets to your cluster service accounts**
 
@@ -127,20 +127,20 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     ```sh
     eval $(minikube -p vogelgrippe docker-env)
-    skaffold run --detect-minikube
+    skaffold run -p minikube --detect-minikube
     ```
     🍎 On macOS with minikube, use the following
 
     ```sh
     source <(minikube docker-env -p vogelgrippe)
-    skaffold run --detect-minikube
+    skaffold run -p minikube --detect-minikube
     ```
 
     💻 On Windows with minikube, use the following with PowerShell
 
     ```sh
     & minikube -p vogelgrippe docker-env | Invoke-Expression
-    skaffold run --detect-minikube
+    skaffold run -p minikube --detect-minikube
     ```
 
     With a kind cluster, simply run the following.
@@ -217,6 +217,16 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     # For Falco and Jaeger add the corresponding profile
     skaffold run -p aws,falco,jaeger --default-repo <aws_account_id.dkr.ecr.region.amazonaws.com>
     ```
+
+4. **Update the application detection rule**
+
+Redeploying the ingress can result in a new frontend hostname. Therefore, you have to update the [application detection rule](https://rjc90872.sprint.dynatracelabs.com/#settings/rum/webappmonitoring) in Dynatrace manually.
+
+To get the hostname run the following command:
+
+```sh
+kubectl get ingress -n vogelgrippe vogelgrippe-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+```
 
 ### 🔼 Push to Dynatrace Registry
 
