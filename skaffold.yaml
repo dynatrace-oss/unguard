@@ -35,12 +35,7 @@ deploy:
               enabled: false
   kubectl:
     manifests:
-      - ./k8s-manifests/base/frontend.yaml
-      - ./k8s-manifests/base/loadgenerator.yaml
-      - ./k8s-manifests/base/microblog-service.yaml
-      - ./k8s-manifests/base/proxy-service.yaml
-      - ./k8s-manifests/base/redis.yaml
-      - ./k8s-manifests/base/user-auth-service.yaml
+      - "k8s-manifests/*.yaml" # placeholder for the YAML patch in the profiles
     flags:
       global:
         [ "--namespace=vogelgrippe" ]
@@ -56,14 +51,19 @@ profiles:
       tagPolicy:
         sha256: { } # uses the latest tag
     patches:
-      - op: remove
-        path: /deploy/kubectl/manifests/0
       - op: replace
         path: /deploy/kustomize/paths/0
         value: "./k8s-manifests/aws"
       - op: add
         path: /deploy/kubectl/manifests/-
         value: ./k8s-manifests/aws/ingress.aws.yaml
+  - name: minikube
+    activation:
+      - kubeContext: minikube
+    patches:
+      - op: replace
+        path: /deploy/kustomize/paths/0
+        value: "./k8s-manifests/minikube"
   - name: falco
     patches:
       - op: add
