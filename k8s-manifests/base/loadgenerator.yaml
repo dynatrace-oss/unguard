@@ -29,3 +29,8 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+      initContainers:
+        - name: wait-for-frontend
+          image: curlimages/curl
+          command: [ "/bin/sh","-c" ]
+          args: [ 'while [ $(curl -ksw "%{http_code}" "http://vogelgrippe-frontend:80/img/logo.svg" -o /dev/null) -ne 200 ]; do sleep 5; echo "health check failed . Waiting for the service..."; done' ]
