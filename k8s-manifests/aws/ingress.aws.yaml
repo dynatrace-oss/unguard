@@ -5,7 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/inbound-cidrs: 83.164.160.102/32 # Dynatrace VPN CIDR
+    alb.ingress.kubernetes.io/inbound-cidrs: 83.164.160.102/32, 80.80.253.56/32, 83.164.197.242/32 # LNZ, KLU, HGB endpoints
 spec:
   rules:
     - http:
