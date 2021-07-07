@@ -33,12 +33,12 @@ deploy:
           primary:
             persistence:
               enabled: false
-  kubectl:
-    manifests:
-      - "k8s-manifests/*.yaml" # placeholder for the YAML patch in the profiles
-    flags:
-      global:
-        [ "--namespace=vogelgrippe" ]
+#  kubectl:
+#    manifests:
+#      - "k8s-manifests/*.yaml" # placeholder for the YAML patch in the profiles
+#    flags:
+#      global:
+#        [ "--namespace=vogelgrippe" ]
   kustomize:
     paths:
     - "./k8s-manifests/base"
