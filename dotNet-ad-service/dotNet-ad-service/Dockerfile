@@ -4,13 +4,18 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-WORKDIR "/src"
+
+# Copy csproj and restore as distinct layers
+WORKDIR /src
 COPY ["dotNet-ad-service.csproj", "."]
 RUN dotnet restore "dotNet-ad-service.csproj"
+
+# Copy everything else and build
+WORKDIR /src
 COPY . .
-WORKDIR "/src"
 RUN dotnet build "dotNet-ad-service.csproj" -c Release -o /app/build
 
+# publish
 FROM build AS publish
 RUN dotnet publish "dotNet-ad-service.csproj" -c Release -o /app/publish
 

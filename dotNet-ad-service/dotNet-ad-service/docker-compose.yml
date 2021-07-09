@@ -1,0 +1,16 @@
+﻿version: "3.8"
+services: 
+  ad-service:
+    image: ad-service
+    environment:
+      - DEBUG_MODE=true # true/false will be recognised in .net as string, not bool
+    ports:
+      - "4203:80"
+    volumes:
+      - c:\dockerStorage\unguard:/app/wwwroot/externalStorage # for debug: use host storage system 
+      - dt-ad-data:/app/wwwroot/volume # for kubernetes
+volumes: 
+  dt-ad-data:
+    driver: local
+
+

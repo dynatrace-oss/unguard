@@ -6,4 +6,12 @@
         <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\css" />
+      <Folder Include="wwwroot\externalStorage" />
+      <Folder Include="wwwroot\lib" />
+      <Folder Include="wwwroot\volume" />
+    </ItemGroup>
+
+
 </Project>
