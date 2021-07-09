@@ -32,6 +32,6 @@ spec:
       initContainers:
         - name: wait-for-frontend
           image: curlimages/curl
-          command: [ "/bin/sh","-c" ]
+          command: ["/bin/sh", "-c"]
           # CASP-8983 replace this endpoint with a proper health check endpoint
           args: [ 'while [ $(curl -ksw "%{http_code}" "http://vogelgrippe-frontend:80/img/logo.svg" -o /dev/null) -ne 200 ]; do sleep 5; echo "health check failed . Waiting for the service..."; done' ]
