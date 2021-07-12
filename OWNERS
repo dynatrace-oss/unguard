@@ -1,0 +1,12 @@
+#######################
+# OWNERS
+#######################
+branch *
+    path **
+        mario.kahlhofer
+        philipp.remplbauer
+        matthias.kranzer
+        michael.hoelzl
+        markus.gierlinger
+        simon.ammer
+        christop.wedenig
