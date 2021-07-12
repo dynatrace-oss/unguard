@@ -1,0 +1,5 @@
+﻿/.idea/config
+/.idea/**/projectSettingsUpdater.xml
+/.idea/**/workspace.xml
+/bin
+/obj
