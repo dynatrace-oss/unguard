@@ -1,4 +1,5 @@
 ﻿/.idea/config
 /.idea/**/projectSettingsUpdater.xml
-/dotNet-ad-service/bin
-/dotNet-ad-service/obj
+/.idea/**/workspace.xml
+/bin
+/obj
