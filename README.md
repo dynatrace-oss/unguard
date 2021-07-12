@@ -1,4 +1,4 @@
-# ![Vogelgrippe logo](.bitbucket/vogelgrippe_small.png) Vogelgrippe
+# ![Vogelgrippe Logo](.bitbucket/vogelgrippe_small.png) Vogelgrippe
 
 A SSRF vulnerable twitter-clone consisting of several microservices designed to run on Kubernetes.
 It comes with Jaeger traces and a bunch of vulnerabilities built-in.
@@ -32,9 +32,13 @@ Vogelgrippe consists of four main services, a load generator, two databases, and
 ## ☸️ Kubernetes Deployment
 
 ### 🗒️ Requirements
+
+The following tools are required for all deployment options:
+
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
 * [helm](https://helm.sh/docs/intro/install/)
 * [skaffold](https://skaffold.dev/docs/install/)
+* [kustomize](https://kustomize.io/)
 
 Add the necessary helm repositories and fetch updates:
 
@@ -45,24 +49,25 @@ helm repo add falcosecurity https://falcosecurity.github.io/charts
 helm repo update
 ```
 
-### ⛵ Minikube Deployment
+### ⛵ Minikube or Kind Deployment
 
-This is the recommended way of running Vogelgrippe and requires you to have [minikube](https://minikube.sigs.k8s.io/docs/) installed.
+This is the recommended way of running Vogelgrippe on a local machine.
 
 1.  **Install prerequisites**
 
-    Follow the instructions to install the following on your system:
+    Follow the instructions to install one of the following on your system:
 
-    * [minikube](https://minikube.sigs.k8s.io/docs/start/) or [kind](https://kind.sigs.k8s.io/)
+    * [minikube](https://minikube.sigs.k8s.io/docs/start/) if you want a cluster in a VM (slow on Windows)
+    * [kind](https://kind.sigs.k8s.io/) if you want a cluster in a Docker container
 
-2.  **Start a new or existing minikube cluster with the ingress add-on enabled**
+2.  **Start a new or existing cluster with the ingress add-on enabled**
 
     This will create a new minikube profile (i.e. cluster) named "vogelgrippe".
 
     ```sh
     minikube start --addons=ingress --profile vogelgrippe
     # 🍎 for macOS a vm-based driver is needed (https://github.com/kubernetes/minikube/issues/7332)
-    minikube start --vm=true --addons=ingress --profile vogelgrippe
+    minikube start --addons=ingress --profile vogelgrippe --vm=true
     ```
 
     Alternatively, create a new kind cluster named "vogelgrippe".
@@ -71,24 +76,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     kind create cluster --name vogelgrippe
     ```
 
-3.  **Install [Jaeger](https://www.jaegertracing.io/)**
-
-    First, add the Jaeger operator to the cluster
-
-    ```sh
-    helm install -n vogelgrippe --create-namespace jaeger-operator jaegertracing/jaeger-operator
-    ```
-
-    Next, apply it to your running cluster.
-    We do this manually to avoid having skaffold attempt to redeploy Jaeger every time.
-
-    ```sh
-    kubectl apply -f k8s-manifests/extra/jaeger.yaml
-    ```
-
-    > Note: Make sure to name your Jaeger instance `jaeger` or adjust all the `JAEGER_AGENT_HOST` environment variables in `/k8s-manifests/base` to be of format `{YOUR-NAME}-agent`
-
-4.  **(Optionally) Add image pull secrets to your cluster service accounts**
+3.  **(Optionally) Add image pull secrets to your cluster service accounts**
 
     Due to the great number of image pulls required you might need to set secrets for
     an authenticated image repository to avoid being [rate-limited by DockerHub](https://www.docker.com/increase-rate-limits).
@@ -119,7 +107,7 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     > Note: This needs to be done every time you re-create the cluster. You might need to repeat those steps once you deploy additional charts, e.g. for `jaeger`, `jaeger-operator`, `mariadb-release` at the moment.
 
-5.  **Build and run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
+4.  **Build and run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
 
     We grab the docker daemon from the cluster first, so that we push the built images already into the cluster.
 
@@ -127,20 +115,20 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     ```sh
     eval $(minikube -p vogelgrippe docker-env)
-    skaffold run -p minikube --detect-minikube
+    skaffold run --detect-minikube
     ```
     🍎 On macOS with minikube, use the following
 
     ```sh
     source <(minikube docker-env -p vogelgrippe)
-    skaffold run -p minikube --detect-minikube
+    skaffold run --detect-minikube
     ```
 
     💻 On Windows with minikube, use the following with PowerShell
 
     ```sh
     & minikube -p vogelgrippe docker-env | Invoke-Expression
-    skaffold run -p minikube --detect-minikube
+    skaffold run --detect-minikube
     ```
 
     With a kind cluster, simply run the following.
@@ -148,6 +136,14 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
 
     ```sh
     skaffold run
+    ```
+
+5. **(Optionally) Deploy Falco or Jaeger**
+
+    Add the dedicated profiles to the skaffold command, so that Falco and/or Jaeger is also deployed:
+
+    ```sh
+    skaffold run -p falco,jaeger
     ```
 
 6.  **(Optionally) Expose the application to your local machine**
@@ -202,7 +198,11 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     terraform -chdir=infrastructure apply -auto-approve
     ```
 
-2. **Login to ECR**
+2. **Update Kube Config and login to ECR**
+
+    ```sh
+    aws eks update-kubeconfig --name ground-zero --region us-east-1 --profile dtRoleAccountAdmin
+    ```
 
     ```sh
     aws ecr get-login-password --region us-east-1 --profile dtRoleAccountAdmin | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com
@@ -213,9 +213,9 @@ This is the recommended way of running Vogelgrippe and requires you to have [min
     The AWS profile already comes with built-in Jaeger and an ingress which is only reachable from the Dynatrace VPN.
     
     ```sh
-    skaffold run -p aws --default-repo <aws_account_id.dkr.ecr.region.amazonaws.com>
+    skaffold run -p aws --default-repo <aws_account_id>.dkr.ecr.region.amazonaws.com
     # For Falco and Jaeger add the corresponding profile
-    skaffold run -p aws,falco,jaeger --default-repo <aws_account_id.dkr.ecr.region.amazonaws.com>
+    skaffold run -p aws,falco,jaeger --default-repo <aws_account_id.dkr>.ecr.region.amazonaws.com
     ```
 
 4. **Update the application detection rule**
@@ -236,35 +236,5 @@ skaffold run --default-repo registry.lab.dynatrace.org/casp
 
 ## 🖥️ Local Deployment
 
-A local deployment is not recommended because our services rely on the K8S domain name service.
-
-### Install [Jaeger](https://www.jaegertracing.io/)
-
-Beside the microservices, a Jaeger deployment is recommended as all the services send traces.
-
-For setting up Jaeger, please see their [documentation](https://www.jaegertracing.io/docs/1.20/getting-started/).
-The simplest way to start all needed Jaeger components is with Docker:
-
-```sh
-docker run -d --name jaeger \
-  -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
-  -p 5775:5775/udp \
-  -p 6831:6831/udp \
-  -p 6832:6832/udp \
-  -p 5778:5778 \
-  -p 16686:16686 \
-  -p 14268:14268 \
-  -p 14250:14250 \
-  -p 9411:9411 \
-  jaegertracing/all-in-one:1.20
-```
-
-### Install the microservices
-
-Follow instructions in the READMEs of the individual services to run them locally.
-
-- [frontend](./frontend)
-- [microblog-service](./microblog-service)
-- [proxy-service](./proxy-service)
-- [user-auth-service](./user-auth-service)
-- [loadgenerator](./loadgenerator)
+A local deployment is not supported because most services rely on the K8S domain name service.
+If you must deploy some parts of the application locally, read the READMEs of the individual services.

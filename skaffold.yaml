@@ -1,15 +1,13 @@
-apiVersion: skaffold/v2beta14
+apiVersion: skaffold/v2beta18
 kind: Config
 build:
   artifacts:
-    # image tags are relative; to specify an image repo (e.g. GCR), you
-    # must provide a "default repo" using one of the methods described
-    # here: https://skaffold.dev/docs/concepts/#image-repository-handling
+    # context is the directory with the Dockerfile for that image
     - image: vogelgrippe-frontend
       context: frontend
     - image: vogelgrippe-microblog-service
       context: microblog-service
-      jib: { }
+      jib: {}
     - image: vogelgrippe-proxy-service
       context: proxy-service
     - image: vogelgrippe-loadgenerator
@@ -17,53 +15,39 @@ build:
     - image: vogelgrippe-user-auth-service
       context: user-auth-service
   tagPolicy:
-    gitCommit: { }
+    # use the commit hash
+    gitCommit: {}
   local:
+    # only the docker CLI respects a manually logged-in daemon
     useDockerCLI: true
+    # buildkit provides cleaner output
     useBuildkit: true
 deploy:
+  kustomize:
+    paths:
+      - ./k8s-manifests/base
   helm:
     releases:
       - name: mariadb-release
         remoteChart: bitnami/mariadb
         namespace: vogelgrippe
         createNamespace: true
-        wait: true
+        wait: true # CASP-8983: might be removed once we have readiness probes
         overrides:
           primary:
             persistence:
               enabled: false
-  kubectl:
-    manifests:
-      - "k8s-manifests/*.yaml" # placeholder for the YAML patch in the profiles
-    flags:
-      global:
-        [ "--namespace=vogelgrippe" ]
-  kustomize:
-    paths:
-    - "./k8s-manifests/base"
-    defaultNamespace: "vogelgrippe"
 profiles:
   - name: aws
     activation:
       - kubeContext: "arn:aws:eks:*"
     build:
       tagPolicy:
-        sha256: { } # uses the latest tag
-    patches:
-      - op: replace
-        path: /deploy/kustomize/paths/0
-        value: "./k8s-manifests/aws"
-      - op: add
-        path: /deploy/kubectl/manifests/-
-        value: ./k8s-manifests/aws/ingress.aws.yaml
-  - name: minikube
-    activation:
-      - kubeContext: minikube
-    patches:
-      - op: replace
-        path: /deploy/kustomize/paths/0
-        value: "./k8s-manifests/minikube"
+        sha256: {} # uses the :latest tag
+    deploy:
+      kustomize:
+        paths:
+          - ./k8s-manifests/aws
   - name: falco
     patches:
       - op: add
@@ -77,12 +61,12 @@ profiles:
   - name: jaeger
     patches:
       - op: add
+        path: /deploy/kustomize/paths/-
+        value: ./k8s-manifests/jaeger
+      - op: add
         path: /deploy/helm/releases/-
         value:
           name: jaeger-operator
           remoteChart: jaegertracing/jaeger-operator
           namespace: vogelgrippe
           createNamespace: true
-      - op: add
-        path: /deploy/kubectl/manifests/-
-        value: ./k8s-manifests/extra/jaeger.yaml
