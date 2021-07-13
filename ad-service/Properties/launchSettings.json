@@ -12,18 +12,16 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "DEBUG_MODE": "false"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "dotNet_ad_service": {
+    "ad_service": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "DEBUG_MODE": "false"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

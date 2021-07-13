@@ -1,5 +1,4 @@
-﻿
-@page
+﻿@page
 @model AdModel
 @{
     ViewData["Title"] = "ad-service";
@@ -7,14 +6,6 @@
 
 <div style="width: 98vw; height: 98vh; display: flex;">
     <div style="margin:auto">
-         @if (@Model.DebugMode)
-            {
-                <img title="bird-img" style="max-width: 98vw; max-height: 98vh;" src="externalStorage/test.jpg">
-        
-            }
-            @if (!@Model.DebugMode)
-            {
-                <img title="bird-img" style="max-width: 98vw; max-height: 98vh;" src="volume/test.jpg">
-            }
+        <img title="bird-img" alt="add" style="max-width: 98vw; max-height: 98vh;" src="adFolder/bird.jpg" >
     </div>
 </div>

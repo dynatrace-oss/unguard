@@ -2,13 +2,10 @@
 services: 
   ad-service:
     image: ad-service
-    environment:
-      - DEBUG_MODE=true # changing between host or docker volume
     ports:
-      - "4203:80"
-    volumes:
-      - c:\dockerStorage\unguard:/app/wwwroot/externalStorage # DEBUG_MODE=true
-      - dt-ad-data:/app/wwwroot/volume                        # DEBUG_MODE=false
+      - "80:80"
+    #volumes:
+    #   - <your-directory>:/app/wwwroot/adFolder 
 volumes: 
   dt-ad-data:
     driver: local

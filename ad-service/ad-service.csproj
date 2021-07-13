@@ -2,13 +2,12 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <RootNamespace>dotNet_ad_service</RootNamespace>
+        <RootNamespace>ad_service</RootNamespace>
         <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
       <Folder Include="wwwroot\css" />
-      <Folder Include="wwwroot\externalStorage" />
       <Folder Include="wwwroot\lib" />
       <Folder Include="wwwroot\volume" />
     </ItemGroup>
