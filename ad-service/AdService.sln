@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ad-service", "ad-service.csproj", "{D189D138-12E0-4991-AEB8-7BEF784F405B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdService", "AdService.csproj", "{D189D138-12E0-4991-AEB8-7BEF784F405B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
