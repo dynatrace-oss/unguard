@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using System;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace dotNet_ad_service.Pages
+namespace AdService.Pages
 {
     public class AdModel : PageModel
     {
-        public string RecourceFolder { get; set; }
         
-        public void OnGet()
-        {
-            RecourceFolder = "/testFolder";
-            ViewData["resourcePath"] = RecourceFolder;
-        }
+        public void OnGet() {}
     }
 }

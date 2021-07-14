@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "dotNet_ad_service": {
+    "AdService": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

@@ -1,0 +1,13 @@
+﻿version: "3.8"
+services: 
+  ad-service:
+    image: ad-service
+    ports:
+      - "80:80"
+    #volumes:
+    #   - <your-directory>:/app/wwwroot/adFolder 
+volumes: 
+  dt-ad-data:
+    driver: local
+
+
