@@ -33,7 +33,7 @@ run image on port 80
 docker run -it -p 80:80 --name ad-service-container ad-service 
 ```
 
-Currently AdService will show a picture under the path /app/wwwroot/adFolder/bird.jpg. <br>
+Currently AdService will show a picture under the path /app/wwwroot/adFolder/bird.jpg.  
 Therefore, if your want to display customized images, you have mount a folder with a picture named bird.jpg in it and
 state it in the command instead of '<your-directory>'.
 ```
