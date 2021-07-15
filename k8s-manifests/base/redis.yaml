@@ -49,4 +49,4 @@ spec:
               memory: 200Mi
       volumes:
         - name: redis-data
-          emptyDir: { }
+          emptyDir: {}
