@@ -4,7 +4,7 @@ metadata:
   name: vogelgrippe-ad-service
 spec:
   ports:
-    - targetPort: 80
+    - targetPort: 8082
       port: 80
   type: ClusterIP
   selector:
@@ -24,11 +24,13 @@ spec:
         app: vogelgrippe-ad-service
     spec:
       containers:
-        - name: proxy-service
+        - name: ad-service
           image: vogelgrippe-ad-service
           ports:
             - containerPort: 8082
           env:
+            - name: SERVER_PORT
+              value: "8082"
             - name: JAEGER_SERVICE_NAME
               value: "vogelgrippe-ad-service"
             - name: JAEGER_AGENT_HOST
