@@ -33,8 +33,6 @@ spec:
               value: "9091"
             - name: JAEGER_AGENT_HOST
               value: "jaeger-agent" # change depending on your jaeger deployment
-            - name: JAEGER_ENDPOINT
-              value: "http://jaeger-collector:14268/api/traces"
             - name: JAEGER_SAMPLER_TYPE
               value: "const"
             - name: JAEGER_SAMPLER_PARAM
