@@ -9,7 +9,7 @@ yarn install
 This frontend is dependent on the MICROBLOG service, and the PROXY service to be also
 available. It is also recommended having a Jaeger agent running for reporting traces.
 
-Adjust the following environment variables if you are running the two
+Adjust the following environment variables if you are running the
 other microservices on different ports/hosts:
 
 |            Name            |  Default Value |
@@ -18,6 +18,7 @@ other microservices on different ports/hosts:
 | JAEGER_AGENT_HOST          | localhost      |
 | MICROBLOG_SERVICE_ADDRESS  | localhost:8080 |
 | PROXY_SERVICE_ADDRESS      | localhost:8081 |
+| AD_SERVICE_ADDRESS         | localhost:8082 |
 
 ## Running
 

@@ -66,12 +66,17 @@ if (!process.env.PROXY_SERVICE_ADDRESS) {
   process.env.PROXY_SERVICE_ADDRESS = "localhost:8081";
 }
 
+if (!process.env.AD_SERVICE_ADDRESS) {
+  process.env.AD_SERVICE_ADDRESS = "localhost:8082";
+}
+
 if (!process.env.USER_AUTH_SERVICE_ADDRESS) {
   process.env.USER_AUTH_SERVICE_ADDRESS = "localhost:9091";
 }
 
 logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS)
 logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS)
+logger.info("AD_SERVICE_ADDRESS is set to " + process.env.AD_SERVICE_ADDRESS)
 logger.info("USER_AUTH_SERVICE_ADDRESS is set to "+ process.env.USER_AUTH_SERVICE_ADDRESS)
 
 let app = express()
