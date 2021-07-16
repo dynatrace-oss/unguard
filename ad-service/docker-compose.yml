@@ -3,7 +3,7 @@ services:
   ad-service:
     image: ad-service
     ports:
-      - "80:80"
+      - "80:8082"
     #volumes:
     #   - <your-directory>:/app/wwwroot/adFolder 
 volumes: 

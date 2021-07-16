@@ -163,7 +163,12 @@ This is the recommended way of running Vogelgrippe on a local machine.
     # exposes the proxy-service on localhost:8081
     kubectl port-forward -n vogelgrippe service/vogelgrippe-proxy-service 8081:80
     ```
-    
+
+    If you just want to check the current ads, you can do that by forward the ad-service directly.
+    ```sh
+    kubectl port-forward -n vogelgrippe service/vogelgrippe-ad-service 8082:80
+    ```
+
     To access the Jaeger UI you can expose it as well.
     ```sh
     # exposes the Jaeger UI on localhost:16686

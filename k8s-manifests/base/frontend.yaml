@@ -43,3 +43,5 @@ spec:
               value: "vogelgrippe-proxy-service"
             - name: USER_AUTH_SERVICE_ADDRESS
               value: "vogelgrippe-user-auth-service"
+            - name: AD_SERVICE_ADDRESS
+              value: "vogelgrippe-ad-service"
