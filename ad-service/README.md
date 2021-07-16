@@ -22,22 +22,26 @@ docker build -t ad-service .
 
 ### Running
 
+
 ##### local
+
+Service will run on port 8082.
+
 ```
 dotnet run AdService.dll
 ```
 
 ##### docker 
-run image on port 80
+Image will be forwarded to port 80
 ```
-docker run -it -p 80:80 --name ad-service-container ad-service 
+docker run -it -p 80:8082 --name ad-service-container ad-service 
 ```
 
 Currently AdService will show a picture under the path /app/wwwroot/adFolder/bird.jpg.  
 Therefore, if your want to display customized images, you have mount a folder with a picture named bird.jpg in it and
 state it in the command instead of '<your-directory>'.
 ```
-docker run -it -v <your-directory>:/app/wwwroot/adFolder -p 80:80 --name ad-service-container ad-service 
+docker run -it -v <your-directory>:/app/wwwroot/adFolder -p 80:8082 --name ad-service-container ad-service 
 ```
 
 ##### docker-compose
