@@ -40,3 +40,15 @@ When developing, to have the server auto-restart on change of a file, use:
 ```
 yarn run dev
 ```
+
+### Developing with kubernetes services
+
+For further development at the frontend it may be useful to start vogelgrippe in
+kubernetes (general README.me) and forward every port to the local build&run frontend:
+ 
+```sh
+kubectl port-forward -n vogelgrippe service/vogelgrippe-microblog-service 8080:80
+kubectl port-forward -n vogelgrippe service/vogelgrippe-proxy-service 8081:80
+kubectl port-forward -n vogelgrippe service/vogelgrippe-ad-service 8082:80
+kubectl port-forward -n vogelgrippe service/vogelgrippe-user-auth-service 9091:80
+```

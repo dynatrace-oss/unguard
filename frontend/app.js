@@ -84,7 +84,7 @@ let app = express()
 nunjucks.configure('views', {
   autoescape: true,
   express: app
-})
+}).addGlobal('AD_SERVICE_ADDRESS', process.env.AD_SERVICE_ADDRESS)
 
 app.use(sassMiddleware({
   src: path.join(__dirname, 'styles'),
