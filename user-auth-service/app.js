@@ -74,8 +74,10 @@ function initTracer (serviceName) {
  */
 async function initDb() {
   console.log("Start initializing database.")
-  await database.dbConnection.query(database.createUserTableQuery)
-  await database.dbConnection.query(database.createTokenTableQuery)
+  await database.dbConnection.query(database.createUserTableQuery);
+  await database.dbConnection.query(database.createTokenTableQuery);
+  await database.dbConnection.query(database.createRoleTableQuery);
+  await database.dbConnection.query(database.createRoleUserTableQuery);
   console.log("Finished initializing database.")
 }
 

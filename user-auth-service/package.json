@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
   },
   "dependencies": {
     "colors": "^1.4.0",
@@ -22,6 +23,7 @@
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {
-    "bcrypt": "^5.0.0"
+    "bcrypt": "^5.0.1",
+    "nodemon": "^2.0.12"
   }
 }

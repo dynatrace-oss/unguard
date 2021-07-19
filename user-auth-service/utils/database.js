@@ -14,11 +14,19 @@ const CREATE_USER_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS users(" +
     "id int(11) unsigned NOT NULL auto_increment, " +
     "username varchar(255) NOT NULL default '', " +
     "password_hash varchar(255) NOT NULL default '', " +
-    "PRIMARY KEY  (id))"
+    "PRIMARY KEY (id))"
 const CREATE_TOKEN_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS tokens(" +
     "id int(11) unsigned NOT NULL auto_increment, " +
     "token varchar(255) NOT NULL default ''," +
     "PRIMARY KEY (id))"
+const CREATE_ROLE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS roles(" +
+    "id int(11) unsigned NOT NULL auto_increment, " +
+    "role_name varchar(255) NOT NULL default '', " +
+    "PRIMARY KEY (id))"
+const CREATE_ROLE_USER_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS roles_users(" +
+    "user_id int(11) unsigned NOT NULL REFERENCES users(id), " +
+    "role_id int(11) unsigned NOT NULL REFERENCES roles(id), " +
+    "PRIMARY KEY (user_id,role_id))"
 
 const CHECK_USER_EXISTS_QUERY = "SELECT username, password_hash, id FROM users WHERE username = ?"
 const CHECK_TOKEN_EXISTS_QUERY = "SELECT token FROM tokens WHERE token = ?"
@@ -36,6 +44,8 @@ exports.checkUserExistsQuery = CHECK_USER_EXISTS_QUERY
 exports.checkTokenExistsQuery = CHECK_TOKEN_EXISTS_QUERY
 exports.createUserTableQuery = CREATE_USER_TABLE_QUERY
 exports.createTokenTableQuery = CREATE_TOKEN_TABLE_QUERY
+exports.createRoleTableQuery = CREATE_ROLE_TABLE_QUERY
+exports.createRoleUserTableQuery = CREATE_ROLE_USER_TABLE_QUERY
 exports.selectPasswordHashQuery = SELECT_PASSWORD_HASH_QUERY
 exports.selectUserNameQuery = SELECT_USERNAME_FOR_ID
 exports.selectIdForName = SELECT_ID_FOR_NAME
