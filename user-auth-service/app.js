@@ -3,6 +3,8 @@ var express = require('express');
 const bodyParser = require("body-parser");
 var logger = require('morgan');
 var database = require('./utils/database')
+var bcrypt = require('bcrypt');
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
@@ -78,6 +80,32 @@ async function initDb() {
   await database.dbConnection.query(database.createTokenTableQuery);
   await database.dbConnection.query(database.createRoleTableQuery);
   await database.dbConnection.query(database.createRoleUserTableQuery);
+
+  const adManagerAlreadyExists = await database.dbConnection.query(database.selectUserForRole, ["AD_MANAGER"])
+    .then((response) => {
+      return response.length !== undefined && response.length >= 0 && response[0].length >= 1;
+    });
+
+  if (!adManagerAlreadyExists) {
+    const userName = "admanager";
+    const userPw = "admanager";
+    const pwHash = await bcrypt.hash(userPw, 10);
+    const adManagerUserId = await database.dbConnection.query(database.insertUserQuery, [userName, pwHash])
+      .then((response) => { return response[0].insertId});
+
+    const adManagerRoleId = await database.dbConnection.query(database.insertRoleQuery,  ["AD_MANAGER"])
+    .then((response) => { return response[0].insertId});
+
+    if (adManagerRoleId === null || adManagerRoleId === undefined 
+      || adManagerUserId === null || adManagerUserId === undefined) 
+    {
+        console.error("User couldn't be inserted!");
+        return;
+    } else {
+      await database.dbConnection.query(database.insertUserToRoleQuery,  [adManagerUserId, adManagerRoleId]);
+    }
+  } 
+  
   console.log("Finished initializing database.")
 }
 
