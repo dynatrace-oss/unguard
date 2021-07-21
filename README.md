@@ -39,6 +39,7 @@ The following tools are required for all deployment options:
 * [helm](https://helm.sh/docs/intro/install/)
 * [skaffold](https://skaffold.dev/docs/install/)
 * [kustomize](https://kustomize.io/)
+* [OpenJDK11](https://jdk.java.net/archive/)
 
 Add the necessary helm repositories and fetch updates:
 

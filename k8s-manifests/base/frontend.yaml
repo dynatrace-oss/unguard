@@ -44,4 +44,4 @@ spec:
             - name: USER_AUTH_SERVICE_ADDRESS
               value: "vogelgrippe-user-auth-service"
             - name: AD_SERVICE_ADDRESS
-              value: "vogelgrippe-ad-service"
+              value: "localhost:8082" # TODO: change back to vogelgrippe-ad-service when issue with ingress is resolved (https://dev-jira.dynatrace.org/browse/CASP-10192)
