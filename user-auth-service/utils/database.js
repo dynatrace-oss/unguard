@@ -4,7 +4,7 @@ var connection = mysql.createPool({
     database : 'my_database',
     port     : '3306',
     user     : 'root',
-    password : 'mariadb-root-password',
+    password : process.env.MARIADB_PASSWORD,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
