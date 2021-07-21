@@ -43,11 +43,26 @@ router.post('/login', async function(req, res){
     return
   }
 
-  var hash = result[0][0].password_hash
+  const user = result[0][0];
+  const roles = await database.dbConnection.query(database.selectUserWithRole, [user.id]).then((response) => {
+    const userWithRoles = response[0];
+    if (userWithRoles.length == 0) { return []; }
+
+    const userRoles = [];
+    userWithRoles.forEach(user => {
+      if (user.role_name !== null) {
+        userRoles.push("" + user.role_name);
+      }
+    });
+
+    return userRoles;
+  });
+
+  var hash = user.password_hash;
 
   bcrypt.compare(password, hash, function(err, compareResult){
     if(compareResult){
-      res.json({result: "successfully logged in!", jwt: jwtUtil.generateJwtAccessToken(username, result[0][0].id)})
+      res.json({result: "successfully logged in!", jwt: jwtUtil.generateJwtAccessToken(username, user.id, roles)})
       return
     }else{
       res.status(401).json({message: 'Wrong password!'})
