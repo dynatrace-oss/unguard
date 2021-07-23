@@ -9,6 +9,7 @@ It allows users to
 - post text
 - post URLs with URL preview
 - view global or personalized timelines
+- user will see ads on the timeline (currently only a static img)
 - view user profiles
 - follow other users
 
@@ -23,6 +24,7 @@ Vogelgrippe consists of four main services, a load generator, two databases, and
 | [proxy-service](./proxy-service)         | Java Spring     | Serves REST API for proxying requests from frontend (vulnerable to SSRF; no sanitization on the entered URL) |
 | [user-auth-service](./user-auth-service) | Node.js Express | Serves REST API for authenticating users with JWT tokens (vulnerable to JWT key confusion)                   |
 | [loadgenerator](./loadgenerator)         | Python Locust   | Creates synthetic user traffic                                                                               |
+| [ad-service](./ad-service)               | .net 5          | Serves a HTML page which a image                                                                              |
 | redis                                    |                 | Key-value store that holds all user data (except authentication-related stuff)                               |
 | maria-db                                 |                 | Relational database that holds user and token data                                                           |
 | jaeger                                   |                 | The [Jaeger](https://www.jaegertracing.io/) stack for distributed tracing                                    |
@@ -165,7 +167,8 @@ This is the recommended way of running Vogelgrippe on a local machine.
     kubectl port-forward -n vogelgrippe service/vogelgrippe-proxy-service 8081:80
     ```
 
-    If you just want to check the current ads, you can do that by forward the ad-service directly.
+    Currently, also the ad-service have to be forwarded locally. 
+    In aws it will only work after the ingress will set correctly (future todo).
     ```sh
     kubectl port-forward -n vogelgrippe service/vogelgrippe-ad-service 8082:80
     ```
