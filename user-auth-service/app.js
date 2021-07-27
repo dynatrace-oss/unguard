@@ -85,7 +85,7 @@ async function initDb() {
 
   const adManagerAlreadyExists = await database.dbConnection.query(database.selectUserForRole, [adManagerRole])
     .then((response) => {
-      return response.length !== undefined && response.length >= 0 && response[0].length >= 1;
+      return response.length !== undefined && response.length > 0 && response[0].length > 0;
     });
 
   if (!adManagerAlreadyExists) {
