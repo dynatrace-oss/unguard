@@ -3,6 +3,8 @@ var express = require('express');
 const bodyParser = require("body-parser");
 var logger = require('morgan');
 var database = require('./utils/database')
+var bcrypt = require('bcrypt');
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
@@ -33,12 +35,12 @@ app.use('/user', usersRouter);
 app.use('/auth', authRouter)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -54,7 +56,7 @@ module.exports = app;
  * @param serviceName
  * @returns {*}
  */
-function initTracer (serviceName) {
+function initTracer(serviceName) {
   const initJaegerTracer = require('jaeger-client').initTracerFromEnv
 
   // Sampler set to const 1 to capture every request, do not do this for production
@@ -78,10 +80,36 @@ async function initDb() {
   await database.dbConnection.query(database.createTokenTableQuery);
   await database.dbConnection.query(database.createRoleTableQuery);
   await database.dbConnection.query(database.createRoleUserTableQuery);
+
+  const adManagerRole = "AD_MANAGER";
+
+  const adManagerAlreadyExists = await database.dbConnection.query(database.selectUserForRole, [adManagerRole])
+    .then((response) => {
+      return response.length !== undefined && response.length > 0 && response[0].length > 0;
+    });
+
+  if (!adManagerAlreadyExists) {
+    const userName = "admanager";
+    const userPw = "admanager";
+    const pwHash = await bcrypt.hash(userPw, 10);
+    const adManagerUserId = await database.dbConnection.query(database.insertUserQuery, [userName, pwHash])
+      .then((response) => { return response[0].insertId });
+
+    const adManagerRoleId = await database.dbConnection.query(database.insertRoleQuery, [adManagerRole])
+      .then((response) => { return response[0].insertId });
+
+    if (adManagerRoleId == null || adManagerUserId == null) {
+      console.error("The 'admanager' user could not be inserted.");
+      return;
+    } else {
+      await database.dbConnection.query(database.insertUserToRoleQuery, [adManagerUserId, adManagerRoleId]);
+    }
+  }
+
   console.log("Finished initializing database.")
 }
 
-function tracingMiddleWare (req, res, next) {
+function tracingMiddleWare(req, res, next) {
   const tracer = opentracing.globalTracer();
   // Extracting the tracing headers from the incoming http request
   const wireCtx = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, req.headers)
@@ -93,7 +121,7 @@ function tracingMiddleWare (req, res, next) {
   // Use the setTag api to capture standard span tags for http traces
   span.setTag(opentracing.Tags.HTTP_METHOD, req.method)
   span.setTag(opentracing.Tags.SPAN_KIND, opentracing.Tags.SPAN_KIND_RPC_SERVER)
-  const baseUrl = req.protocol + "://"+ req.headers["host"]+req.path
+  const baseUrl = req.protocol + "://" + req.headers["host"] + req.path
   span.setTag(opentracing.Tags.HTTP_URL, baseUrl)
 
   // include trace ID in headers so that we can debug slow requests we see in
