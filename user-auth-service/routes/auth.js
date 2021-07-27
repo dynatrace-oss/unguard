@@ -28,7 +28,7 @@ router.post('/logout', async function (req, res) {
     const result = await database.dbConnection.query(database.insertTokenQuery, [jwtToken])
 
     if (result[0].insertId != null && result[0].insertId != -1) {
-        res.json({result: 'successfully logged out!'})
+        res.json({ result: 'successfully logged out!' })
     } else
         return res.sendStatus(404)
 });
@@ -53,7 +53,7 @@ router.post('/isValid', async function (req, res) {
         return res.sendStatus(403) // Maybe 404 is not optimal, but found no better status-code, which fits this purpose
     }
 
-    return res.json({result: 'token is valid'})
+    return res.json({ result: 'token is valid' })
 });
 
 module.exports = router;

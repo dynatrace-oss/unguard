@@ -10,10 +10,10 @@ function generateJwtAccessToken(username, userid, roles) {
     var jwtToken = {
         username: username,
         userid: userid,
-        roles: roles === undefined ? [] : roles
+        roles: roles == null ? [] : roles
     }
 
-    return jwt.encode(jwtToken, JWT_PRIV, 'RS256')
+    return jwt.encode(jwtToken, FJWT_PRIV, 'RS256')
 }
 
 exports.generateJwtAccessToken = generateJwtAccessToken
