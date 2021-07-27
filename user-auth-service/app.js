@@ -9,6 +9,7 @@ var bcrypt = require('bcrypt');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
 var authRouter = require('./routes/auth');
+var jwtRouter = require('./routes/jwt');
 
 // set environment variables if not set
 if (!process.env.MARIADB_SERVICE) {
@@ -32,7 +33,8 @@ app.use(bodyParser.json());
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
-app.use('/auth', authRouter)
+app.use('/auth', authRouter);
+app.use('/.well-known', jwtRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
