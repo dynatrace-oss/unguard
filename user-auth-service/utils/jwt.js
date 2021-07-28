@@ -6,8 +6,14 @@ var path = require('path')
 var JWT_PUB = fs.readFileSync(path.normalize(__dirname + '/../keys/jwtRS256.key.pub'));
 var JWT_PRIV = fs.readFileSync(path.normalize(__dirname + '/../keys/jwtRS256.key'));
 
-function generateJwtAccessToken(username, userid) {
-    return jwt.encode({username: username, userid: userid}, JWT_PRIV, 'RS256')
+function generateJwtAccessToken(username, userid, roles) {
+    var jwtToken = {
+        username: username,
+        userid: userid,
+        roles: roles == null ? [] : roles
+    }
+
+    return jwt.encode(jwtToken, JWT_PRIV, 'RS256')
 }
 
 exports.generateJwtAccessToken = generateJwtAccessToken
