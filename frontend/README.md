@@ -9,7 +9,7 @@ yarn install
 This frontend is dependent on the MICROBLOG service, and the PROXY service to be also
 available. It is also recommended having a Jaeger agent running for reporting traces.
 
-Adjust the following environment variables if you are running the two
+Adjust the following environment variables if you are running the
 other microservices on different ports/hosts:
 
 |            Name            |  Default Value |
@@ -18,6 +18,7 @@ other microservices on different ports/hosts:
 | JAEGER_AGENT_HOST          | localhost      |
 | MICROBLOG_SERVICE_ADDRESS  | localhost:8080 |
 | PROXY_SERVICE_ADDRESS      | localhost:8081 |
+| AD_SERVICE_ADDRESS         | localhost:8082 |
 
 ## Running
 
@@ -38,4 +39,16 @@ When developing, to have the server auto-restart on change of a file, use:
 
 ```
 yarn run dev
+```
+
+### Developing with kubernetes services
+
+For further development at the frontend it may be useful to start vogelgrippe in
+kubernetes (general README.me) and forward every port to the local build&run frontend:
+ 
+```sh
+kubectl port-forward -n vogelgrippe service/vogelgrippe-microblog-service 8080:80
+kubectl port-forward -n vogelgrippe service/vogelgrippe-proxy-service 8081:80
+kubectl port-forward -n vogelgrippe service/vogelgrippe-ad-service 8082:80
+kubectl port-forward -n vogelgrippe service/vogelgrippe-user-auth-service 9091:80
 ```

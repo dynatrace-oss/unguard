@@ -14,6 +14,8 @@ build:
       context: loadgenerator
     - image: vogelgrippe-user-auth-service
       context: user-auth-service
+    - image: vogelgrippe-ad-service
+      context: ad-service
   tagPolicy:
     # use the commit hash
     gitCommit: {}

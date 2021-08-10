@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\css" />
       <Folder Include="wwwroot\lib" />
       <Folder Include="wwwroot\volume" />
     </ItemGroup>

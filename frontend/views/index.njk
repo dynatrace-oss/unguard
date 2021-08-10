@@ -1,13 +1,17 @@
 {% extends "base.njk" %}
 
 {% block content %}
-    <div>
-        <h1>{{ title }}</h1>
+    <div class="timeline-page">
+        <div class="timeline-container"> 
+            <h1>{{ title }}</h1>
+            {% include "compose.njk" %}
 
-        {% include "compose.njk" %}
-
-        {% for post in data %}
-            {% include "post.njk" %}
-        {% endfor %}
+            {% for post in data %}
+                {% include "post.njk" %}
+            {% endfor %}
+        </div>
+        <div class="ad-container"> 
+            <iframe class="ad-webside" src="http://{{ AD_SERVICE_ADDRESS }}"\>
+        </div>
     </div>
 {% endblock %}
