@@ -4,17 +4,16 @@
         <TargetFramework>net5.0</TargetFramework>
         <RootNamespace>AdService</RootNamespace>
         <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="wwwroot\css" />
       <Folder Include="wwwroot\lib" />
       <Folder Include="wwwroot\volume" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NSwag.AspNetCore" Version="13.12.1" />
-      <PackageReference Include="SharpCompress" Version="0.21.1" />
+      <PackageReference Include="SharpCompress" Version="0.20.0" />
     </ItemGroup>
 
 
