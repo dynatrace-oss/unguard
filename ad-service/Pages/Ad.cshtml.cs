@@ -55,6 +55,11 @@ namespace AdService.Pages
         public string GetImage()
         {
             var ads = AdFile.CreateList(_appEnvironment.WebRootPath);
+            if (ads.Count == 0)
+            {
+                return "";
+            }
+            
             var currentAd = Request.Cookies["current_ad"];
 
             int adIndex = ads.FindIndex(ad => ad.Name == currentAd);

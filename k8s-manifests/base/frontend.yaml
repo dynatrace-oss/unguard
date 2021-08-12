@@ -52,7 +52,9 @@ spec:
               value: "unguard-proxy-service"
             - name: USER_AUTH_SERVICE_ADDRESS
               value: "unguard-user-auth-service"
+            - name: AD_SERVICE_ADDRESS
+              value: "unguard-ad-service"
             - name: FRONTEND_BASE_PATH
-              value: "/ui"
+                value: "/ui"
             - name: AD_PATH
-              value: "/ad"
+              value: "/ad-service"
