@@ -36,8 +36,8 @@ function getLoggedInUser(req) {
 function extendRenderData(data, req) {
     return {
         ...data,
-        AD_SERVICE_URL: req.protocol + '://' + req.get('host') + '/ad',
-        BASE_URL: req.protocol + '://' + req.get('host') + '/ui'
+        AD_SERVICE_URL: req.protocol + '://' + req.get('host') + process.env.AD_SERVICE_URL,
+        BASE_URL: req.protocol + '://' + req.get('host') + process.env.BASE_URL
     }
 }
 
@@ -126,7 +126,6 @@ function doLogin(req, res) {
             console.log(error)
             res.status(statusCodeForError(error)).render('error.njk', handleError(error));
         })
-    // res.redirect(utilities.extendURL('/'));
 }
 
 function registerUser(req, res) {

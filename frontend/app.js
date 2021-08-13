@@ -12,6 +12,7 @@ const sassMiddleware = require('node-sass-middleware')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
 const winston = require('winston');
+const utilities = require("./utilities.js");
 
 const site = require("./site");
 
@@ -86,14 +87,11 @@ logger.info("USER_AUTH_SERVICE_ADDRESS is set to "+ process.env.USER_AUTH_SERVIC
 
 let app = express()
 
-function extendURL (url) {
-    return process.env.FRONTEND_BASE_PATH + url;
-}
 
 nunjucks.configure('views', {
   autoescape: true,
   express: app
-}).addGlobal('extendURL', extendURL)
+}).addGlobal('extendURL', utilities.extendURL)
 
 app.use(sassMiddleware({
   src: path.join(__dirname, 'styles'),
@@ -164,16 +162,3 @@ server.listen('3000', () => {
   logger.info('Listening on port 3000')
 })
 
-// module.export = extendURL;
-// module.exports = { extendURL };
-
-// module.exports = {
-//   extendURL: function (url) {
-//     return process.env.FRONTEND_BASE_PATH + url;
-//   }
-// };
-
-
-// module.exports = { extendURL };
-
-module.exports =  { extendURL}
