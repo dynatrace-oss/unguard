@@ -31,7 +31,7 @@ deploy:
     defaultNamespace: unguard
   helm:
     releases:
-      - name: mariadb-release
+      - name: unguard-mariadb
         remoteChart: bitnami/mariadb
         namespace: unguard
         createNamespace: true
