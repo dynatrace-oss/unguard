@@ -1,7 +1,7 @@
 # Adapted from https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/managed_node_groups/variables.tf
 variable "prefix" {
   description = "Repository prefix."
-  default = "vogelgrippe"
+  default = "unguard"
   type = string
 }
 
