@@ -7,6 +7,6 @@ patchesStrategicMerge:
     apiVersion: v1
     kind: Service
     metadata:
-      name: vogelgrippe-frontend
+      name: unguard-frontend
     spec:
       type: NodePort

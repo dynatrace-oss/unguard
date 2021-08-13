@@ -1,11 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: vogelgrippe-ingress
+  name: unguard-ingress
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/part-of: unguard
   annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/inbound-cidrs: 83.164.160.102/32, 80.80.253.56/32, 83.164.197.242/32 # LNZ, KLU, HGB endpoints
+    alb.ingress.kubernetes.io/load-balancer-name: "unguard-elb"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    kubernetes.io/ingress.class: alb
 spec:
   rules:
     - http:
@@ -14,6 +18,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: vogelgrippe-frontend
+                name: unguard-frontend
                 port:
                   number: 80

@@ -1,35 +1,31 @@
-# ![Vogelgrippe Logo](.bitbucket/vogelgrippe_small.png) Vogelgrippe
+# ![Unguard Logo](.bitbucket/unguard-small.png) Unguard
 
-A SSRF vulnerable twitter-clone consisting of several microservices designed to run on Kubernetes.
-It comes with Jaeger traces and a bunch of vulnerabilities built-in.
+**Unguard** (🇦🇹 [ˈʊnˌɡuːat] like disquieting, 🇫🇷 [ãˈɡard] like the fencing command) is an insecure cloud-native microservices demo application. It consists of six app services, a load generator, and two databases. Unguard encompasses vulnerabilities like SSRF and comes with built-in Jaeger traces. The application is a web-based Twitter clone where users can:
 
-It allows users to
-
-- register / login (without any passwords)
-- post text
-- post URLs with URL preview
+- register/login (without any passwords)
+- post text and URLs with previews
 - view global or personalized timelines
-- user will see ads on the timeline (currently only a static img)
+- see ads on the timeline (currently only a static image)
 - view user profiles
 - follow other users
 
 ## 🏗️ Architecture
 
-Vogelgrippe consists of four main services, a load generator, two databases, and Jaeger for tracing:
+Unguard is composed of six microservices written in different languages that talk to each other over REST.
+
+![Unguard Architecture](.bitbucket/unguard-architecture.png)
 
 | Service                                  | Language        | Description                                                                                                  |
 | ---------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------ |
-| [frontend](./frontend)                   | Node.js Express | Serves HTML to the user to interact with the application                                                     |
-| [microblog-service](./microblog-service) | Java Spring     | Serves REST API for frontend, saves data into redis                                                          |
-| [proxy-service](./proxy-service)         | Java Spring     | Serves REST API for proxying requests from frontend (vulnerable to SSRF; no sanitization on the entered URL) |
-| [user-auth-service](./user-auth-service) | Node.js Express | Serves REST API for authenticating users with JWT tokens (vulnerable to JWT key confusion)                   |
-| [loadgenerator](./loadgenerator)         | Python Locust   | Creates synthetic user traffic                                                                               |
-| [ad-service](./ad-service)               | .NET 5          | Serves a HTML page with an static image                                                                              |
-| redis                                    |                 | Key-value store that holds all user data (except authentication-related stuff)                               |
-| maria-db                                 |                 | Relational database that holds user and token data                                                           |
-| jaeger                                   |                 | The [Jaeger](https://www.jaegertracing.io/) stack for distributed tracing                                    |
-
-![Vogelgrippe Architecture](.bitbucket/architecture_vogelgrippe.png)
+| [ad-service](./ad-service)               | .NET 5          | Serves a HTML page with an static image.                                                                              |
+| [frontend](./frontend)                   | Node.js Express | Serves HTML to the user to interact with the application.                                                     |
+| [load-generator](./load-generator)       | Python/Locust   | Creates synthetic user traffic.                                                                               |
+| [microblog-service](./microblog-service) | Java Spring     | Serves REST API for frontend, saves data into redis.                                                          |
+| [proxy-service](./proxy-service)         | Java Spring     | Serves REST API for proxying requests from frontend (vulnerable to SSRF; no sanitization on the entered URL). |
+| [user-auth-service](./user-auth-service) | Node.js Express | Serves REST API for authenticating users with JWT tokens (vulnerable to JWT key confusion).                   |
+| jaeger                                   |                 | The [Jaeger](https://www.jaegertracing.io/) stack for distributed tracing.                                    |
+| mariadb                                 |                 | Relational database that holds user and token data.                                                           |
+| redis                                    |                 | Key-value store that holds all user data (except authentication-related stuff).                               |
 
 ## ☸️ Kubernetes Deployment
 
@@ -43,7 +39,7 @@ The following tools are required for all deployment options:
 * [kustomize](https://kustomize.io/)
 * [OpenJDK11](https://jdk.java.net/archive/)
 
-Add the necessary helm repositories and fetch updates:
+Add the necessary Helm repositories and fetch updates:
 
 ```sh
 helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
@@ -54,7 +50,7 @@ helm repo update
 
 ### ⛵ Minikube or Kind Deployment
 
-This is the recommended way of running Vogelgrippe on a local machine.
+This is the recommended way of running Unguard on a local machine.
 
 1.  **Install prerequisites**
 
@@ -65,18 +61,18 @@ This is the recommended way of running Vogelgrippe on a local machine.
 
 2.  **Start a new or existing cluster with the ingress add-on enabled**
 
-    This will create a new minikube profile (i.e. cluster) named "vogelgrippe".
+    This will create a new minikube profile (i.e. cluster) named "unguard".
 
     ```sh
-    minikube start --addons=ingress --profile vogelgrippe
+    minikube start --addons=ingress --profile unguard
     # 🍎 for macOS a vm-based driver is needed (https://github.com/kubernetes/minikube/issues/7332)
-    minikube start --addons=ingress --profile vogelgrippe --vm=true
+    minikube start --addons=ingress --profile unguard --vm=true
     ```
 
-    Alternatively, create a new kind cluster named "vogelgrippe".
+    Alternatively, create a new kind cluster named "unguard".
 
     ```sh
-    kind create cluster --name vogelgrippe
+    kind create cluster --name unguard
     ```
 
 3.  **(Optionally) Add image pull secrets to your cluster service accounts**
@@ -85,7 +81,7 @@ This is the recommended way of running Vogelgrippe on a local machine.
     an authenticated image repository to avoid being [rate-limited by DockerHub](https://www.docker.com/increase-rate-limits).
 
     ```sh
-    kubectl create secret docker-registry vogelgrippe-docker-hub-secrets
+    kubectl create secret docker-registry unguard-docker-hub-secrets
         --docker-server=docker.io \
         --docker-username=DUMMY_USERNAME \
         --docker-password=DUMMY_DOCKER_ACCESS_TOKEN \
@@ -97,40 +93,40 @@ This is the recommended way of running Vogelgrippe on a local machine.
     🐧 On Linux, use the following
 
     ```sh
-    kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "vogelgrippe-docker-hub-secrets"}]}'
-    kubectl patch serviceaccount jaeger-operator -p '{"imagePullSecrets": [{"name": "vogelgrippe-docker-hub-secrets"}]}'
+    kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "unguard-docker-hub-secrets"}]}'
+    kubectl patch serviceaccount jaeger-operator -p '{"imagePullSecrets": [{"name": "unguard-docker-hub-secrets"}]}'
     ```
 
     💻 On Windows, use the following
 
     ```sh
-    kubectl patch serviceaccount default -p '{\"imagePullSecrets\": [{\"name\": \"vogelgrippe-docker-hub-secrets\"}]}'
-    kubectl patch serviceaccount jaeger-operator -p '{\"imagePullSecrets\": [{\"name\": \"vogelgrippe-docker-hub-secrets\"}]}'
+    kubectl patch serviceaccount default -p '{\"imagePullSecrets\": [{\"name\": \"unguard-docker-hub-secrets\"}]}'
+    kubectl patch serviceaccount jaeger-operator -p '{\"imagePullSecrets\": [{\"name\": \"unguard-docker-hub-secrets\"}]}'
     ```
 
-    > Note: This needs to be done every time you re-create the cluster. You might need to repeat those steps once you deploy additional charts, e.g. for `jaeger`, `jaeger-operator`, `mariadb-release` at the moment.
+    > Note: This needs to be done every time you recreate the cluster. You might need to repeat those steps once you deploy additional charts, e.g. for `jaeger`, `jaeger-operator`, `unguard-mariadb` at the moment.
 
-4.  **Build and run the Vogelgrippe application with [Skaffold](https://skaffold.dev/)**
+4.  **Build and run Unguard with [Skaffold](https://skaffold.dev/)**
 
-    We grab the docker daemon from the cluster first, so that we push the built images already into the cluster.
+    We grab the Docker daemon from the cluster first, so that we push the built images already into the cluster.
 
     🐧 On Linux with minikube, use the following
 
     ```sh
-    eval $(minikube -p vogelgrippe docker-env)
+    eval $(minikube -p unguard docker-env)
     skaffold run --detect-minikube
     ```
     🍎 On macOS with minikube, use the following
 
     ```sh
-    source <(minikube docker-env -p vogelgrippe)
+    source <(minikube docker-env -p unguard)
     skaffold run --detect-minikube
     ```
 
     💻 On Windows with minikube, use the following with PowerShell
 
     ```sh
-    & minikube -p vogelgrippe docker-env | Invoke-Expression
+    & minikube -p unguard docker-env | Invoke-Expression
     skaffold run --detect-minikube
     ```
 
@@ -156,7 +152,7 @@ This is the recommended way of running Vogelgrippe on a local machine.
 
     ```sh
     # exposes the frontend on localhost:3000
-    kubectl port-forward -n vogelgrippe service/vogelgrippe-frontend 3000:80
+    kubectl port-forward -n unguard service/unguard-frontend 3000:80
     ```
 
     To make non-blind SSRF exploits, you can expose the proxy-service as well.
@@ -164,25 +160,25 @@ This is the recommended way of running Vogelgrippe on a local machine.
 
     ```sh
     # exposes the proxy-service on localhost:8081
-    kubectl port-forward -n vogelgrippe service/vogelgrippe-proxy-service 8081:80
+    kubectl port-forward -n unguard service/unguard-proxy-service 8081:80
     ```
     
     Currently, the ad-service has to be exposed to the end-user just like the frontend.
     For usage in the cloud, an ingress needs to be set up. (TODO [CASP-10192](https://dev-jira.dynatrace.org/browse/CASP-10192))
     ```sh
-    kubectl port-forward -n vogelgrippe service/vogelgrippe-ad-service 8082:80
+    kubectl port-forward -n unguard service/unguard-ad-service 8082:80
     ```
 
     To access the Jaeger UI you can expose it as well.
     ```sh
     # exposes the Jaeger UI on localhost:16686
-    kubectl port-forward -n vogelgrippe service/jaeger-query 16686:16686
+    kubectl port-forward -n unguard service/jaeger-query 16686:16686
     ```
 
 7.  **(Optionally) Expose the application to the internet**
 
     Use the [`k8s-manifests/extra/ingress.yaml`](./k8s-manifests/extra/ingress.yaml) as a template
-    and possibly change the `vogelgrippe.kube` hostname to match the hostname of your deployment before applying it.
+    and possibly change the `unguard.kube` hostname to match the hostname of your deployment before applying it.
 
     ```sh
     kubectl apply -f k8s-manifests/extra/ingress.yaml
@@ -210,7 +206,7 @@ This is the recommended way of running Vogelgrippe on a local machine.
 2. **Update Kube Config and login to ECR**
 
     ```sh
-    aws eks update-kubeconfig --name ground-zero --region us-east-1 --profile dtRoleAccountAdmin
+    aws eks update-kubeconfig --name <cluster-name> --region us-east-1 --profile dtRoleAccountAdmin
     ```
 
     ```sh
@@ -234,7 +230,7 @@ Redeploying the ingress can result in a new frontend hostname. Therefore, you ha
 To get the hostname run the following command:
 
 ```sh
-kubectl get ingress -n vogelgrippe vogelgrippe-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+kubectl get ingress -n unguard unguard-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
 
 ### 🔼 Push to Dynatrace Registry

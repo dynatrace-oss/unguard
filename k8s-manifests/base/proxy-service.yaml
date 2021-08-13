@@ -1,38 +1,47 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: vogelgrippe-proxy-service
+  name: unguard-proxy-service
+  labels:
+    app.kubernetes.io/name: proxy-service
+    app.kubernetes.io/part-of: unguard
 spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: proxy-service
+    app.kubernetes.io/part-of: unguard
   ports:
     - targetPort: 8081
       port: 80
-  type: ClusterIP
-  selector:
-    app: vogelgrippe-proxy-service
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vogelgrippe-proxy-service
+  name: unguard-proxy-service
+  labels:
+    app.kubernetes.io/name: proxy-service
+    app.kubernetes.io/part-of: unguard
 spec:
   selector:
     matchLabels:
-      app: vogelgrippe-proxy-service
+      app.kubernetes.io/name: proxy-service
+      app.kubernetes.io/part-of: unguard
   template:
     metadata:
       labels:
-        app: vogelgrippe-proxy-service
+        app.kubernetes.io/name: proxy-service
+        app.kubernetes.io/part-of: unguard
     spec:
       containers:
         - name: proxy-service
-          image: vogelgrippe-proxy-service
+          image: unguard-proxy-service
           ports:
             - containerPort: 8081
           env:
             - name: SERVER_PORT
               value: "8081"
             - name: JAEGER_SERVICE_NAME
-              value: "vogelgrippe-proxy-service"
+              value: "unguard-proxy-service"
             - name: JAEGER_AGENT_HOST
               value: "jaeger-agent" # change depending on your jaeger deployment
             - name: JAEGER_SAMPLER_TYPE

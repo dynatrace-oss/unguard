@@ -1,36 +1,45 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: vogelgrippe-frontend
+  name: unguard-frontend
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/part-of: unguard
 spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/part-of: unguard
   ports:
     - targetPort: 3000
       port: 80
-  type: ClusterIP
-  selector:
-    app: vogelgrippe-frontend
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vogelgrippe-frontend
+  name: unguard-frontend
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/part-of: unguard
 spec:
   selector:
     matchLabels:
-      app: vogelgrippe-frontend
+      app.kubernetes.io/name: frontend
+      app.kubernetes.io/part-of: unguard
   template:
     metadata:
       labels:
-        app: vogelgrippe-frontend
+        app.kubernetes.io/name: frontend
+        app.kubernetes.io/part-of: unguard
     spec:
       containers:
         - name: frontend
-          image: vogelgrippe-frontend
+          image: unguard-frontend
           ports:
             - containerPort: 3000
           env:
             - name: JAEGER_SERVICE_NAME
-              value: "vogelgrippe-frontend"
+              value: "unguard-frontend"
             - name: JAEGER_AGENT_HOST
               value: "jaeger-agent" # change depending on your jaeger deployment
             - name: JAEGER_SAMPLER_TYPE
@@ -38,10 +47,10 @@ spec:
             - name: JAEGER_SAMPLER_PARAM
               value: "1"
             - name: MICROBLOG_SERVICE_ADDRESS
-              value: "vogelgrippe-microblog-service"
+              value: "unguard-microblog-service"
             - name: PROXY_SERVICE_ADDRESS
-              value: "vogelgrippe-proxy-service"
+              value: "unguard-proxy-service"
             - name: USER_AUTH_SERVICE_ADDRESS
-              value: "vogelgrippe-user-auth-service"
+              value: "unguard-user-auth-service"
             - name: AD_SERVICE_ADDRESS
-              value: "localhost:8082" # TODO: change back to vogelgrippe-ad-service when issue with ingress is resolved (https://dev-jira.dynatrace.org/browse/CASP-10192)
+              value: "localhost:8082" # TODO: change back to unguard-ad-service when issue with ingress is resolved (https://dev-jira.dynatrace.org/browse/CASP-10192)

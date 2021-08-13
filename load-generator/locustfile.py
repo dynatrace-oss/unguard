@@ -39,7 +39,7 @@ URLS = [
 
 TEXTS = [
     "Hello everyone! 👋",
-    "This is a post on Vogelgrippe, the best Microblogging platform ever. 🐦",
+    "This is a post on Unguard, the best Microblogging platform ever. 🐦",
     "Thinking about birds 🐦",
     "Stay at home guys! 🏠",
     "I just realized that the earth is actually flat!!11one1 🌍",
@@ -55,7 +55,7 @@ TEXTS = [
 ]
 
 
-class VogelgrippeUser(HttpUser):
+class UnguardUser(HttpUser):
     wait_time = between(10, 30)
 
     def get_running_username(self):

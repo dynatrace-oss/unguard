@@ -1,31 +1,40 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: vogelgrippe-user-auth-service
+  name: unguard-user-auth-service
+  labels:
+    app.kubernetes.io/name: user-auth-service
+    app.kubernetes.io/part-of: unguard
 spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: user-auth-service
+    app.kubernetes.io/part-of: unguard
   ports:
     - targetPort: 9091
       port: 80
-  type: ClusterIP
-  selector:
-    app: vogelgrippe-user-auth-service
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vogelgrippe-user-auth-service
+  name: unguard-user-auth-service
+  labels:
+    app.kubernetes.io/name: user-auth-service
+    app.kubernetes.io/part-of: unguard
 spec:
   selector:
     matchLabels:
-      app: vogelgrippe-user-auth-service
+      app.kubernetes.io/name: user-auth-service
+      app.kubernetes.io/part-of: unguard
   template:
     metadata:
       labels:
-        app: vogelgrippe-user-auth-service
+        app.kubernetes.io/name: user-auth-service
+        app.kubernetes.io/part-of: unguard
     spec:
       containers:
         - name: user-auth-service
-          image: vogelgrippe-user-auth-service
+          image: unguard-user-auth-service
           ports:
             - containerPort: 9091
           env:
@@ -38,11 +47,11 @@ spec:
             - name: JAEGER_SAMPLER_PARAM
               value: "1"
             - name: REDIS_SERVICE_ADDRESS
-              value: "vogelgrippe-redis"
+              value: "unguard-redis"
             - name: MARIADB_SERVICE
               value: "mariadb-release"
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mariadb-release
+                  name: unguard-mariadb
                   key: mariadb-root-password
