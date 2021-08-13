@@ -7,7 +7,7 @@
                     <img class="rounded-circle" width="60" src="//robohash.org/{{ post.username }}.png?set=set1&size=60x60" alt="{{ post.username }}">
                 </div>
                 <div class="ml-2">
-                    <a href="/user/{{post.username}}">
+                    <a href="{{ extendURL('/user/'+ post.username) }}">
                         <div class="h5 m-0">{{ post.username }}</div>
                     </a>
                     <div class="h7 text-muted">{{ post.timestamp }}</div>
@@ -19,9 +19,9 @@
 
     <div class="card-body">
         <div class="row">
-            {% if (post.imageUrl) %}
+            {% if (extendURL(post.imageUrl)) %}
                 <div class="col-auto">
-                    <img src="{{ post.imageUrl }}" height="150px" alt="">
+                    <img src="{{ extendURL(post.imageUrl) }}" height="150px" alt="">
                 </div>
             {% endif %}
             <div class="col">

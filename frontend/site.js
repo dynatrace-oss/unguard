@@ -1,8 +1,9 @@
-const {handleError, statusCodeForError} = require("./errorhandler");
+const { handleError, statusCodeForError } = require("./errorhandler");
 const cheerio = require('cheerio')
 const express = require('express');
 const router = express.Router();
 const jwt_decode = require("jwt-decode");
+const utilities = require("./utilities.js");
 
 // Global Timeline route
 router.get('/', showGlobalTimeline)
@@ -32,16 +33,26 @@ function getLoggedInUser(req) {
     return null;
 }
 
+function extendRenderData(data, req) {
+    return {
+        ...data,
+        AD_SERVICE_URL: req.protocol + '://' + req.get('host') + '/ad',
+        BASE_URL: req.protocol + '://' + req.get('host') + '/ui'
+    }
+}
+
+
 function showGlobalTimeline(req, res) {
     req.API.get('/timeline').then((response) => {
-        let data = {
+        let data = extendRenderData({
             data: response.data,
             title: 'Timeline',
             username: getLoggedInUser(req),
-        }
+        }, req);
 
         res.render('index.njk', data)
     }).catch(reason => {
+        console.log(reason);
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 
@@ -50,11 +61,11 @@ function showGlobalTimeline(req, res) {
 function showPersonalTimeline(req, res) {
     req.API.get('/mytimeline').then((response) => {
 
-        let data = {
+        let data = extendRenderData({
             data: response.data,
             title: 'My Timeline',
             username: getLoggedInUser(req)
-        }
+        }, req);
 
         res.render('index.njk', data)
     }).catch(reason => {
@@ -65,11 +76,11 @@ function showPersonalTimeline(req, res) {
 function showUserProfile(req, res) {
     const usernameProfile = req.params.username;
     req.API.get(`/users/${usernameProfile}/posts`).then((response) => {
-        let data = {
+        let data = extendRenderData({
             data: response.data,
             profileName: usernameProfile,
             username: getLoggedInUser(req)
-        }
+        }, req);
 
         res.render('profile.njk', data)
     }).catch(reason => {
@@ -94,7 +105,7 @@ function doLogin(req, res) {
     const usernameToLogin = req.body.username;
     const passwordToLogin = req.body.password;
     if (!usernameToLogin || !passwordToLogin) {
-        res.render('error.njk', {error: "Username and password must be supplied to login"});
+        res.render('error.njk', { error: "Username and password must be supplied to login" });
         return;
     }
 
@@ -106,22 +117,23 @@ function doLogin(req, res) {
         .then(response => {
             if (response.data.jwt) {
                 res.cookie("jwt", response.data.jwt)
-                res.redirect('/')
+                res.redirect(utilities.extendURL('/'))
             } else {
-                res.redirect('/login')
+                res.redirect(utilities.extendURL('/login'))
             }
         })
         .catch(error => {
             console.log(error)
             res.status(statusCodeForError(error)).render('error.njk', handleError(error));
         })
+    // res.redirect(utilities.extendURL('/'));
 }
 
 function registerUser(req, res) {
     const usernameToLogin = req.body.username;
     const passwordToLogin = req.body.password;
     if (!usernameToLogin || !passwordToLogin) {
-        res.render('error.njk', {error: "Username and password must be supplied to register"});
+        res.render('error.njk', { error: "Username and password must be supplied to register" });
         return;
     }
     req.USER_AUTH_API
@@ -130,7 +142,7 @@ function registerUser(req, res) {
             "password": passwordToLogin
         })
         .then(response => {
-            res.redirect('/login')
+            res.redirect(utilities.extendURL('/login'))
         })
         .catch(error => {
             res.status(statusCodeForError(error)).render('error.njk', handleError(error));
@@ -223,10 +235,10 @@ function createPost(req, res) {
 function getPost(req, res) {
     const postId = req.params.postid;
     req.API.get(`/post/${postId}`).then((response) => {
-        let data = {
+        let data = extendRenderData({
             post: response.data,
             username: getLoggedInUser(req)
-        }
+        }, req);
 
         res.render('singlepost.njk', data)
     }).catch(reason => {

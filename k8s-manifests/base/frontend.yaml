@@ -52,5 +52,7 @@ spec:
               value: "unguard-proxy-service"
             - name: USER_AUTH_SERVICE_ADDRESS
               value: "unguard-user-auth-service"
-            - name: AD_SERVICE_ADDRESS
-              value: "localhost:8082" # TODO: change back to unguard-ad-service when issue with ingress is resolved (https://dev-jira.dynatrace.org/browse/CASP-10192)
+            - name: FRONTEND_BASE_PATH
+              value: "/ui"
+            - name: AD_PATH
+              value: "/ad"

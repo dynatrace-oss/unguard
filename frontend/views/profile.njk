@@ -11,7 +11,7 @@
                 </div>
                 <div class="ml-2">
                     <div class="h1 m-0">{{ profileName }}</div>
-                    <form action="/user/{{ profileName }}/follow" method="post">
+                    <form action="{{ extendURL('/user/'+ profileName + '/follow') }}" method="post">
                         <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Follow</button>
                     </form>
                 </div>
