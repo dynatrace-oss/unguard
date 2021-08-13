@@ -59,16 +59,16 @@ This including a js file which will reload the page after certain time.
 Therefore, the last used image name will be saved in a cookie 
 so that the backend knows which imaged should be loaded next.
 
-#### /ad -POST 
+#### /ads -POST 
 
 * "filename": string
 
 Deletes the file with the passed attribute name, if existing.
 
-#### /ad-update -GET
+#### /delete-ad -POST
 Returns a JSON list with the current available files.
 
-#### /ad-update -POST
+#### /update-ad -POST
 * "file": zip-file  
 
 Uploads and extracts a passed zip file.

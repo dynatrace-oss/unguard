@@ -10,8 +10,18 @@ namespace AdService.Model
     {
         public static string FileFolder = "adFolder";
         public string Name { get; set; }
-        public DateTime CreationTime { get; set; } 
+        public DateTime CreationTime { get; set; }
 
+        /// <summary>Check if /wwwroot/adfolder contains files</summary>
+        ///
+        public static bool FolderIsEmpty(string webRootPath)
+        {
+            var filePath = Path.Combine(webRootPath, FileFolder);
+            return Directory.GetFiles(filePath).Length == 0;
+        }
+        
+        /// <summary>Create a list of current available files</summary>
+        ///
         public static List<AdFile> CreateList(string webRootPath)
         {
             var imageDirectory = Path.Combine(webRootPath, FileFolder);
@@ -20,6 +30,8 @@ namespace AdService.Model
             return CreateList(filePaths);
         }
 
+        /// <summary>Create a list of current available files</summary>
+        ///
         public static List<AdFile> CreateList(IEnumerable filePath)
         {
             return (

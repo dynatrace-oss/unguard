@@ -1,5 +1,4 @@
-﻿/* vulnerable since this file (like every other /wwwroot file) can be overwritten
- * with the sharpcompress vulnerability */
+﻿// file can be overwritten with the sharpcompress path traversal exploit 
 
 window.onload = function() {
   // change the ads periodical reload

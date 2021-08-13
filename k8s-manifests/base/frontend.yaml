@@ -57,4 +57,4 @@ spec:
             - name: FRONTEND_BASE_PATH
                 value: "/ui"
             - name: AD_PATH
-              value: "/ad-service"
+                value: "/ad-service"

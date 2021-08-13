@@ -9,57 +9,37 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace AdService.Pages
 {
-    // TODO implement AntiForgeryToken at the Frontend if necessary
     [IgnoreAntiforgeryToken(Order = 1001)]
     public class AdModel : PageModel
     {
         private readonly IWebHostEnvironment _appEnvironment;
 
+        /// <summary>Inject current appEnvironment</summary>
+        ///
         public AdModel(IWebHostEnvironment appEnvironment)
         {
             _appEnvironment = appEnvironment;
         }
 
-        public async void OnGet() {} // void since razor page(html) will be return automatic
-
-        public async Task<IActionResult> OnPostAsync(string fileName)
+        /// <summary>Endpoint: Return Page</summary>
+        ///
+        public IActionResult OnGet()
         {
-            // TODO implement isValid() check and check jwt-role(adManager) in CASP-10416 (because of Frontend Changes)
-            // see Ad-Upload/OnGetAsync()
-            
-            List<AdFile> ads = AdFile.CreateList(_appEnvironment.WebRootPath);
-
-            DeleteImage(ads, fileName);
-
-            return new OkResult();
-        }
-
-        private void DeleteImage(List<AdFile> availableAds, string deleteFileName)
-        {
-            if (availableAds.Count == 0)
+            if (AdFile.FolderIsEmpty(_appEnvironment.WebRootPath))
             {
-                return;
+                return new EmptyResult();
             }
 
-            var fileDirPath = Path.Combine(_appEnvironment.WebRootPath, AdFile.FileFolder);
-
-            availableAds.ForEach(ad =>
-            {
-                if (ad.Name == deleteFileName)
-                {
-                    System.IO.File.Delete(Path.Combine(fileDirPath, deleteFileName));
-                }
-            });
+            return Page();
         }
 
+
+        /// <summary>Returns path to the next image</summary>
+        ///
         public string GetImage()
         {
             var ads = AdFile.CreateList(_appEnvironment.WebRootPath);
-            if (ads.Count == 0)
-            {
-                return "";
-            }
-            
+
             var currentAd = Request.Cookies["current_ad"];
 
             int adIndex = ads.FindIndex(ad => ad.Name == currentAd);
