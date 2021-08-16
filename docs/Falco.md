@@ -34,4 +34,4 @@ cd /tmp; curl -L -o amicontained https://github.com/genuinetools/amicontained/re
 
 3. Open [localhost:27017/ui/#/events](localhost:27017/ui/#/events)
 
-![](../.bitbucket/falcosidekick-ui.png)
+![](images/falcosidekick-ui.png)
