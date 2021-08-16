@@ -24,7 +24,7 @@ namespace AdService.Pages
             _appEnvironment = appEnvironment;
         }
 
-        /// <summary>Endpoint: Upload Zip file and extract it</summary>
+        /// <summary>Endpoint: Uploads and extracts a passed zip file.</summary>
         ///
         public IActionResult OnPost()
         {
