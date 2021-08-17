@@ -36,7 +36,7 @@ function getLoggedInUser(req) {
 function extendRenderData(data, req) {
     return {
         ...data,
-        AD_SERVICE_URL: req.protocol + '://' + req.get('host') + '/ad',
+        AD_SERVICE_ADDRESS: req.protocol + '://' + req.get('host') + process.env.AD_SERVICE_ADDRESS,
         BASE_URL: req.protocol + '://' + req.get('host') + process.env.BASE_URL
     }
 }
@@ -90,7 +90,7 @@ function showUserProfile(req, res) {
 
 function doLogout(req, res) {
     res.clearCookie('jwt')
-    res.redirect('/')
+    res.redirect(utilities.extendURL(`/`))
 }
 
 function showLogin(req, res) {
@@ -151,7 +151,7 @@ function registerUser(req, res) {
 function followUser(req, res) {
     const usernameProfile = req.params.username;
     req.API.post(`/users/${usernameProfile}/follow`).then((response) => {
-        res.redirect(`/user/${usernameProfile}`);
+        res.redirect(utilities.extendURL(`/user/${usernameProfile}`));
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
@@ -190,7 +190,7 @@ function createPost(req, res) {
                 content: `${metaTitle} ${req.body.urlmessage}`,
                 imageUrl: metaImgSrc
             }).then((post_response) => {
-                res.redirect(`/post/${post_response.data.postId}`)
+                res.redirect(utilities.extendURL(`/post/${post_response.data.postId}`))
             }).catch(reason => {
                 res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
             });
@@ -209,7 +209,7 @@ function createPost(req, res) {
                 content: req.body.description,
                 imageUrl: response.data
             }).then((post_response) => {
-                res.redirect(`/post/${post_response.data.postId}`)
+                res.redirect(utilities.extendURL(`/post/${post_response.data.postId}`))
             }).catch(reason => {
                 res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
             });
@@ -221,13 +221,13 @@ function createPost(req, res) {
         req.API.post('/post', {
             content: req.body.message
         }).then((post_response) => {
-            res.redirect(`/post/${post_response.data.postId}`)
+            res.redirect(utilities.extendURL(`/post/${post_response.data.postId}`))
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
     } else {
         // when nothing is set, just redirect back
-        res.redirect('/')
+        res.redirect(utilities.extendURL('/'))
     }
 }
 
