@@ -1,4 +1,4 @@
-const { handleError, statusCodeForError } = require("./errorhandler");
+const { createError, handleError, statusCodeForError } = require("./errorhandler");
 const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
@@ -177,14 +177,7 @@ function registerUser(req, res) {
 function adManagerPage(req, res) {
     if (containsRole(req, Roles.AD_MANAGER) == false) {
         return res
-            .status(statusCodeForError({
-                err: {
-                    response: { status: 401 }
-                }
-            }))
-            .render('error.njk', {
-                message: { status: 401 }
-            });
+            .render('error.njk', createError("", {status: 403}));
     }
 
     req.AD_SERVICE_API.get('/ads').then((response) => {

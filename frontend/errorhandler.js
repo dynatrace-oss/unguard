@@ -1,8 +1,13 @@
+
+exports.createError = function (errorMessage, data) {
+    return { error: errorMessage, message: data};
+}
+
 exports.handleError = function (err) {
     let message = "No detailed message available."
     if (!err.response) {
         console.error(err)
-        return {error: err.code, message: err};
+        return { error: err.code, message: err };
     }
     if (err.response.data) {
         if (err.response.data.message && err.response.data.path) {
@@ -18,7 +23,7 @@ exports.handleError = function (err) {
         console.error(err)
     }
 
-    return {error: message, message: err.response.data};
+    return { error: message, message: err.response.data };
 }
 
 exports.statusCodeForError = function (err) {

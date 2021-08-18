@@ -7,6 +7,7 @@ Contains web-app which displays a simple image, and some Endpoints to manage the
 ### Requirements
 
 - .net 5 SDK (https://dotnet.microsoft.com/download/dotnet/5.0)
+- environment variables - They are set in Properties/launchSettings.json for local build 
 
 ## Building
 

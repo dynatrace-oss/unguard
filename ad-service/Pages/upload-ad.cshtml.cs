@@ -35,9 +35,9 @@ namespace AdService.Pages
             
             switch (await @UserAuthService.UserIsValid(jwt))
             {
-                case HttpStatusCode.Unauthorized:
-                    return new ObjectResult("Incorrect Content-Type") {StatusCode = 400};
                 case HttpStatusCode.BadRequest:
+                    return new ObjectResult("Incorrect Content-Type") {StatusCode = 400};
+                case HttpStatusCode.Unauthorized:
                     return new ObjectResult("Access denied!") {StatusCode = 403};
                 case HttpStatusCode.OK:
                     // continue
