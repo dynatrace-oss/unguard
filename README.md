@@ -58,13 +58,13 @@ If you would like to deploy the application on a local cluster, see the [Develop
 3. **Update your kubeconfig**
 
    ```sh
-   aws eks update-kubeconfig --name <cluster-name> --region us-east-1 --profile dtRoleAccountAdmin
+   aws eks update-kubeconfig --name <cluster-name> --region <region> --profile dtRoleAccountAdmin
    ```
    
 4. **Login to ECR**
    
    ```sh
-   aws ecr get-login-password --region us-east-1 --profile dtRoleAccountAdmin | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com
+   aws ecr get-login-password --region <region> --profile dtRoleAccountAdmin | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
    ```
 
 5. **Deploy to AWS**
@@ -72,9 +72,9 @@ If you would like to deploy the application on a local cluster, see the [Develop
    The AWS profile already comes with an ingress which is only reachable from the Dynatrace VPN.
     
    ```sh
-   skaffold run -p aws --default-repo <aws_account_id>.dkr.ecr.region.amazonaws.com
+   skaffold run -p aws --default-repo <aws_account_id>.dkr.ecr.<region>.amazonaws.com
    # for extra services add the corresponding profile
-   skaffold run -p aws,falco,jaeger --default-repo <aws_account_id.dkr>.ecr.region.amazonaws.com
+   skaffold run -p aws,falco,jaeger --default-repo <aws_account_id.dkr>.ecr.<region>.amazonaws.com
    ```
 
 ## ✨ Features
