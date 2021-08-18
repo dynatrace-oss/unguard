@@ -20,7 +20,7 @@ namespace AdService.Pages
             _appEnvironment = appEnvironment;
         }
 
-        /// <summary>Endpoint: Deletes the file with the passed attribute name, if existing. </summary>
+        /// <summary>Endpoint: Delete file if it exists</summary>
         ///
         public async Task<IActionResult> OnPostAsync(string fileName)
         {

@@ -12,7 +12,7 @@ namespace AdService.Model
         public string Name { get; set; }
         public DateTime CreationTime { get; set; }
 
-        /// <summary>Creates a path with webRootPath and FileFolder and checks if it contains files</summary>
+        /// <summary>Check if /wwwroot/adfolder contains files</summary>
         ///
         public static bool FolderIsEmpty(string webRootPath)
         {

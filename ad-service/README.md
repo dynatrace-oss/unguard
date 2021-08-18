@@ -1,5 +1,4 @@
 ﻿# AdService
-
 Contains web-app which displays a simple image, and some Endpoints to manage the ads.
 
 ## Getting started
@@ -11,13 +10,11 @@ Contains web-app which displays a simple image, and some Endpoints to manage the
 ## Building
 
 ##### source:
-
 ```
 dotnet build AdService.sln
 ```
 
 ##### docker image build:
-
 ```
 docker build -t ad-service .
 ```
@@ -35,7 +32,6 @@ dotnet run AdService.dll
 ```
 
 ##### docker 
-
 Image will be forwarded to port 80
 ```
 docker run -it -p 80:8082 --name ad-service-container ad-service 
@@ -57,24 +53,22 @@ docker compose up -d
 
 ### API Endpoints
 
-#### GET /ad 
-
+#### /ad -GET
 Return a HTML page which will show an image(ad).  
 This including a js file which will reload the page after certain time. 
 Therefore, the last used image name will be saved in a cookie 
 so that the backend knows which imaged should be loaded next.
 
-#### GET /ads  
-
-Return available files on server.
-
-#### POST /delete-ad 
+#### /ads -POST 
 
 * "filename": string
 
 Deletes the file with the passed attribute name, if existing.
 
-#### POST /update-ad 
+#### /delete-ad -POST
+Returns a JSON list with the current available files.
+
+#### /update-ad -POST
 * "file": zip-file  
 
 Uploads and extracts a passed zip file.

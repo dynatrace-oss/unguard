@@ -12,7 +12,10 @@
             </li>
             {% if (username) %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ extendURL('/mytimeline') }}">My Timeline</a>
+                    <a class="nav-link" href="{{ extendURL('/my-timeline') }}">My Timeline</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/ad-manager">Ad Manager</a>
                 </li>
             {% endif %}
         </ul>
@@ -37,7 +40,7 @@
                         </li>
                     </ul>
                 </li>
-                <form class="form-inline" action="{{ extendURL('/logout') }}" method="post">   
+                <form class="form-inline" action="{{ extendURL('/logout') }}" method="post">
                     <button class="btn btn-warning my-2 my-sm-0" type="submit">Logout</button>
                 </form>
             {% else %}

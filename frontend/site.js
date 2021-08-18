@@ -1,29 +1,36 @@
-const { handleError, statusCodeForError } = require("./errorhandler");
-const cheerio = require('cheerio')
+const {handleError, statusCodeForError} = require("./errorhandler");
+const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
 const jwt_decode = require("jwt-decode");
 const utilities = require("./utilities.js");
+const FormData = require('form-data');
+const multer  = require('multer');
+const upload = multer(); //  use web storage (for using file.buffer)
 
 // Global Timeline route
-router.get('/', showGlobalTimeline)
+router.get('/', showGlobalTimeline);
 // Personalized Timeline (only works when logged in)
-router.get('/mytimeline', showPersonalTimeline)
+router.get('/my-timeline', showPersonalTimeline);
 // User Profile route
-router.get('/user/:username', showUserProfile)
+router.get('/user/:username', showUserProfile);
 // Follow a user
-router.post('/user/:username/follow', followUser)
+router.post('/user/:username/follow', followUser);
 // Create post
-router.post('/post', createPost)
+router.post('/post', createPost);
 // get single post
-router.get('/post/:postid', getPost)
+router.get('/post/:postid', getPost);
 // Logout
-router.post('/logout', doLogout)
+router.post('/logout', doLogout);
 // Login
-router.get('/login', showLogin)
-router.post('/login', doLogin)
+router.get('/login', showLogin);
+router.post('/login', doLogin);
 // Register
-router.post('/register', registerUser)
+router.post('/register', registerUser);
+// TODO ad management page, only works if user have admanager role
+router.get('/ad-manager', adManagerPage);
+router.post('/ad-manager-upload', upload.single("uploadZip"), adManagerUpload);
+router.post('/ad-manager-delete', adManagerDelete);
 
 function getLoggedInUser(req) {
     if (req.cookies.jwt) {
@@ -148,6 +155,69 @@ function registerUser(req, res) {
         })
 }
 
+function adManagerPage (req, res) {
+    req.AD_SERVICE_API.get('/ads').then((response) => {
+
+        response.data.forEach(ad => {
+            ad.creationTime = getFormatDateAsString(new Date(ad.creationTime));
+        })
+
+        let adManagerViewModel = {
+            username: getLoggedInUser(req),
+            data: response.data
+        }
+
+        res.render('adManager.njk', adManagerViewModel)
+    }).catch(reason => {
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+    });
+}
+
+function getFormatDateAsString(date) {
+    return ("0" + date.getDay()).slice(-2)   + "." + ("0" + date.getMonth()).slice(-2)   + "." + date.getFullYear() + " | "
+         + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
+}
+
+function adManagerUpload (req, res) {
+    const file = req.file;
+    if (file == null || file.originalname == null || !file.originalname.endsWith(".zip")) {
+        return res.status(statusCodeForError(400))
+        .render('error.njk', handleError({
+            response: { data:  { message:
+                "The upload has to include exactly one zip file!"
+            }}
+        }));
+    }
+
+    const formData = new FormData();
+    formData.append("file",  file.buffer, file.originalname);
+    const headers = {
+        headers: {...formData.getHeaders()}
+    };
+
+    req.AD_SERVICE_API.post("/upload-ad", formData, headers)
+    .then(response => {
+        res.redirect('/ad-manager');
+    }).catch(reason => {
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+    });
+}
+
+function adManagerDelete (req, res) {
+    const formData = new FormData();
+    formData.append("fileName",  req.body.filename);
+    const headerConfig = {
+        headers: {...formData.getHeaders()}
+    }
+
+    req.AD_SERVICE_API.post("/delete-ad", formData, headerConfig)
+    .then((response) => {
+        res.redirect('/ad-manager');
+    }).catch(reason => {
+        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+    });
+}
+
 function followUser(req, res) {
     const usernameProfile = req.params.username;
     req.API.post(`/users/${usernameProfile}/follow`).then((response) => {
@@ -186,7 +256,6 @@ function createPost(req, res) {
             }
 
             req.API.post('/post', {
-                jwt: req.cookies.jwt,
                 content: `${metaTitle} ${req.body.urlmessage}`,
                 imageUrl: metaImgSrc
             }).then((post_response) => {
@@ -205,7 +274,6 @@ function createPost(req, res) {
             }
         }).then((response) => {
             req.API.post('/post', {
-                jwt: req.cookies.jwt,
                 content: req.body.description,
                 imageUrl: response.data
             }).then((post_response) => {

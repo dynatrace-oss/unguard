@@ -19,6 +19,7 @@ other microservices on different ports/hosts:
 | MICROBLOG_SERVICE_ADDRESS  | localhost:8080 |
 | PROXY_SERVICE_ADDRESS      | localhost:8081 |
 | AD_SERVICE_ADDRESS         | localhost:8082 |
+| AD_SERVICE_EXTERN_ADDRESS  | localhost:8082 |
 
 ## Running
 
