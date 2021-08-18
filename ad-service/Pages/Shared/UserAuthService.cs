@@ -32,7 +32,7 @@ namespace AdService.Pages.Shared
             {
                 userAuthServiceResponse = await httpClient.PostAsync(userAuthServiceUri, content);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return HttpStatusCode.Unauthorized;
             }

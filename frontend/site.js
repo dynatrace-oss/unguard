@@ -1,11 +1,11 @@
-const {handleError, statusCodeForError} = require("./errorhandler");
+const { handleError, statusCodeForError } = require("./errorhandler");
 const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
 const jwt_decode = require("jwt-decode");
 const utilities = require("./utilities.js");
 const FormData = require('form-data');
-const multer  = require('multer');
+const multer = require('multer');
 const upload = multer(); //  use web storage (for using file.buffer)
 
 // Global Timeline route
@@ -27,10 +27,16 @@ router.get('/login', showLogin);
 router.post('/login', doLogin);
 // Register
 router.post('/register', registerUser);
-// TODO ad management page, only works if user have admanager role
+// Ad Manager (only works when logged in and user have AD_MANAGER role)
 router.get('/ad-manager', adManagerPage);
+// upload zip with images and extract it there (overwrites images if already existing)
 router.post('/ad-manager-upload', upload.single("uploadZip"), adManagerUpload);
+// deletes a image from the server
 router.post('/ad-manager-delete', adManagerDelete);
+
+const Roles = {
+    AD_MANAGER: "AD_MANAGER"
+}
 
 function getLoggedInUser(req) {
     if (req.cookies.jwt) {
@@ -38,6 +44,16 @@ function getLoggedInUser(req) {
     }
 
     return null;
+}
+
+function containsRole(req, role) {
+    if (req.cookies.jwt) {
+        const roles = jwt_decode(req.cookies.jwt)["roles"];
+        if (roles != null && roles.includes(role))
+            return jwt_decode(req.cookies.jwt)["roles"];
+    }
+
+    return false;
 }
 
 function extendRenderData(data, req) {
@@ -55,6 +71,7 @@ function showGlobalTimeline(req, res) {
             data: response.data,
             title: 'Timeline',
             username: getLoggedInUser(req),
+            isAdManager: containsRole(req, Roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data)
@@ -72,6 +89,7 @@ function showPersonalTimeline(req, res) {
             data: response.data,
             title: 'My Timeline',
             username: getLoggedInUser(req)
+            isAdManager: containsRole(req, Roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data)
@@ -86,7 +104,8 @@ function showUserProfile(req, res) {
         let data = extendRenderData({
             data: response.data,
             profileName: usernameProfile,
-            username: getLoggedInUser(req)
+            username: getLoggedInUser(req),
+            isAdManager: containsRole(req, Roles.AD_MANAGER)
         }, req);
 
         res.render('profile.njk', data)
@@ -155,7 +174,19 @@ function registerUser(req, res) {
         })
 }
 
-function adManagerPage (req, res) {
+function adManagerPage(req, res) {
+    if (containsRole(req, Roles.AD_MANAGER) == false) {
+        return res
+            .status(statusCodeForError({
+                err: {
+                    response: { status: 401 }
+                }
+            }))
+            .render('error.njk', {
+                message: { status: 401 }
+            });
+    }
+
     req.AD_SERVICE_API.get('/ads').then((response) => {
 
         response.data.forEach(ad => {
@@ -178,44 +209,46 @@ function getFormatDateAsString(date) {
          + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
 }
 
-function adManagerUpload (req, res) {
+function adManagerUpload(req, res) {
     const file = req.file;
     if (file == null || file.originalname == null || !file.originalname.endsWith(".zip")) {
         return res.status(statusCodeForError(400))
-        .render('error.njk', handleError({
-            response: { data:  { message:
-                "The upload has to include exactly one zip file!"
-            }}
-        }));
+            .render('error.njk', handleError({
+                response: {
+                    data: {
+                        message: "The upload has to include exactly one zip file!"
+                    }
+                }
+            }));
     }
 
     const formData = new FormData();
-    formData.append("file",  file.buffer, file.originalname);
+    formData.append("file", file.buffer, file.originalname);
     const headers = {
-        headers: {...formData.getHeaders()}
+        headers: { ...formData.getHeaders() }
     };
 
     req.AD_SERVICE_API.post("/upload-ad", formData, headers)
-    .then(response => {
-        res.redirect('/ad-manager');
-    }).catch(reason => {
-        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
-    });
+        .then(response => {
+            res.redirect('/ad-manager');
+        }).catch(reason => {
+            res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+        });
 }
 
-function adManagerDelete (req, res) {
+function adManagerDelete(req, res) {
     const formData = new FormData();
-    formData.append("fileName",  req.body.filename);
+    formData.append("fileName", req.body.filename);
     const headerConfig = {
-        headers: {...formData.getHeaders()}
+        headers: { ...formData.getHeaders() }
     }
 
     req.AD_SERVICE_API.post("/delete-ad", formData, headerConfig)
-    .then((response) => {
-        res.redirect('/ad-manager');
-    }).catch(reason => {
-        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
-    });
+        .then((response) => {
+            res.redirect('/ad-manager');
+        }).catch(reason => {
+            res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+        });
 }
 
 function followUser(req, res) {

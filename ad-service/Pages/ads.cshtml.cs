@@ -22,7 +22,7 @@ namespace AdService.Pages
 
         /// <summary>Endpoint: Return available files on server.</summary>
         ///
-        public async Task<IActionResult> OnGetAsync()
+        public IActionResult OnGet()
         {
             List<AdFile> ads = AdFile.CreateList(_appEnvironment.WebRootPath);
             return new JsonResult(ads);
