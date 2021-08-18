@@ -63,12 +63,11 @@ This document explains how to build and run Unguard locally using `skaffold`.
 
 4. Access the frontend through your browser
 
-    The recommended way to access the frontend is to use port-forwarding
+    The recommended way to access the frontend is to use port-forwarding.
 
     ```sh
     # exposes the frontend on localhost:3000
     kubectl port-forward -n unguard service/unguard-frontend 3000:80
-    kubectl port-forward -n unguard service/unguard-ad-service 8082:80 # until CASP-10192 is fixed
     ```
 
     Currently, the ad-service has to be exposed to the end-user just like the frontend. For usage in the cloud, an ingress needs to be set up (TODO [CASP-10192](https://dev-jira.dynatrace.org/browse/CASP-10192)).

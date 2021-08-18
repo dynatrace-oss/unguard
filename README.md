@@ -1,4 +1,4 @@
-# ![Unguard Logo](docs/images/unguard-small.png) Unguard
+# ![Unguard Logo](docs/images/unguard-logo.png) Unguard
 
 **Unguard** (🇦🇹 [ˈʊnˌɡuːat] like disquieting, 🇫🇷 [ãˈɡard] like the fencing command) is an insecure cloud-native microservices demo application. It consists of six app services, a load generator, and two databases. Unguard encompasses vulnerabilities like SSRF and comes with built-in Jaeger traces. The application is a web-based Twitter clone where users can:
 
@@ -23,10 +23,10 @@ Unguard is composed of six microservices written in different languages that tal
 
 | Service                                  | Language        | Description                                                                                                  |
 | ---------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------ |
-| [ad-service](./ad-service)               | .NET 5          | Serves a HTML page with an static image.                                                                              |
+| [ad-service](./ad-service)               | .NET 5          | Serves a HTML page with a static image.                                                                              |
 | [frontend](./frontend)                   | Node.js Express | Serves HTML to the user to interact with the application.                                                     |
 | [load-generator](./load-generator)       | Python/Locust   | Creates synthetic user traffic.                                                                               |
-| [microblog-service](./microblog-service) | Java Spring     | Serves REST API for frontend, saves data into redis.                                                          |
+| [microblog-service](./microblog-service) | Java Spring     | Serves a REST API for the frontend and saves data into redis.                                                          |
 | [proxy-service](./proxy-service)         | Java Spring     | Serves REST API for proxying requests from frontend (vulnerable to SSRF; no sanitization on the entered URL). |
 | [user-auth-service](./user-auth-service) | Node.js Express | Serves REST API for authenticating users with JWT tokens (vulnerable to JWT key confusion).                   |
 | jaeger                                   |                 | The [Jaeger](https://www.jaegertracing.io/) stack for distributed tracing.                                    |
@@ -73,7 +73,7 @@ If you would like to deploy the application on a local cluster, see the [Develop
     
    ```sh
    skaffold run -p aws --default-repo <aws_account_id>.dkr.ecr.region.amazonaws.com
-   # For extra services add the corresponding profile
+   # for extra services add the corresponding profile
    skaffold run -p aws,falco,jaeger --default-repo <aws_account_id.dkr>.ecr.region.amazonaws.com
    ```
 
@@ -89,3 +89,7 @@ If you would like to deploy the application on a local cluster, see the [Develop
 
 * **Falco**: [See these instructions](./docs/FALCO.md)
 * **Jaeger**: [See these instructions](./docs/JAEGER.md)
+
+---
+
+[Hummingbird](https://thenounproject.com/search/?q=hummingbird&i=4138237) icon by Danil Polshin from [the Noun Project](https://thenounproject.com/).
