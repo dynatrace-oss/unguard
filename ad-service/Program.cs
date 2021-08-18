@@ -21,7 +21,7 @@ namespace AdService
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://*:8082");
+                    webBuilder.UseUrls("http://*:" + Environment.GetEnvironmentVariable("SERVER_PORT"));
                 });
     }
 }

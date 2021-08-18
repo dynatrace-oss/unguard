@@ -38,8 +38,6 @@ spec:
           ports:
             - containerPort: 8082
           env:
-            - name: SERVER_PORT
-              value: "8082"
             - name: JAEGER_SERVICE_NAME
               value: "unguard-ad-service"
             - name: JAEGER_AGENT_HOST
@@ -48,6 +46,10 @@ spec:
               value: "const"
             - name: JAEGER_SAMPLER_PARAM
               value: "1"
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: SERVER_PORT
+              value: "8082"
             - name: USER_AUTH_SERVICE_ADDRESS
               value: "vogelgrippe-user-auth-service"
 

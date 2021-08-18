@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using AdService.Model;
+using AdService.Pages.Shared;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -24,8 +27,26 @@ namespace AdService.Pages
         ///
         public async Task<IActionResult> OnPostAsync(string fileName)
         {
-            // TODO implement isValid() check and check jwt-role(adManager) in CASP-10416 (because of Frontend Changes)
-            // see upload-ad/OnGetAsync()
+            var jwt = Request.Cookies["jwt"];
+            
+            switch (await @UserAuthService.UserIsValid(jwt))
+            {
+                case HttpStatusCode.Unauthorized:
+                    return new ObjectResult("Incorrect Content-Type") {StatusCode = 400};
+                case HttpStatusCode.BadRequest:
+                    return new ObjectResult("Access denied!") {StatusCode = 403};
+                case HttpStatusCode.OK:
+                    // continue
+                    break;
+                default:
+                    return new ObjectResult("Internal Server error!") {StatusCode = 500};
+            }
+
+            var payload = JwtPayload.parseJwt(jwt);
+            if (payload?.Roles == null || payload.Roles.Count == 0 || !payload.Roles.Contains("AD_MANAGER"))
+            {
+                return new ObjectResult("Access denied!") {StatusCode = 403};
+            }
 
             List<AdFile> ads = AdFile.CreateList(_appEnvironment.WebRootPath);
 

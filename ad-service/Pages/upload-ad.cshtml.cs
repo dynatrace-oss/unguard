@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using AdService.Model;
+using AdService.Pages.Shared;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,35 +29,29 @@ namespace AdService.Pages
 
         /// <summary>Endpoint: Upload Zip file and extract it</summary>
         ///
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
-            // TODO implement isValid() check and check jwt-role(adManager) in CASP-10416 (because of Frontend Changes) 
-            /* Testcase below: tested isValid() function in minikube with success, with frontend sending the jwt as
-             * url parameter.
-             * Futher todo:
-             *  - setup environment variable for user-auth-service url
-             *  - create frontend middleware for forwarding jwt to ad service
-             *  - if valid, read out parameter of jwt and check for admanager role
-            var jwt = Request.Query["jwt"];
-            var httpClient = new HttpClient();
-            var userAuthServiceURI = new Uri("http://" + "vogelgrippe-user-auth-service" + "/auth/isValid"); // TODO env variable for user-auth
-            var payload = "{\"jwt\":\"" + jwt + "\"}";
-            var content = new StringContent(payload, Encoding.UTF8, "application/json");
-
-            HttpResponseMessage userAuthServiceResponse;
-            try
+            var jwt = Request.Cookies["jwt"];
+            
+            switch (await @UserAuthService.UserIsValid(jwt))
             {
-                userAuthServiceResponse = await httpClient.PostAsync(userAuthServiceURI, content);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return new JsonResult(e.Message);
+                case HttpStatusCode.Unauthorized:
+                    return new ObjectResult("Incorrect Content-Type") {StatusCode = 400};
+                case HttpStatusCode.BadRequest:
+                    return new ObjectResult("Access denied!") {StatusCode = 403};
+                case HttpStatusCode.OK:
+                    // continue
+                    break;
+                default:
+                    return new ObjectResult("Internal Server error!") {StatusCode = 500};
             }
 
-            Console.WriteLine(userAuthServiceResponse);
-            return new JsonResult(userAuthServiceResponse);
-            */
+            var payload = JwtPayload.parseJwt(jwt);
+            if (payload?.Roles == null || payload.Roles.Count == 0 || !payload.Roles.Contains("AD_MANAGER"))
+            {
+                return new ObjectResult("Access denied!") {StatusCode = 403};
+            }
+            
             try
             {
                 if (Request.Form.Files.Count != 1 || !Request.Form.Files[0].FileName.EndsWith(".zip"))
