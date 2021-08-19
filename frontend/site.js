@@ -1,12 +1,14 @@
-const { createError, handleError, statusCodeForError } = require("./errorhandler");
+const { handleError, statusCodeForError } = require("./controller/errorHandler");
+const { roles, containsRole } = require('./model/role');
+const { getLoggedInUser } = require('./controller/user');
+const utilities = require("./utilities.js");
+
+const adManagerRouter = require('./controller/adManager');
+
 const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
-const jwt_decode = require("jwt-decode");
-const utilities = require("./utilities.js");
-const FormData = require('form-data');
-const multer = require('multer');
-const upload = multer(); //  use web storage (for using file.buffer)
+
 
 // Global Timeline route
 router.get('/', showGlobalTimeline);
@@ -27,34 +29,9 @@ router.get('/login', showLogin);
 router.post('/login', doLogin);
 // Register
 router.post('/register', registerUser);
-// Ad Manager (only works when logged in and user have AD_MANAGER role)
-router.get('/ad-manager', adManagerPage);
-// upload zip with images and extract it there (overwrites images if already existing)
-router.post('/ad-manager-upload', upload.single("uploadZip"), adManagerUpload);
-// deletes a image from the server
-router.post('/ad-manager-delete', adManagerDelete);
 
-const Roles = {
-    AD_MANAGER: "AD_MANAGER"
-}
+router.use('/ad-manager', adManagerRouter);
 
-function getLoggedInUser(req) {
-    if (req.cookies.jwt) {
-        return jwt_decode(req.cookies.jwt)["username"];
-    }
-
-    return null;
-}
-
-function containsRole(req, role) {
-    if (req.cookies.jwt) {
-        const roles = jwt_decode(req.cookies.jwt)["roles"];
-        if (roles != null && roles.includes(role))
-            return jwt_decode(req.cookies.jwt)["roles"];
-    }
-
-    return false;
-}
 
 function extendRenderData(data, req) {
     return {
@@ -71,7 +48,7 @@ function showGlobalTimeline(req, res) {
             data: response.data,
             title: 'Timeline',
             username: getLoggedInUser(req),
-            isAdManager: containsRole(req, Roles.AD_MANAGER)
+            isAdManager: containsRole(req, roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data)
@@ -88,8 +65,8 @@ function showPersonalTimeline(req, res) {
         let data = extendRenderData({
             data: response.data,
             title: 'My Timeline',
-            username: getLoggedInUser(req)
-            isAdManager: containsRole(req, Roles.AD_MANAGER)
+            username: getLoggedInUser(req),
+            isAdManager: containsRole(req, roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data)
@@ -105,7 +82,7 @@ function showUserProfile(req, res) {
             data: response.data,
             profileName: usernameProfile,
             username: getLoggedInUser(req),
-            isAdManager: containsRole(req, Roles.AD_MANAGER)
+            isAdManager: containsRole(req, roles.AD_MANAGER)
         }, req);
 
         res.render('profile.njk', data)
@@ -172,76 +149,6 @@ function registerUser(req, res) {
         .catch(error => {
             res.status(statusCodeForError(error)).render('error.njk', handleError(error));
         })
-}
-
-function adManagerPage(req, res) {
-    if (containsRole(req, Roles.AD_MANAGER) == false) {
-        return res
-            .render('error.njk', createError("", {status: 403}));
-    }
-
-    req.AD_SERVICE_API.get('/ads').then((response) => {
-
-        response.data.forEach(ad => {
-            ad.creationTime = getFormatDateAsString(new Date(ad.creationTime));
-        })
-
-        let adManagerViewModel = {
-            username: getLoggedInUser(req),
-            data: response.data
-        }
-
-        res.render('adManager.njk', adManagerViewModel)
-    }).catch(reason => {
-        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
-    });
-}
-
-function getFormatDateAsString(date) {
-    return ("0" + date.getDay()).slice(-2)   + "." + ("0" + date.getMonth()).slice(-2)   + "." + date.getFullYear() + " | "
-         + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
-}
-
-function adManagerUpload(req, res) {
-    const file = req.file;
-    if (file == null || file.originalname == null || !file.originalname.endsWith(".zip")) {
-        return res.status(statusCodeForError(400))
-            .render('error.njk', handleError({
-                response: {
-                    data: {
-                        message: "The upload has to include exactly one zip file!"
-                    }
-                }
-            }));
-    }
-
-    const formData = new FormData();
-    formData.append("file", file.buffer, file.originalname);
-    const headers = {
-        headers: { ...formData.getHeaders() }
-    };
-
-    req.AD_SERVICE_API.post("/upload-ad", formData, headers)
-        .then(response => {
-            res.redirect('/ad-manager');
-        }).catch(reason => {
-            res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
-        });
-}
-
-function adManagerDelete(req, res) {
-    const formData = new FormData();
-    formData.append("fileName", req.body.filename);
-    const headerConfig = {
-        headers: { ...formData.getHeaders() }
-    }
-
-    req.AD_SERVICE_API.post("/delete-ad", formData, headerConfig)
-        .then((response) => {
-            res.redirect('/ad-manager');
-        }).catch(reason => {
-            res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
-        });
 }
 
 function followUser(req, res) {

@@ -1,6 +1,6 @@
 
 exports.createError = function (errorMessage, data) {
-    return { error: errorMessage, message: data};
+    return { error: errorMessage, message: data };
 }
 
 exports.handleError = function (err) {
