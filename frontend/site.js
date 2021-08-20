@@ -47,8 +47,8 @@ function showGlobalTimeline(req, res) {
         let data = extendRenderData({
             data: response.data,
             title: 'Timeline',
-            username: getLoggedInUser(req),
-            isAdManager: containsRole(req, roles.AD_MANAGER)
+            username: cookieGetUser(req.cookies),
+            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data)
@@ -65,8 +65,8 @@ function showPersonalTimeline(req, res) {
         let data = extendRenderData({
             data: response.data,
             title: 'My Timeline',
-            username: getLoggedInUser(req),
-            isAdManager: containsRole(req, roles.AD_MANAGER)
+            username: cookieGetUser(req.cookies),
+            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data)
@@ -81,8 +81,8 @@ function showUserProfile(req, res) {
         let data = extendRenderData({
             data: response.data,
             profileName: usernameProfile,
-            username: getLoggedInUser(req),
-            isAdManager: containsRole(req, roles.AD_MANAGER)
+            username: cookieGetUser(req.cookies),
+            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
         res.render('profile.njk', data)
@@ -237,7 +237,7 @@ function getPost(req, res) {
     req.API.get(`/post/${postId}`).then((response) => {
         let data = extendRenderData({
             post: response.data,
-            username: getLoggedInUser(req)
+            username: cookieGetUser(req.cookies)
         }, req);
 
         res.render('singlepost.njk', data)

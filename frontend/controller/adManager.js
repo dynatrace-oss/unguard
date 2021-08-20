@@ -1,6 +1,6 @@
-const { createError, handleError, statusCodeForError } = require("./errorHandler");
-const { roles, containsRole } = require('../model/role');
-const { getLoggedInUser } = require('./user');
+const { createError, handleError, statusCodeForError } = require('./errorHandler');
+const { cookieGetUser, cookieHasRole } = require('./cookie');
+const { roles } = require('../model/role');
 
 const express = require('express');
 const router = express.Router();
@@ -14,12 +14,13 @@ const adManagerRouter = express.Router({ mergeParams: true });
 adManagerRouter.get('/', adManagerPage);
 // upload zip with images and extract it there (overwrites images if already existing)
 adManagerRouter.post('/upload', upload.single("uploadZip"), adManagerUpload);
-// deletes a image from the server
+// deletes an ad image from the server
 adManagerRouter.post('/delete', adManagerDelete);
 
 
 function adManagerPage(req, res) {
-    if (containsRole(req, roles.AD_MANAGER) == false) {
+    if (cookieHasRole(req.cookies, roles.AD_MANAGER) == false) {
+        console.error("/adManagerPage called without appropriate role (Status: 403)");
         return res
             .render('error.njk', createError("", { status: 403 }));
     }
@@ -32,8 +33,8 @@ function adManagerPage(req, res) {
 
         let adManagerViewModel = {
             data: response.data,
-            username: getLoggedInUser(req),
-            isAdManager: containsRole(req, roles.AD_MANAGER)
+            username: cookieGetUser(req.cookies),
+            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
         }
 
         res.render('adManager.njk', adManagerViewModel)
