@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/part-of: unguard
   annotations:
     alb.ingress.kubernetes.io/inbound-cidrs: 83.164.160.102/32, 80.80.253.56/32, 83.164.197.242/32 # LNZ, KLU, HGB endpoints
-    alb.ingress.kubernetes.io/load-balancer-name: "unguard-elb"
+    alb.ingress.kubernetes.io/load-balancer-name: "ground-zero-unguard"
     alb.ingress.kubernetes.io/scheme: internet-facing
     kubernetes.io/ingress.class: alb
 spec:
