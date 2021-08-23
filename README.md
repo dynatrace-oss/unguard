@@ -58,13 +58,13 @@ If you would like to deploy the application on a local cluster, see the [Develop
 3. **Update your kubeconfig**
 
    ```sh
-   aws eks update-kubeconfig --name <cluster-name> --region <region> --profile dtRoleAccountAdmin
+   aws eks update-kubeconfig --name <cluster-name> --region <region>
    ```
    
 4. **Login to ECR**
    
    ```sh
-   aws ecr get-login-password --region <region> --profile dtRoleAccountAdmin | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+   aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
    ```
 
 5. **Deploy to AWS**
