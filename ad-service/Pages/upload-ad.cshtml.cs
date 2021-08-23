@@ -36,14 +36,14 @@ namespace AdService.Pages
             switch (await @UserAuthService.UserIsValid(jwt))
             {
                 case HttpStatusCode.BadRequest:
-                    return new ObjectResult("Incorrect Content-Type") {StatusCode = 400};
+                    return new ObjectResult("Jwt Cookie missing!") {StatusCode = StatusCodes.Status400BadRequest};
                 case HttpStatusCode.Unauthorized:
-                    return new ObjectResult("Access denied!") {StatusCode = 403};
+                    return new UnauthorizedResult();
                 case HttpStatusCode.OK:
                     // continue
                     break;
                 default:
-                    return new ObjectResult("Internal Server error!") {StatusCode = 500};
+                    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
             var payload = JwtPayload.parseJwt(jwt);

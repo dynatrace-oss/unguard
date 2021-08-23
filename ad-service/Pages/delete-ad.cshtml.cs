@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AdService.Model;
 using AdService.Pages.Shared;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -28,18 +29,18 @@ namespace AdService.Pages
         public async Task<IActionResult> OnPostAsync(string fileName)
         {
             var jwt = Request.Cookies["jwt"];
-            
+
             switch (await @UserAuthService.UserIsValid(jwt))
             {
-                case HttpStatusCode.Unauthorized:
-                    return new ObjectResult("Incorrect Content-Type") {StatusCode = 400};
                 case HttpStatusCode.BadRequest:
-                    return new ObjectResult("Access denied!") {StatusCode = 403};
+                    return new ObjectResult("Jwt Cookie missing!") {StatusCode = StatusCodes.Status400BadRequest};
+                case HttpStatusCode.Unauthorized:
+                    return new UnauthorizedResult();
                 case HttpStatusCode.OK:
                     // continue
                     break;
                 default:
-                    return new ObjectResult("Internal Server error!") {StatusCode = 500};
+                    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
             var payload = JwtPayload.parseJwt(jwt);

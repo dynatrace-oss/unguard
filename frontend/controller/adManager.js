@@ -10,7 +10,7 @@ const upload = multer(); // default multer uses web storage (access with file.bu
 
 const adManagerRouter = express.Router({ mergeParams: true });
 
-// Ad Manager (only works when logged in and user have AD_MANAGER role)
+// Ad Manager (only works when logged in and user has AD_MANAGER role)
 adManagerRouter.get('/', adManagerPage);
 // upload zip with images and extract it there (overwrites images if already existing)
 adManagerRouter.post('/upload', upload.single("uploadZip"), adManagerUpload);
@@ -20,9 +20,9 @@ adManagerRouter.post('/delete', adManagerDelete);
 
 function adManagerPage(req, res) {
     if (cookieHasRole(req.cookies, roles.AD_MANAGER) == false) {
-        console.error("/adManagerPage called without appropriate role (Status: 403)");
+        console.error("/adManagerPage called without appropriate role (Status: 401)");
         return res
-            .render('error.njk', createError("", { status: 403 }));
+            .render('error.njk', createError("", { status: 401 }));
     }
 
     req.AD_SERVICE_API.get('/ads').then((response) => {
