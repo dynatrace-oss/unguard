@@ -18,6 +18,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: vogelgrippe-ad-service
+                name: unguard-ad-service
                 port:
                   number: 80
