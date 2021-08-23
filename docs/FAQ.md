@@ -7,29 +7,29 @@ This document answers common questions which can occur when running Unguard.
 Due to the great number of image pulls required you might need to set secrets for
 an authenticated image repository to avoid being [rate-limited by DockerHub](https://www.docker.com/increase-rate-limits).
 
-    ```sh
-    kubectl create secret docker-registry unguard-docker-hub-secrets
-        --docker-server=docker.io \
-        --docker-username=DUMMY_USERNAME \
-        --docker-password=DUMMY_DOCKER_ACCESS_TOKEN \
-        --docker-email=DUMMY_DOCKER_EMAIL
-    ```
+```sh
+kubectl create secret docker-registry unguard-docker-hub-secrets
+    --docker-server=docker.io \
+    --docker-username=DUMMY_USERNAME \
+    --docker-password=DUMMY_DOCKER_ACCESS_TOKEN \
+    --docker-email=DUMMY_DOCKER_EMAIL
+```
 
-    Patch the default service account (and the one used by the Jaeger operator) to use these pull secrets.
+Patch the default service account (and the one used by the Jaeger operator) to use these pull secrets.
 
-    🐧🍎 On Linux and macOS, use the following
+🐧🍎 On Linux and macOS, use the following
 
-    ```sh
-    kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "unguard-docker-hub-secrets"}]}'
-    kubectl patch serviceaccount jaeger-operator -p '{"imagePullSecrets": [{"name": "unguard-docker-hub-secrets"}]}'
-    ```
+```sh
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "unguard-docker-hub-secrets"}]}'
+kubectl patch serviceaccount jaeger-operator -p '{"imagePullSecrets": [{"name": "unguard-docker-hub-secrets"}]}'
+```
 
-    💻 On Windows, use the following
+💻 On Windows, use the following
 
-    ```sh
-    kubectl patch serviceaccount default -p '{\"imagePullSecrets\": [{\"name\": \"unguard-docker-hub-secrets\"}]}'
-    kubectl patch serviceaccount jaeger-operator -p '{\"imagePullSecrets\": [{\"name\": \"unguard-docker-hub-secrets\"}]}'
-    ```
+```sh
+kubectl patch serviceaccount default -p '{\"imagePullSecrets\": [{\"name\": \"unguard-docker-hub-secrets\"}]}'
+kubectl patch serviceaccount jaeger-operator -p '{\"imagePullSecrets\": [{\"name\": \"unguard-docker-hub-secrets\"}]}'
+```
 
 > Note: This needs to be done every time you recreate the cluster. You might need to repeat those steps once you deploy additional charts, e.g. for `jaeger`, `jaeger-operator`, `unguard-mariadb` at the moment.
 
