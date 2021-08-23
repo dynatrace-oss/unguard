@@ -3,18 +3,18 @@ kind: Config
 build:
   artifacts:
     # context is the directory with the Dockerfile for that image
-    - image: vogelgrippe-frontend
+    - image: unguard-frontend
       context: frontend
-    - image: vogelgrippe-microblog-service
+    - image: unguard-microblog-service
       context: microblog-service
       jib: {}
-    - image: vogelgrippe-proxy-service
+    - image: unguard-proxy-service
       context: proxy-service
-    - image: vogelgrippe-loadgenerator
-      context: loadgenerator
-    - image: vogelgrippe-user-auth-service
+    - image: unguard-load-generator
+      context: load-generator
+    - image: unguard-user-auth-service
       context: user-auth-service
-    - image: vogelgrippe-ad-service
+    - image: unguard-ad-service
       context: ad-service
   tagPolicy:
     # use the commit hash
@@ -22,19 +22,20 @@ build:
   local:
     # only the docker CLI respects a manually logged-in daemon
     useDockerCLI: true
-    # buildkit provides cleaner output
+    # BuildKit provides an improvement on performance
     useBuildkit: true
 deploy:
   kustomize:
     paths:
       - ./k8s-manifests/base
+    defaultNamespace: unguard
   helm:
     releases:
-      - name: mariadb-release
+      - name: unguard-mariadb
         remoteChart: bitnami/mariadb
-        namespace: vogelgrippe
+        namespace: unguard
         createNamespace: true
-        wait: true # CASP-8983: might be removed once we have readiness probes
+        wait: true # TODO: might be removed once we have readiness probes (CASP-8983)
         overrides:
           primary:
             persistence:
@@ -50,6 +51,7 @@ profiles:
       kustomize:
         paths:
           - ./k8s-manifests/aws
+        defaultNamespace: unguard
   - name: falco
     patches:
       - op: add
@@ -70,5 +72,5 @@ profiles:
         value:
           name: jaeger-operator
           remoteChart: jaegertracing/jaeger-operator
-          namespace: vogelgrippe
+          namespace: unguard
           createNamespace: true

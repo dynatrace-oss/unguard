@@ -1,38 +1,47 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: vogelgrippe-microblog-service
+  name: unguard-microblog-service
+  labels:
+    app.kubernetes.io/name: microblog-service
+    app.kubernetes.io/part-of: unguard
 spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: microblog-service
+    app.kubernetes.io/part-of: unguard
   ports:
     - targetPort: 8080
       port: 80
-  type: ClusterIP
-  selector:
-    app: vogelgrippe-microblog-service
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vogelgrippe-microblog-service
+  name: unguard-microblog-service
+  labels:
+    app.kubernetes.io/name: microblog-service
+    app.kubernetes.io/part-of: unguard
 spec:
   selector:
     matchLabels:
-      app: vogelgrippe-microblog-service
+      app.kubernetes.io/name: microblog-service
+      app.kubernetes.io/part-of: unguard
   template:
     metadata:
       labels:
-        app: vogelgrippe-microblog-service
+        app.kubernetes.io/name: microblog-service
+        app.kubernetes.io/part-of: unguard
     spec:
       containers:
         - name: microblog-service
-          image: vogelgrippe-microblog-service
+          image: unguard-microblog-service
           ports:
             - containerPort: 8080
           env:
             - name: SERVER_PORT
               value: "8080"
             - name: JAEGER_SERVICE_NAME
-              value: "vogelgrippe-microblog-service"
+              value: "unguard-microblog-service"
             - name: JAEGER_AGENT_HOST
               value: "jaeger-agent" # change depending on your jaeger deployment
             - name: JAEGER_SAMPLER_TYPE
@@ -40,6 +49,6 @@ spec:
             - name: JAEGER_SAMPLER_PARAM
               value: "1"
             - name: REDIS_SERVICE_ADDRESS
-              value: "vogelgrippe-redis"
+              value: "unguard-redis"
             - name: USER_AUTH_SERVICE_ADDRESS
-              value: "vogelgrippe-user-auth-service"
+              value: "unguard-user-auth-service"

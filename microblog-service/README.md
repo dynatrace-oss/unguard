@@ -13,7 +13,7 @@ Contains a RESTful web-service that exposes functionality to login/register, vie
 The Simplest way to start a Redis instance is with Docker:
 
 ```
-docker run -d --name vogelgrippe-redis -p 6379:6379 redis
+docker run -d --name unguard-redis -p 6379:6379 redis
 ```
 
 ### Running
@@ -56,4 +56,4 @@ To get more information about the JAEGER config options, see https://www.jaegert
 | JAEGER_SERVICE_NAME   | microblog-service | Name that will be used for the service in the Jaeger traces
 | JAEGER_SAMPLER_TYPE   | const             | (optional) Set to const to get all traces
 | JAEGER_SAMPLER_PARAM  | 1                 | (optional) Set to 1 while sampler is const to get all traces
-| USER_AUTH_SERVICE_ADDRESS | vogelgrippe-user-auth-service | Change to hostname/IP of user-auth-service instance
+| USER_AUTH_SERVICE_ADDRESS | unguard-user-auth-service | Change to hostname/IP of user-auth-service instance
