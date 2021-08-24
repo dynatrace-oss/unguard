@@ -49,9 +49,8 @@ function getFormatDateAsString(date) {
     var hour = new Intl.DateTimeFormat('en-gb', {hour: '2-digit'}).format(date);
     var minute = new Intl.DateTimeFormat('en-gb', {minute: '2-digit'}).format(date);
     var second = new Intl.DateTimeFormat('en-gb', {second: '2-digit'}).format(date);
-    
-    return day + "." + month + "." +  year + " | " 
-        + hour + ":" + minute + ":" + second ;
+
+    return `${day}.${month}.${year} | ${hour}:${minute}:${second}`;
 }
 
 function adManagerUpload(req, res) {

@@ -35,9 +35,10 @@ namespace AdService.Pages.Shared
             {
                 userAuthServiceResponse = await httpClient.PostAsync(userAuthServiceUri, content);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);;
+                Console.WriteLine(e.Message);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
             if (userAuthServiceResponse.StatusCode != HttpStatusCode.OK)
