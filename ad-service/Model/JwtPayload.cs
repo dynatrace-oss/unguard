@@ -11,13 +11,12 @@ namespace AdService.Model
     {
         public string Username { get; set; }
         public int UserId { get; set; }
-        // currently only the Role AD_MANAGER is available
         public IList<string> Roles { get; set; }
         
         
-        /// <summary>Parse a given jwt tocken to the JwtPayload object. Return null if paload is invalid. </summary>
+        /// <summary>Parse a given jwt token to the JwtPayload object. Return null if payload is invalid.</summary>
         ///
-        public static JwtPayload parseJwt(string jwt) {
+        public static JwtPayload ParseJwt(string jwt) {
             try
             {
                 var jwtPayloadRaw = jwt.Split('.')[1];
@@ -37,8 +36,9 @@ namespace AdService.Model
                 
                 return payload;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 return null;
             }
         }

@@ -20,7 +20,7 @@ namespace AdService.Pages
     {
         private readonly IWebHostEnvironment _appEnvironment;
 
-        /// <summary>Inject current appEnvironment</summary>
+        /// <summary>Inject current appEnvironment.</summary>
         ///
         public UploadAd(IWebHostEnvironment appEnvironment)
         {
@@ -32,24 +32,11 @@ namespace AdService.Pages
         public async Task<IActionResult> OnPost()
         {
             var jwt = Request.Cookies["jwt"];
-            
-            switch (await @UserAuthService.UserIsValid(jwt))
-            {
-                case HttpStatusCode.BadRequest:
-                    return new ObjectResult("Jwt Cookie missing!") {StatusCode = StatusCodes.Status400BadRequest};
-                case HttpStatusCode.Unauthorized:
-                    return new UnauthorizedResult();
-                case HttpStatusCode.OK:
-                    // continue
-                    break;
-                default:
-                    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            }
+            var response = await UserAuthService.VerifyAdManager(jwt);
 
-            var payload = JwtPayload.parseJwt(jwt);
-            if (payload?.Roles == null || payload.Roles.Count == 0 || !payload.Roles.Contains("AD_MANAGER"))
+            if (response.StatusCode != StatusCodes.Status200OK)
             {
-                return new ObjectResult("Access denied!") {StatusCode = 403};
+                return response;
             }
             
             try
@@ -70,7 +57,7 @@ namespace AdService.Pages
             return new OkResult();
         }
 
-        /// <summary>Upload Zip file and extract it</summary>
+        /// <summary>Upload Zip file and extract it.</summary>
         ///
         private void UploadAndUnzipFile(IFormFile file)
         {
@@ -86,9 +73,9 @@ namespace AdService.Pages
                 file.CopyTo(stream);
             }
 
-            /* vulnerable since ZipArchive.Entries.WriteToDirectory enables writing outside 
-             * the destination directory without throwing an error
-             * https://snyk.io/vuln/SNYK-DOTNET-SHARPCOMPRESS-60246 */
+            // Vulnerable since ZipArchive.Entries.WriteToDirectory enables writing outside 
+            // the destination directory without throwing an error.
+            // https://snyk.io/vuln/SNYK-DOTNET-SHARPCOMPRESS-60246 
             using (var archive = ZipArchive.Open(filePath))
             {
                 foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))

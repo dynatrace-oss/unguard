@@ -14,14 +14,14 @@ namespace AdService.Pages
     {
         private readonly IWebHostEnvironment _appEnvironment;
 
-        /// <summary>Inject current appEnvironment</summary>
+        /// <summary>Inject current appEnvironment.</summary>
         ///
         public AdModel(IWebHostEnvironment appEnvironment)
         {
             _appEnvironment = appEnvironment;
         }
 
-        /// <summary>Endpoint: Return Page</summary>
+        /// <summary>Endpoint: Return Page.</summary>
         ///
         public IActionResult OnGet()
         {
@@ -34,7 +34,7 @@ namespace AdService.Pages
         }
 
 
-        /// <summary>Returns path to the next image</summary>
+        /// <summary>Returns path to the next image.</summary>
         ///
         public string GetImage()
         {

@@ -13,7 +13,7 @@ namespace AdService.Pages
     {
         private readonly IWebHostEnvironment _appEnvironment;
 
-        /// <summary>Inject current appEnvironment</summary>
+        /// <summary>Inject current appEnvironment.</summary>
         ///
         public Ads(IWebHostEnvironment appEnvironment)
         {

@@ -1,5 +1,6 @@
 const { handleError, statusCodeForError } = require("./controller/errorHandler");
 const { roles, containsRole } = require('./model/role');
+const { getJwtUser, hasJwtRole } = require('./controller/cookie');
 const { getLoggedInUser } = require('./controller/user');
 const utilities = require("./utilities.js");
 
