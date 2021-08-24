@@ -36,7 +36,7 @@ function getLoggedInUser(req) {
 function extendRenderData(data, req) {
     return {
         ...data,
-        AD_SERVICE_ADDRESS: req.protocol + '://' + req.get('host') + process.env.AD_SERVICE_ADDRESS,
+        AD_SERVICE_ADDRESS: req.protocol + '://' + req.get('host') + process.env.AD_PATH,
         BASE_URL: req.protocol + '://' + req.get('host') + process.env.BASE_URL
     }
 }

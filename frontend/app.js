@@ -98,7 +98,6 @@ app.use(sassMiddleware({
   dest: path.join(__dirname, 'public'),
   indentedSyntax: true, // true = .sass and false = .scss
   sourceMap: true,
-  debug: true,
   prefix: process.env.FRONTEND_BASE_PATH
 }))
 

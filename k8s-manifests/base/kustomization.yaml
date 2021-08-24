@@ -8,3 +8,4 @@ resources:
   - proxy-service.yaml
   - redis.yaml
   - user-auth-service.yaml
+  - ingress.yaml
