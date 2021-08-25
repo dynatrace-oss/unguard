@@ -52,6 +52,11 @@ profiles:
         paths:
           - ./k8s-manifests/aws
         defaultNamespace: unguard
+  - name: localdev
+    patches:
+      - op: add
+        path: /deploy/kustomize/paths/-
+        value: ./k8s-manifests/ingress
   - name: falco
     patches:
       - op: add
