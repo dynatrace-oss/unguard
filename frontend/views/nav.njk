@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <img height="30px" src="/img/logo.svg" class="nav-logo"> <a class="navbar-brand" href="/">Unguard</a>
+    <img height="30px" src="{{ extendURL('/img/logo.svg') }}" class="nav-logo"> <a class="navbar-brand" href="{{ extendURL('/') }}">Unguard</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
             aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -8,11 +8,11 @@
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{{ extendURL('/') }}">Home <span class="sr-only">(current)</span></a>
             </li>
             {% if (username) %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/mytimeline">My Timeline</a>
+                    <a class="nav-link" href="{{ extendURL('/mytimeline') }}">My Timeline</a>
                 </li>
             {% endif %}
         </ul>
@@ -26,9 +26,9 @@
                             <img class="rounded-circle" width="150"
                                  src="//robohash.org/{{ username }}.png?set=set1&size=150x150" alt="{{ username }}">
                             <div class="list-group">
-                                <a href="/user/{{ username }}"
+                                <a href="{{ extendURL('/user/'+ username ) }}"
                                    class="list-group-item list-group-item-action">Profile</a>
-                                <form action="/logout" method="post">
+                                <form action="{{ extendURL('/logout') }}" method="post">
                                     <button class="list-group-item list-group-item-action list-group-item-warning"
                                             type="submit">Logout
                                     </button>
@@ -37,12 +37,12 @@
                         </li>
                     </ul>
                 </li>
-                <form class="form-inline" action="/logout" method="post">
+                <form class="form-inline" action="{{ extendURL('/logout') }}" method="post">   
                     <button class="btn btn-warning my-2 my-sm-0" type="submit">Logout</button>
                 </form>
             {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/login">Login/Register</a>
+                    <a class="nav-link" href="{{ extendURL('/login') }}">Login/Register</a>
                 </li>
             {% endif %}
         </ul>

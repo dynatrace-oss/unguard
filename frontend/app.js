@@ -12,6 +12,7 @@ const sassMiddleware = require('node-sass-middleware')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
 const winston = require('winston');
+const utilities = require("./utilities.js");
 
 const site = require("./site");
 
@@ -74,28 +75,35 @@ if (!process.env.USER_AUTH_SERVICE_ADDRESS) {
   process.env.USER_AUTH_SERVICE_ADDRESS = "localhost:9091";
 }
 
+if (!process.env.FRONTEND_BASE_PATH) {
+  process.env.FRONTEND_BASE_PATH = "/";
+}
+
 logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS)
+logger.info("FRONTEND_BASE_PATH is set to " + process.env.FRONTEND_BASE_PATH)
 logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS)
 logger.info("AD_SERVICE_ADDRESS is set to " + process.env.AD_SERVICE_ADDRESS)
 logger.info("USER_AUTH_SERVICE_ADDRESS is set to "+ process.env.USER_AUTH_SERVICE_ADDRESS)
 
 let app = express()
 
+
 nunjucks.configure('views', {
   autoescape: true,
   express: app
-}).addGlobal('AD_SERVICE_ADDRESS', process.env.AD_SERVICE_ADDRESS)
+}).addGlobal('extendURL', utilities.extendURL)
 
 app.use(sassMiddleware({
   src: path.join(__dirname, 'styles'),
   dest: path.join(__dirname, 'public'),
   indentedSyntax: true, // true = .sass and false = .scss
-  sourceMap: true
+  sourceMap: true,
+  prefix: process.env.FRONTEND_BASE_PATH
 }))
 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(process.env.FRONTEND_BASE_PATH, express.static(path.join(__dirname, 'public')))
 // for non generated content, serve the static folder
-app.use(express.static(path.join(__dirname, 'static')))
+app.use(process.env.FRONTEND_BASE_PATH, express.static(path.join(__dirname, 'static')))
 
 // Setup tracer
 const tracer = initTracerFromEnv({
@@ -146,9 +154,10 @@ app.use((req, res, next) => {
 });
 
 // register all the routes
-app.use('/', site);
+app.use(process.env.FRONTEND_BASE_PATH, site);
 
 const server = http.createServer(app)
 server.listen('3000', () => {
   logger.info('Listening on port 3000')
 })
+

@@ -7,10 +7,17 @@ spec:
     - host: unguard.kube
       http:
         paths:
-          - path: /
+          - path: /ui
             pathType: Prefix
             backend:
               service:
                 name: unguard-frontend
+                port:
+                  number: 80
+          - path: /ad
+            pathType: Prefix
+            backend:
+              service:
+                name: unguard-ad-service
                 port:
                   number: 80

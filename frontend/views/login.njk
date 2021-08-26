@@ -16,7 +16,7 @@
             <div class="user_card">
                 <div class="d-flex justify-content-center">
                     <div class="brand_logo_container">
-                        <img style="fill: red" src="/img/logo.svg" class="brand_logo vg_logo" alt="Logo">
+                        <img style="fill: red" src="{{ extendURL('/img/logo.svg') }}" class="brand_logo vg_logo" alt="Logo">
                     </div>
                 </div>
                 <div class="d-flex justify-content-center form_container">
@@ -30,8 +30,8 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6"><button class="btn btn-primary" formaction="/login" type="submit" style="width: 100%;">Login</button></div>
-                            <div class="col-md-6"><button class="btn btn-dark" formaction="/register" type="submit" style="width: 100%;">Sign up</button></div>
+                            <div class="col-md-6"><button class="btn btn-primary" formaction="{{ extendURL('/login') }}" type="submit" style="width: 100%;">Login</button></div>
+                            <div class="col-md-6"><button class="btn btn-dark" formaction="{{ extendURL('/register') }}" type="submit" style="width: 100%;">Sign up</button></div>
                         </div>
                     </form>
                 </div>
