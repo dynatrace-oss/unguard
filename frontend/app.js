@@ -71,10 +71,6 @@ if (!process.env.AD_SERVICE_ADDRESS) {
   process.env.AD_SERVICE_ADDRESS = "localhost:8082";
 }
 
-if (!process.env.AD_SERVICE_EXTERN_ADDRESS) {
-  process.env.AD_SERVICE_EXTERN_ADDRESS = "localhost:8082";
-}
-
 if (!process.env.USER_AUTH_SERVICE_ADDRESS) {
   process.env.USER_AUTH_SERVICE_ADDRESS = "localhost:9091";
 }
