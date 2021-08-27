@@ -63,8 +63,18 @@ This document explains how to build and run Unguard locally using `skaffold`.
 
 4. Access the frontend through your browser
 
-    The recommended way to access the frontend is to use port-forwarding.
+   For local development you can use the skaffold profile < localdev >
 
+    ```sh
+    skaffold run -p localdev
+    ```    
+   This will apply the local Ingress resource and expose the frontend and the ad-service. Make sure to have an Ingress Controller installed on your cluster.  
+   If you use kind, also make sure to create the cluster with extraPortMappings.  
+   The Ingress Controller will be exposed over the port you define in the extraPortMappings.
+   
+   <br>
+   
+    You can also use port forwarding to access the frontend and the ad-service
     ```sh
     # exposes the frontend on localhost:3000
     kubectl port-forward -n unguard service/unguard-frontend 3000:80
