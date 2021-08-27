@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using AdService.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -53,9 +51,33 @@ namespace AdService.Pages
                 adIndex = 0;
             }
 
-            string path = Path.Combine(AdFile.FileFolder, ads[adIndex].Name);
-
+            string path = GetFullImageApiPath(ads[adIndex].Name);
+            
             Response.Cookies.Append("current_ad", ads[adIndex].Name);
+            return path;
+        }
+
+        private static string GetFullImageApiPath(string fileName)
+        {
+            var apiPath = Environment.GetEnvironmentVariable("API_PATH");
+            string path;
+
+            if (string.IsNullOrEmpty(apiPath))
+            {
+                path = Path.Combine(Path.DirectorySeparatorChar + AdFile.FileFolder, fileName);
+            }
+            else
+            {
+                if (apiPath.StartsWith('\\') || apiPath.StartsWith('/'))
+                {
+                    path = Path.Combine(Path.DirectorySeparatorChar + apiPath[1..], AdFile.FileFolder, fileName);
+                }
+                else
+                {
+                    path = Path.Combine(Path.DirectorySeparatorChar + apiPath, AdFile.FileFolder, fileName);
+                }
+            }
+
             return path;
         }
     }

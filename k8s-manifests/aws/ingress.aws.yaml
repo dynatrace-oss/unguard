@@ -21,7 +21,7 @@ spec:
                 name: unguard-frontend
                 port:
                   number: 80
-          - path: /ad
+          - path: /ad-service
             pathType: Prefix
             backend:
               service:

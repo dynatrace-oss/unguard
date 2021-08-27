@@ -1,16 +1,22 @@
-﻿<!DOCTYPE html>
+﻿@{
+    string apiPath = Environment.GetEnvironmentVariable("API_PATH");
+    string stylesheet = apiPath + "/css/style.css";
+    string script = apiPath + "/js/site.js";
+}
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <link rel="stylesheet" href="~/css/style.css">
+        <link rel="stylesheet" href="@stylesheet">
         <title>AdService</title>
     </head>
     <body>
         @RenderBody()
 
-        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src=@script asp-append-version="true"></script>
 
+        <img title="bird-img" alt="ad" src="/adFolder/spring-bird.jpg">
         @await RenderSectionAsync("Scripts", required: false)
     </body>
 </html>
