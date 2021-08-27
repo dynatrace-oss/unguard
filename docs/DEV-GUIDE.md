@@ -70,7 +70,13 @@ This document explains how to build and run Unguard locally using `skaffold`.
     ```    
    This will apply the local Ingress resource and expose the frontend and the ad-service. Make sure to have an Ingress Controller installed on your cluster.  
    If you use kind, also make sure to create the cluster with extraPortMappings.  
-   The Ingress Controller will be exposed over the port you define in the extraPortMappings.
+   The Ingress Controller will be exposed over the port you define in the extraPortMappings.  
+   <br>
+   If you don't use minikube, you will have to manually install the nginx ingress controller.  
+   The recommended version is:
+   ```sh
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/kind/deploy.yaml
+    ``` 
    
    <br>
    
