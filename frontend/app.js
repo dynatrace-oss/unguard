@@ -50,13 +50,15 @@ console.info = function () {
 
 // log all environment variables
 logger.info("JAEGER_SERVICE_NAME is set to " + process.env.JAEGER_SERVICE_NAME);
+logger.info("JAEGER_AGENT_HOST is set to " + process.env.JAEGER_AGENT_HOST);
+logger.info("JAEGER_SAMPLER_TYPE is set to " + process.env.JAEGER_SAMPLER_TYPE);
 logger.info("JAEGER_SAMPLER_PARAM is set to " + process.env.JAEGER_SAMPLER_PARAM);
 logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS);
 logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS);
 logger.info("AD_SERVICE_ADDRESS is set to " + process.env.AD_SERVICE_ADDRESS);
 logger.info("USER_AUTH_SERVICE_ADDRESS is set to "+ process.env.USER_AUTH_SERVICE_ADDRESS);
 logger.info("FRONTEND_BASE_PATH is set to "+ process.env.FRONTEND_BASE_PATH);
-logger.info("AD_SERVICE_SUB_PATH is set to "+ process.env.AD_SERVICE_SUB_PATH);
+logger.info("AD_SERVICE_BASE_PATH is set to "+ process.env.AD_SERVICE_BASE_PATH);
 
 let app = express();
 
@@ -115,7 +117,7 @@ app.use((req, res, next) => {
   });
 
   const AD_SERVICE_API = axios.create({
-    baseURL: "http://" + process.env.AD_SERVICE_ADDRESS + process.env.AD_SERVICE_SUB_PATH,
+    baseURL: "http://" + process.env.AD_SERVICE_ADDRESS + process.env.AD_SERVICE_BASE_PATH,
     // forward cookie
     headers: req.cookies.jwt ? { "Cookie": "jwt=" + req.cookies.jwt} : {},
   });

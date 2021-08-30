@@ -1,7 +1,7 @@
 const { createError, handleError, statusCodeForError } = require('./errorHandler');
 const { getJwtUser, hasJwtRole } = require('./cookie');
 const { roles } = require('../model/role');
-const { extendURL } = require("./utilities.js");
+const { extendURL, extendRenderData } = require("./utilities.js");
 
 const express = require('express');
 const FormData = require('form-data');
@@ -31,26 +31,26 @@ function adManagerPage(req, res) {
             ad.creationTime = getFormatDateAsString(new Date(ad.creationTime));
         })
 
-        let adManagerViewModel = {
+        let data = extendRenderData({
             data: response.data,
             username: getJwtUser(req.cookies),
             isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
-            AD_SERVICE_SUB_PATH: process.env.AD_SERVICE_SUB_PATH
-        }
+            AD_SERVICE_BASE_PATH: process.env.AD_SERVICE_BASE_PATH
+        }, req);
 
-        res.render('adManager.njk', adManagerViewModel)
+        res.render('adManager.njk', data)
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 }
 
 function getFormatDateAsString(date) {
-    var day = new Intl.DateTimeFormat('en-gb', { day: '2-digit' }).format(date);
-    var month = new Intl.DateTimeFormat('en-gb', { month: '2-digit' }).format(date);
-    var year = new Intl.DateTimeFormat('en-gb', { year: '2-digit' }).format(date);
-    var hour = new Intl.DateTimeFormat('en-gb', { hour: '2-digit' }).format(date);
-    var minute = new Intl.DateTimeFormat('en-gb', { minute: '2-digit' }).format(date);
-    var second = new Intl.DateTimeFormat('en-gb', { second: '2-digit' }).format(date);
+    var day = date.toLocaleString('en-gb', { day: '2-digit' });
+    var month = date.toLocaleString('en-gb', { month: '2-digit' });
+    var year = date.toLocaleString('en-gb', { year: '2-digit' });
+    var hour = date.toLocaleString('en-gb', { hour: '2-digit', hour12: false  });
+    var minute = date.toLocaleString('en-gb', { day: '2-digit' }).padStart(2, "0");
+    var second = date.toLocaleString('en-gb', { day: '2-digit' }).padStart(2, "0");
 
     return `${day}.${month}.${year} | ${hour}:${minute}:${second}`;
 }
@@ -95,6 +95,8 @@ function adManagerDelete(req, res) {
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
+
+        
 }
 
 module.exports = adManagerRouter;

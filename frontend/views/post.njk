@@ -14,12 +14,11 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="card-body">
         <div class="row">
-            {% if (extendURL(post.imageUrl)) %}
+            {% if (post.imageUrl) %}
                 <div class="col-auto">
                     <img src="{{ extendURL(post.imageUrl) }}" height="150px" alt="">
                 </div>

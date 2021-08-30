@@ -56,5 +56,5 @@ spec:
               value: "unguard-ad-service"
             - name: FRONTEND_BASE_PATH
               value: "/ui"
-            - name: AD_PATH
+            - name: AD_SERVICE_BASE_PATH
               value: "/ad-service"
