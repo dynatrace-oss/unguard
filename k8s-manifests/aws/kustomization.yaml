@@ -10,3 +10,10 @@ patchesStrategicMerge:
       name: unguard-frontend
     spec:
       type: NodePort
+  - |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: unguard-ad-service
+    spec:
+      type: NodePort
