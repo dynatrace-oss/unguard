@@ -29,7 +29,7 @@ namespace AdService.Pages
 
         /// <summary>Endpoint: Uploads and extracts a passed zip file.</summary>
         ///
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             var jwt = Request.Cookies["jwt"];
             var response = await UserAuthService.VerifyAdManager(jwt);

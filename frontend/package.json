@@ -28,6 +28,7 @@
     "dev": "nodemon -e js,njk,sass,scss app.js"
   },
   "devDependencies": {
-    "nodemon": "^2.0.12"
+    "nodemon": "^2.0.12",
+    "dotenv": "^10.0.0"
   }
 }

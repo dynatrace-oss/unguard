@@ -1,0 +1,11 @@
+exports.extendURL = function (url) {
+    return process.env.FRONTEND_BASE_PATH + url;
+}
+
+exports.extendRenderData = function (data, req) {
+  return {
+      ...data,
+      AD_SERVICE_INGRESS_ADDRESS: req.protocol + '://' + req.get('host') + process.env.AD_SERVICE_SUB_PATH,
+      BASE_URL: req.protocol + '://' + req.get('host') + process.env.FRONTEND_BASE_PATH
+  }
+}

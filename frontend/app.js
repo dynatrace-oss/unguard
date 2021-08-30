@@ -2,7 +2,7 @@ const express = require('express');
 
 const axios = require('axios');
 const expressOpentracing = require('@w3d3/express-opentracing').default;
-const {initTracerFromEnv} = require('jaeger-client');
+const { initTracerFromEnv } = require('jaeger-client');
 const createAxiosTracing = require('@w3d3/axios-opentracing').default;
 
 const http = require('http');
@@ -12,7 +12,7 @@ const sassMiddleware = require('node-sass-middleware');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const winston = require('winston');
-const utilities = require("./utilities.js");
+const { extendURL } = require("./controller/utilities.js");
 
 const site = require("./site");
 
@@ -34,6 +34,9 @@ if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
         format: winston.format.simple(),
     }));
+
+    // load environment variable from .env
+    require('dotenv').config()
 }
 
 // Override the base console log with winston
@@ -45,45 +48,15 @@ console.info = function () {
     return logger.warn.apply(logger, arguments)
 };
 
-// set default environment variables if not set
-
-if (!process.env.JAEGER_SERVICE_NAME) {
-    process.env.JAEGER_SERVICE_NAME = "frontend";
-}
-
-if (!process.env.JAEGER_SAMPLER_TYPE) {
-    process.env.JAEGER_SAMPLER_TYPE = "const";
-}
-
-if (!process.env.JAEGER_SAMPLER_PARAM) {
-  process.env.JAEGER_SAMPLER_PARAM = "1";
-}
-
-if (!process.env.MICROBLOG_SERVICE_ADDRESS) {
-  process.env.MICROBLOG_SERVICE_ADDRESS = "localhost:8080";
-}
-
-if (!process.env.PROXY_SERVICE_ADDRESS) {
-  process.env.PROXY_SERVICE_ADDRESS = "localhost:8081";
-}
-
-if (!process.env.AD_SERVICE_ADDRESS) {
-  process.env.AD_SERVICE_ADDRESS = "localhost:8082";
-}
-
-if (!process.env.USER_AUTH_SERVICE_ADDRESS) {
-  process.env.USER_AUTH_SERVICE_ADDRESS = "localhost:9091";
-}
-
-if (!process.env.FRONTEND_BASE_PATH) {
-  process.env.FRONTEND_BASE_PATH = "/";
-}
-
+// log all environment variables
+logger.info("JAEGER_SERVICE_NAME is set to " + process.env.JAEGER_SERVICE_NAME);
+logger.info("JAEGER_SAMPLER_PARAM is set to " + process.env.JAEGER_SAMPLER_PARAM);
 logger.info("MICROBLOG_SERVICE_ADDRESS is set to " + process.env.MICROBLOG_SERVICE_ADDRESS);
-logger.info("FRONTEND_BASE_PATH is set to " + process.env.FRONTEND_BASE_PATH);
 logger.info("PROXY_SERVICE_ADDRESS is set to " + process.env.PROXY_SERVICE_ADDRESS);
 logger.info("AD_SERVICE_ADDRESS is set to " + process.env.AD_SERVICE_ADDRESS);
 logger.info("USER_AUTH_SERVICE_ADDRESS is set to "+ process.env.USER_AUTH_SERVICE_ADDRESS);
+logger.info("FRONTEND_BASE_PATH is set to "+ process.env.FRONTEND_BASE_PATH);
+logger.info("AD_SERVICE_SUB_PATH is set to "+ process.env.AD_SERVICE_SUB_PATH);
 
 let app = express();
 
@@ -91,7 +64,7 @@ let app = express();
 nunjucks.configure('views', {
   autoescape: true,
   express: app
-}).addGlobal('extendURL', utilities.extendURL)
+}).addGlobal('extendURL', extendURL)
 
 app.use(sassMiddleware({
   src: path.join(__dirname, 'styles'),
@@ -142,7 +115,7 @@ app.use((req, res, next) => {
   });
 
   const AD_SERVICE_API = axios.create({
-    baseURL: "http://" + process.env.AD_SERVICE_ADDRESS,
+    baseURL: "http://" + process.env.AD_SERVICE_ADDRESS + process.env.AD_SERVICE_SUB_PATH,
     // forward cookie
     headers: req.cookies.jwt ? { "Cookie": "jwt=" + req.cookies.jwt} : {},
   });

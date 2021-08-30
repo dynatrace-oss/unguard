@@ -27,16 +27,27 @@ namespace AdService
                 Console.WriteLine("Environment variable API_PATH have to be defined!");
                 throw new ArgumentNullException();
             }
-            
-            services.AddRazorPages()
-                .AddRazorPagesOptions(options => 
-                    options.Conventions 
-                        .AddPageRoute("/ad", Environment.GetEnvironmentVariable("API_PATH"))
-                        .AddPageRoute("/ad",  Path.Combine(apiPath, "/ad"))
-                        .AddPageRoute("/ads",  Path.Combine(apiPath, "/ads"))
-                        .AddPageRoute("/ads/update",  Path.Combine(apiPath, "/ads/update"))
-                        .AddPageRoute("/ads/delete",  Path.Combine(apiPath, "/ads/delete"))
-                );
+
+            var a = Path.Combine(apiPath, "/ad");
+            if (apiPath == "/")
+            {
+                services.AddRazorPages()
+                    .AddRazorPagesOptions(options =>  
+                        options.Conventions .AddPageRoute("/ad", "/")
+                    );
+            }
+            else
+            {
+                services.AddRazorPages()
+                    .AddRazorPagesOptions(options => 
+                            options.Conventions 
+                                .AddPageRoute("/ad", "/")
+                                .AddPageRoute("/ad",  apiPath + "/ad")
+                                .AddPageRoute("/ads",  apiPath + "/ads")
+                                .AddPageRoute("/ads/upload",  apiPath + "/ads/upload")
+                                .AddPageRoute("/ads/delete",  apiPath + "/ads/delete")
+                    );
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
