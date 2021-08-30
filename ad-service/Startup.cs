@@ -28,12 +28,11 @@ namespace AdService
                 throw new ArgumentNullException();
             }
 
-            var a = Path.Combine(apiPath, "/ad");
             if (apiPath == "/")
             {
                 services.AddRazorPages()
                     .AddRazorPagesOptions(options =>  
-                        options.Conventions .AddPageRoute("/ad", "/")
+                        options.Conventions.AddPageRoute("/ad", "/")
                     );
             }
             else
@@ -42,10 +41,10 @@ namespace AdService
                     .AddRazorPagesOptions(options => 
                             options.Conventions 
                                 .AddPageRoute("/ad", "/")
-                                .AddPageRoute("/ad",  apiPath + "/ad")
-                                .AddPageRoute("/ads",  apiPath + "/ads")
-                                .AddPageRoute("/ads/upload",  apiPath + "/ads/upload")
-                                .AddPageRoute("/ads/delete",  apiPath + "/ads/delete")
+                                .AddPageRoute("/ad", apiPath + "/ad")
+                                .AddPageRoute("/ads", apiPath + "/ads")
+                                .AddPageRoute("/ads/upload", apiPath + "/ads/upload")
+                                .AddPageRoute("/ads/delete", apiPath + "/ads/delete")
                     );
             }
         }

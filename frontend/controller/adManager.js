@@ -95,8 +95,6 @@ function adManagerDelete(req, res) {
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
-
-        
 }
 
 module.exports = adManagerRouter;
