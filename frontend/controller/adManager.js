@@ -28,7 +28,7 @@ function adManagerPage(req, res) {
     req.AD_SERVICE_API.get('/ads').then((response) => {
 
         response.data.forEach(ad => {
-            ad.creationTime = getFormatDateAsString(new Date(ad.creationTime));
+            ad.creationTime = (new Date(ad.creationTime)).toLocaleDateString('de-at');
         })
 
         let data = extendRenderData({
@@ -42,17 +42,6 @@ function adManagerPage(req, res) {
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
-}
-
-function getFormatDateAsString(date) {
-    var day = date.toLocaleString('en-gb', { day: '2-digit' });
-    var month = date.toLocaleString('en-gb', { month: '2-digit' });
-    var year = date.toLocaleString('en-gb', { year: '2-digit' });
-    var hour = date.toLocaleString('en-gb', { hour: '2-digit', hour12: false  });
-    var minute = date.toLocaleString('en-gb', { day: '2-digit' }).padStart(2, "0");
-    var second = date.toLocaleString('en-gb', { day: '2-digit' }).padStart(2, "0");
-
-    return `${day}.${month}.${year} | ${hour}:${minute}:${second}`;
 }
 
 function adManagerUpload(req, res) {
@@ -74,9 +63,9 @@ function adManagerUpload(req, res) {
         headers: { ...formData.getHeaders() }
     };
 
-    req.AD_SERVICE_API.post(`/ads/upload`, formData, headers)
+    req.AD_SERVICE_API.post('/ads/upload', formData, headers)
         .then(response => {
-            res.redirect(extendURL(`/ad-manager`));
+            res.redirect(extendURL('/ad-manager'));
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
@@ -89,9 +78,9 @@ function adManagerDelete(req, res) {
         headers: { ...formData.getHeaders() }
     }
 
-    req.AD_SERVICE_API.post(`/ads/delete`, formData, headerConfig)
+    req.AD_SERVICE_API.post('/ads/delete', formData, headerConfig)
         .then(response => {
-            res.redirect(extendURL(`/ad-manager`));
+            res.redirect(extendURL('/ad-manager'));
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });

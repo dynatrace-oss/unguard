@@ -62,7 +62,6 @@ logger.info("AD_SERVICE_BASE_PATH is set to "+ process.env.AD_SERVICE_BASE_PATH)
 
 let app = express();
 
-
 nunjucks.configure('views', {
   autoescape: true,
   express: app

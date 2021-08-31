@@ -1,12 +1,7 @@
 const { handleError, statusCodeForError } = require("./controller/errorHandler");
-const { roles, containsRole } = require('./model/role');
 const { getJwtUser, hasJwtRole } = require('./controller/cookie');
 const { roles } = require('./model/role');
 const { extendURL, extendRenderData } = require("./controller/utilities.js");
-
-const adManagerRouter = require('./controller/adManager');
-const { getLoggedInUser } = require('./controller/user');
-const utilities = require("./utilities.js");
 
 const adManagerRouter = require('./controller/adManager');
 
@@ -42,8 +37,8 @@ function showGlobalTimeline(req, res) {
         let data = extendRenderData({
             data: response.data,
             title: 'Timeline',
-            username: cookieGetUser(req.cookies),
-            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data)
@@ -60,8 +55,8 @@ function showPersonalTimeline(req, res) {
         let data = extendRenderData({
             data: response.data,
             title: 'My Timeline',
-            username: cookieGetUser(req.cookies),
-            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data);
@@ -76,8 +71,8 @@ function showUserProfile(req, res) {
         let data = extendRenderData({
             data: response.data,
             profileName: usernameProfile,
-            username: cookieGetUser(req.cookies),
-            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
         res.render('profile.njk', data);
@@ -88,7 +83,7 @@ function showUserProfile(req, res) {
 
 function doLogout(req, res) {
     res.clearCookie('jwt');
-    res.redirect(extendURL(`/`));
+    res.redirect(extendURL('/'));
 }
 
 function showLogin(req, res) {
@@ -232,7 +227,7 @@ function getPost(req, res) {
     req.API.get(`/post/${postId}`).then((response) => {
         let data = extendRenderData({
             post: response.data,
-            username: cookieGetUser(req.cookies)
+            username: getJwtUser(req.cookies)
         }, req);
 
         res.render('singlepost.njk', data);

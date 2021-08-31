@@ -24,7 +24,7 @@ namespace AdService
             var apiPath = Environment.GetEnvironmentVariable("API_PATH");
             if (apiPath == null)
             {
-                Console.WriteLine("Environment variable API_PATH have to be defined!");
+                Console.WriteLine("Environment variable API_PATH has to be defined!");
                 throw new ArgumentNullException();
             }
 

@@ -14,7 +14,7 @@
                 <li class="nav-item {{'active' if (currentPath != undefined) and (extendURL('/my-timeline') == currentPath)}}">
                     <a class="nav-link" href="{{ extendURL('/my-timeline') }}">My Timeline</a>
                 </li>
-                
+
                 {% if (isAdManager) %}
                     <li class="nav-item {{'active' if (currentPath != undefined) and (extendURL('/ad-manager') == currentPath)}}">
                         <a class="nav-link" href="{{ extendURL('/ad-manager') }}">Ad Manager</a>
