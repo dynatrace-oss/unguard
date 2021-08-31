@@ -28,7 +28,7 @@ function adManagerPage(req, res) {
     req.AD_SERVICE_API.get('/ads').then((response) => {
 
         response.data.forEach(ad => {
-            ad.creationTime = (new Date(ad.creationTime)).toLocaleDateString('de-at');
+            ad.creationTime = (new Date(ad.creationTime)).toLocaleString('de-at');
         })
 
         let data = extendRenderData({
