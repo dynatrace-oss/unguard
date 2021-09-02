@@ -16,10 +16,14 @@ other microservices on different ports/hosts:
 |----------------------------|----------------|
 | JAEGER_SERVICE_NAME        | frontend       |
 | JAEGER_AGENT_HOST          | localhost      |
+| JAEGER_SAMPLER_TYPE        | const          |
+| JAEGER_SAMPLER_PARAM       | 1              |
 | MICROBLOG_SERVICE_ADDRESS  | localhost:8080 |
 | PROXY_SERVICE_ADDRESS      | localhost:8081 |
 | AD_SERVICE_ADDRESS         | localhost:8082 |
-| AD_SERVICE_EXTERN_ADDRESS  | localhost:8082 |
+| USER_AUTH_SERVICE_ADDRESS  | localhost:9091 |
+| FRONTEND_BASE_PATH         | /ui            |
+| AD_SERVICE_BASE_PATH       | /ad-service    |
 
 ## Running
 
@@ -36,7 +40,7 @@ and then run the frontend, run:
 export $(xargs -a .env); yarn start
 ```
 
-When developing, to have the server auto-restart on change of a file, use:
+When developing, to have the server auto-restart (and apply .env) on change of a file, use:
 
 ```
 yarn run dev
@@ -45,8 +49,11 @@ yarn run dev
 ### Developing with Kubernetes services
 
 For further development at the frontend it may be useful to start Unguard in
-Kubernetes (general README.me) and forward every port to the local build&run frontend:
- 
+Kubernetes (general README.me) and forward every port to the local build&run frontend.  
+Note that the iframe which loads the ad won't run with manual execution, since the ingress 
+would normally root it over the frontend ```host address``` + AD_SERVICE_BASE_PATH.
+
+Port forwarding: 
 ```sh
 kubectl port-forward -n unguard service/unguard-microblog-service 8080:80
 kubectl port-forward -n unguard service/unguard-proxy-service 8081:80

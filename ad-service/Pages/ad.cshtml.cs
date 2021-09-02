@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using AdService.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -53,8 +51,8 @@ namespace AdService.Pages
                 adIndex = 0;
             }
 
-            string path = Path.Combine(AdFile.FileFolder, ads[adIndex].Name);
-
+            string path = Flurl.Url.Combine("/", Environment.GetEnvironmentVariable("API_PATH"), AdFile.FileFolder, ads[adIndex].Name);
+            
             Response.Cookies.Append("current_ad", ads[adIndex].Name);
             return path;
         }

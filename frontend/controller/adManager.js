@@ -1,6 +1,7 @@
 const { createError, handleError, statusCodeForError } = require('./errorHandler');
 const { getJwtUser, hasJwtRole } = require('./cookie');
 const { roles } = require('../model/role');
+const { extendURL, extendRenderData } = require("./utilities.js");
 
 const express = require('express');
 const FormData = require('form-data');
@@ -27,30 +28,20 @@ function adManagerPage(req, res) {
     req.AD_SERVICE_API.get('/ads').then((response) => {
 
         response.data.forEach(ad => {
-            ad.creationTime = getFormatDateAsString(new Date(ad.creationTime));
+            ad.creationTime = (new Date(ad.creationTime)).toLocaleString('de-at');
         })
 
-        let adManagerViewModel = {
+        let data = extendRenderData({
             data: response.data,
             username: getJwtUser(req.cookies),
-            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
-        }
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
+            AD_SERVICE_BASE_PATH: process.env.AD_SERVICE_BASE_PATH
+        }, req);
 
-        res.render('adManager.njk', adManagerViewModel)
+        res.render('adManager.njk', data)
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
-}
-
-function getFormatDateAsString(date) {
-    var day = new Intl.DateTimeFormat('en-gb', {day: '2-digit'}).format(date);
-    var month = new Intl.DateTimeFormat('en-gb', {month: '2-digit'}).format(date);
-    var year = new Intl.DateTimeFormat('en-gb', {year: '2-digit'}).format(date);
-    var hour = new Intl.DateTimeFormat('en-gb', {hour: '2-digit'}).format(date);
-    var minute = new Intl.DateTimeFormat('en-gb', {minute: '2-digit'}).format(date);
-    var second = new Intl.DateTimeFormat('en-gb', {second: '2-digit'}).format(date);
-
-    return `${day}.${month}.${year} | ${hour}:${minute}:${second}`;
 }
 
 function adManagerUpload(req, res) {
@@ -72,9 +63,9 @@ function adManagerUpload(req, res) {
         headers: { ...formData.getHeaders() }
     };
 
-    req.AD_SERVICE_API.post("/ads/upload", formData, headers)
+    req.AD_SERVICE_API.post('/ads/upload', formData, headers)
         .then(response => {
-            res.redirect('/ad-manager');
+            res.redirect(extendURL('/ad-manager'));
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
@@ -87,9 +78,9 @@ function adManagerDelete(req, res) {
         headers: { ...formData.getHeaders() }
     }
 
-    req.AD_SERVICE_API.post("/ads/delete", formData, headerConfig)
-        .then((response) => {
-            res.redirect('/ad-manager');
+    req.AD_SERVICE_API.post('/ads/delete', formData, headerConfig)
+        .then(response => {
+            res.redirect(extendURL('/ad-manager'));
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });

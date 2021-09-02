@@ -23,7 +23,7 @@ Unguard is composed of six microservices written in different languages that tal
 
 | Service                                  | Language        | Description                                                                                                  |
 | ---------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------ |
-| [ad-service](./ad-service)               | .NET 5          | Serves a HTML page with a static image.                                                                              |
+| [ad-service](./ad-service)               | .NET 5          | Provide CRUD operation for images and serves a HTML page which displays an image like an ad. |
 | [frontend](./frontend)                   | Node.js Express | Serves HTML to the user to interact with the application.                                                     |
 | [load-generator](./load-generator)       | Python/Locust   | Creates synthetic user traffic.                                                                               |
 | [microblog-service](./microblog-service) | Java Spring     | Serves a REST API for the frontend and saves data into redis.                                                          |

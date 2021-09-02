@@ -1,15 +1,13 @@
 const { handleError, statusCodeForError } = require("./controller/errorHandler");
-const { roles, containsRole } = require('./model/role');
 const { getJwtUser, hasJwtRole } = require('./controller/cookie');
-const { getLoggedInUser } = require('./controller/user');
-const utilities = require("./utilities.js");
+const { roles } = require('./model/role');
+const { extendURL, extendRenderData } = require("./controller/utilities.js");
 
 const adManagerRouter = require('./controller/adManager');
 
 const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
-
 
 // Global Timeline route
 router.get('/', showGlobalTimeline);
@@ -34,22 +32,13 @@ router.post('/register', registerUser);
 router.use('/ad-manager', adManagerRouter);
 
 
-function extendRenderData(data, req) {
-    return {
-        ...data,
-        AD_SERVICE_ADDRESS: req.protocol + '://' + req.get('host') + process.env.AD_PATH,
-        BASE_URL: req.protocol + '://' + req.get('host') + process.env.BASE_URL
-    }
-}
-
-
 function showGlobalTimeline(req, res) {
     req.API.get('/timeline').then((response) => {
         let data = extendRenderData({
             data: response.data,
             title: 'Timeline',
-            username: cookieGetUser(req.cookies),
-            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data)
@@ -66,11 +55,11 @@ function showPersonalTimeline(req, res) {
         let data = extendRenderData({
             data: response.data,
             title: 'My Timeline',
-            username: cookieGetUser(req.cookies),
-            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
-        res.render('index.njk', data)
+        res.render('index.njk', data);
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
@@ -82,19 +71,19 @@ function showUserProfile(req, res) {
         let data = extendRenderData({
             data: response.data,
             profileName: usernameProfile,
-            username: cookieGetUser(req.cookies),
-            isAdManager: cookieHasRole(req.cookies, roles.AD_MANAGER)
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
-        res.render('profile.njk', data)
+        res.render('profile.njk', data);
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 }
 
 function doLogout(req, res) {
-    res.clearCookie('jwt')
-    res.redirect(utilities.extendURL(`/`))
+    res.clearCookie('jwt');
+    res.redirect(extendURL('/'));
 }
 
 function showLogin(req, res) {
@@ -102,7 +91,7 @@ function showLogin(req, res) {
         reg_success: req.query.reg_success,
         login_fail: req.query.login_fail
     }
-    res.render('login.njk', data)
+    res.render('login.njk', data);
 }
 
 function doLogin(req, res) {
@@ -120,10 +109,10 @@ function doLogin(req, res) {
         })
         .then(response => {
             if (response.data.jwt) {
-                res.cookie("jwt", response.data.jwt)
-                res.redirect(utilities.extendURL('/'))
+                res.cookie("jwt", response.data.jwt);
+                res.redirect(extendURL('/'));
             } else {
-                res.redirect(utilities.extendURL('/login'))
+                res.redirect(extendURL('/login'));
             }
         })
         .catch(error => {
@@ -145,7 +134,7 @@ function registerUser(req, res) {
             "password": passwordToLogin
         })
         .then(response => {
-            res.redirect(utilities.extendURL('/login'))
+            res.redirect(extendURL('/login'));
         })
         .catch(error => {
             res.status(statusCodeForError(error)).render('error.njk', handleError(error));
@@ -155,7 +144,7 @@ function registerUser(req, res) {
 function followUser(req, res) {
     const usernameProfile = req.params.username;
     req.API.post(`/users/${usernameProfile}/follow`).then((response) => {
-        res.redirect(utilities.extendURL(`/user/${usernameProfile}`));
+        res.redirect(extendURL(`/user/${usernameProfile}`));
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
@@ -193,7 +182,7 @@ function createPost(req, res) {
                 content: `${metaTitle} ${req.body.urlmessage}`,
                 imageUrl: metaImgSrc
             }).then((post_response) => {
-                res.redirect(utilities.extendURL(`/post/${post_response.data.postId}`))
+                res.redirect(extendURL(`/post/${post_response.data.postId}`));
             }).catch(reason => {
                 res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
             });
@@ -211,7 +200,7 @@ function createPost(req, res) {
                 content: req.body.description,
                 imageUrl: response.data
             }).then((post_response) => {
-                res.redirect(utilities.extendURL(`/post/${post_response.data.postId}`))
+                res.redirect(extendURL(`/post/${post_response.data.postId}`));
             }).catch(reason => {
                 res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
             });
@@ -223,13 +212,13 @@ function createPost(req, res) {
         req.API.post('/post', {
             content: req.body.message
         }).then((post_response) => {
-            res.redirect(utilities.extendURL(`/post/${post_response.data.postId}`))
+            res.redirect(extendURL(`/post/${post_response.data.postId}`));
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
     } else {
         // when nothing is set, just redirect back
-        res.redirect(utilities.extendURL('/'))
+        res.redirect(extendURL('/'));
     }
 }
 
@@ -238,10 +227,10 @@ function getPost(req, res) {
     req.API.get(`/post/${postId}`).then((response) => {
         let data = extendRenderData({
             post: response.data,
-            username: cookieGetUser(req.cookies)
+            username: getJwtUser(req.cookies)
         }, req);
 
-        res.render('singlepost.njk', data)
+        res.render('singlepost.njk', data);
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });

@@ -50,6 +50,8 @@ spec:
               value: "Production"
             - name: SERVER_PORT
               value: "8082"
+            - name: API_PATH
+              value: "/ad-service"
             - name: USER_AUTH_SERVICE_ADDRESS
-              value: "vogelgrippe-user-auth-service"
+              value: "unguard-user-auth-service"
 
