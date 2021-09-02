@@ -76,12 +76,12 @@ This document explains how to build and run Unguard locally using `skaffold`.
      skaffold run -p localdev
     ```    
     This will apply the local Ingress resource and expose the frontend and the ad-service to the host `unguard.kube`.
-    To excess the resources, make sure to map `unguard.kube` to your localhost via your hosts file:
+    To excess the resources, make sure to access `unguard.kube` to your `127.0.0.1` via your hosts file:
     ```shell
       # unguard local deployment
       127.0.0.1 unguard.kube
     ```
-    Afterwards you can access the page like via
+    Afterwards you can access the page via
     ``` http://unguard.kube:82/ui/ ```
 
     #### Deployment via port forwarding
