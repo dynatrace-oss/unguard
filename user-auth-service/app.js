@@ -11,12 +11,12 @@ var usersRouter = require('./routes/user');
 var authRouter = require('./routes/auth');
 var jwtRouter = require('./routes/jwt');
 
-// set environment variables if not set
-if (!process.env.MARIADB_SERVICE) {
-  process.env.MARIADB_SERVICE = "localhost";
+if (process.env.NODE_ENV !== 'production') {
+   // load environment variable from .env
+   require('dotenv').config()
 }
 
-const tracer = initTracer('user-auth-service');
+const tracer = initTracer(process.env.JAEGER_SERVICE_NAME);
 const opentracing = require('opentracing')
 opentracing.initGlobalTracer(tracer);
 
