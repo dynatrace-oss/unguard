@@ -1,7 +1,7 @@
 ﻿@{
     string apiPath = Environment.GetEnvironmentVariable("API_PATH");
-    string stylesheet = apiPath + "/css/style.css";
-    string script = apiPath + "/js/site.js";
+    string stylesheet = Flurl.Url.Combine("/", apiPath, "/css/style.css");
+    string script =  Flurl.Url.Combine("/", apiPath, "/js/site.js");
 }
 <!DOCTYPE html>
 <html lang="en">

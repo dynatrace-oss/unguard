@@ -6,11 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Flurl;
 
 namespace AdService
 {
     public class Startup
     {
+        private readonly string _ApiPath = Environment.GetEnvironmentVariable("API_PATH");
         public IConfiguration Configuration { get; set; }
         
         public Startup(IConfiguration configuration)
@@ -21,30 +23,25 @@ namespace AdService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var apiPath = Environment.GetEnvironmentVariable("API_PATH");
-            if (apiPath == null)
-            {
-                Console.WriteLine("Environment variable API_PATH has to be defined!");
-                throw new ArgumentNullException();
-            }
-
-            if (apiPath == "/")
+            if (string.IsNullOrEmpty(_ApiPath) || _ApiPath == "/")
             {
                 services.AddRazorPages()
-                    .AddRazorPagesOptions(options =>  
-                        options.Conventions.AddPageRoute("/ad", "/")
+                    .AddRazorPagesOptions(options =>
+                        options.Conventions
+                            .AddPageRoute("/ad", "/")
                     );
             }
             else
             {
                 services.AddRazorPages()
-                    .AddRazorPagesOptions(options => 
-                            options.Conventions 
-                                .AddPageRoute("/ad", "/")
-                                .AddPageRoute("/ad", apiPath + "/ad")
-                                .AddPageRoute("/ads", apiPath + "/ads")
-                                .AddPageRoute("/ads/upload", apiPath + "/ads/upload")
-                                .AddPageRoute("/ads/delete", apiPath + "/ads/delete")
+                    .AddRazorPagesOptions(options =>
+                        options.Conventions
+                            .AddPageRoute("/ad", "/")
+                            .AddPageRoute("/ad", _ApiPath)
+                            .AddPageRoute("/ad", Url.Combine(_ApiPath, "/ad"))
+                            .AddPageRoute("/ads", Url.Combine(_ApiPath, "/ads"))
+                            .AddPageRoute("/ads/upload", Url.Combine(_ApiPath, "/ads/upload"))
+                            .AddPageRoute("/ads/delete", Url.Combine(_ApiPath, "/ads/delete"))
                     );
             }
         }
@@ -65,13 +62,18 @@ namespace AdService
                 app.UseHsts();
             }
 
-            app.UseStaticFiles(new StaticFileOptions
+            if (!string.IsNullOrEmpty(_ApiPath) && _ApiPath != "/")
             {
-                FileProvider = new PhysicalFileProvider(
-                    Path.Combine(env.ContentRootPath, "wwwroot")),
-                RequestPath = Environment.GetEnvironmentVariable("API_PATH")
-            });
-            
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(
+                        Path.Combine(env.ContentRootPath, "wwwroot")), RequestPath = Url.Combine("/", _ApiPath)
+                });
+            }
+            else
+            {
+                app.UseStaticFiles();
+            }
 
             app.UseAuthorization();
 
