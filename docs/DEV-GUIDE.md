@@ -115,7 +115,7 @@ This document explains how to build and run Unguard locally using `skaffold`.
      kubectl port-forward -n unguard service/unguard-proxy-service 8081:80
     ```
 
-    ### switching between clusters
+6. switching between clusters during development  
     The **Kind** cluster use `~/.kube/config` for defining context. 
     There you will find current saved context and are able to switch between different clusters
     (e.g. between aws and local kind cluster) by setting the `current-context:` to a cluster saved in the `contexts:` section.
