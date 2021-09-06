@@ -13,15 +13,17 @@ This document explains how to build and run Unguard locally using `skaffold`.
 * [kustomize](https://kubernetes-sigs.github.io/kustomize/installation/)
 * [OpenJDK11](https://openjdk.java.net/projects/jdk/11/)
 * [minikube](https://minikube.sigs.k8s.io) or [kind](https://kind.sigs.k8s.io/)
-   * if you're using kind, make sure to deploy the right ingress-nginx resource:
-     ```sh
-       kubectl apply -f .\docs\dev-env\kind\ingress-nginx.yaml
-     ```
-     Note: The current ingress resources are incompatible with v1.0.0
+  (due to performance and stability reasons, it is recommended to use `kind`)
 
 ## ⛵ Local Cluster
 
 1. Launch a local Kubernetes cluster with one of the following tools:
+
+    - To launch a **kind** cluster, make sure to create the cluster with [extraPortMappings](https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings) for step 5.1.
+      This will be achieved by forwarding the ingress resource to port 82 with the given config:
+        ```sh
+          kind create cluster --name unguard --config ./docs/dev-env/kind/port-mapping-config.yaml
+        ```
 
     - To launch **Minikube** (cluster in a VM and slow on Windows):
         ```sh
@@ -30,12 +32,7 @@ This document explains how to build and run Unguard locally using `skaffold`.
           minikube start --addons=ingress --profile unguard --vm=true
         ```    
 
-    - To launch a **Kind** cluster, make sure to create the cluster with [extraPortMappings](https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings).
-      This will be achieved by forwarding the ingress resource to port 82 with the given config:
-        ```sh
-          kind create cluster --name unguard --config .\docs\dev-env\kind\port-mapping-config.yaml
-        ```
-      
+
 2. Run `kubectl get nodes` to verify the connection to the respective control plane
 
 3. Fetch the necessary Helm repositories
@@ -47,9 +44,15 @@ This document explains how to build and run Unguard locally using `skaffold`.
     helm repo update
     ```
    
-3. Use `skaffold` to build and deploy the application (first time will be slow). If the images should be rebuilt automatically, run `skaffold dev`.
+4. Use `skaffold` to build and deploy the application (first time will be slow).  
+   If the images should be rebuilt automatically, run `skaffold dev`.
+   
+    - With **kind** the images will be moved automatically to the cluster:
+    ```sh
+    skaffold run
+    ```
 
-    - The Docker daemon inside the **Minikube** can be re-used to improve the experience with building and running Docker images:
+    - The Docker daemon inside **Minikube** can be re-used to improve the experience with building and running Docker images:
     ```sh
     # 🐧 for Linux
     eval $(minikube -p unguard docker-env)
@@ -62,21 +65,32 @@ This document explains how to build and run Unguard locally using `skaffold`.
     skaffold run --detect-minikube
     ```
    
-    - With **Kind** the images will be moved automatically to the cluster:
-    ```sh
-    skaffold run
-    ```
 
-4. Access the frontend through your browser
+5. Access the frontend through your browser  
+    There are currently two option for local deployment:
+    * 5.1 Deployment via ingress
+    * 5.2 Deployment via port forwarding  
+    
+    For full functionality support 5.1 is recommended.
 
-    #### Deployment via ingress
+    #### 5.1 Deployment via ingress
+    Make sure to deploy the right ingress-nginx resource.  
+    Note: The current ingress resources are incompatible with v1.0.0
+   
+    For kind simply run:
+      ```sh
+        kubectl apply -f ./docs/dev-env/kind/ingress-nginx.yaml
+      ```
+
     For local development you can use the skaffold profile localdev 
 
     ```sh
      skaffold run -p localdev
-    ```    
-    This will apply the local Ingress resource and expose the frontend and the ad-service to the host `unguard.kube`.
-    To excess the resources, make sure to access `unguard.kube` to your `127.0.0.1` via your hosts file:
+    ```   
+    
+    This will apply the local Ingress resource and expose the frontend and the ad-service to the host `unguard.kube`.  
+    To excess the resources, make sure to link `unguard.kube` to `127.0.0.1` via your hosts file:
+    
     ```shell
       # unguard local deployment
       127.0.0.1 unguard.kube
@@ -84,7 +98,7 @@ This document explains how to build and run Unguard locally using `skaffold`.
     Afterwards you can access the page via
     ``` http://unguard.kube:82/ui/ ```
 
-    #### Deployment via port forwarding
+    #### 5.2 Deployment via port forwarding
     If you don't want to use the Ingress Controller, you can also use port forwarding to access the frontend and the ad-service.
     When using this method, the ads at the timeline won't show up since they are using the 
     frontend url and there is no ingress in place for the right forwarding. 
