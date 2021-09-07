@@ -7,13 +7,19 @@
 
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            <li class="nav-item {{'active' if (currentPath != undefined) and (extendURL('/') == currentPath)}}">
                 <a class="nav-link" href="{{ extendURL('/') }}">Home <span class="sr-only">(current)</span></a>
             </li>
             {% if (username) %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ extendURL('/mytimeline') }}">My Timeline</a>
+                <li class="nav-item {{'active' if (currentPath != undefined) and (extendURL('/my-timeline') == currentPath)}}">
+                    <a class="nav-link" href="{{ extendURL('/my-timeline') }}">My Timeline</a>
                 </li>
+
+                {% if (isAdManager) %}
+                    <li class="nav-item {{'active' if (currentPath != undefined) and (extendURL('/ad-manager') == currentPath)}}">
+                        <a class="nav-link" href="{{ extendURL('/ad-manager') }}">Ad Manager</a>
+                    </li>
+                {% endif %}
             {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -37,7 +43,7 @@
                         </li>
                     </ul>
                 </li>
-                <form class="form-inline" action="{{ extendURL('/logout') }}" method="post">   
+                <form class="form-inline" action="{{ extendURL('/logout') }}" method="post">
                     <button class="btn btn-warning my-2 my-sm-0" type="submit">Logout</button>
                 </form>
             {% else %}

@@ -1,15 +1,20 @@
-﻿<!DOCTYPE html>
+﻿@{
+    string apiPath = Environment.GetEnvironmentVariable("API_PATH");
+    string stylesheet = Flurl.Url.Combine("/", apiPath, "/css/style.css");
+    string script =  Flurl.Url.Combine("/", apiPath, "/js/site.js");
+}
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
-        <link rel="stylesheet" href="~/css/style.css">
-        <title>@ViewData["Title"] - AdService</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="@stylesheet">
+        <title>AdService</title>
     </head>
     <body>
         @RenderBody()
 
-        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src=@script asp-append-version="true"></script>
 
         @await RenderSectionAsync("Scripts", required: false)
     </body>

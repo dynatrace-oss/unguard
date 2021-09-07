@@ -7,8 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="wwwroot\css" />
       <Folder Include="wwwroot\lib" />
       <Folder Include="wwwroot\volume" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Flurl.Http" Version="3.2.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="SharpCompress" Version="0.20.0" />
     </ItemGroup>
 
 

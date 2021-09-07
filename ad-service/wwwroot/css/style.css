@@ -1,0 +1,19 @@
+﻿body {
+    margin: 0;
+}
+
+.ad-container {
+    width: 100vw; 
+    height: 100vh; 
+    display: flex;
+    
+}
+
+.ad-container .ad-picture {
+    margin:auto;
+}
+
+.ad-container .ad-picture img {
+    max-width: 98vw; 
+    max-height: 98vh;
+}

@@ -1,4 +1,4 @@
-﻿// file can be overwritten with the sharpcompress path traversal exploit
+﻿// file can be overwritten with the sharpcompress path traversal exploit 
 
 window.onload = function() {
   // change the ads periodical reload

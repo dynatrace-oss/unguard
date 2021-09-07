@@ -4,6 +4,7 @@
     <div class="timeline-page">
         <div class="timeline-container"> 
             <h1>{{ title }}</h1>
+
             {% include "compose.njk" %}
 
             {% for post in data %}
@@ -11,7 +12,7 @@
             {% endfor %}
         </div>
         <div class="ad-container"> 
-            <iframe class="ad-webside" src="{{ AD_SERVICE_ADDRESS }}" />
+            <iframe class="ad-website" src="{{ AD_SERVICE_INGRESS_ADDRESS + '/ad' }}" />
         </div>
     </div>
 {% endblock %}

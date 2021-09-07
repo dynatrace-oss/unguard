@@ -1,0 +1,47 @@
+{% extends "base.njk" %}
+
+{% block content %}
+    <div class="ad-manager-page">
+        <div class="ad-manager-container">
+            <h1>Ad Manager</h1>
+            <div class="d-flex ">
+                <div class="ml-auto mr-auto  col-sm-12 col-xl-10">
+                    <div class="d-flex mt-4 mb-3">
+                        <h4 class="">Current ad list:</h4>
+                        <form action="{{ extendURL('/ad-manager/upload') }}" method="post" class="ml-auto" enctype="multipart/form-data">
+                            <input type="file" accept=".zip" name="uploadZip" id="uploadZip" onchange="document.getElementById('file-chosen').textContent = this.files[0].name" hidden/>
+                            <label for="uploadZip" class="btn btn-primary mb-0">
+                                <span class="material-icons-outlined p-0">folder</span>
+                            </label>
+                            <span id="file-chosen" class="mr zip-file-name">No zip file chosen</span>
+                            <input type="submit" class="btn btn-primary" value="upload" >
+                        </form>
+                    </div>
+                    <div>
+                        <ul class="list-group">
+                            {% for ad in data %}
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-sm-7 col-xl-8">{{ ad.name }}</div>
+                                        <div class="col-sm-4 col-xl-3 text-right">{{ ad.creationTime }}</div>
+                                        <div class="col-sm-1 text-right">
+                                        
+                                        <form action="{{ extendURL('/ad-manager/delete') }}" method="post">
+                                            <label for="filename" hidden>filename</label>
+                                            <input type="text" name="filename" id="filename" value={{ ad.name }}  hidden/>
+                            
+                                            <button type="submit"  class="btn p-0">
+                                                <span class="material-icons-outlined text-primary">delete</span>
+                                            </button>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

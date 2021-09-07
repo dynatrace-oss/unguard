@@ -1,45 +1,35 @@
-const { handleError, statusCodeForError } = require("./errorhandler");
-const cheerio = require('cheerio')
+const { handleError, statusCodeForError } = require("./controller/errorHandler");
+const { getJwtUser, hasJwtRole } = require('./controller/cookie');
+const { roles } = require('./model/role');
+const { extendURL, extendRenderData } = require("./controller/utilities.js");
+
+const adManagerRouter = require('./controller/adManager');
+
+const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
-const jwt_decode = require("jwt-decode");
-const utilities = require("./utilities.js");
 
 // Global Timeline route
-router.get('/', showGlobalTimeline)
+router.get('/', showGlobalTimeline);
 // Personalized Timeline (only works when logged in)
-router.get('/mytimeline', showPersonalTimeline)
+router.get('/my-timeline', showPersonalTimeline);
 // User Profile route
-router.get('/user/:username', showUserProfile)
+router.get('/user/:username', showUserProfile);
 // Follow a user
-router.post('/user/:username/follow', followUser)
+router.post('/user/:username/follow', followUser);
 // Create post
-router.post('/post', createPost)
+router.post('/post', createPost);
 // get single post
-router.get('/post/:postid', getPost)
+router.get('/post/:postid', getPost);
 // Logout
-router.post('/logout', doLogout)
+router.post('/logout', doLogout);
 // Login
-router.get('/login', showLogin)
-router.post('/login', doLogin)
+router.get('/login', showLogin);
+router.post('/login', doLogin);
 // Register
-router.post('/register', registerUser)
+router.post('/register', registerUser);
 
-function getLoggedInUser(req) {
-    if (req.cookies.jwt) {
-        return jwt_decode(req.cookies.jwt)["username"];
-    }
-
-    return null;
-}
-
-function extendRenderData(data, req) {
-    return {
-        ...data,
-        AD_SERVICE_ADDRESS: req.protocol + '://' + req.get('host') + process.env.AD_PATH,
-        BASE_URL: req.protocol + '://' + req.get('host') + process.env.BASE_URL
-    }
-}
+router.use('/ad-manager', adManagerRouter);
 
 
 function showGlobalTimeline(req, res) {
@@ -47,7 +37,8 @@ function showGlobalTimeline(req, res) {
         let data = extendRenderData({
             data: response.data,
             title: 'Timeline',
-            username: getLoggedInUser(req),
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
         res.render('index.njk', data)
@@ -64,10 +55,11 @@ function showPersonalTimeline(req, res) {
         let data = extendRenderData({
             data: response.data,
             title: 'My Timeline',
-            username: getLoggedInUser(req)
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
-        res.render('index.njk', data)
+        res.render('index.njk', data);
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
@@ -79,18 +71,19 @@ function showUserProfile(req, res) {
         let data = extendRenderData({
             data: response.data,
             profileName: usernameProfile,
-            username: getLoggedInUser(req)
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
-        res.render('profile.njk', data)
+        res.render('profile.njk', data);
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
 }
 
 function doLogout(req, res) {
-    res.clearCookie('jwt')
-    res.redirect(utilities.extendURL(`/`))
+    res.clearCookie('jwt');
+    res.redirect(extendURL('/'));
 }
 
 function showLogin(req, res) {
@@ -98,7 +91,7 @@ function showLogin(req, res) {
         reg_success: req.query.reg_success,
         login_fail: req.query.login_fail
     }
-    res.render('login.njk', data)
+    res.render('login.njk', data);
 }
 
 function doLogin(req, res) {
@@ -116,10 +109,10 @@ function doLogin(req, res) {
         })
         .then(response => {
             if (response.data.jwt) {
-                res.cookie("jwt", response.data.jwt)
-                res.redirect(utilities.extendURL('/'))
+                res.cookie("jwt", response.data.jwt);
+                res.redirect(extendURL('/'));
             } else {
-                res.redirect(utilities.extendURL('/login'))
+                res.redirect(extendURL('/login'));
             }
         })
         .catch(error => {
@@ -141,7 +134,7 @@ function registerUser(req, res) {
             "password": passwordToLogin
         })
         .then(response => {
-            res.redirect(utilities.extendURL('/login'))
+            res.redirect(extendURL('/login'));
         })
         .catch(error => {
             res.status(statusCodeForError(error)).render('error.njk', handleError(error));
@@ -151,7 +144,7 @@ function registerUser(req, res) {
 function followUser(req, res) {
     const usernameProfile = req.params.username;
     req.API.post(`/users/${usernameProfile}/follow`).then((response) => {
-        res.redirect(utilities.extendURL(`/user/${usernameProfile}`));
+        res.redirect(extendURL(`/user/${usernameProfile}`));
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
@@ -186,11 +179,10 @@ function createPost(req, res) {
             }
 
             req.API.post('/post', {
-                jwt: req.cookies.jwt,
                 content: `${metaTitle} ${req.body.urlmessage}`,
                 imageUrl: metaImgSrc
             }).then((post_response) => {
-                res.redirect(utilities.extendURL(`/post/${post_response.data.postId}`))
+                res.redirect(extendURL(`/post/${post_response.data.postId}`));
             }).catch(reason => {
                 res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
             });
@@ -205,11 +197,10 @@ function createPost(req, res) {
             }
         }).then((response) => {
             req.API.post('/post', {
-                jwt: req.cookies.jwt,
                 content: req.body.description,
                 imageUrl: response.data
             }).then((post_response) => {
-                res.redirect(utilities.extendURL(`/post/${post_response.data.postId}`))
+                res.redirect(extendURL(`/post/${post_response.data.postId}`));
             }).catch(reason => {
                 res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
             });
@@ -221,13 +212,13 @@ function createPost(req, res) {
         req.API.post('/post', {
             content: req.body.message
         }).then((post_response) => {
-            res.redirect(utilities.extendURL(`/post/${post_response.data.postId}`))
+            res.redirect(extendURL(`/post/${post_response.data.postId}`));
         }).catch(reason => {
             res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
         });
     } else {
         // when nothing is set, just redirect back
-        res.redirect(utilities.extendURL('/'))
+        res.redirect(extendURL('/'));
     }
 }
 
@@ -236,10 +227,10 @@ function getPost(req, res) {
     req.API.get(`/post/${postId}`).then((response) => {
         let data = extendRenderData({
             post: response.data,
-            username: getLoggedInUser(req)
+            username: getJwtUser(req.cookies)
         }, req);
 
-        res.render('singlepost.njk', data)
+        res.render('singlepost.njk', data);
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
     });
