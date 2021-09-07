@@ -16,6 +16,13 @@
       <PackageReference Include="Flurl.Http" Version="3.2.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="SharpCompress" Version="0.20.0" />
+      <PackageReference Include="OpenTelemetry" Version="1.1.0" />
+      <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.1.0" />
+      <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.1.0" />
+      <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.1.0" />
+      <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc7" />
+      <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc7" />
+      <PackageReference Include="Jaeger" Version="0.2.2" />
     </ItemGroup>
 
 

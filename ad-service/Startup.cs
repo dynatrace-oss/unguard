@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Exporter;
 using Flurl;
 
 namespace AdService
@@ -44,6 +47,20 @@ namespace AdService
                             .AddPageRoute("/ads/delete", Url.Combine(_ApiPath, "/ads/delete"))
                     );
             }
+
+            services.AddOpenTelemetryTracing(
+                (builder) => builder
+                    .SetResourceBuilder(ResourceBuilder
+                        .CreateDefault()
+                        .AddService(Environment.GetEnvironmentVariable("JAEGER_SERVICE_NAME"))
+                    )
+                    .AddAspNetCoreInstrumentation()
+                    .AddJaegerExporter()
+            );
+            services.Configure<JaegerExporterOptions>(options =>
+            {
+                options.AgentHost = Environment.GetEnvironmentVariable("JAEGER_AGENT_HOST");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
