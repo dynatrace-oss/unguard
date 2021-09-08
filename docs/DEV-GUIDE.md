@@ -20,7 +20,7 @@ This document explains how to build and run Unguard locally using `skaffold`.
 1. Launch a local Kubernetes cluster with one of the following tools:
 
     - To launch a **kind** cluster, make sure to create the cluster with [extraPortMappings](https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings) for step 5.1.
-      This will be achieved by forwarding the ingress resource to port 82 with the given config:
+      This will be achieved by forwarding the ingress resource to port 80 with the given config:
         ```sh
           kind create cluster --name unguard --config ./docs/dev-env/kind/port-mapping-config.yaml
         ```
@@ -96,7 +96,7 @@ This document explains how to build and run Unguard locally using `skaffold`.
       127.0.0.1 unguard.kube
     ```
     Afterwards you can access the page via
-    ``` http://unguard.kube:82/ui/ ```
+    ``` http://unguard.kube/ui/ ```
 
     #### 5.2 Deployment via port forwarding
     If you don't want to use the Ingress Controller, you can also use port forwarding to access the frontend and the ad-service.
