@@ -19,7 +19,7 @@ This document explains how to build and run Unguard locally using `skaffold`.
 
 1. Launch a local Kubernetes cluster with one of the following tools:
 
-    - To launch a **kind** cluster, make sure to create the cluster with [extraPortMappings](https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings) for step 5.1.
+    - To launch a **kind** cluster, make sure to create the cluster with [extraPortMappings](https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings) for step 4.1.
       This will be achieved by forwarding the ingress resource to port 80 with the given config:
         ```sh
           kind create cluster --name unguard --config ./docs/dev-env/kind/port-mapping-config.yaml
@@ -35,16 +35,7 @@ This document explains how to build and run Unguard locally using `skaffold`.
 
 2. Run `kubectl get nodes` to verify the connection to the respective control plane
 
-3. Fetch the necessary Helm repositories
-
-    ```sh
-    helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
-    helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm repo add falcosecurity https://falcosecurity.github.io/charts # optional
-    helm repo update
-    ```
-   
-4. Use `skaffold` to build and deploy the application (first time will be slow).  
+3. Use `skaffold` to build and deploy the application (first time will be slow).  
    If the images should be rebuilt automatically, run `skaffold dev`.
    
     - With **kind** the images will be moved automatically to the cluster:
@@ -66,14 +57,14 @@ This document explains how to build and run Unguard locally using `skaffold`.
     ```
    
 
-5. Access the frontend through your browser  
+4. Access the frontend through your browser  
     There are currently two option for local deployment:
-    * 5.1 Deployment via ingress
-    * 5.2 Deployment via port forwarding  
+    * 4.1 Deployment via ingress
+    * 4.2 Deployment via port forwarding  
     
     For full functionality support 5.1 is recommended.
 
-    #### 5.1 Deployment via ingress
+    #### 4.1 Deployment via ingress
     Make sure to deploy the right ingress-nginx resource.  
     Note: The current ingress resources are incompatible with v1.0.0
    
@@ -98,7 +89,7 @@ This document explains how to build and run Unguard locally using `skaffold`.
     Afterwards you can access the page via
     ``` http://unguard.kube/ui/ ```
 
-    #### 5.2 Deployment via port forwarding
+    #### 4.2 Deployment via port forwarding
     If you don't want to use the Ingress Controller, you can also use port forwarding to access the frontend and the ad-service.
     When using this method, the ads at the timeline won't show up since they are using the 
     frontend url and there is no ingress in place for the right forwarding. 
@@ -115,7 +106,7 @@ This document explains how to build and run Unguard locally using `skaffold`.
      kubectl port-forward -n unguard service/unguard-proxy-service 8081:80
     ```
 
-6. switching between clusters during development  
+5. switching between clusters during development  
     The **Kind** cluster use `~/.kube/config` for defining context. 
     There you will find current saved context and are able to switch between different clusters
     (e.g. between aws and local kind cluster) by setting the `current-context:` to a cluster saved in the `contexts:` section.

@@ -32,7 +32,8 @@ deploy:
   helm:
     releases:
       - name: unguard-mariadb
-        remoteChart: bitnami/mariadb
+        remoteChart: mariadb
+        repo: https://charts.bitnami.com/bitnami
         namespace: unguard
         createNamespace: true
         wait: true # TODO: might be removed once we have readiness probes (CASP-8983)
@@ -63,7 +64,8 @@ profiles:
         path: /deploy/helm/releases/-
         value:
           name: falco
-          remoteChart: falcosecurity/falco
+          remoteChart: falco
+          repo: https://falcosecurity.github.io/charts
           setValues:
             falcosidekick.enabled: true
             falcosidekick.webui.enabled: true
@@ -76,6 +78,7 @@ profiles:
         path: /deploy/helm/releases/-
         value:
           name: jaeger-operator
-          remoteChart: jaegertracing/jaeger-operator
+          remoteChart: jaeger-operator
+          repo: https://jaegertracing.github.io/helm-charts
           namespace: unguard
           createNamespace: true
