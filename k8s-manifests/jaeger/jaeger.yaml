@@ -1,4 +1,5 @@
 apiVersion: jaegertracing.io/v1
 kind: Jaeger
 metadata:
-  name: jaeger # if you change this, also adapt all "<name>-agent" reference elsewhere
+  # if you change this name, also adapt all "<name>-agent" references elsewhere
+  name: jaeger

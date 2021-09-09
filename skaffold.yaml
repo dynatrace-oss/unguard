@@ -28,14 +28,12 @@ deploy:
   kustomize:
     paths:
       - ./k8s-manifests/base
-    defaultNamespace: unguard
   helm:
     releases:
       - name: unguard-mariadb
         remoteChart: mariadb
         repo: https://charts.bitnami.com/bitnami
         namespace: unguard
-        createNamespace: true
         wait: true # TODO: might be removed once we have readiness probes (CASP-8983)
         overrides:
           primary:
@@ -47,12 +45,12 @@ profiles:
       - kubeContext: "arn:aws:eks:*"
     build:
       tagPolicy:
-        sha256: {} # uses the :latest tag
+        # uses the :latest tag for AWS images
+        sha256: {}
     deploy:
       kustomize:
         paths:
           - ./k8s-manifests/aws
-        defaultNamespace: unguard
   - name: localdev
     patches:
       - op: add
@@ -81,4 +79,3 @@ profiles:
           remoteChart: jaeger-operator
           repo: https://jaegertracing.github.io/helm-charts
           namespace: unguard
-          createNamespace: true
