@@ -16,4 +16,3 @@ nodes:
         hostPort: 444
         protocol: TCP
   - role: worker
-  - role: worker

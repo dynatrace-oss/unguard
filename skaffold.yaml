@@ -34,6 +34,7 @@ deploy:
         remoteChart: mariadb
         repo: https://charts.bitnami.com/bitnami
         namespace: unguard
+        createNamespace: true
         wait: true # TODO: might be removed once we have readiness probes (CASP-8983)
         overrides:
           primary:
@@ -52,10 +53,10 @@ profiles:
         paths:
           - ./k8s-manifests/aws
   - name: localdev
-    patches:
-      - op: add
-        path: /deploy/kustomize/paths/-
-        value: ./k8s-manifests/ingress
+    deploy:
+      kustomize:
+        paths:
+          - ./k8s-manifests/localdev/kind
   - name: falco
     patches:
       - op: add
@@ -79,3 +80,4 @@ profiles:
           remoteChart: jaeger-operator
           repo: https://jaegertracing.github.io/helm-charts
           namespace: unguard
+          createNamespace: true
