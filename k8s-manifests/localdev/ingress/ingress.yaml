@@ -2,6 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: unguard-ingress
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/part-of: unguard
 spec:
   rules:
     - host: unguard.kube

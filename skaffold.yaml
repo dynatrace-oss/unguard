@@ -28,11 +28,11 @@ deploy:
   kustomize:
     paths:
       - ./k8s-manifests/base
-    defaultNamespace: unguard
   helm:
     releases:
       - name: unguard-mariadb
-        remoteChart: bitnami/mariadb
+        remoteChart: mariadb
+        repo: https://charts.bitnami.com/bitnami
         namespace: unguard
         createNamespace: true
         wait: true # TODO: might be removed once we have readiness probes (CASP-8983)
@@ -46,24 +46,25 @@ profiles:
       - kubeContext: "arn:aws:eks:*"
     build:
       tagPolicy:
-        sha256: {} # uses the :latest tag
+        # uses the :latest tag for AWS images
+        sha256: {}
     deploy:
       kustomize:
         paths:
           - ./k8s-manifests/aws
-        defaultNamespace: unguard
   - name: localdev
-    patches:
-      - op: add
-        path: /deploy/kustomize/paths/-
-        value: ./k8s-manifests/ingress
+    deploy:
+      kustomize:
+        paths:
+          - ./k8s-manifests/localdev/kind
   - name: falco
     patches:
       - op: add
         path: /deploy/helm/releases/-
         value:
           name: falco
-          remoteChart: falcosecurity/falco
+          remoteChart: falco
+          repo: https://falcosecurity.github.io/charts
           setValues:
             falcosidekick.enabled: true
             falcosidekick.webui.enabled: true
@@ -76,6 +77,7 @@ profiles:
         path: /deploy/helm/releases/-
         value:
           name: jaeger-operator
-          remoteChart: jaegertracing/jaeger-operator
+          remoteChart: jaeger-operator
+          repo: https://jaegertracing.github.io/helm-charts
           namespace: unguard
           createNamespace: true
