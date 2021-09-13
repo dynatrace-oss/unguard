@@ -7,7 +7,10 @@ This document explains how to build and run Unguard locally using `skaffold`.
 ## 🗒️ Prerequisites
 
 * [Docker](https://www.docker.com/products/docker-desktop)
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/) and [Helm](https://helm.sh/docs/intro/install/) and [Skaffold](https://skaffold.dev/docs/install/) and [Kustomize](https://kubernetes-sigs.github.io/kustomize/installation/)
+* [Kubectl](https://kubernetes.io/docs/tasks/tools/)
+* [Helm](https://helm.sh/docs/intro/install/)
+* [Skaffold](https://skaffold.dev/docs/install/)
+* [Kustomize](https://kubernetes-sigs.github.io/kustomize/installation/)
 * [OpenJDK 11](https://openjdk.java.net/projects/jdk/11/)
   for use with [Jib](https://github.com/GoogleContainerTools/jib)
 * [Kind](https://kind.sigs.k8s.io/), or, alternatively [Minikube](https://minikube.sigs.k8s.io)
