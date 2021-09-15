@@ -7,6 +7,8 @@ namespace AdService.Factory
     /// <summary>
     /// A factory for creating <see cref="HttpContext" /> instances.
     /// Additionally injects W3C Trace-Context into header if Jaeger Trace-Context header is sent.
+    /// (JAEGER) uber-trace-id header: $`{ trace-id }:{ span-id }:{ parent-span-id }:{ trace-flags }`
+    /// (W3C)    traceparent header:   $`{ version-format }-{ trace-id }-{ parent-id (i.e. span-id) }-{ trace-flags }`
     /// https://www.jaegertracing.io/docs/1.26/client-libraries/#propagation-format
     /// </summary>
     public class W3CHeaderHttpContextFactory : IHttpContextFactory
@@ -29,9 +31,8 @@ namespace AdService.Factory
             var httpContext = this._defaultHttpContextFactory.Create(featureCollection);
             
             // inject W3C Trace-Context into header
-            httpContext.Request.Headers.TryGetValue("uber-trace-id", out var uberTraceId);
-            //if (httpContext.Request.Headers.TryGetValue("uber-trace-id", out var uberTraceId)
-             //   && !httpContext.Request.Headers.ContainsKey("traceparent"))
+            if (httpContext.Request.Headers.TryGetValue("uber-trace-id", out var uberTraceId)
+                && !httpContext.Request.Headers.ContainsKey("traceparent"))
             {
                 SetTraceParentHeader(httpContext.Request, uberTraceId[0]);
             }
@@ -40,8 +41,7 @@ namespace AdService.Factory
         }
 
         /// <summary>
-        /// Create an <see cref="HttpContext"/> instance given an <paramref name="featureCollection" />.
-        /// Additionally inject a W3C Trace-Context header, if a JAEGER Trace-Context header is found.
+        /// Add or overwrite the traceparent header based on the uber-trace-id (JAEGER-default) header.
         /// </summary>
         private void SetTraceParentHeader(HttpRequest request, string uberTraceId)
         {

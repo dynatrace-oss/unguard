@@ -51,6 +51,23 @@ dependencies {
 	}
 }
 
+if (project.hasProperty('dev')) {
+	def path = ".env"
+	def env = [:]
+
+	def file = new File(path)
+	if (file.exists()) {
+		file.eachLine { line ->
+			def (name, value) = line.tokenize("=")
+			env[name.trim()] = value.trim()
+		}
+	}
+
+	env.each { name, value ->
+		System.setProperty(name, value)
+	}
+}
+
 test {
 	useJUnitPlatform()
 }

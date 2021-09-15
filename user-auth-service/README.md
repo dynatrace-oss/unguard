@@ -35,7 +35,7 @@ and then run the frontend, run:
 export $(xargs -a .env); yarn start
 ```
 
-When developing, to have the server auto-restart on change of a file, use:
+When developing, to have the server auto-restart on change of a file and use local .env variable, use:
 
 ```
 yarn run dev

@@ -63,22 +63,23 @@ namespace AdService
                     .AddAspNetCoreInstrumentation()  // Jaeger Trace-Context header compatible through W3CHeaderHttpContextFactory
                     .AddHttpClientInstrumentation(options => options.Enrich = ((activity, eventName, rawObject) =>
                         {
-                            if (eventName.Equals("OnStartActivity"))
+                            // Add JAEGER Trace-Context header for compatibility with other services.
+                            // For more info have a look at W3CHeaderHttpContextFactory.cs
+                            if (eventName.Equals("OnStartActivity")
+                                && rawObject is HttpRequestMessage request
+                                && !request.Headers.Contains("uber-trace-id"))
                             {
-                                if (rawObject is HttpRequestMessage request)
+                                string traceFlag = ((int) activity.ActivityTraceFlags).ToString();
+                                if (traceFlag.Length == 1)
                                 {
-                                    // Add JAEGER propagation header for other services.
-                                    // uber-trace-id header: $`{ trace-id }:{ span-id }:{ parent-span-id }:{ TraceFlags }`
-                                    // traceparent header: $`{ version-format }-{ trace-id }-{ parent-id (i.e. span-id) }-{ trace-flags }`
-                                    // https://www.jaegertracing.io/docs/1.26/client-libraries/#propagation-format
-
-                                    var jaegerHeader = activity.Context.TraceId
-                                                       + ":" + activity.Context.SpanId
-                                                       + ":" + activity.ParentId
-                                                       + ":" + "0" + (int) activity.ActivityTraceFlags;
-                                    request.Headers.Remove("uber-trace-id");
-                                    request.Headers.Add("uber-trace-id", jaegerHeader);
+                                    traceFlag = "0" + traceFlag;
                                 }
+                                
+                                var jaegerHeader = activity.Context.TraceId
+                                                   + ":" + activity.Context.SpanId
+                                                   + ":" + activity.ParentId
+                                                   + ":" + traceFlag;
+                                request.Headers.Add("uber-trace-id", jaegerHeader);
                             }
                         })
 

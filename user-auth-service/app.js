@@ -2,19 +2,20 @@ var createError = require('http-errors');
 var express = require('express');
 const bodyParser = require("body-parser");
 var logger = require('morgan');
-var database = require('./utils/database')
 var bcrypt = require('bcrypt');
 
+if (process.env.NODE_ENV !== 'production') {
+  // load environment variable from .env; needed for ./utils/database
+  require('dotenv').config()
+}
 
+var database = require('./utils/database')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
 var authRouter = require('./routes/auth');
 var jwtRouter = require('./routes/jwt');
 
-if (process.env.NODE_ENV !== 'production') {
-   // load environment variable from .env
-   require('dotenv').config()
-}
+
 
 const tracer = initTracer(process.env.JAEGER_SERVICE_NAME);
 const opentracing = require('opentracing')
