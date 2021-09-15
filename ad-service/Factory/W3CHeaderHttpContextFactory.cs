@@ -53,16 +53,10 @@ namespace AdService.Factory
             // convert traceId according to W3C trace context 16 byte standard
             // note: leading zeros won't be send to JAEGER for compatibility reason but 16 byte (as hex-string encoded)
             //       is necessary for W3C context initialization
-            if (traceId.Length == 16)
-            {
-                traceId = "0000000000000000" + traceId;
-            }
+            traceId.PadLeft(32, '0');
 
             // same with traceFlags as with traceId, W3C context defines 8 bit field
-            if (traceFlags.Length == 1)
-            {
-                traceFlags = "0" + traceFlags;
-            }
+            traceFlags.PadLeft(2, '0');
 
             var traceparentHeader = $"00-{traceId}-{spanId}-{traceFlags}";
             request.Headers.Remove("traceparent");
