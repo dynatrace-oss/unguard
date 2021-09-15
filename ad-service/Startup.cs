@@ -68,7 +68,8 @@ namespace AdService
         ///
         private void AddOpenTelemetryTracing(IServiceCollection services)
         {
-            // injects W3C Trace-Context header if Jaeger Trace-Context header was send
+            // Injects W3C Trace-Context header if Jaeger Trace-Context header was send, since opentelemetry-dotnet
+            // only supports W3C Propagators.
             services.AddSingleton<IHttpContextFactory>(serviceProvider => new W3CHeaderHttpContextFactory(serviceProvider));
 
             services.AddOpenTelemetryTracing(
@@ -78,13 +79,14 @@ namespace AdService
                         .AddService(Environment.GetEnvironmentVariable("JAEGER_SERVICE_NAME"))
                         .AddEnvironmentVariableDetector()
                     )
-                    // add traces to incoming requests (e.g. from unguard-frontend)
+                    // Add traces to incoming requests (e.g. from unguard-frontend)
                     // Jaeger Trace-Context header compatible through W3CHeaderHttpContextFactory
                     .AddAspNetCoreInstrumentation() 
-                    // add traces to outgoing requests (e.g. to unguard-user-auth-service)
+                    // Add traces to outgoing requests (e.g. to unguard-user-auth-service)
                     .AddHttpClientInstrumentation(options => options.Enrich = ((activity, eventName, rawObject) =>
                         {
-                            // Add JAEGER Trace-Context header for compatibility with other services.
+                            // Add JAEGER Trace-Context header before sending an request (i.d. OnStartActivity)
+                            // This is necessary for creating compatibility with other services.
                             // For more info have a look at W3CHeaderHttpContextFactory.cs
                             if (eventName.Equals("OnStartActivity")
                                 && rawObject is HttpRequestMessage request
