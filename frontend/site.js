@@ -227,7 +227,8 @@ function getPost(req, res) {
     req.API.get(`/post/${postId}`).then((response) => {
         let data = extendRenderData({
             post: response.data,
-            username: getJwtUser(req.cookies)
+            username: getJwtUser(req.cookies),
+            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER)
         }, req);
 
         res.render('singlepost.njk', data);

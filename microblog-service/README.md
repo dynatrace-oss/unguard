@@ -21,9 +21,10 @@ docker run -d --name unguard-redis -p 6379:6379 redis
 To simply run this service, optionally adjust the ```.env``` file for 
 your Jaeger/Redis config and then run:
 
-```
+``` bash
 # either set env variables manually or set them from .env file by running:
-export $(xargs -a .env)
+export $(xargs -a .env)                  # linux
+for /F "tokens=*" %A in (.env) do set %A # windows-cmd
 # start the application
 ./gradlew bootRun
 ```

@@ -40,6 +40,8 @@ spec:
           env:
             - name: SERVER_PORT
               value: "9091"
+            - name: JAEGER_SERVICE_NAME
+              value: "unguard-user-auth-service"
             - name: JAEGER_AGENT_HOST
               value: "jaeger-agent" # change depending on your jaeger deployment
             - name: JAEGER_SAMPLER_TYPE
