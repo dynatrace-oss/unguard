@@ -20,6 +20,7 @@ other microservices on different ports/hosts:
 | JAEGER_SAMPLER_TYPE   | const             | (optional) Set to const to get all traces
 | JAEGER_SAMPLER_PARAM  | 1                 | (optional) Set to 1 while sampler is const to get all traces
 | MARIADB_SERVICE       | localhost         | Address of MariaDB database
+| MARIADB_PASSWORD      | mariadb-root-password | Password of MariaDB database
 
 ## Running
 

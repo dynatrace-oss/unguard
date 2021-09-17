@@ -20,7 +20,12 @@ namespace AdService.Model
             try
             {
                 var jwtPayloadRaw = jwt.Split('.')[1];
-                var jwtPayloadBase64 = jwtPayloadRaw.PadRight(jwtPayloadRaw.Length + (jwtPayloadRaw.Length % 4),'=');
+                var jwtPayloadBase64 = jwtPayloadRaw;
+                // add padding if needed
+                if (jwtPayloadBase64.Length % 4 != 0) {
+                    jwtPayloadBase64 = jwtPayloadBase64.PadRight(jwtPayloadBase64.Length + (4 - jwtPayloadBase64.Length % 4),'=');
+                }
+
                 var jwtPayloadJsonString = Encoding.UTF8.GetString(Convert.FromBase64String(jwtPayloadBase64));
                 var jwtPayloadJson = JObject.Parse(jwtPayloadJsonString);
                 
