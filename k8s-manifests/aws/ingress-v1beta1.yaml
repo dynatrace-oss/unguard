@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1beta1 # kubernetes version <= v1.21
+kind: Ingress
+metadata:
+  name: unguard-ingress
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/part-of: unguard
+  annotations:
+    # TODO: CASP-10740 remove when we have the VPC
+    alb.ingress.kubernetes.io/inbound-cidrs: 83.164.160.102/32, 80.80.253.56/32, 83.164.197.242/32 # LNZ, KLU, HGB endpoints
+    alb.ingress.kubernetes.io/load-balancer-name: "ground-zero-unguard"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    kubernetes.io/ingress.class: alb
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /ui
+            backend:
+              serviceName: unguard-frontend
+              servicePort: 80
+          - path: /ad-service
+            backend:
+              serviceName: unguard-ad-service
+              servicePort: 80

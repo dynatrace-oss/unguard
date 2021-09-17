@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: unguard
 resources:
   - ../base
-  - ingress.yaml
+  - ingress-v1beta1.yaml
 patchesStrategicMerge:
   - |-
     apiVersion: v1
