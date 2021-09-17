@@ -5,7 +5,7 @@ resources:
   - namespace.yaml
   - ad-service.yaml
   - frontend.yaml
-  - load-generator.yaml
+  # - load-generator.yaml # TODO will be fixed with CASP-10547
   - microblog-service.yaml
   - proxy-service.yaml
   - redis.yaml

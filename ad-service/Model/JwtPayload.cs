@@ -20,7 +20,7 @@ namespace AdService.Model
             try
             {
                 var jwtPayloadRaw = jwt.Split('.')[1];
-                var jwtPayloadBase64 = jwtPayloadRaw.PadRight(jwtPayloadRaw.Length + (4 - jwtPayloadRaw.Length % 4),'=');
+                var jwtPayloadBase64 = jwtPayloadRaw.PadRight(jwtPayloadRaw.Length + (jwtPayloadRaw.Length % 4),'=');
                 var jwtPayloadJsonString = Encoding.UTF8.GetString(Convert.FromBase64String(jwtPayloadBase64));
                 var jwtPayloadJson = JObject.Parse(jwtPayloadJsonString);
                 
