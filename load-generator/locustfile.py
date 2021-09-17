@@ -94,7 +94,7 @@ class UnguardUser(HttpUser):
 
     @task(2)
     def mytimeline(self):
-        self.client.get("/mytimeline")
+        self.client.get("/my-timeline")
 
     @tag('posting')
     @task(1)
