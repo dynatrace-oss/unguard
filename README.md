@@ -77,6 +77,13 @@ If you would like to deploy the application on a local cluster, see the [Develop
    skaffold run -p aws,falco,jaeger --default-repo <aws_account_id.dkr>.ecr.<region>.amazonaws.com
    ```
 
+## ❄️ Dynatrace Monaco
+
+The configuration file for creating an unguard managment-zone is placed in `monaco/management-zone`.  
+For more infos regarding the deployment check the official monaco [Github](https://github.com/dynatrace-oss/dynatrace-monitoring-as-code) or our [wiki page](https://dev-wiki.dynatrace.org/pages/viewpage.action?pageId=324390976).
+
+For a detailed step by step guide, how to deploy this monaco configs [read here](https://dev-wiki.dynatrace.org/pages/viewpage.action?pageId=324390976).
+
 ## ✨ Features
 
 * **[Kubernetes](https://kubernetes.io/) / [AWS](https://aws.amazon.com/eks)**: The app is designed to run on a local Kubernetes cluster, as well as on the cloud with AWS.
