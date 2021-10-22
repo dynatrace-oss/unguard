@@ -2,12 +2,6 @@
  "description": "",
  "dimensionalRules": [],
  "entitySelectorBasedRules": [],
- "metadata": {
-  "clusterVersion": "1.230.0.20211014-213634",
-  "configurationVersions": [
-   0
-  ]
- },
  "name": "{{.name}}",
  "rules": [
   {
