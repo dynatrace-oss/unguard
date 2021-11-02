@@ -1,6 +1,6 @@
 # Development Guide
 
-This document explains how to build and run Unguard locally using `skaffold`.
+This document explains how to build and run Unguard locally inside Kubernetes using `skaffold`.
 
 > **Warning:** Most of the services rely on the Kubernetes DNS. If you must deploy some parts of the application without a Kubernetes cluster, read the READMEs of the individual services instead.
 
@@ -62,10 +62,15 @@ This document explains how to build and run Unguard locally using `skaffold`.
         skaffold run -p localdev --detect-minikube
         ```
 
-2. Add a local DNS entry in your `hosts` file and access the frontend on **[unguard.kube/ui](http://unguard.kube/ui)**
+2. Add an entry in your `/etc/hosts` file to access the ingress exposing the frontend on **[unguard.kube/ui](http://unguard.kube/ui)**
     ```sh
-    # unguard local deployment
+    # for kind clusters
     127.0.0.1 unguard.kube
+    ```
+   For minikube clusters, use the clusters external ip in the entry:
+    ```sh
+    sudo -- sh -c "echo $(minikube -p unguard ip) unguard.kube >> /etc/hosts"
+    # or manually add the output of `minikube -p unguard ip` to your `/etc/hosts` file
     ```
 
 ### 🔥 Cleanup
@@ -90,3 +95,5 @@ skaffold run -p localdev,jaeger
 Clusters are configured in `~/.kube/config`.
 
 To switch between different clusters (e.g., between `aws` and `kind`) set the `current-context:` to a cluster saved in the `contexts:` section.
+
+A great tool that makes this process faster is [kubectx](https://github.com/ahmetb/kubectx).

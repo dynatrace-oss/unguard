@@ -53,10 +53,10 @@ profiles:
         paths:
           - ./k8s-manifests/aws
   - name: localdev
-    deploy:
-      kustomize:
-        paths:
-          - ./k8s-manifests/localdev/kind
+    patches:
+      - op: add
+        path: /deploy/kustomize/paths/-
+        value: ./k8s-manifests/localdev/ingress
   - name: falco
     patches:
       - op: add
