@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1 # kubernetes version >= v1.19
+apiVersion: networking.k8s.io/v1 # available starting from kubernetes version v1.19
 kind: Ingress
 metadata:
   name: unguard-ingress
@@ -9,6 +9,7 @@ metadata:
     alb.ingress.kubernetes.io/load-balancer-name: "ground-zero-unguard"
     alb.ingress.kubernetes.io/scheme: internet-facing
     kubernetes.io/ingress.class: alb
+    nginx.ingress.kubernetes.io/app-root: /ui
 spec:
   rules:
     - http:
