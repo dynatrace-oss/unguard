@@ -10,8 +10,8 @@ build:
       jib: {}
     - image: unguard-proxy-service
       context: proxy-service
-    - image: unguard-load-generator
-      context: load-generator
+#    - image: unguard-load-generator
+#      context: load-generator
     - image: unguard-user-auth-service
       context: user-auth-service
     - image: unguard-ad-service
@@ -52,11 +52,16 @@ profiles:
       kustomize:
         paths:
           - ./k8s-manifests/aws
-  - name: localdev
-    patches:
-      - op: add
-        path: /deploy/kustomize/paths/-
-        value: ./k8s-manifests/localdev/ingress
+  - name: localdev-minikube
+    deploy:
+      kustomize:
+        paths:
+          - ./k8s-manifests/localdev/ingress
+  - name: localdev-kind
+    deploy:
+      kustomize:
+        paths:
+          - ./k8s-manifests/localdev/kind
   - name: falco
     patches:
       - op: add
