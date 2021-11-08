@@ -10,8 +10,8 @@ build:
       jib: {}
     - image: unguard-proxy-service
       context: proxy-service
-#    - image: unguard-load-generator
-#      context: load-generator
+    - image: unguard-load-generator
+      context: load-generator
     - image: unguard-user-auth-service
       context: user-auth-service
     - image: unguard-ad-service
