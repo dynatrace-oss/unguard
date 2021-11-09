@@ -91,11 +91,11 @@ skaffold run -p localdev-kind,jaeger,falco
 
 ### How can I have fast, incremental Java builds during development?
 
-To benefit from incremental Java builds in the container, install use [OpenJDK 11](https://openjdk.java.net/projects/jdk/11/) and [Jib](https://github.com/GoogleContainerTools/jib).
+To benefit from incremental Java builds in the container, install [OpenJDK 11](https://openjdk.java.net/projects/jdk/11/) and [Jib](https://github.com/GoogleContainerTools/jib).
 
 You may then append the `jib` profile which adapts the build section so that it uses your locally installed Jib.
 ```sh
-skaffold run -p localdev,jib
+skaffold run -p localdev-minikube,jib
 ```
 
 ### How can I switch between multiple clusters?
