@@ -8,8 +8,6 @@ This document explains how to build and run Unguard locally inside Kubernetes us
 
 * [Docker](https://www.docker.com/products/docker-desktop)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/), [Helm](https://helm.sh/docs/intro/install/), [Skaffold](https://skaffold.dev/docs/install/), and [Kustomize](https://kubernetes-sigs.github.io/kustomize/installation/)
-* [OpenJDK 11](https://openjdk.java.net/projects/jdk/11/)
-  for use with [Jib](https://github.com/GoogleContainerTools/jib)
 * [Kind](https://kind.sigs.k8s.io/), or, alternatively [Minikube](https://minikube.sigs.k8s.io)
   * For best performance and stability, we recommend Kind, especially on Windows
 
@@ -81,9 +79,9 @@ Run `skaffold delete` with the chosen profile used to start unguard to clean up 
 skaffold delete -p {localdev-minikube/localdev-kind}
 ```
 
-## Additional Notes
+## 🙋‍♀️ FAQ
 
-### Skaffold profiles
+### What are skaffold profiles?
 
 Have a look at the profiles that are supported in `skaffold.yaml`.  
 Often, you might also want to also deploy Jaeger or even Falco.
@@ -91,7 +89,16 @@ Often, you might also want to also deploy Jaeger or even Falco.
 skaffold run -p localdev-kind,jaeger,falco
 ```
 
-### Switching between multiple clusters
+### How can I have fast, incremental Java builds during development?
+
+To benefit from incremental Java builds in the container, install use [OpenJDK 11](https://openjdk.java.net/projects/jdk/11/) and [Jib](https://github.com/GoogleContainerTools/jib).
+
+You may then append the `jib` profile which adapts the build section so that it uses your locally installed Jib.
+```sh
+skaffold run -p localdev,jib
+```
+
+### How can I switch between multiple clusters?
 
 Clusters are configured in `~/.kube/config`.
 

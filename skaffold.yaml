@@ -5,9 +5,8 @@ build:
     # context is the directory with the Dockerfile for that image
     - image: unguard-frontend
       context: frontend
-    - image: unguard-microblog-service
+    - image: unguard-microblog-service # adapt jib patch index below if you move this item
       context: microblog-service
-      jib: {}
     - image: unguard-proxy-service
       context: proxy-service
     - image: unguard-load-generator
@@ -86,3 +85,8 @@ profiles:
           repo: https://jaegertracing.github.io/helm-charts
           namespace: unguard
           createNamespace: true
+  - name: jib
+    patches:
+      - op: add
+        path: /build/artifacts/1/jib
+        value: {}
