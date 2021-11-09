@@ -56,7 +56,7 @@ profiles:
     deploy:
       kustomize:
         paths:
-          - ./k8s-manifests/localdev/ingress
+          - ./k8s-manifests/localdev/minikube
   - name: localdev-kind
     deploy:
       kustomize:
