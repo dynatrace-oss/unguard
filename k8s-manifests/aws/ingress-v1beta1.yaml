@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: frontend
     app.kubernetes.io/part-of: unguard
   annotations:
-    alb.ingress.kubernetes.io/load-balancer-name: "ground-zero-unguard"
+    alb.ingress.kubernetes.io/load-balancer-name: "unguard-lb"
     alb.ingress.kubernetes.io/scheme: internet-facing
     kubernetes.io/ingress.class: alb
     nginx.ingress.kubernetes.io/app-root: /ui
