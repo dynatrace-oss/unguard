@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1beta1 # available until kubernetes version v1.21
+kind: Ingress
+metadata:
+  name: unguard-ingress
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/part-of: unguard
+
+  #TODO Implement this ingress for GCP, that it is accessible via a Loadbalancer
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /ui
+            backend:
+              serviceName: unguard-frontend
+              servicePort: 80
+          - path: /ad-service
+            backend:
+              serviceName: unguard-ad-service
+              servicePort: 80
