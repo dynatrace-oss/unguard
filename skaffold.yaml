@@ -51,6 +51,11 @@ profiles:
       kustomize:
         paths:
           - ./k8s-manifests/aws
+  - name: gcp
+    deploy:
+      kustomize:
+        paths:
+          - ./k8s-manifests/gcp
   - name: localdev-minikube
     deploy:
       kustomize:

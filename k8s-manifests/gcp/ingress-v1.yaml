@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1 # available starting from kubernetes version v1.19
+kind: Ingress
+metadata:
+  name: unguard-ingress
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/part-of: unguard
+
+  #TODO Implement this ingress for GCP, that it is accessible via a Loadbalancer but just in our DT-VPN. (APM-336273)
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /ui
+            pathType: Prefix
+            backend:
+              service:
+                name: unguard-frontend
+                port:
+                  number: 80
+          - path: /ad-service
+            pathType: Prefix
+            backend:
+              service:
+                name: unguard-ad-service
+                port:
+                  number: 80
