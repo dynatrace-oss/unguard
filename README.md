@@ -84,6 +84,9 @@ For more infos regarding the deployment check the official monaco [Github](https
 
 For a detailed step by step guide, how to deploy this monaco configs [read here](https://dev-wiki.dynatrace.org/pages/viewpage.action?pageId=324390976).
 
+## 💫 Versioning
+For further information about the unguard-versioning [look here](https://dev-wiki.dynatrace.org/display/CASP/Unguard%3A+Versioning).
+
 ## ✨ Features
 
 * **[Kubernetes](https://kubernetes.io/) / [AWS](https://aws.amazon.com/eks)**: The app is designed to run on a local Kubernetes cluster, as well as on the cloud with AWS.
