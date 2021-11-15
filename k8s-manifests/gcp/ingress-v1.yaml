@@ -6,8 +6,7 @@ metadata:
     app.kubernetes.io/name: frontend
     app.kubernetes.io/part-of: unguard
 
-  #TODO Implement this ingress for GCP, that it is accessible via a Loadbalancer
-
+  #TODO Implement this ingress for GCP, that it is accessible via a Loadbalancer but just in our DT-VPN. (APM-336273)
 spec:
   rules:
     - http:
