@@ -30,7 +30,7 @@ Unguard is composed of six microservices written in different languages that tal
 | [proxy-service](./proxy-service)         | Java Spring     | Serves REST API for proxying requests from frontend (vulnerable to SSRF; no sanitization on the entered URL). |
 | [user-auth-service](./user-auth-service) | Node.js Express | Serves REST API for authenticating users with JWT tokens (vulnerable to JWT key confusion).                   |
 | jaeger                                   |                 | The [Jaeger](https://www.jaegertracing.io/) stack for distributed tracing.                                    |
-| mariadb                                 |                 | Relational database that holds user and token data.                                                           |
+| mariadb                                  |                 | Relational database that holds user and token data.                                                           |
 | redis                                    |                 | Key-value store that holds all user data (except authentication-related stuff).                               |
 
 ## 🖥️ Local Development
