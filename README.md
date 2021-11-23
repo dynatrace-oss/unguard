@@ -79,10 +79,10 @@ If you would like to deploy the application on a local cluster, see the [Develop
 
 ## ❄️ Dynatrace Monaco
 
-The configuration file for creating an unguard managment-zone is placed in `monaco/management-zone`.  
+The configuration file for creating an unguard management-zone is placed in `monaco/management-zone`.  
 For more infos regarding the deployment check the official monaco [Github](https://github.com/dynatrace-oss/dynatrace-monitoring-as-code) or our [wiki page](https://dev-wiki.dynatrace.org/pages/viewpage.action?pageId=324390976).
 
-For a detailed step by step guide, how to deploy this monaco configs [read here](https://dev-wiki.dynatrace.org/pages/viewpage.action?pageId=324390976).
+For a detailed step-by-step guide, how to deploy this monaco configs [read here](https://dev-wiki.dynatrace.org/pages/viewpage.action?pageId=324390976).
 
 ## ✨ Features
 
