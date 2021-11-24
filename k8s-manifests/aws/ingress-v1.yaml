@@ -9,7 +9,7 @@ metadata:
     alb.ingress.kubernetes.io/load-balancer-name: "unguard-lb"
     alb.ingress.kubernetes.io/scheme: internal
     kubernetes.io/ingress.class: alb
-    nginx.ingress.kubernetes.io/app-root: /ui
+    nginx.ingress.kubernetes.io/app-root: /ui/
 spec:
   rules:
     - http:
