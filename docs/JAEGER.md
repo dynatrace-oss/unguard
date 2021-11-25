@@ -4,10 +4,18 @@
 
 ## ⚙️ Installation
 
-Use the `jaeger` profile when calling Skaffold.
+Use the `jaeger` profile when calling Skaffold to deploy the scalable Jaeger stack with an Elasticsearch backend.
+This is not recommended for local development, due to the high memory / CPU demand.
 
 ```sh
 skaffold run -p jaeger
+```
+
+For local development, the jaeger all-in-one deployment can be used as a drop-in replacement for the more production ready
+Jaeger stack. This can be deployed using the `jaeger-dev` Skaffold profile.
+
+```sh
+skaffold run -p jaeger-dev
 ```
 
 ## 🖥️ Usage
