@@ -3,10 +3,12 @@ import {beforeAll, By, step, TestData, TestSettings} from '@flood/element'
 // noinspection JSUnusedGlobalSymbols
 export const settings: TestSettings = {
     userAgent: 'simulated-browser-user',
-    loopCount: Infinity,
+    loopCount: 10,
     screenshotOnFailure: false,
     // Automatically wait for elements before trying to interact with them
     waitUntil: 'visible',
+    actionDelay: 3,
+    stepDelay: 5
     // For the future, we can set HTTP headers here:
     // extraHTTPHeaders: {
     //     'X-Client-Ip': `${ip}`
