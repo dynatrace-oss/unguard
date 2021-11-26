@@ -3,6 +3,8 @@ import {beforeAll, By, step, TestData, TestSettings} from '@flood/element'
 // noinspection JSUnusedGlobalSymbols
 export const settings: TestSettings = {
     userAgent: 'simulated-browser-user',
+    // Currently only 10 loops instead of Infinite, as the 11th run stalls forever
+    // But as K8s will restart the pod, this will still run indefinitely
     loopCount: 10,
     screenshotOnFailure: false,
     // Automatically wait for elements before trying to interact with them
