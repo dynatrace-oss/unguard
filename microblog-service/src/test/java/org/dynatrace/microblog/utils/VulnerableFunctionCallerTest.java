@@ -7,14 +7,21 @@ import org.junit.jupiter.api.Test;
 
 class VulnerableFunctionCallerTest {
 
-	@Test
-	void callVulnerableFunction_callsVulnerableFunction() {
-		String vulnerableFunction = "com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator.validateSubType";
-		VulnerableFunctionCaller vulnerableFunctionCaller = new VulnerableFunctionCaller();
+	private final VulnerableFunctionCaller vulnerableFunctionCaller = new VulnerableFunctionCaller();
 
-		boolean methodCalled = vulnerableFunctionCaller.callVulnerableFunctionOf(vulnerableFunction);
+	@Test
+	void callVulnerableFunctionOfJacksonDatabind_ReturnsTrue_WhenObjectCouldBeDeserialized() {
+		boolean methodCalled = vulnerableFunctionCaller.callVulnerableFunctionOfJacksonDatabind();
 
 		assertThat(methodCalled).isTrue();
+	}
+
+	@Test
+	void callVulnerableFunction_ReturnsFalse_WhenObjectCouldNotBeDeserialized() {
+		boolean methodCalled = vulnerableFunctionCaller.callVulnerableFunctionOfJacksonDatabind();
+
+		assertThat(methodCalled).isTrue();
+
 	}
 }
 
