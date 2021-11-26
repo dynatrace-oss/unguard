@@ -1,66 +1,31 @@
 package org.dynatrace.microblog.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator;
 
 public class VulnerableFunctionCaller {
 
-	public String callVulnerableFunctionOf(String vulnerableLib) {
+	Logger logger = LoggerFactory.getLogger(VulnerableFunctionCaller.class);
+
+	@SuppressWarnings("deprecation") //Deprecated method call is necessary, we'd like to call a vulnerable function here.
+	public boolean callVulnerableFunctionOf(String vulnerableLib) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.enableDefaultTyping();
 
-		final Person john = new Person("john", 25, new DomesticNumber(43, 0));
 		try {
+			final Person john = new Person("John", 25, new DomesticNumber(43, 0));
 			String serializedJohn = mapper.writeValueAsString(john);
-			//here the vulnerable function of "com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator.validateSubType" is called
-			Person deserializedJohn = mapper.readValue(serializedJohn, Person.class);
 
+			if(mapper.readValue(serializedJohn, Person.class) != null) {
+				logger.info(String.format("Vulnerable function %s called.", vulnerableLib));
+				return true;
+			}
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			logger.warn(String.format("Exception while trying to call vulnerable function %s ", vulnerableLib), e);
 		}
-		return "stacktrace";
-	}
-}
-
-class Person {
-	public String name;
-	public int age;
-	public PhoneNumber phone;
-
-	public Person() {
-	}
-	public Person(String name, int age, PhoneNumber phone) {
-		this.name = name;
-		this.age = age;
-		this.phone = phone;
-	}
-}
-abstract class PhoneNumber {
-	public int areaCode, local;
-
-	public PhoneNumber() {
-	}
-	public PhoneNumber(int areaCode, int local) {
-		this.areaCode = areaCode;
-		this.local = local;
-	}
-}
-class InternationalNumber extends PhoneNumber {
-	public int countryCode;
-
-	public InternationalNumber() {
-	}
-	public InternationalNumber(int areaCode, int local, int countryCode) {
-		super(areaCode, local);
-		this.countryCode = countryCode;
-	}
-}
-class DomesticNumber extends PhoneNumber {
-	public DomesticNumber() {
-	}
-	public DomesticNumber(int areaCode, int local) {
-		super(areaCode, local);
+		return false;
 	}
 }

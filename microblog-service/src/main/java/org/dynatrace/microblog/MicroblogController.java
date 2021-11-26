@@ -10,6 +10,7 @@ import org.dynatrace.microblog.exceptions.*;
 import org.dynatrace.microblog.form.PostForm;
 import org.dynatrace.microblog.redis.RedisClient;
 import org.dynatrace.microblog.utils.JwtTokensUtils;
+import org.dynatrace.microblog.utils.VulnerableFunctionCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,6 +117,9 @@ public class MicroblogController {
     @GetMapping("/post/{postid}")
     public Post getPost(@PathVariable("postid") String postId, @CookieValue(value="jwt", required = false) String jwt) throws UserNotFoundException, InvalidJwtException, IOException, NotLoggedInException {
         checkJwt(jwt);
+		VulnerableFunctionCaller vulnerableFunctionCaller = new VulnerableFunctionCaller();
+		vulnerableFunctionCaller.callVulnerableFunctionOf(
+				"com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator.validateSubType");
 
         return redisClient.getPost(jwt, postId);
     }

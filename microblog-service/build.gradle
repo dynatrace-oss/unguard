@@ -17,6 +17,8 @@ dependencies {
 	// tracing
 	implementation 'io.jaegertracing:jaeger-client:1.4.0'
 	implementation group: 'io.opentracing.contrib', name: 'opentracing-spring-jaeger-web-starter', version: '3.2.2'
+	implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+	implementation 'junit:junit:4.13.1'
 
 	// https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-okhttp3
 	compile group: 'io.opentracing.contrib', name: 'opentracing-okhttp3', version: '3.0.0'
@@ -49,6 +51,8 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	// https://mvnrepository.com/artifact/org.assertj/assertj-core
+	testImplementation 'org.assertj:assertj-core:3.21.0'
 }
 
 test {
