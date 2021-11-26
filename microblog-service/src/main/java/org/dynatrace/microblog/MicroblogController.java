@@ -10,7 +10,7 @@ import org.dynatrace.microblog.exceptions.*;
 import org.dynatrace.microblog.form.PostForm;
 import org.dynatrace.microblog.redis.RedisClient;
 import org.dynatrace.microblog.utils.JwtTokensUtils;
-import org.dynatrace.microblog.utils.VulnerableFunctionCaller;
+import org.dynatrace.microblog.vulnerablefunctions.VulnerableFunctionCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

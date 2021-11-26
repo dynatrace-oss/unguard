@@ -2,6 +2,7 @@ package org.dynatrace.microblog.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.dynatrace.microblog.vulnerablefunctions.VulnerableFunctionCaller;
 import org.junit.jupiter.api.Test;
 
 class VulnerableFunctionCallerTest {

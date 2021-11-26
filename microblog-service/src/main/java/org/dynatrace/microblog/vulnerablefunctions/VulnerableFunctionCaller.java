@@ -1,4 +1,4 @@
-package org.dynatrace.microblog.utils;
+package org.dynatrace.microblog.vulnerablefunctions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
