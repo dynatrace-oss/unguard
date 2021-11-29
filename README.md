@@ -21,12 +21,12 @@ Unguard is composed of six microservices written in different languages that tal
 
 ![Unguard Architecture](docs/images/unguard-architecture.png)
 
-| Service                                  | Language        | Description                                                                                                  |
-| ---------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------ |
-| [ad-service](./ad-service)               | .NET 5          | Provide CRUD operation for images and serves a HTML page which displays an image like an ad. |
+| Service                                  | Language        | Description                                                                                                   |
+| ---------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------- |
+| [ad-service](./ad-service)               | .NET 5          | Provide CRUD operation for images and serves a HTML page which displays an image like an ad.                  |
 | [frontend](./frontend)                   | Node.js Express | Serves HTML to the user to interact with the application.                                                     |
-| [load-generator](./load-generator)       | Python/Locust   | Creates synthetic user traffic.                                                                               |
-| [microblog-service](./microblog-service) | Java Spring     | Serves a REST API for the frontend and saves data into redis.                                                          |
+| [user-simulator](./user-simulator)       | Node.js Element | Creates synthetic user traffic by simulating an Unguard user using a real browser. Acts as a load generator.  |                                                               |
+| [microblog-service](./microblog-service) | Java Spring     | Serves a REST API for the frontend and saves data into redis.                                                 |
 | [proxy-service](./proxy-service)         | Java Spring     | Serves REST API for proxying requests from frontend (vulnerable to SSRF; no sanitization on the entered URL). |
 | [user-auth-service](./user-auth-service) | Node.js Express | Serves REST API for authenticating users with JWT tokens (vulnerable to JWT key confusion).                   |
 | jaeger                                   |                 | The [Jaeger](https://www.jaegertracing.io/) stack for distributed tracing.                                    |
@@ -83,10 +83,10 @@ TODO: Update Description of deployment here. (APM-336273)
 
 ## ❄️ Dynatrace Monaco
 
-The configuration file for creating an unguard managment-zone is placed in `monaco/management-zone`.  
+The configuration file for creating an unguard management-zone is placed in `monaco/management-zone`.  
 For more infos regarding the deployment check the official monaco [Github](https://github.com/dynatrace-oss/dynatrace-monitoring-as-code) or our [wiki page](https://dev-wiki.dynatrace.org/pages/viewpage.action?pageId=324390976).
 
-For a detailed step by step guide, how to deploy this monaco configs [read here](https://dev-wiki.dynatrace.org/pages/viewpage.action?pageId=324390976).
+For a detailed step-by-step guide, how to deploy this monaco configs [read here](https://dev-wiki.dynatrace.org/pages/viewpage.action?pageId=324390976).
 
 ## 💫 Versioning
 For further information about the unguard-versioning [look here](https://dev-wiki.dynatrace.org/display/CASP/Unguard%3A+Versioning).
@@ -96,8 +96,8 @@ For further information about the unguard-versioning [look here](https://dev-wik
 * **[Kubernetes](https://kubernetes.io/) / [AWS](https://aws.amazon.com/eks)**: The app is designed to run on a local Kubernetes cluster, as well as on the cloud with AWS.
 * [**Jaeger Tracing**](https://www.jaegertracing.io/): Most services are instrumented using trace interceptors.
 * [**Skaffold**](https://skaffold.dev/): Unguard is deployed to Kubernetes with a single command using Skaffold.
-* **Synthetic Load Generation**: The application comes with a deployment that creates traces using the [Locust](https://locust.io/) load generator.
-* **[Exploits](./exploits/README.md)**: Different automated attack scenarios like JWT key confusion attacks or remote code execution.
+* **Synthetic Load Generation**: The application comes with a deployment that creates traffic using the [Element](https://element.flood.io/) browser-based load generation library.
+* **[Exploits](./exploits/tool/README.md)**: Different automated attack scenarios like JWT key confusion attacks or remote code execution.
 
 ## ➕ Additional Deployment Options
 

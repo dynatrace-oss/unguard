@@ -9,8 +9,8 @@ build:
       context: microblog-service
     - image: unguard-proxy-service
       context: proxy-service
-    - image: unguard-load-generator
-      context: load-generator
+    - image: unguard-user-simulator
+      context: user-simulator
     - image: unguard-user-auth-service
       context: user-auth-service
     - image: unguard-ad-service

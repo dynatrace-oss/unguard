@@ -1,0 +1,36 @@
+{
+  "name": "user-simulator",
+  "version": "1.0.0",
+  "description": "Simulates a real browser unguard user.",
+  "scripts": {
+    "start": "element run ./default-user-sim.perf.ts"
+  },
+  "private": true,
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 100,
+    "useTabs": true,
+    "tabWidth": 2,
+    "bracketSpacing": true,
+    "jsxBracketSameLine": true,
+    "arrowParens": "avoid"
+  },
+  "dependencies": {
+    "@flood/element": "2.0.4",
+    "@flood/element-cli": "2.0.4",
+    "assert": "*",
+    "faker": "*",
+    "prettier": "*"
+  },
+  "devDependencies": {
+    "@types/faker": "*",
+    "@types/assert": "*"
+  },
+  "element": {
+    "testMatch": [
+      "**/*.perf.[tj]s"
+    ]
+  }
+}
