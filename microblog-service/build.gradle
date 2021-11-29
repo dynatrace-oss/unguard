@@ -55,8 +55,6 @@ dependencies {
 	testImplementation 'org.assertj:assertj-core:3.21.0'
 	// https://mvnrepository.com/artifact/org.mockito/mockito-core
 	testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.1.0'
-
-
 }
 
 test {
