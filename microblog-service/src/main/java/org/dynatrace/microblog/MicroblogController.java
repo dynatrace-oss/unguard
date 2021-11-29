@@ -1,18 +1,12 @@
 package org.dynatrace.microblog;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
+import io.jsonwebtoken.Claims;
+import io.opentracing.Tracer;
 import org.dynatrace.microblog.authservice.UserAuthServiceClient;
 import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.PostId;
 import org.dynatrace.microblog.dto.User;
-import org.dynatrace.microblog.exceptions.FollowYourselfException;
-import org.dynatrace.microblog.exceptions.InvalidJwtException;
-import org.dynatrace.microblog.exceptions.InvalidUserException;
-import org.dynatrace.microblog.exceptions.NotLoggedInException;
-import org.dynatrace.microblog.exceptions.UserNotFoundException;
+import org.dynatrace.microblog.exceptions.*;
 import org.dynatrace.microblog.form.PostForm;
 import org.dynatrace.microblog.redis.RedisClient;
 import org.dynatrace.microblog.utils.JwtTokensUtils;
@@ -20,17 +14,11 @@ import org.dynatrace.microblog.vulnerablefunctions.VulnerableFunctionCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import io.jsonwebtoken.Claims;
-import io.opentracing.Tracer;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 
 @RestController
@@ -64,7 +52,7 @@ public class MicroblogController {
         this.userAuthServiceClient = new UserAuthServiceClient(userAuthServiceAddress);
         this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
         this.vulnerableFunctionCaller = vulnerableFunctionCaller;
-	}
+    }
 
     @RequestMapping("/timeline")
     public List<Post> timeline(@CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
@@ -120,7 +108,7 @@ public class MicroblogController {
 
     @PostMapping("/post")
     public PostId post(@RequestBody PostForm postForm, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidUserException, InvalidJwtException, NotLoggedInException {
-		checkJwt(jwt);
+        checkJwt(jwt);
 
         // decode JWT
         Claims claims = JwtTokensUtils.decodeTokenClaims(jwt);
@@ -130,8 +118,8 @@ public class MicroblogController {
 
     @GetMapping("/post/{postid}")
     public Post getPost(@PathVariable("postid") String postId, @CookieValue(value="jwt", required = false) String jwt) throws UserNotFoundException, InvalidJwtException, IOException, NotLoggedInException {
+        checkJwt(jwt);
 		vulnerableFunctionCaller.callVulnerableFunctionOfJacksonDatabind();
-		checkJwt(jwt);
         return redisClient.getPost(jwt, postId);
     }
 
