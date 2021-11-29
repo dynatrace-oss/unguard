@@ -1,12 +1,18 @@
 package org.dynatrace.microblog;
 
-import io.jsonwebtoken.Claims;
-import io.opentracing.Tracer;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
 import org.dynatrace.microblog.authservice.UserAuthServiceClient;
 import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.PostId;
 import org.dynatrace.microblog.dto.User;
-import org.dynatrace.microblog.exceptions.*;
+import org.dynatrace.microblog.exceptions.FollowYourselfException;
+import org.dynatrace.microblog.exceptions.InvalidJwtException;
+import org.dynatrace.microblog.exceptions.InvalidUserException;
+import org.dynatrace.microblog.exceptions.NotLoggedInException;
+import org.dynatrace.microblog.exceptions.UserNotFoundException;
 import org.dynatrace.microblog.form.PostForm;
 import org.dynatrace.microblog.redis.RedisClient;
 import org.dynatrace.microblog.utils.JwtTokensUtils;
@@ -14,11 +20,17 @@ import org.dynatrace.microblog.vulnerablefunctions.VulnerableFunctionCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
+import io.jsonwebtoken.Claims;
+import io.opentracing.Tracer;
 
 
 @RestController
@@ -29,29 +41,29 @@ public class MicroblogController {
     private final UserAuthServiceClient userAuthServiceClient;
 	private final VulnerableFunctionCaller vulnerableFunctionCaller;
 
-	@Autowired
+    @Autowired
     public MicroblogController(Tracer tracer, VulnerableFunctionCaller vulnerableFunctionCaller) {
-		String redisServiceAddress;
-		String userAuthServiceAddress;
-		if (System.getenv("REDIS_SERVICE_ADDRESS") != null) {
-			redisServiceAddress = System.getenv("REDIS_SERVICE_ADDRESS");
-			logger.info("REDIS_SERVICE_ADDRESS set to {}", redisServiceAddress);
-		} else {
-			redisServiceAddress = "localhost";
-			logger.warn("No REDIS_SERVICE_ADDRESS environment variable defined, falling back to localhost.");
-		}
+        String redisServiceAddress;
+        String userAuthServiceAddress;
+        if (System.getenv("REDIS_SERVICE_ADDRESS") != null) {
+            redisServiceAddress = System.getenv("REDIS_SERVICE_ADDRESS");
+            logger.info("REDIS_SERVICE_ADDRESS set to {}", redisServiceAddress);
+        } else {
+            redisServiceAddress = "localhost";
+            logger.warn("No REDIS_SERVICE_ADDRESS environment variable defined, falling back to localhost.");
+        }
 
-		if (System.getenv("USER_AUTH_SERVICE_ADDRESS") != null) {
-			userAuthServiceAddress = System.getenv("USER_AUTH_SERVICE_ADDRESS");
-			logger.info("USER_AUTH_SERVICE_ADDRESS set to {}", userAuthServiceAddress);
-		} else {
-			userAuthServiceAddress = "localhost:9091";
-			logger.warn("No USER_AUTH_SERVICE_ADDRESS environment variable defined, falling back to localhost:9091.");
-		}
+        if (System.getenv("USER_AUTH_SERVICE_ADDRESS") != null) {
+            userAuthServiceAddress = System.getenv("USER_AUTH_SERVICE_ADDRESS");
+            logger.info("USER_AUTH_SERVICE_ADDRESS set to {}", userAuthServiceAddress);
+        } else {
+            userAuthServiceAddress = "localhost:9091";
+            logger.warn("No USER_AUTH_SERVICE_ADDRESS environment variable defined, falling back to localhost:9091.");
+        }
 
-		this.userAuthServiceClient = new UserAuthServiceClient(userAuthServiceAddress);
-		this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
-		this.vulnerableFunctionCaller = vulnerableFunctionCaller;
+        this.userAuthServiceClient = new UserAuthServiceClient(userAuthServiceAddress);
+        this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
+        this.vulnerableFunctionCaller = vulnerableFunctionCaller;
 	}
 
     @RequestMapping("/timeline")
