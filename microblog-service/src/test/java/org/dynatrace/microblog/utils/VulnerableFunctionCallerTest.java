@@ -14,7 +14,3 @@ class VulnerableFunctionCallerTest {
 		assertThat(vulnerableFunctionCaller.callVulnerableFunctionOfJacksonDatabind()).isTrue();
 	}
 }
-
-
-
-
