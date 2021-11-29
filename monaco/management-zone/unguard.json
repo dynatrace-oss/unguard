@@ -127,10 +127,30 @@
    ],
    "enabled": true,
    "propagationTypes": [
-    "SERVICE_TO_PROCESS_GROUP_LIKE",
-    "SERVICE_TO_HOST_LIKE"
+    "SERVICE_TO_HOST_LIKE",
+    "SERVICE_TO_PROCESS_GROUP_LIKE"
    ],
    "type": "SERVICE"
+  },
+  {
+   "conditions": [
+    {
+     "comparisonInfo": {
+      "caseSensitive": true,
+      "negate": false,
+      "operator": "EQUALS",
+      "type": "STRING",
+      "value": "unguard"
+     },
+     "key": {
+      "attribute": "KUBERNETES_CLUSTER_NAME",
+      "type": "STATIC"
+     }
+    }
+   ],
+   "enabled": true,
+   "propagationTypes": [],
+   "type": "HOST"
   }
  ]
 }
