@@ -11,17 +11,7 @@ class VulnerableFunctionCallerTest {
 
 	@Test
 	void callVulnerableFunctionOfJacksonDatabind_ReturnsTrue_WhenObjectCouldBeDeserialized() {
-		boolean methodCalled = vulnerableFunctionCaller.callVulnerableFunctionOfJacksonDatabind();
-
-		assertThat(methodCalled).isTrue();
-	}
-
-	@Test
-	void callVulnerableFunction_ReturnsFalse_WhenObjectCouldNotBeDeserialized() {
-		boolean methodCalled = vulnerableFunctionCaller.callVulnerableFunctionOfJacksonDatabind();
-
-		assertThat(methodCalled).isTrue();
-
+		assertThat(vulnerableFunctionCaller.callVulnerableFunctionOfJacksonDatabind()).isTrue();
 	}
 }
 
