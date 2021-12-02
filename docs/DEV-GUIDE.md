@@ -86,7 +86,7 @@ skaffold delete -p {localdev-minikube/localdev-kind}
 Have a look at the profiles that are supported in `skaffold.yaml`.  
 Often, you might also want to also deploy Jaeger or even Falco.
 ```sh
-skaffold run -p localdev-kind,jaeger,falco
+skaffold run -p localdev-kind,jaeger-dev,falco
 ```
 
 ### How can I have fast, incremental Java builds during development?

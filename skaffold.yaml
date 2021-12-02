@@ -9,8 +9,8 @@ build:
       context: microblog-service
     - image: unguard-proxy-service
       context: proxy-service
-    - image: unguard-load-generator
-      context: load-generator
+    - image: unguard-user-simulator
+      context: user-simulator
     - image: unguard-user-auth-service
       context: user-auth-service
     - image: unguard-ad-service
@@ -77,7 +77,7 @@ profiles:
           setValues:
             falcosidekick.enabled: true
             falcosidekick.webui.enabled: true
-  - name: jaeger
+  - name: jaeger-dev
     patches:
       - op: add
         path: /deploy/kustomize/paths/-
@@ -90,6 +90,31 @@ profiles:
           repo: https://jaegertracing.github.io/helm-charts
           namespace: unguard
           createNamespace: true
+  - name: jaeger
+    patches:
+      - op: add
+        path: /deploy/helm/releases/-
+        value:
+          name: jaeger
+          remoteChart: jaeger
+          repo: https://jaegertracing.github.io/helm-charts
+          namespace: unguard
+          createNamespace: true
+          overrides:
+            provisionDataStore:
+              cassandra: false
+              elasticsearch: true
+            storage:
+              type: elasticsearch
+            elasticsearch:
+              antiAffinity: soft
+              replicas: 1
+              minimumMasterNodes: 1
+            esIndexCleaner:
+              enabled: true
+              tag: 1.22
+              schedule: "55 23 * * *"
+              numberOfDays: 7
   - name: jib
     patches:
       - op: add

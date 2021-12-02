@@ -5,7 +5,7 @@ resources:
   - namespace.yaml
   - ad-service.yaml
   - frontend.yaml
-  - load-generator.yaml
+  - user-simulator.yaml
   - microblog-service.yaml
   - proxy-service.yaml
   - redis.yaml
