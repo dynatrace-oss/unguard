@@ -51,10 +51,12 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+	// using the specified version of jackson databind is intentional, it contains a vulnerable function that we'd like to call
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.11.3'
+
 	// https://mvnrepository.com/artifact/org.assertj/assertj-core
 	testImplementation 'org.assertj:assertj-core:3.21.0'
-	// https://mvnrepository.com/artifact/org.mockito/mockito-core
-	testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.1.0'
 }
 
 test {
