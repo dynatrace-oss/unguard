@@ -1,7 +1,6 @@
 package org.dynatrace.microblog.dto;
 
 import java.util.Date;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
