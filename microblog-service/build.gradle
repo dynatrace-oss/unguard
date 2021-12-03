@@ -46,7 +46,7 @@ dependencies {
 	implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
 
 	implementation ('org.springframework.boot:spring-boot-starter-web:1.5.18.RELEASE') {
-		// excluding jackson-core here so that we can force version: '2.8.11.3', which includes a vulnerable function
+		// excluding jackson-core here so that we can force version: '2.9.9', which includes a vulnerable function
 		exclude group: 'com.fasterxml.jackson.core', module:'jackson-databind'
 		exclude group: 'com.fasterxml.jackson.core', module:'jackson-core'
 		exclude group: 'com.fasterxml.jackson.core', module:'jackson-annotations'
@@ -55,17 +55,17 @@ dependencies {
 	implementation 'org.testng:testng:6.14.3'
 	testImplementation('org.springframework.boot:spring-boot-starter-test:1.5.18.RELEASE') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-		// excluding jackson-core here so that we can force version: '2.8.11.3', which includes a vulnerable function
+		// excluding jackson-core here so that we can force version: '2.9.9', which includes a vulnerable function
 		exclude group: 'com.fasterxml.jackson.core', module:'jackson-databind'
 		exclude group: 'com.fasterxml.jackson.core', module:'jackson-core'
 		exclude group: 'com.fasterxml.jackson.core', module:'jackson-annotations'
 	}
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.11.3'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.11'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.9'
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.11'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.9'
 
 
 	// https://mvnrepository.com/artifact/org.assertj/assertj-core
