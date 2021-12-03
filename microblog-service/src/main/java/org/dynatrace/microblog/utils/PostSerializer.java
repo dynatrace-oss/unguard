@@ -42,7 +42,7 @@ public class PostSerializer {
 		} catch (JsonProcessingException e) {
 			logger.warn(String.format("Exception while trying to call vulnerable function %s ", vulnerableFunction), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warn(String.format("Exception while trying to deserialize Object %s ", serializedPost), e);
 		}
 		return false;
 	}
