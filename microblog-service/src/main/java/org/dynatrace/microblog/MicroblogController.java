@@ -5,11 +5,13 @@ import io.opentracing.Tracer;
 import org.dynatrace.microblog.authservice.UserAuthServiceClient;
 import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.PostId;
+import org.dynatrace.microblog.dto.SerializedPost;
 import org.dynatrace.microblog.dto.User;
 import org.dynatrace.microblog.exceptions.*;
 import org.dynatrace.microblog.form.PostForm;
 import org.dynatrace.microblog.redis.RedisClient;
 import org.dynatrace.microblog.utils.JwtTokensUtils;
+import org.dynatrace.microblog.utils.PostSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-
+import java.util.UUID;
 
 @RestController
 public class MicroblogController {
@@ -26,9 +28,10 @@ public class MicroblogController {
     private final RedisClient redisClient;
     Logger logger = LoggerFactory.getLogger(MicroblogController.class);
     private final UserAuthServiceClient userAuthServiceClient;
+	private final PostSerializer postSerializer;
 
     @Autowired
-    public MicroblogController(Tracer tracer) {
+    public MicroblogController(Tracer tracer, PostSerializer postSerializer) {
         String redisServiceAddress;
         String userAuthServiceAddress;
         if (System.getenv("REDIS_SERVICE_ADDRESS") != null) {
@@ -49,6 +52,7 @@ public class MicroblogController {
 
         this.userAuthServiceClient = new UserAuthServiceClient(userAuthServiceAddress);
         this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
+        this.postSerializer = postSerializer;
     }
 
     @RequestMapping("/timeline")
@@ -116,8 +120,9 @@ public class MicroblogController {
     @GetMapping("/post/{postid}")
     public Post getPost(@PathVariable("postid") String postId, @CookieValue(value="jwt", required = false) String jwt) throws UserNotFoundException, InvalidJwtException, IOException, NotLoggedInException {
         checkJwt(jwt);
-
-        return redisClient.getPost(jwt, postId);
+		final Post post = redisClient.getPost(jwt, postId);
+		postSerializer.serializePost(new SerializedPost(post.getUsername(), post.getBody(), post.getImageUrl(), post.getTimestamp(), UUID.randomUUID()));
+		return post;
     }
 
     public void checkJwt(String jwt) throws InvalidJwtException, NotLoggedInException {
@@ -126,5 +131,4 @@ public class MicroblogController {
         }
         if (!userAuthServiceClient.checkTokenValidity(jwt)) throw new InvalidJwtException();
     }
-
 }

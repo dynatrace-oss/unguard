@@ -25,8 +25,8 @@ Unguard is composed of six microservices written in different languages that tal
 | ---------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------- |
 | [ad-service](./ad-service)               | .NET 5          | Provide CRUD operation for images and serves a HTML page which displays an image like an ad.                  |
 | [frontend](./frontend)                   | Node.js Express | Serves HTML to the user to interact with the application.                                                     |
-| [user-simulator](./user-simulator)       | Node.js Element | Creates synthetic user traffic by simulating an Unguard user using a real browser. Acts as a load generator.  |                                                               |
-| [microblog-service](./microblog-service) | Java Spring     | Serves a REST API for the frontend and saves data into redis.                                                 |
+| [user-simulator](./user-simulator)       | Node.js Element | Creates synthetic user traffic by simulating an Unguard user using a real browser. Acts as a load generator.  |                                                               
+| [microblog-service](./microblog-service) | Java Spring     | Serves a REST API for the frontend and saves data into redis (explicitly calls vulnerable functions of the jackson-databind library (version 2.9.9)).|
 | [proxy-service](./proxy-service)         | Java Spring     | Serves REST API for proxying requests from frontend (vulnerable to SSRF; no sanitization on the entered URL). |
 | [user-auth-service](./user-auth-service) | Node.js Express | Serves REST API for authenticating users with JWT tokens (vulnerable to JWT key confusion).                   |
 | jaeger                                   |                 | The [Jaeger](https://www.jaegertracing.io/) stack for distributed tracing.                                    |
