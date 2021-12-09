@@ -12,8 +12,8 @@ resource "aws_ecr_repository" "unguard-frontend" {
   }
 }
 
-resource "aws_ecr_repository" "unguard-load-generator" {
-  name                 = "${var.prefix}-load-generator"
+resource "aws_ecr_repository" "unguard-user-simulator" {
+  name                 = "${var.prefix}-user-simulator"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
