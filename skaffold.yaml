@@ -15,9 +15,6 @@ build:
       context: user-auth-service
     - image: unguard-ad-service
       context: ad-service
-  tagPolicy:
-    # use the commit hash
-    gitCommit: {}
   local:
     # only the docker CLI respects a manually logged-in daemon
     useDockerCLI: true
@@ -44,9 +41,6 @@ profiles:
     activation:
       - kubeContext: "arn:aws:eks:*"
     build:
-      tagPolicy:
-        # uses the :latest tag for AWS images
-        sha256: {}
     deploy:
       kustomize:
         paths:
