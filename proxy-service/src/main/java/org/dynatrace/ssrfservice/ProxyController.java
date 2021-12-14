@@ -15,8 +15,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.dynatrace.ssrfservice.tracing.EnhancedTracingRequestInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ public class ProxyController {
 
     CloseableHttpClient httpclient;
     private final Tracer tracer;
-    Logger logger = LoggerFactory.getLogger(ProxyController.class);
+    private final Logger logger = LogManager.getLogger(ProxyController.class);
 
     @Autowired
     public ProxyController(Tracer tracer) {
