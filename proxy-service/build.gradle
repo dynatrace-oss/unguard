@@ -20,6 +20,11 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
 	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4'
 
+	// CVE-2021-44228 10.0 RCE VULNERABILITY in log4j < 2.15 in combination with JDK < 8u121
+	// https://security.snyk.io/vuln/SNYK-JAVA-ORGAPACHELOGGINGLOG4J-2314720
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.0'
+
 
 	implementation 'com.uber.jaeger:jaeger-apachehttpclient:0.27.0'
 	implementation 'io.jaegertracing:jaeger-client:1.4.0'
