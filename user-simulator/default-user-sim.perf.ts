@@ -1,5 +1,66 @@
 import {beforeAll, By, step, TestData, TestSettings} from '@flood/element'
 
+const random_ips = ['177.236.37.155',
+    '49.210.236.225',
+    '66.96.37.30',
+    '19.21.221.83',
+    '134.110.48.221',
+    '87.130.41.167',
+    '159.104.0.163',
+    '91.21.66.164',
+    '217.69.107.8',
+    '204.176.161.159',
+    '18.153.60.55',
+    '227.194.148.108',
+    '96.16.70.23',
+    '171.72.188.229',
+    '24.253.46.199',
+    '122.62.252.49',
+    '48.130.188.78',
+    '168.172.80.223',
+    '107.60.18.49',
+    '238.227.33.197',
+    '7.255.47.168',
+    '147.99.166.57',
+    '102.99.216.105',
+    '161.210.123.218',
+    '35.183.42.70',
+    '51.229.182.255',
+    '159.3.105.62',
+    '35.102.238.6',
+    '32.221.32.66',
+    '92.111.134.241',
+    '106.203.123.108',
+    '239.91.223.239',
+    '81.223.64.234',
+    '172.175.183.17',
+    '175.127.203.9',
+    '253.40.37.243',
+    '42.61.224.189',
+    '79.236.195.22',
+    '182.7.180.66',
+    '184.195.3.131',
+    '141.70.56.232',
+    '104.9.77.242',
+    '126.47.188.82',
+    '211.40.123.204',
+    '177.116.53.144',
+    '241.243.168.0',
+    '183.66.217.182',
+    '50.164.50.137',
+    '101.58.202.167',
+    '195.86.230.231',
+    '119.241.63.127',
+    '151.42.34.115',
+    '102.46.70.77',
+    '120.21.221.110',
+    '212.102.231.31',
+    '194.132.161.92',
+    '62.179.239.135',
+    '113.167.100.35'];
+
+const ip = random_ips[getRandomInt(random_ips.length)];
+
 // noinspection JSUnusedGlobalSymbols
 export const settings: TestSettings = {
     userAgent: 'simulated-browser-user',
@@ -10,11 +71,11 @@ export const settings: TestSettings = {
     // Automatically wait for elements before trying to interact with them
     waitUntil: 'visible',
     actionDelay: 3,
-    stepDelay: 5
-    // For the future, we can set HTTP headers here:
-    // extraHTTPHeaders: {
-    //     'X-Client-Ip': `${ip}`
-    // }
+    stepDelay: 5,
+    // Simulate a client ip from the public internet for this user
+    extraHTTPHeaders: {
+        'X-Client-Ip': `${ip}`
+    }
 }
 
 type User = {
