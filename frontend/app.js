@@ -75,6 +75,10 @@ app.use(sassMiddleware({
   prefix: process.env.FRONTEND_BASE_PATH
 }));
 
+// serve frontend JS at /js
+app.use(process.env.FRONTEND_BASE_PATH + "/js/jquery", express.static(path.join(__dirname, "node_modules/jquery/dist")));
+app.use(process.env.FRONTEND_BASE_PATH + "/js/bootstrap", express.static(path.join(__dirname, "node_modules/bootstrap/dist/js")));
+
 app.use(process.env.FRONTEND_BASE_PATH, express.static(path.join(__dirname, 'public')));
 // for non generated content, serve the static folder
 app.use(process.env.FRONTEND_BASE_PATH, express.static(path.join(__dirname, 'static')));

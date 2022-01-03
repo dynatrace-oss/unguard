@@ -1,5 +1,7 @@
+const path = require('path');
+
 exports.extendURL = function (url) {
-    return process.env.FRONTEND_BASE_PATH + url;
+    return path.join(process.env.FRONTEND_BASE_PATH, url);
 }
 
 exports.extendRenderData = function (data, req) {
