@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/name: user-simulator-cronjob
     app.kubernetes.io/part-of: unguard
 spec:
-  schedule: "30 * * * *"
+  schedule: "*/15 * * * *"
   jobTemplate:
     spec:
       template:
