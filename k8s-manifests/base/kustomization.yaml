@@ -6,6 +6,7 @@ resources:
   - ad-service.yaml
   - frontend.yaml
   - user-simulator.yaml
+  - user-simulator-cronjob.yaml
   - microblog-service.yaml
   - proxy-service.yaml
   - redis.yaml
