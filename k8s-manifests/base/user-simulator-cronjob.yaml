@@ -1,0 +1,139 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  # TODO: CASP-13041 remove this workaround
+  # this cronjob will directly call the proxy service
+  # so that it is shown as "exposed" within Dynatrace
+  name: user-simulator-cronjob
+  labels:
+    app.kubernetes.io/name: user-simulator-cronjob
+    app.kubernetes.io/part-of: unguard
+spec:
+  schedule: "*/15 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: user-simulator-cronjob
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  curl -i -H "X-Client-Ip: 177.236.37.155" -H "X-Forwarded-For: 177.236.37.155" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 49.210.236.225" -H "X-Forwarded-For: 49.210.236.225" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 49.210.236.225" -H "X-Forwarded-For: 49.210.236.225" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 66.96.37.30" -H "X-Forwarded-For: 66.96.37.30" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 66.96.37.30" -H "X-Forwarded-For: 66.96.37.30" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 19.21.221.83" -H "X-Forwarded-For: 19.21.221.83" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 19.21.221.83" -H "X-Forwarded-For: 19.21.221.83" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 134.110.48.221" -H "X-Forwarded-For: 134.110.48.221" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 134.110.48.221" -H "X-Forwarded-For: 134.110.48.221" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 87.130.41.167" -H "X-Forwarded-For: 87.130.41.167" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 87.130.41.167" -H "X-Forwarded-For: 87.130.41.167" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 159.104.0.163" -H "X-Forwarded-For: 159.104.0.163" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 159.104.0.163" -H "X-Forwarded-For: 159.104.0.163" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 91.21.66.164" -H "X-Forwarded-For: 91.21.66.164" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 91.21.66.164" -H "X-Forwarded-For: 91.21.66.164" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 217.69.107.8" -H "X-Forwarded-For: 217.69.107.8" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 217.69.107.8" -H "X-Forwarded-For: 217.69.107.8" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 204.176.161.159" -H "X-Forwarded-For: 204.176.161.159" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 204.176.161.159" -H "X-Forwarded-For: 204.176.161.159" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 18.153.60.55" -H "X-Forwarded-For: 18.153.60.55" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 18.153.60.55" -H "X-Forwarded-For: 18.153.60.55" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 227.194.148.108" -H "X-Forwarded-For: 227.194.148.108" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 227.194.148.108" -H "X-Forwarded-For: 227.194.148.108" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 96.16.70.23" -H "X-Forwarded-For: 96.16.70.23" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 96.16.70.23" -H "X-Forwarded-For: 96.16.70.23" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 171.72.188.229" -H "X-Forwarded-For: 171.72.188.229" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 171.72.188.229" -H "X-Forwarded-For: 171.72.188.229" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 24.253.46.199" -H "X-Forwarded-For: 24.253.46.199" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 24.253.46.199" -H "X-Forwarded-For: 24.253.46.199" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 122.62.252.49" -H "X-Forwarded-For: 122.62.252.49" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 122.62.252.49" -H "X-Forwarded-For: 122.62.252.49" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 48.130.188.78" -H "X-Forwarded-For: 48.130.188.78" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 48.130.188.78" -H "X-Forwarded-For: 48.130.188.78" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 168.172.80.223" -H "X-Forwarded-For: 168.172.80.223" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 168.172.80.223" -H "X-Forwarded-For: 168.172.80.223" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 107.60.18.49" -H "X-Forwarded-For: 107.60.18.49" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 107.60.18.49" -H "X-Forwarded-For: 107.60.18.49" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 238.227.33.197" -H "X-Forwarded-For: 238.227.33.197" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 238.227.33.197" -H "X-Forwarded-For: 238.227.33.197" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 7.255.47.168" -H "X-Forwarded-For: 7.255.47.168" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 7.255.47.168" -H "X-Forwarded-For: 7.255.47.168" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 147.99.166.57" -H "X-Forwarded-For: 147.99.166.57" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 147.99.166.57" -H "X-Forwarded-For: 147.99.166.57" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 102.99.216.105" -H "X-Forwarded-For: 102.99.216.105" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 102.99.216.105" -H "X-Forwarded-For: 102.99.216.105" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 161.210.123.218" -H "X-Forwarded-For: 161.210.123.218" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 161.210.123.218" -H "X-Forwarded-For: 161.210.123.218" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 35.183.42.70" -H "X-Forwarded-For: 35.183.42.70" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 35.183.42.70" -H "X-Forwarded-For: 35.183.42.70" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 51.229.182.255" -H "X-Forwarded-For: 51.229.182.255" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 51.229.182.255" -H "X-Forwarded-For: 51.229.182.255" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 159.3.105.62" -H "X-Forwarded-For: 159.3.105.62" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 159.3.105.62" -H "X-Forwarded-For: 159.3.105.62" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 35.102.238.6" -H "X-Forwarded-For: 35.102.238.6" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 35.102.238.6" -H "X-Forwarded-For: 35.102.238.6" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 32.221.32.66" -H "X-Forwarded-For: 32.221.32.66" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 32.221.32.66" -H "X-Forwarded-For: 32.221.32.66" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 92.111.134.241" -H "X-Forwarded-For: 92.111.134.241" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 92.111.134.241" -H "X-Forwarded-For: 92.111.134.241" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 106.203.123.108" -H "X-Forwarded-For: 106.203.123.108" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 106.203.123.108" -H "X-Forwarded-For: 106.203.123.108" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 239.91.223.239" -H "X-Forwarded-For: 239.91.223.239" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 239.91.223.239" -H "X-Forwarded-For: 239.91.223.239" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 81.223.64.234" -H "X-Forwarded-For: 81.223.64.234" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 81.223.64.234" -H "X-Forwarded-For: 81.223.64.234" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 172.175.183.17" -H "X-Forwarded-For: 172.175.183.17" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 172.175.183.17" -H "X-Forwarded-For: 172.175.183.17" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 175.127.203.9" -H "X-Forwarded-For: 175.127.203.9" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 175.127.203.9" -H "X-Forwarded-For: 175.127.203.9" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 253.40.37.243" -H "X-Forwarded-For: 253.40.37.243" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 253.40.37.243" -H "X-Forwarded-For: 253.40.37.243" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 42.61.224.189" -H "X-Forwarded-For: 42.61.224.189" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 42.61.224.189" -H "X-Forwarded-For: 42.61.224.189" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 79.236.195.22" -H "X-Forwarded-For: 79.236.195.22" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 79.236.195.22" -H "X-Forwarded-For: 79.236.195.22" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 182.7.180.66" -H "X-Forwarded-For: 182.7.180.66" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 182.7.180.66" -H "X-Forwarded-For: 182.7.180.66" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 184.195.3.131" -H "X-Forwarded-For: 184.195.3.131" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 184.195.3.131" -H "X-Forwarded-For: 184.195.3.131" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 141.70.56.232" -H "X-Forwarded-For: 141.70.56.232" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 141.70.56.232" -H "X-Forwarded-For: 141.70.56.232" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 104.9.77.242" -H "X-Forwarded-For: 104.9.77.242" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 104.9.77.242" -H "X-Forwarded-For: 104.9.77.242" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 126.47.188.82" -H "X-Forwarded-For: 126.47.188.82" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 126.47.188.82" -H "X-Forwarded-For: 126.47.188.82" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 211.40.123.204" -H "X-Forwarded-For: 211.40.123.204" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 211.40.123.204" -H "X-Forwarded-For: 211.40.123.204" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 177.116.53.144" -H "X-Forwarded-For: 177.116.53.144" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 177.116.53.144" -H "X-Forwarded-For: 177.116.53.144" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 241.243.168.0" -H "X-Forwarded-For: 241.243.168.0" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 241.243.168.0" -H "X-Forwarded-For: 241.243.168.0" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 183.66.217.182" -H "X-Forwarded-For: 183.66.217.182" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 183.66.217.182" -H "X-Forwarded-For: 183.66.217.182" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 50.164.50.137" -H "X-Forwarded-For: 50.164.50.137" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 50.164.50.137" -H "X-Forwarded-For: 50.164.50.137" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 101.58.202.167" -H "X-Forwarded-For: 101.58.202.167" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 101.58.202.167" -H "X-Forwarded-For: 101.58.202.167" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 195.86.230.231" -H "X-Forwarded-For: 195.86.230.231" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 195.86.230.231" -H "X-Forwarded-For: 195.86.230.231" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 119.241.63.127" -H "X-Forwarded-For: 119.241.63.127" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 119.241.63.127" -H "X-Forwarded-For: 119.241.63.127" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 151.42.34.115" -H "X-Forwarded-For: 151.42.34.115" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 151.42.34.115" -H "X-Forwarded-For: 151.42.34.115" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 102.46.70.77" -H "X-Forwarded-For: 102.46.70.77" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 102.46.70.77" -H "X-Forwarded-For: 102.46.70.77" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 120.21.221.110" -H "X-Forwarded-For: 120.21.221.110" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 120.21.221.110" -H "X-Forwarded-For: 120.21.221.110" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 212.102.231.31" -H "X-Forwarded-For: 212.102.231.31" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 212.102.231.31" -H "X-Forwarded-For: 212.102.231.31" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 194.132.161.92" -H "X-Forwarded-For: 194.132.161.92" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 194.132.161.92" -H "X-Forwarded-For: 194.132.161.92" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 62.179.239.135" -H "X-Forwarded-For: 62.179.239.135" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 62.179.239.135" -H "X-Forwarded-For: 62.179.239.135" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 113.167.100.35" -H "X-Forwarded-For: 113.167.100.35" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
+                  curl -i -H "X-Client-Ip: 113.167.100.35" -H "X-Forwarded-For: 113.167.100.35" -X GET "http://unguard-proxy-service/?url=www.google.at&header=en";
