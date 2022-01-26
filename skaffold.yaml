@@ -4,17 +4,17 @@ build:
   artifacts:
     # context is the directory with the Dockerfile for that image
     - image: unguard-frontend
-      context: frontend
+      context: src/frontend
     - image: unguard-microblog-service # adapt jib patch index below if you move this item
-      context: microblog-service
+      context: src/microblog-service
     - image: unguard-proxy-service
-      context: proxy-service
+      context: src/proxy-service
     - image: unguard-user-simulator
-      context: user-simulator
+      context: src/user-simulator
     - image: unguard-user-auth-service
-      context: user-auth-service
+      context: src/user-auth-service
     - image: unguard-ad-service
-      context: ad-service
+      context: src/ad-service
   local:
     # only the docker CLI respects a manually logged-in daemon
     useDockerCLI: true

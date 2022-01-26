@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Simulates a real browser unguard user.",
   "scripts": {
-    "start": "element run ./default-user-sim.perf.ts"
+    "start": "element run default-user-sim.perf.ts"
   },
   "private": true,
   "prettier": {

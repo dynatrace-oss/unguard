@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="bin\www" type="NodeJSConfigurationType" path-to-js-file="bin/www" working-dir="$PROJECT_DIR$/user-auth-service">
+  <configuration default="false" name="bin\www" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/src/user-auth-service/bin/www" working-dir="$PROJECT_DIR$/src/user-auth-service">
     <envs>
       <env name="DEBUG" value="user-auth-service:*" />
     </envs>

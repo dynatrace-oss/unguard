@@ -3,10 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/exploits/exploits.iml" filepath="$PROJECT_DIR$/exploits/exploits.iml" />
-      <module fileurl="file://$PROJECT_DIR$/frontend/frontend.iml" filepath="$PROJECT_DIR$/frontend/frontend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/frontend/frontend.iml" filepath="$PROJECT_DIR$/src/frontend/frontend.iml" />
       <module fileurl="file://$PROJECT_DIR$/load-generator/loadgenerator.iml" filepath="$PROJECT_DIR$/load-generator/loadgenerator.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/microservices-ssrf.iml" filepath="$PROJECT_DIR$/.idea/microservices-ssrf.iml" />
-      <module fileurl="file://$PROJECT_DIR$/user-auth-service/user-auth-service.iml" filepath="$PROJECT_DIR$/user-auth-service/user-auth-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/unguard.iml" filepath="$PROJECT_DIR$/.idea/unguard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/user-auth-service/user-auth-service.iml" filepath="$PROJECT_DIR$/src/user-auth-service/user-auth-service.iml" />
     </modules>
   </component>
 </project>

@@ -10,7 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 var database = require('./utils/database')
-var indexRouter = require('./routes/index');
+var indexRouter = require('./routes');
 var usersRouter = require('./routes/user');
 var authRouter = require('./routes/auth');
 var jwtRouter = require('./routes/jwt');
