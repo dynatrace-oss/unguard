@@ -33,27 +33,9 @@ kubectl patch serviceaccount jaeger-operator -p '{\"imagePullSecrets\": [{\"name
 
 > Note: This needs to be done every time you recreate the cluster. You might need to repeat those steps once you deploy additional charts, e.g. for `jaeger`, `jaeger-operator`, `unguard-mariadb` at the moment.
 
-**Why is Unguard not recognized by Dynatrace anymore?**
-
-Redeploying the ingress can result in a new frontend hostname. Therefore, you have to update the [application detection rule](https://rjc90872.sprint.dynatracelabs.com/#settings/rum/webappmonitoring) in Dynatrace manually.
-
-To get the hostname run the following command:
-
-```sh
-kubectl get ingress -n unguard unguard-ingress -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}'
-```
-
-**How can I push the images to the internal Dynatrace registry?**
-
-Run the following command:
-
-```sh
-skaffold run --default-repo registry.lab.dynatrace.org/casp
-```
-
 **How can I expose Unguard deployed on Minikube to the internet?**
 
-Use the [`k8s-manifests/extra/ingress.yaml`](./k8s-manifests/extra/ingress.yaml) as a template
+Use the [`k8s-manifests/extra/ingress.yaml`](../k8s-manifests/localdev/ingress/ingress.yaml) as a template
 and possibly change the `unguard.kube` hostname to match the hostname of your deployment before applying it.
 
 ```sh
