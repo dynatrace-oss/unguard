@@ -22,3 +22,12 @@ This document explains how to setup the ECR container registry in your AWS EKS c
    ```
 
 4. 🎉 You may confirm this by logging into the AWS console (see step 2) and checking if you see ECR repositories
+
+5. (Optional) Configure AWS Route 53 DNS entry. This is only necessary if the load balancer has been removed and recreated and is done through the UI. Within the AWS Console, follow these steps:
+    * Go to the Route 53 console.
+    * Open the hosted zone that you want to configure.
+    * Edit the existing entry or create a new entry with:
+        * Record Name: _choose a name_
+        * Route traffic to: "Alias to Application and Classic Load Balancer"
+        * Region: ${REGION}
+        * Load Balancer: _select the AWS load balancer of unguard_

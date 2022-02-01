@@ -8,6 +8,7 @@ For setup, read the [official Monaco docs](https://dynatrace-oss.github.io/dynat
 **Why is Unguard not recognized by Dynatrace anymore?**
 
 Redeploying the ingress can result in a new frontend hostname. Therefore, you have to update the [application detection rule](https://rjc90872.sprint.dynatracelabs.com/#settings/rum/webappmonitoring) in Dynatrace manually.
+A workaround to this using Route 53 is described in the [terraform guide](./TERRAFORM.md).
 
 To get the hostname run the following command:
 
