@@ -35,7 +35,7 @@ kubectl patch serviceaccount jaeger-operator -p '{\"imagePullSecrets\": [{\"name
 
 **How can I expose Unguard deployed on Minikube to the internet?**
 
-Use the [`k8s-manifests/extra/ingress.yaml`](../k8s-manifests/localdev/ingress/ingress.yaml) as a template
+Use the [`k8s-manifests/localdev/ingress.yaml`](../k8s-manifests/localdev/ingress/ingress.yaml) as a template
 and possibly change the `unguard.kube` hostname to match the hostname of your deployment before applying it.
 
 ```sh
