@@ -61,53 +61,54 @@ profiles:
         paths:
           - ./k8s-manifests/localdev/kind
   - name: falco
-    deploy:
-      helm:
-        releases:
-          - name: falco
-            remoteChart: falco
-            repo: https://falcosecurity.github.io/charts
-            setValues:
-              falcosidekick.enabled: true
-              falcosidekick.webui.enabled: true
-
+    patches:
+      - op: add
+        path: /deploy/helm/releases/-
+        value:
+          name: falco
+          remoteChart: falco
+          repo: https://falcosecurity.github.io/charts
+          setValues:
+            falcosidekick.enabled: true
+            falcosidekick.webui.enabled: true
   - name: jaeger-dev
-    deploy:
-      helm:
-        releases:
-        - name: jaeger-operator
-          remoteChart: jaeger-operator
-          repo: https://jaegertracing.github.io/helm-charts
-          namespace: unguard
-          createNamespace: true
     patches:
       - op: add
         path: /deploy/kustomize/paths/-
         value: ./k8s-manifests/jaeger
+      - op: add
+        path: /deploy/helm/releases/-
+        value:
+          name: jaeger-operator
+          remoteChart: jaeger-operator
+          repo: https://jaegertracing.github.io/helm-charts
+          namespace: unguard
+          createNamespace: true
   - name: jaeger
-    deploy:
-      helm:
-        releases:
-          - name: jaeger
-            remoteChart: jaeger
-            repo: https://jaegertracing.github.io/helm-charts
-            namespace: unguard
-            createNamespace: true
-            overrides:
-              provisionDataStore:
-                cassandra: false
-                elasticsearch: true
-              storage:
-                type: elasticsearch
-              elasticsearch:
-                antiAffinity: soft
-                replicas: 1
-                minimumMasterNodes: 1
-              esIndexCleaner:
-                enabled: true
-                tag: 1.22
-                schedule: "55 23 * * *"
-                numberOfDays: 7
+    patches:
+      - op: add
+        path: /deploy/helm/releases/-
+        value:
+          name: jaeger
+          remoteChart: jaeger
+          repo: https://jaegertracing.github.io/helm-charts
+          namespace: unguard
+          createNamespace: true
+          overrides:
+            provisionDataStore:
+              cassandra: false
+              elasticsearch: true
+            storage:
+              type: elasticsearch
+            elasticsearch:
+              antiAffinity: soft
+              replicas: 1
+              minimumMasterNodes: 1
+            esIndexCleaner:
+              enabled: true
+              tag: 1.22
+              schedule: "55 23 * * *"
+              numberOfDays: 7
   - name: jib
     patches:
       - op: add
