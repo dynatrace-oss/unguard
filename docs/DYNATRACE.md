@@ -5,6 +5,10 @@ For setup, read the [official Monaco docs](https://dynatrace-oss.github.io/dynat
 
 ## 🙋 FAQ
 
+**How can I setup my AWS configuration?**
+
+Pull AWS configuration via [ACE UPM](https://internal.ace-tools.dynatrace.com/upm/me/dashboard) (see [here](https://dev-wiki.dynatrace.org/x/wx6jF) for your first-time setup).
+
 **Why is Unguard not recognized by Dynatrace anymore?**
 
 Redeploying the ingress can result in a new frontend hostname. Therefore, you have to update the [application detection rule](https://rjc90872.sprint.dynatracelabs.com/#settings/rum/webappmonitoring) in Dynatrace manually.

@@ -39,7 +39,7 @@ Use the [`k8s-manifests/localdev/ingress.yaml`](../k8s-manifests/localdev/ingres
 and possibly change the `unguard.kube` hostname to match the hostname of your deployment before applying it.
 
 ```sh
-kubectl apply -f k8s-manifests/extra/ingress.yaml
+kubectl apply -f k8s-manifests/localdev/ingress.yaml
  ```
 
 Finally, you have to forward incoming requests to your machine on port 80 to your Minikube on port 80.

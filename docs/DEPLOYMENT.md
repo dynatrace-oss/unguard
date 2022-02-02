@@ -15,9 +15,7 @@ If they don't, head to the [Terraform Guide](./TERRAFORM.md) for more.
 
 ### ⛵ AWS [EKS](https://aws.amazon.com/eks/) Deployment
 
-1. Pull AWS configuration via [ACE UPM](https://internal.ace-tools.dynatrace.com/upm/me/dashboard) (see [here](https://dev-wiki.dynatrace.org/x/wx6jF) for your first-time setup).
-
-2. Let `aws` update your kubeconfig to be connected to EKS.
+1. Let `aws` update your kubeconfig to be connected to EKS.
    This command will also return you the account ID that you need in the next step.
    It is encoded in the ARN ` arn:aws:eks:${REGION}:${AWS_ACCOUNT_ID}:cluster/${CLUSTER_NAME}`.
 
@@ -25,13 +23,13 @@ If they don't, head to the [Terraform Guide](./TERRAFORM.md) for more.
    aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${REGION}
    ```
 
-3. Let `aws` log you into your ECR repository so that Docker pushes images to that.
+2. Let `aws` log you into your ECR repository so that Docker pushes images to that.
 
    ```sh
    aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
    ```
 
-4. Deploy to AWS. This might take up to 30 minutes for a cold build.
+3. Deploy to AWS. This might take up to 30 minutes for a cold build.
 
    ```sh
    # do a standard deployment
