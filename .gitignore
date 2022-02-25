@@ -129,7 +129,7 @@ fabric.properties
 *.war
 *.nar
 *.ear
-*.zip
+#*.zip
 *.tar.gz
 *.rar
 
@@ -167,7 +167,7 @@ replay_pid*
 
 ### Eclipse ###
 .metadata
-bin/
+#bin/
 tmp/
 *.tmp
 *.bak
