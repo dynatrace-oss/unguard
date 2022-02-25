@@ -32,7 +32,7 @@
 .idea/**/dbnavigator.xml
 
 # Gradle
-.idea/**/gradle.xml
+#.idea/**/gradle.xml
 .idea/**/libraries
 
 # Gradle and Maven with auto-import
