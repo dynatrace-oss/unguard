@@ -34,7 +34,7 @@ if (process.env.NODE_ENV !== 'production') {
 	// load environment variable from .env; needed for ./utils/database
 	require('dotenv').config()
 } else {
-	app.use(logger('combined'));
+	app.use(logger('[:date[iso]] :status :userid :req[header] ":method :url HTTP/:http-version" - :response-time ms'));
 }
 
 const tracer = initTracer(process.env.JAEGER_SERVICE_NAME);
