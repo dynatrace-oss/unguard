@@ -5,7 +5,7 @@ WORKDIR /home/gradle/src
 RUN gradle build
 RUN ls build/libs/
 
-# force JDK < 8u121 to provoke CVE-2021-44228 10.0 RCE in log4j < 2.15
+# force JDK < 8u121 to provoke CVE-2021-44228 10.0 RCE in log4j < 2.4.1
 # https://security.snyk.io/vuln/SNYK-JAVA-ORGAPACHELOGGINGLOG4J-2314720
 FROM openjdk:8u111-jre-alpine
 RUN apk --no-cache add curl

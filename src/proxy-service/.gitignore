@@ -162,6 +162,7 @@ local.properties
 .loadpath
 .recommenders
 
+
 # External tool builders
 .externalToolBuilders/
 
@@ -252,3 +253,6 @@ local.properties
 .history
 .ionide
 # End of https://www.toptal.com/developers/gitignore/api/gradle,java,intellij
+
+.classpath
+.project
