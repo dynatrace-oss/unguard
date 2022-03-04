@@ -2,6 +2,16 @@
 
 This document answers common questions which can occur when running Unguard.
 
+**I get a `kustomize` error during deployment**
+
+```sh
+running [kubectl --context unguard kustomize ./k8s-manifests/localdev/minikube]
+ - stdout: ""
+ - stderr: "Error: rawResources failed to read Resources: Load from path ../../base failed: '../../base' must be a file
+ ```
+
+Upgrade `kubectl` to the latest version (at least >= `v1.21.0`). See this [stackoverflow answer](https://stackoverflow.com/questions/67071962/kubectl-apply-k-throws-error-rawresources-failed-to-read-resources-load-from).
+
 **How can I avoid ImagePullBackOff errors in Kubernetes?**
 
 Due to the great number of image pulls required you might need to set secrets for
