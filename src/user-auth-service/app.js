@@ -13,7 +13,7 @@ var jwtRouter = require('./routes/jwt');
 var app = express();
 
 logger.token('userid', function (req) {
-	const userid = req.body.userid ? req.body.userid: '-';
+	const userid = req.body.userid ? `User ID: ${req.body.userid}`: '-';
 	return userid;
 });
 
