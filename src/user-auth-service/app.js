@@ -4,29 +4,45 @@ const bodyParser = require("body-parser");
 var logger = require('morgan');
 var bcrypt = require('bcrypt');
 
-if (process.env.NODE_ENV !== 'production') {
-  // load environment variable from .env; needed for ./utils/database
-  require('dotenv').config()
-}
-
 var database = require('./utils/database')
 var indexRouter = require('./routes');
 var usersRouter = require('./routes/user');
 var authRouter = require('./routes/auth');
 var jwtRouter = require('./routes/jwt');
 
+var app = express();
 
+logger.token('userid', function (req) {
+	const userid = req.body.userid ? `User ID: ${req.body.userid}`: '-';
+	return userid;
+});
+
+logger.token('body', function (req) {
+	const maxLoggingLength = 30;
+	Object.keys(req.body).forEach((key) => {
+		if (req.body[key].length > maxLoggingLength) {
+			req.body[key] = req.body[key].substr(0, maxLoggingLength) + '...'
+		}
+	})
+
+	return JSON.stringify(req.body);
+});
+
+if (process.env.NODE_ENV !== 'production') {
+	app.use(logger('[:date[iso]] :status :userid :req[header] ":method :url HTTP/:http-version" - :body :response-time ms'));
+
+	// load environment variable from .env; needed for ./utils/database
+	require('dotenv').config()
+} else {
+	app.use(logger('[:date[iso]] :status :userid :req[header] ":method :url HTTP/:http-version" - :response-time ms'));
+}
 
 const tracer = initTracer(process.env.JAEGER_SERVICE_NAME);
 const opentracing = require('opentracing')
 opentracing.initGlobalTracer(tracer);
 
-var app = express();
-
 app.use(tracingMiddleWare);
 initDb();
-
-app.use(logger('dev'));
 
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
