@@ -3,27 +3,28 @@ exports.createError = function (errorMessage, data) {
     return { error: errorMessage, message: data };
 }
 
-exports.handleError = function (err) {
-    let message = "No detailed message available."
-    if (!err.response) {
-        console.error(err)
-        return { error: err.code, message: err };
-    }
-    if (err.response.data) {
-        if (err.response.data.message && err.response.data.path) {
-            message = err.response.data.message
-            console.error(`${err.response.data.path} failed (Status: ${err.response.data.status}) with message: ${message}`)
-        } else if (err.response.data.path) {
-            console.error(`${err.response.data.path} failed with status: ${err.response.data.status}`)
-        } else if (err.response.data.message) {
-            console.error(`Failed with message: ${err.response.data.message}`)
-            message = err.response.data.message;
-        }
-    } else {
-        console.error(err)
-    }
+exports.handleError = function (error) {
+	const { code: errorTitle = 'Something Went Wrong', request, response, config } = error;
+	const { method, url, baseURL } = config;
+	const { data } = response || {}; // || {} handles undefined case
+	const { message } = data || {}
 
-    return { error: message, message: err.response.data };
+	let outMessage = message || "No detailed message available.";
+
+	if (response) {
+		return { error: outMessage, message: data }
+	} else if (request) {
+		const requestMetadata = {
+			message: error.message,
+			method: method,
+			host: baseURL,
+			path: url
+		}
+
+		return { error: errorTitle, message: requestMetadata };
+	} else {
+		return { error: errorTitle, message: { message: error.message } } // Lowest level error
+	}
 }
 
 exports.statusCodeForError = function (err) {

@@ -31,9 +31,8 @@ router.post('/register', registerUser);
 
 router.use('/ad-manager', adManagerRouter);
 
-
 function showGlobalTimeline(req, res) {
-    req.API.get('/timeline').then((response) => {
+    req.MICROBLOG_API.get('/timeline').then((response) => {
         let data = extendRenderData({
             data: response.data,
             title: 'Timeline',
@@ -42,15 +41,14 @@ function showGlobalTimeline(req, res) {
         }, req);
 
         res.render('index.njk', data)
-    }).catch(reason => {
-        console.log(reason);
-        res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
+    }).catch(error => {
+        res.status(statusCodeForError(error)).render('error.njk', handleError(error));
     });
 
 }
 
 function showPersonalTimeline(req, res) {
-    req.API.get('/mytimeline').then((response) => {
+    req.MICROBLOG_API.get('/mytimeline').then((response) => {
 
         let data = extendRenderData({
             data: response.data,
@@ -67,7 +65,7 @@ function showPersonalTimeline(req, res) {
 
 function showUserProfile(req, res) {
     const usernameProfile = req.params.username;
-    req.API.get(`/users/${usernameProfile}/posts`).then((response) => {
+    req.MICROBLOG_API.get(`/users/${usernameProfile}/posts`).then((response) => {
         let data = extendRenderData({
             data: response.data,
             profileName: usernameProfile,
@@ -116,7 +114,6 @@ function doLogin(req, res) {
             }
         })
         .catch(error => {
-            console.log(error)
             res.status(statusCodeForError(error)).render('error.njk', handleError(error));
         })
 }
@@ -143,7 +140,7 @@ function registerUser(req, res) {
 
 function followUser(req, res) {
     const usernameProfile = req.params.username;
-    req.API.post(`/users/${usernameProfile}/follow`).then((response) => {
+    req.MICROBLOG_API.post(`/users/${usernameProfile}/follow`).then((response) => {
         res.redirect(extendURL(`/user/${usernameProfile}`));
     }).catch(reason => {
         res.status(statusCodeForError(reason)).render('error.njk', handleError(reason));
@@ -178,7 +175,7 @@ function createPost(req, res) {
                 metaTitle = $('title').text()
             }
 
-            req.API.post('/post', {
+            req.MICROBLOG_API.post('/post', {
                 content: `${metaTitle} ${req.body.urlmessage}`,
                 imageUrl: metaImgSrc
             }).then((post_response) => {
@@ -196,7 +193,7 @@ function createPost(req, res) {
                 url: req.body.imgurl
             }
         }).then((response) => {
-            req.API.post('/post', {
+            req.MICROBLOG_API.post('/post', {
                 content: req.body.description,
                 imageUrl: response.data
             }).then((post_response) => {
@@ -209,7 +206,7 @@ function createPost(req, res) {
         });
     } else if (req.body.message) {
         // this is a normal message
-        req.API.post('/post', {
+        req.MICROBLOG_API.post('/post', {
             content: req.body.message
         }).then((post_response) => {
             res.redirect(extendURL(`/post/${post_response.data.postId}`));
@@ -224,7 +221,7 @@ function createPost(req, res) {
 
 function getPost(req, res) {
     const postId = req.params.postid;
-    req.API.get(`/post/${postId}`).then((response) => {
+    req.MICROBLOG_API.get(`/post/${postId}`).then((response) => {
         let data = extendRenderData({
             post: response.data,
             username: getJwtUser(req.cookies),
