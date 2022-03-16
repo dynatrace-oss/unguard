@@ -1,16 +1,16 @@
-var createError = require('http-errors');
-var express = require('express');
+const createError = require('http-errors');
+const express = require('express');
 const bodyParser = require("body-parser");
-var logger = require('morgan');
-var bcrypt = require('bcrypt');
+const logger = require('morgan');
+const bcrypt = require('bcrypt');
 
-var database = require('./utils/database')
-var indexRouter = require('./routes');
-var usersRouter = require('./routes/user');
-var authRouter = require('./routes/auth');
-var jwtRouter = require('./routes/jwt');
+const database = require('./utils/database')
+const indexRouter = require('./routes');
+const usersRouter = require('./routes/user');
+const authRouter = require('./routes/auth');
+const jwtRouter = require('./routes/jwt');
 
-var app = express();
+const app = express();
 
 logger.token('userid', function (req) {
 	const userid = req.body.userid ? `User ID: ${req.body.userid}`: '-';
@@ -68,8 +68,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
 });
 
-module.exports = app;
-
 /**
  * Initialize Jaeger Tracing.
  * @param serviceName
@@ -103,22 +101,34 @@ async function initDb() {
   const adManagerRole = "AD_MANAGER";
 
   const adManagerAlreadyExists = await database.dbConnection.query(database.selectUserForRole, [adManagerRole])
-    .then((response) => {
-      return response.length !== undefined && response.length > 0 && response[0].length > 0;
-    });
+      .then((response) => {
+        return response.length !== undefined && response.length > 0 && response[0].length > 0;
+      }).catch((err) => {
+        console.log(err)
+      });
 
   if (!adManagerAlreadyExists) {
     const userName = "admanager";
     const userPw = "admanager";
     const pwHash = await bcrypt.hash(userPw, 10);
     const adManagerUserId = await database.dbConnection.query(database.insertUserQuery, [userName, pwHash])
-      .then((response) => { return response[0].insertId });
+        .then((response) => {
+          return response[0].insertId
+        })
+        .catch((err) => {
+          console.error("Cannot insert ad manager user", err.sqlMessage)
+        });
 
     const adManagerRoleId = await database.dbConnection.query(database.insertRoleQuery, [adManagerRole])
-      .then((response) => { return response[0].insertId });
+        .then((response) => {
+          return response[0].insertId
+        })
+        .catch((err) => {
+          console.error("Cannot insert ad manager role", err.sqlMessage)
+        });
 
     if (adManagerRoleId == null || adManagerUserId == null) {
-      console.error("The 'admanager' user could not be inserted.");
+      console.error("The 'admanager' user/role could not be inserted.");
       return;
     } else {
       await database.dbConnection.query(database.insertUserToRoleQuery, [adManagerUserId, adManagerRoleId]);
@@ -171,3 +181,5 @@ function tracingMiddleWare(req, res, next) {
   res.on('finish', finishSpan)
   next()
 }
+
+module.exports = app;

@@ -1,10 +1,10 @@
-var mysql      = require('mysql2/promise');
-var connection = mysql.createPool({
-    host     : process.env.MARIADB_SERVICE,
-    database : 'my_database',
-    port     : '3306',
-    user     : 'root',
-    password : process.env.MARIADB_PASSWORD,
+const mysql = require('mysql2/promise');
+const connection = mysql.createPool({
+    host: process.env.MARIADB_SERVICE,
+    database: 'my_database',
+    port: '3306',
+    user: 'root',
+    password: process.env.MARIADB_PASSWORD,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -45,7 +45,7 @@ const SELECT_USER_FOR_ROLE = "SELECT users.id, users.username, roles.name FROM u
     + "INNER JOIN roles ON roles.id=users_roles.role_id AND roles.name = ?;"
 const SELECT_USER_WITH_ROLE_FOR_USER_ID = "SELECT users.id, users.username, roles.name as role_name FROM users "
     + "LEFT JOIN users_roles ON users.id=users_roles.user_id "
-    + "LEFT JOIN roles ON roles.id=users_roles.role_id " 
+    + "LEFT JOIN roles ON roles.id=users_roles.role_id "
     + "WHERE users.id = ?;"
 
 
