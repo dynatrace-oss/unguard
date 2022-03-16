@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:16
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -16,4 +16,4 @@ RUN npm install
 COPY . .
 
 EXPOSE 9091
-CMD [ "node", "bin/www" ]
+CMD [ "node", "--unhandled-rejections=strict", "bin/www" ]
