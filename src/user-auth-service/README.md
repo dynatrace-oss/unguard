@@ -7,6 +7,21 @@ yarn install
 ```
 
 This user-auth-service requires a running relational database MariaDB has been used for testing.
+To run it locally using docker, you can run:
+
+```bash
+docker run --detach --name user-auth-db \
+  --env MARIADB_PASSWORD=mariadb-root-password \
+  --env MARIADB_DATABASE=my_database \
+   -p 3306:3306 \
+   mariadb:latest
+```
+And then update the environment variables for the user-auth-service to fit:
+```bash
+export MARIADB_PASSWORD=mariadb-root-password
+export MARIADB_SERVICE=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' user-auth-db)
+```
+
 It is also recommended having a Jaeger agent running for reporting traces.
 
 Adjust the following environment variables if you are running the two
@@ -24,16 +39,9 @@ other microservices on different ports/hosts:
 
 ## Running
 
-To run the user-auth-service use.
+To run the user-auth-service use:
 ```
 yarn start
-```
-
-If you want to change the override values with the environment variables set in .env 
-and then run the frontend, run:
-
-```
-export $(xargs -a .env); yarn start
 ```
 
 When developing, to have the server auto-restart on change of a file and use local .env variable, use:
