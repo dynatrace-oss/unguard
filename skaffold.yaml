@@ -45,6 +45,16 @@ profiles:
       kustomize:
         paths:
           - ./k8s-manifests/aws
+  - name: aws-demo-live
+    deploy:
+      kustomize:
+        paths:
+          - ./k8s-manifests/aws-demo-live
+  - name: aws-demo-staging
+    deploy:
+      kustomize:
+        paths:
+          - ./k8s-manifests/aws-demo-staging
   - name: gcp
     deploy:
       kustomize:
