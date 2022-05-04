@@ -38,10 +38,6 @@ Unguard is composed of six microservices written in different languages that tal
 | ---------------- |---------------------|
 | default          | None                |                                               
 | unguard-proxy    | List and create pods| 
-| unguard-mariadb  | TODO                | 
-
-
-
 
 ## 🖥️ Local Deployment
 
