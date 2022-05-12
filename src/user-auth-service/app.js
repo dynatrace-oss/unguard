@@ -20,7 +20,7 @@ logger.token('userid', function (req) {
 logger.token('body', function (req) {
 	const maxLoggingLength = 30;
 	Object.keys(req.body).forEach((key) => {
-		if (req.body[key].length > maxLoggingLength) {
+		if (req.body[key] && req.body[key].length > maxLoggingLength) {
 			req.body[key] = req.body[key].substr(0, maxLoggingLength) + '...'
 		}
 	})

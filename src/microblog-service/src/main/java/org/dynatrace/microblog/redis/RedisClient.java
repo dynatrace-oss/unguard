@@ -8,10 +8,10 @@ import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.User;
 import org.dynatrace.microblog.exceptions.InvalidJwtException;
 import org.dynatrace.microblog.exceptions.UserNotFoundException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -38,6 +38,7 @@ public class RedisClient {
     private static final String FOLLOWERS_KEY_PREFIX = "followers";
 
     private static final int REDIS_PORT = 6379;
+    public static final int POST_TIMEOUT_SECONDS = 24 * 60 * 60;
 
     private final JedisPool jedisPool;
     private final Logger logger = LoggerFactory.getLogger(RedisClient.class);
@@ -57,11 +58,15 @@ public class RedisClient {
         return String.format("%s:%s", keyPrefix, value);
     }
 
-    public String newPost(String userId, String body, String imageUrl) {
-        return newPostWithUserId(userId, body, imageUrl);
-    }
-
-    private String newPostWithUserId(@NonNull String userId, @NonNull String body, @Nullable String imageUrl) {
+    /**
+     * Creates and persists a new post with the given details
+     * @param userId the user id of the author
+     * @param body the text body of the post
+     * @param imageUrl the optional url to any image
+     * @return the post id of the newly created post
+     */
+    @NotNull
+    public String newPost(@NotNull String userId, @NotNull String body, @Nullable String imageUrl) {
         try (Jedis jedis = jedisPool.getResource()) {
             String postId = String.valueOf(jedis.incr(POST_ID_KEY));
 
@@ -74,7 +79,9 @@ public class RedisClient {
             map.put("time", String.valueOf(new Date().getTime()));
 
             // create new post
-            jedis.hmset(getCombinedKey(POST_KEY_PREFIX, postId), map);
+            String postKey = getCombinedKey(POST_KEY_PREFIX, postId);
+            jedis.hmset(postKey, map);
+            jedis.expire(postKey, POST_TIMEOUT_SECONDS);
 
             // add to our own posts
             jedis.lpush(getCombinedKey(POSTS_KEY_PREFIX, userId), postId);
@@ -96,21 +103,30 @@ public class RedisClient {
         }
     }
 
+    @NotNull
     public List<Post> getUserTimeline(String jwtToken, String userId) {
         List<String> postIds;
         try (Jedis jedis = jedisPool.getResource()) {
             // Get the timeline of the user
             postIds = jedis.lrange(getCombinedKey(TIMELINE_KEY, userId), 0, MAX_TIMELINE_ENTRIES);
 
-            List<Post> posts = new ArrayList<>();
-            for (String postId : postIds) {
-                posts.add(getPostById(jwtToken, postId, jedis));
-            }
-            return posts;
+            return getPosts(jwtToken, postIds, jedis);
         } catch (Exception e) {
             logger.error("Could not get user timeline", e);
             throw new RuntimeException("Could not get user timeline");
         }
+    }
+
+    @NotNull
+    private List<Post> getPosts(String jwtToken, List<String> postIds, Jedis jedis) throws UserNotFoundException, InvalidJwtException, IOException {
+        List<Post> posts = new ArrayList<>();
+        for (String postId : postIds) {
+            Post post = readAndTransformPost(jwtToken, postId, jedis);
+            if (post != null) {
+                posts.add(post);
+            }
+        }
+        return posts;
     }
 
     /**
@@ -128,10 +144,7 @@ public class RedisClient {
         List<Post> posts;
         try (Jedis jedis = jedisPool.getResource()) {
             List<String> postIds = jedis.lrange(getCombinedKey(POSTS_KEY_PREFIX, userId), start, start + count);
-            posts = new ArrayList<>();
-            for (String postId : postIds) {
-                posts.add(getPostById(jwtToken, postId, jedis));
-            }
+            posts = getPosts(jwtToken, postIds, jedis);
         } catch (Exception e) {
             logger.error("Could not get posts", e);
             throw new RuntimeException("Could not get posts");
@@ -139,14 +152,29 @@ public class RedisClient {
         return posts;
     }
 
+    /**
+     * Gets a single post
+     * @param jwtToken the token of the logged in user
+     * @param postId the post id of the post to be viewed
+     * @return the post
+     * @throws UserNotFoundException if the given user does not exists
+     * @throws IOException if the request to the user auth service fails
+     * @throws InvalidJwtException if the jwt is invalid
+     */
+    @Nullable
     public Post getPost(String jwtToken, String postId) throws UserNotFoundException, IOException, InvalidJwtException {
         try (Jedis jedis = jedisPool.getResource()) {
-            return getPostById(jwtToken, postId, jedis);
+            return readAndTransformPost(jwtToken, postId, jedis);
         }
     }
 
-    private Post getPostById(String jwtToken, String postId, Jedis jedis) throws UserNotFoundException, InvalidJwtException, IOException {
+    @Nullable
+    private Post readAndTransformPost(String jwtToken, String postId, Jedis jedis) throws UserNotFoundException, InvalidJwtException, IOException {
         Map<String, String> postMap = jedis.hgetAll(getCombinedKey(POST_KEY_PREFIX, postId));
+        if (postMap.isEmpty()) {
+            logger.warn("Could not get post with id {}", postId);
+            return null;
+        }
         String userName = this.userAuthServiceClient.getUserNameForUserId(jwtToken, postMap.get("userId"));
         String body = postMap.get("body");
         String imageUrl = postMap.get("imageUrl");
@@ -159,10 +187,7 @@ public class RedisClient {
         List<Post> posts;
         try (Jedis jedis = jedisPool.getResource()) {
             List<String> postIds = jedis.lrange(TIMELINE_KEY, 0, 50);
-            posts = new ArrayList<>();
-            for (String postId : postIds) {
-                posts.add(getPostById(jwtToken, postId, jedis));
-            }
+            posts = getPosts(jwtToken, postIds, jedis);
         } catch (Exception e) {
             logger.error("Could not get timeline", e);
             throw new RuntimeException("Could not get timeline");
@@ -190,9 +215,9 @@ public class RedisClient {
         }
 
         if (followedAddedSuccess == 1 && followerAddedSuccess == 1) {
-            logger.info(String.format("User with id %s followed user with id %s", currentUserId, userId));
+            logger.info("User with id {} followed user with id {}", currentUserId, userId);
         } else if (followedAddedSuccess == 0 && followerAddedSuccess == 0) {
-            logger.info(String.format("User with id %s already was following user with id %s", currentUserId, userId));
+            logger.info("User with id {} already was following user with id {}", currentUserId, userId);
         } else {
             logger.error("Inconsistent database state for followed/following.");
         }
@@ -203,7 +228,7 @@ public class RedisClient {
         try (Jedis jedis = jedisPool.getResource()) {
             Set<String> followerIds = jedis.zrange("followers:" + userId, 0, -1);
             if (followerIds.isEmpty()) {
-                logger.info(String.format("No followers for %s", userId));
+                logger.info("No followers for {}", userId);
                 return Collections.emptyList();
             }
             followers = new HashSet<>();
