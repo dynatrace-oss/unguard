@@ -16,28 +16,33 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class RedisClient {
 
     private static final String FOLLOWED_KEY_PREFIX = "followed";
-    private final String TIMELINE_KEY = "timeline";
-    private final String POST_ID_KEY = "post_id";
-    private final String POST_KEY_PREFIX = "post";
-    private final String POSTS_KEY_PREFIX = "posts";
-    private final String FOLLOWERS_KEY_PREFIX = "followers";
+    private static final int MAX_TIMELINE_ENTRIES = 10;
 
-    private final int REDIS_PORT = 6379;
+    private static final String TIMELINE_KEY = "timeline";
+    private static final String POST_ID_KEY = "post_id";
+    private static final String POST_KEY_PREFIX = "post";
+    private static final String POSTS_KEY_PREFIX = "posts";
+    private static final String FOLLOWERS_KEY_PREFIX = "followers";
+
+    private static final int REDIS_PORT = 6379;
 
     private final JedisPool jedisPool;
     private final Logger logger = LoggerFactory.getLogger(RedisClient.class);
 
-    private UserAuthServiceClient userAuthServiceClient;
-
-
-    /*
-    Redis works with userIds we abstract usernames away, they get handled by the user-auth-service.
-    */
+    private final UserAuthServiceClient userAuthServiceClient;
 
     public RedisClient(String host, UserAuthServiceClient userAuthServiceClient, Tracer tracer) {
         TracingConfiguration tracingConfiguration = new TracingConfiguration.Builder(tracer)
@@ -80,11 +85,12 @@ public class RedisClient {
             followers.add(userId);
             for (String follower : followers) {
                 jedis.lpush(getCombinedKey(TIMELINE_KEY, follower), postId);
+                jedis.ltrim(getCombinedKey(TIMELINE_KEY, follower), 0, MAX_TIMELINE_ENTRIES);
             }
 
             // add to global timeline
             jedis.lpush(TIMELINE_KEY, postId);
-            jedis.ltrim(TIMELINE_KEY, 0, 10);
+            jedis.ltrim(TIMELINE_KEY, 0, MAX_TIMELINE_ENTRIES);
 
             return postId;
         }
@@ -94,7 +100,7 @@ public class RedisClient {
         List<String> postIds;
         try (Jedis jedis = jedisPool.getResource()) {
             // Get the timeline of the user
-            postIds = jedis.lrange(getCombinedKey(TIMELINE_KEY, userId), 0, 10);
+            postIds = jedis.lrange(getCombinedKey(TIMELINE_KEY, userId), 0, MAX_TIMELINE_ENTRIES);
 
             List<Post> posts = new ArrayList<>();
             for (String postId : postIds) {
@@ -109,8 +115,9 @@ public class RedisClient {
 
     /**
      * Gets a List of Posts that are authored by the user with the username specified
+     *
      * @param userName username of the user
-     * @param limit maximum amount of posts returned
+     * @param limit    maximum amount of posts returned
      * @return list of posts of the user
      */
     public List<Post> getUserPosts(String jwt, String userName, int limit) throws UserNotFoundException, IOException, InvalidJwtException {
