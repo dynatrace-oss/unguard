@@ -34,10 +34,10 @@ Unguard is composed of six microservices written in different languages that tal
 | redis                                        |                 | default         | Key-value store that holds all user data (except authentication-related stuff).                                                             |
 
 
-| Service Account  | Permissions             |
-| ---------------- |-------------------------|
-| default          | None                    |                                               
-| unguard-proxy    | List, get & create pods | 
+| Service Account  | Permissions                               |
+| ---------------- |-------------------------------------------|
+| default          | None                                      |                                               
+| unguard-proxy    | List, get & create pods, create pods/exec | 
 
 ## 🖥️ Local Deployment
 
