@@ -1,6 +1,5 @@
 package org.dynatrace.ssrfservice;
 
-
 import com.uber.jaeger.httpclient.Constants;
 import com.uber.jaeger.httpclient.TracingResponseInterceptor;
 import io.opentracing.Span;
@@ -14,14 +13,25 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.dynatrace.ssrfservice.tracing.EnhancedTracingRequestInterceptor;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dynatrace.ssrfservice.tracing.EnhancedTracingRequestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Base64;
@@ -133,28 +143,27 @@ public class ProxyController {
          * VULNERABLE CODE BELOW
          * it's never a good idea to not sanitize a user controlled URL
          */
-        String[] command = {"curl", "--silent", "-S", url, "--max-time", "10", "--output", temporaryJpgFile.getAbsolutePath()};
+        String[] command = {"/usr/bin/sh", "-c", "curl --silent -S " + url + " --max-time 10 --output " + temporaryJpgFile.getAbsolutePath()};
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.directory(new File("/home/"));
         Process process = processBuilder.start();
-        BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+		BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
         String errline;
         while ((errline = err.readLine()) != null) {
             logger.warn("ERR: {}", errline);
         }
 
-        // close the buffered readers
-        in.close();
-        err.close();
+		/*
+		 * wait until process completes, this should be always after the
+		 * input_stream of ProcessBuilder is read to avoid deadlock
+		 * situations
+		 */
+		process.waitFor();
 
-        /*
-         * wait until process completes, this should be always after the
-         * input_stream of ProcessBuilder is read to avoid deadlock
-         * situations
-         */
-        process.waitFor();
+        // close the buffered readers
+        err.close();
 
         /* exit code can be obtained only after process completes, 0
          * indicates a successful completion
