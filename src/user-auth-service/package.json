@@ -17,7 +17,7 @@
     "jwt-simple": "^0.3.0",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
-    "mysql2": "^2.2.5",
+    "mysql2": "^2.3.3",
     "opentracing": "^0.14.5",
     "pug": "2.0.0-beta11",
     "readline-sync": "^1.4.10",
