@@ -19,7 +19,7 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
     "opentracing": "^0.14.5",
-    "pug": "2.0.0-beta11",
+    "pug": "2.0.4",
     "readline-sync": "^1.4.10",
     "bcrypt": "^5.0.1"
   },
