@@ -22,7 +22,7 @@
     "@flood/element-cli": "2.0.4",
     "assert": "*",
     "faker": "*",
-    "prettier": "*"
+    "prettier": "2.7.1"
   },
   "devDependencies": {
     "@types/faker": "*",
