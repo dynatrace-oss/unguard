@@ -1,0 +1,41 @@
+{# 
+Copyright 2023 Dynatrace LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+<script>
+$(document).ready((function () {
+		$('[data-toggle="popover"]').popover()
+	}))
+</script>
+
+<div class="py-3 border-top text-center">
+    Powered by Unguard.<br/>
+    Robots lovingly delivered by <a href="https://robohash.org/">Robohash.org</a><br/>
+    {% if baseData.total != baseData.available %}
+        <a href="#" id="deployment-status" class="text-danger"
+            rel="popover"
+	        data-toggle="popover"
+	        data-trigger="focus"
+	        data-content="<ul class='pl-2 ml-0'>{% for microservice, health in baseData.microservices %}
+	            {% set availableReplicas = baseData[microservice].status.availableReplicas %}
+                {% set availability = 'Available' if health.healthy else 'Failing' %}
+                {% set numberOfReplicas = availableReplicas if availableReplicas else 0 %}
+	            <li class='{{'text-success' if health.healthy else 'text-danger'}}'>
+		        <span>{{ microservice }}: <span class='float-right'>{{ availability }}</span></span>
+		        <span class='d-block'>Available Replicas: {{numberOfReplicas}} </span>
+		        </li>{% endfor %}</ul>"
+	        data-html="true">{{ baseData.available }}/{{ baseData.total }} deployments available</a>
+    {% endif %}
+ </div>

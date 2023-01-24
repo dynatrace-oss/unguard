@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/exploit-toolkit/exploit-toolkit.iml" filepath="$PROJECT_DIR$/exploit-toolkit/exploit-toolkit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/unguard.iml" filepath="$PROJECT_DIR$/.idea/unguard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/ad-service/unguard.ad-service.iml" filepath="$PROJECT_DIR$/src/ad-service/unguard.ad-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/frontend/unguard.frontend.iml" filepath="$PROJECT_DIR$/src/frontend/unguard.frontend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/malicious-load-generator/unguard.malicious-load-generator.iml" filepath="$PROJECT_DIR$/src/malicious-load-generator/unguard.malicious-load-generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/status-service/unguard.status-service.iml" filepath="$PROJECT_DIR$/src/status-service/unguard.status-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/user-auth-service/unguard.user-auth-service.iml" filepath="$PROJECT_DIR$/src/user-auth-service/unguard.user-auth-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/user-simulator/unguard.user-simulator.iml" filepath="$PROJECT_DIR$/src/user-simulator/unguard.user-simulator.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,41 @@
+{# 
+Copyright 2023 Dynatrace LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% extends "base.njk" %}
+
+{% block content %}
+    {% set status = message["status"] | int %}
+    {% if status == 401 or status == 403 %}
+        <div>
+            <h3>Unauthorized</h3>
+            <h4>Log in to see this content.</h4>
+        </div>
+    {% else %}
+    <div class="error-bg" id="errorBg">
+        <h3>Error</h3>
+        <h4>{{ error }}</h4>
+        {% if (message) %}
+            <div class="card">
+                <div class="card-body">
+<pre><code>{% for index, elem in message %}{{ index }}: {{ elem }}
+{% endfor %}</code></pre>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+{% endblock %}
+

@@ -1,0 +1,48 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.2.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'com.google.cloud.tools.jib' version '2.7.1'
+	id 'java'
+}
+
+group = 'org.dynatrace'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore
+	// WARNING this is a version of httpcore that is vulnerable to CLRF injection in HTTP headers
+	implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.5'
+	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4'
+
+	// CVE-2021-44228 10.0 RCE VULNERABILITY in log4j < 2.4.1 in combination with JDK < 8u121
+	// https://security.snyk.io/vuln/SNYK-JAVA-ORGAPACHELOGGINGLOG4J-2314720
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.4'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.4'
+
+	implementation 'com.uber.jaeger:jaeger-apachehttpclient:0.27.0'
+	implementation 'io.jaegertracing:jaeger-client:1.4.0'
+
+	// https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-spring-jaeger-web-starter
+	implementation group: 'io.opentracing.contrib', name: 'opentracing-spring-jaeger-web-starter', version: '3.2.2'
+
+
+	// https://mvnrepository.com/artifact/commons-io/commons-io
+	implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.testng:testng:6.14.3'
+	implementation 'org.testng:testng:6.14.3'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+test {
+	useJUnitPlatform()
+}

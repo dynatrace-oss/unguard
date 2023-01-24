@@ -1,0 +1,156 @@
+{
+ "description": "",
+ "dimensionalRules": [],
+ "entitySelectorBasedRules": [],
+ "name": "{{.name}}",
+ "rules": [
+  {
+   "conditions": [
+    {
+     "comparisonInfo": {
+      "caseSensitive": true,
+      "negate": false,
+      "operator": "EQUALS",
+      "type": "STRING",
+      "value": "unguard"
+     },
+     "key": {
+      "attribute": "PROCESS_GROUP_PREDEFINED_METADATA",
+      "dynamicKey": "KUBERNETES_NAMESPACE",
+      "type": "PROCESS_PREDEFINED_METADATA_KEY"
+     }
+    }
+   ],
+   "enabled": true,
+   "propagationTypes": [
+    "PROCESS_GROUP_TO_SERVICE",
+    "PROCESS_GROUP_TO_HOST"
+   ],
+   "type": "PROCESS_GROUP"
+  },
+  {
+   "conditions": [
+    {
+     "comparisonInfo": {
+      "caseSensitive": true,
+      "negate": false,
+      "operator": "EQUALS",
+      "type": "STRING",
+      "value": "unguard"
+     },
+     "key": {
+      "attribute": "CLOUD_APPLICATION_NAMESPACE_NAME",
+      "type": "STATIC"
+     }
+    }
+   ],
+   "enabled": true,
+   "propagationTypes": [],
+   "type": "CLOUD_APPLICATION_NAMESPACE"
+  },
+  {
+   "conditions": [
+    {
+     "comparisonInfo": {
+      "caseSensitive": true,
+      "negate": false,
+      "operator": "EQUALS",
+      "type": "STRING",
+      "value": "unguard"
+     },
+     "key": {
+      "attribute": "PROCESS_GROUP_PREDEFINED_METADATA",
+      "dynamicKey": "KUBERNETES_NAMESPACE",
+      "type": "PROCESS_PREDEFINED_METADATA_KEY"
+     }
+    }
+   ],
+   "enabled": true,
+   "propagationTypes": [],
+   "type": "SERVICE"
+  },
+  {
+   "conditions": [
+    {
+     "comparisonInfo": {
+      "caseSensitive": true,
+      "negate": false,
+      "operator": "EQUALS",
+      "type": "STRING",
+      "value": "unguard"
+     },
+     "key": {
+      "attribute": "CLOUD_APPLICATION_NAMESPACE_NAME",
+      "type": "STATIC"
+     }
+    }
+   ],
+   "enabled": true,
+   "propagationTypes": [],
+   "type": "CLOUD_APPLICATION"
+  },
+  {
+   "conditions": [
+    {
+     "comparisonInfo": {
+      "caseSensitive": true,
+      "negate": false,
+      "operator": "EQUALS",
+      "type": "STRING",
+      "value": "unguard"
+     },
+     "key": {
+      "attribute": "KUBERNETES_CLUSTER_NAME",
+      "type": "STATIC"
+     }
+    }
+   ],
+   "enabled": true,
+   "propagationTypes": [],
+   "type": "KUBERNETES_CLUSTER"
+  },
+  {
+   "conditions": [
+    {
+     "comparisonInfo": {
+      "caseSensitive": true,
+      "negate": false,
+      "operator": "BEGINS_WITH",
+      "type": "STRING",
+      "value": "unguard-mariadb"
+     },
+     "key": {
+      "attribute": "SERVICE_DATABASE_HOST_NAME",
+      "type": "STATIC"
+     }
+    }
+   ],
+   "enabled": true,
+   "propagationTypes": [
+    "SERVICE_TO_HOST_LIKE",
+    "SERVICE_TO_PROCESS_GROUP_LIKE"
+   ],
+   "type": "SERVICE"
+  },
+  {
+   "conditions": [
+    {
+     "comparisonInfo": {
+      "caseSensitive": true,
+      "negate": false,
+      "operator": "EQUALS",
+      "type": "STRING",
+      "value": "unguard"
+     },
+     "key": {
+      "attribute": "KUBERNETES_CLUSTER_NAME",
+      "type": "STATIC"
+     }
+    }
+   ],
+   "enabled": true,
+   "propagationTypes": [],
+   "type": "HOST"
+  }
+ ]
+}

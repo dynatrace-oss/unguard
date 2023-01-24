@@ -1,0 +1,15 @@
+﻿{
+    "profiles": {
+        "MembershipService": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "SERVER_PORT": "8083",
+                "API_PATH":"/membership-service",
+                "MARIADB_SERVICE": "localhost",
+                "MARIADB_PASSWORD": "abc123"
+           }
+        }
+    }
+}

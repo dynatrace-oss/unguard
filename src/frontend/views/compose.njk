@@ -1,0 +1,80 @@
+{# 
+Copyright 2023 Dynatrace LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+<!--- Compose -->
+<div class="card gedf-card">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="posts-tab" data-toggle="tab" href="#posts" role="tab"
+                   aria-controls="posts" aria-selected="true">Share Text</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="url-tab" data-toggle="tab" role="tab" aria-controls="url"
+                   aria-selected="false" href="#url">Share URL</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="image-tab" data-toggle="tab" role="tab" aria-controls="image"
+                   aria-selected="false" href="#image">Share Image</a>
+            </li>
+        </ul>
+    </div>
+    <form action="{{ extendURL('/post') }}" method="post">
+        <div class="card-body">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                    <div class="form-group">
+                        <label class="sr-only" for="message">post</label>
+                        <textarea type="text" class="form-control" name="message" id="message" rows="3"
+                                  placeholder="What are you thinking?"></textarea>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="url" role="tabpanel" aria-labelledby="url-tab">
+                    <div class="form-group">
+
+                        <div class="form-group">
+                            <label class="sr-only" for="urlmessage">post</label>
+                            <textarea class="form-control" name="urlmessage" id="urlmessage" rows="1"
+                                      placeholder="Share your favourite URL here."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="header">post</label>
+                            <textarea class="form-control" name="header" id="header" rows="1"
+                                      placeholder="Preferred Language (e.g. en-US)"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="image-tab">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label class="sr-only" for="imgurl">post</label>
+                            <textarea class="form-control" name="imgurl" id="imgurl" rows="1"
+                                      placeholder="Link to an image here"></textarea>
+                            <label class="sr-only" for="description">image description</label>
+                            <textarea type="text" class="form-control" name="description" id="description" rows="3"
+                                      placeholder="Image description"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-toolbar justify-content-between">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" name="postSubmit">post</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

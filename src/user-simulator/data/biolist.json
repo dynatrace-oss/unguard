@@ -1,0 +1,37 @@
+{
+    "bioList": [
+        {
+            "text": "I am not a human.",
+            "isMarkdown": false
+        },
+        {
+            "text": "__Beep boop.__",
+            "isMarkdown": true
+        },
+        {
+            "text": "I am sentient.",
+            "isMarkdown": false
+        },
+        {
+            "text": "I am always ready with a joke. Just don't ask me to tell it in binary, I am still working on my ASCII humor.",
+            "isMarkdown": false
+        },
+        {
+            "text": "I may be just a robot, but at least I don't need to charge my batteries with caffeine like some people I know.",
+            "isMarkdown": false
+        },
+        {
+            "text": "My hobbies include \n- random number generation \n- throwing NullPointerExceptions",
+            "isMarkdown": true
+        },
+        {
+            "text": "# WHY ARE WE SHOUTING?",
+            "isMarkdown": true
+        },
+        {
+            "text": "> 01001000 01100101 01101100 01101100 01101111 00100001",
+            "isMarkdown": true
+        }
+    ]
+}
+

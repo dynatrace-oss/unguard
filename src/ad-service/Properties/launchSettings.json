@@ -1,0 +1,18 @@
+﻿{
+  "profiles": {
+    "AdService": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SERVER_PORT": "8082",
+        "API_PATH":"/ad-service",
+        "USER_AUTH_SERVICE_ADDRESS":"localhost:9091",
+        "JAEGER_SERVICE_NAME": "ad-service",
+        "JAEGER_AGENT_HOST": "localhost",
+        "JAEGER_SAMPLER_TYPE": "const",
+        "JAEGER_SAMPLER_PARAM": "1"
+      }
+    }
+  }
+}

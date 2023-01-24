@@ -1,0 +1,61 @@
+plugins {
+	// using this version intentionally because we'd like to call a vulnerable function
+	id 'org.springframework.boot' version '2.1.7.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'com.google.cloud.tools.jib' version '2.7.1'
+	id 'java'
+}
+
+group = 'org.dynatrace'
+version = '1.0.1'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// tracing
+	implementation 'io.jaegertracing:jaeger-client:1.4.0'
+	implementation group: 'io.opentracing.contrib', name: 'opentracing-spring-jaeger-web-starter', version: '3.2.2'
+	implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+	implementation 'junit:junit:4.13.1'
+
+	// https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-okhttp3
+	compile group: 'io.opentracing.contrib', name: 'opentracing-okhttp3', version: '3.0.0'
+
+
+	// https://mvnrepository.com/artifact/redis.clients/jedis
+	compile group: 'redis.clients', name: 'jedis', version: '3.3.0'
+	// https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-redis-jedis3
+	compile group: 'io.opentracing.contrib', name: 'opentracing-redis-jedis3', version: '0.1.16'
+
+	// https://mvnrepository.com/artifact/com.squareup.okhttp/okhttp
+	compile group: 'com.squareup.okhttp', name: 'okhttp', version: '2.7.5'
+
+	// https://mvnrepository.com/artifact/org.json/json
+	compile group: 'org.json', name: 'json', version: '20201115'
+
+
+	compile 'io.jsonwebtoken:jjwt-api:0.11.2'
+	runtime 'io.jsonwebtoken:jjwt-impl:0.11.2',
+			// Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
+			//'org.bouncycastle:bcprov-jdk15on:1.60',
+			'io.jsonwebtoken:jjwt-jackson:0.11.2' // or 'io.jsonwebtoken:jjwt-gson:0.11.2' for gson
+
+	// https://mvnrepository.com/artifact/commons-io/commons-io
+	implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	implementation 'org.testng:testng:6.14.3'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	// https://mvnrepository.com/artifact/org.assertj/assertj-core
+	testImplementation 'org.assertj:assertj-core:3.21.0'
+}
+
+test {
+	useJUnitPlatform()
+}

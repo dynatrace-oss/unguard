@@ -1,0 +1,140 @@
+# Copyright 2023 Dynatrace LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: skaffold/v3alpha1
+kind: Config
+metadata:
+  name: unguard
+build:
+  artifacts:
+    # context is the directory with the Dockerfile for that image
+    - image: unguard-envoy-proxy
+      context: src/envoy-proxy
+    - image: unguard-frontend
+      context: src/frontend
+    - image: unguard-microblog-service # adapt jib patch index below if you move this item
+      context: src/microblog-service
+    - image: unguard-proxy-service
+      context: src/proxy-service
+    - image: unguard-user-simulator
+      context: src/user-simulator
+    - image: unguard-user-auth-service
+      context: src/user-auth-service
+    - image: unguard-ad-service
+      context: src/ad-service
+    - image: unguard-membership-service
+      context: src/membership-service
+    - image: unguard-malicious-load-generator
+      context: src/malicious-load-generator
+    - image: unguard-status-service
+      context: src/status-service
+    - image: unguard-profile-service
+      context: src/profile-service
+  local:
+    # only the docker CLI respects a manually logged-in daemon
+    useDockerCLI: true
+    # BuildKit provides an improvement on performance
+    useBuildkit: true
+manifests:
+  kustomize:
+      paths:
+        - ./k8s-manifests/base
+deploy:
+  kubectl:
+    {}
+  helm:
+    releases:
+      - name: unguard-mariadb
+        remoteChart: mariadb
+        repo: https://charts.bitnami.com/bitnami
+        namespace: unguard
+        createNamespace: true
+        wait: true # TODO: #22 Might be removed once we have readiness probes
+        overrides:
+          primary:
+            persistence:
+              enabled: false
+profiles:
+  - name: aws
+    # automatic regex-based activation would conflict with
+    # aws profiles that inherit from this skaffold.yaml file
+    # activation: [{ kubeContext: arn:aws:eks:* }]
+    manifests:
+      kustomize:
+        paths:
+          - ./k8s-manifests/aws
+  - name: localdev-minikube
+    manifests:
+      kustomize:
+        paths:
+          - ./k8s-manifests/localdev/minikube
+  - name: localdev-kind
+    manifests:
+      kustomize:
+        paths:
+          - ./k8s-manifests/localdev/kind
+  - name: jaeger-dev
+    patches:
+      - op: add
+        path: /deploy/kustomize/paths/-
+        value: ./k8s-manifests/jaeger
+      - op: add
+        path: /deploy/helm/releases/-
+        value:
+          name: jaeger-operator
+          remoteChart: jaeger-operator
+          repo: https://jaegertracing.github.io/helm-charts
+          version: 2.22.0
+          namespace: unguard
+          createNamespace: true
+  - name: jaeger
+    patches:
+      - op: add
+        path: /deploy/helm/releases/-
+        value:
+          name: jaeger
+          remoteChart: jaeger
+          repo: https://jaegertracing.github.io/helm-charts
+          namespace: unguard
+          createNamespace: true
+          overrides:
+            provisionDataStore:
+              cassandra: false
+              elasticsearch: true
+            storage:
+              type: elasticsearch
+            elasticsearch:
+              antiAffinity: soft
+              replicas: 1
+              minimumMasterNodes: 1
+            esIndexCleaner:
+              enabled: true
+              tag: 1.22
+              schedule: "55 23 * * *"
+              numberOfDays: 7
+  - name: jib
+    patches:
+      - op: add
+        path: /build/artifacts/2/jib
+        value: {}
+  - name: malicious-load-generator
+    patches:
+      - op: add
+        path: /manifests/kustomize/paths/-
+        value: ./k8s-manifests/malicious-load-generator
+  - name: tracing
+    patches:
+      - op: add
+        path: /manifests/kustomize/paths/-
+        value: ./k8s-manifests/tracing

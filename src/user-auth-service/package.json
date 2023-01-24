@@ -1,0 +1,30 @@
+{
+  "name": "user-auth-service",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node bin/www",
+    "dev": "nodemon bin/www"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jaeger-client": "^3.15.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-simple": "0.5.2",
+    "morgan": "~1.9.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.2.5",
+    "opentracing": "^0.14.5",
+    "pug": "2.0.0-beta11",
+    "readline-sync": "^1.4.10",
+    "bcrypt": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12",
+    "dotenv": "^10.0.0"
+  }
+}
