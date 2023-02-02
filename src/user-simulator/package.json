@@ -18,16 +18,12 @@
         "arrowParens": "avoid"
     },
     "dependencies": {
-        "@flood/element": "2.0.4",
-        "@flood/element-cli": "2.0.4",
-        "assert": "*",
-        "faker": "*",
-        "prettier": "*"
+        "@flood/element": "^2.0.4",
+        "@flood/element-cli": "^2.0.4",
+        "prettier": "^2.8.3"
     },
     "devDependencies": {
-        "@types/faker": "*",
-        "@types/assert": "*",
-        "@types/node": "*"
+        "@types/node": "18.11.18"
     },
     "element": {
         "testMatch": [
