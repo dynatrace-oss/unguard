@@ -103,44 +103,29 @@ app.use(cookieParser());
 // for parsing application/xwww-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
+function createAxiosInstance(req, baseURL, logger, headers) {
+    const axiosInstace = axios.create({baseURL, headers});
+
+    axiosInstace.interceptors.response.use(undefined, function (error) {
+        logger.log({level: 'error', message: error, errorType: 'http'});
+        return Promise.reject(error)
+    });
+
+    return axiosInstace;
+}
+
 // setup 6 custom axios instances configured to talk to each microservice respectively
 // (MICROBLOG_API, PROXY, USER_AUTH_API, AD_SERVICE_API, PROFILE_SERVICE_API and STATUS_SERVICE_API). All with Jaeger tracing enabled
 app.use((req, res, next) => {
-    const MICROBLOG_API = axios.create({
-        baseURL: "http://" + process.env.MICROBLOG_SERVICE_ADDRESS,
-        // forward username cookie
-        headers: req.cookies.jwt ? { "Cookie": "jwt=" + req.cookies.jwt } : {}
-    });
+    const cookieHeader = req.cookies.jwt ? {"Cookie": "jwt=" + req.cookies.jwt} : {};
 
-    const PROXY = axios.create({
-        baseURL: "http://" + process.env.PROXY_SERVICE_ADDRESS
-    });
-
-    const USER_AUTH_API = axios.create({
-        baseURL: "http://" + process.env.USER_AUTH_SERVICE_ADDRESS,
-        // forward username cookie
-        headers: req.cookies.jwt ? {"Cookie": "jwt=" + req.cookies.jwt} : {}
-    });
-
-    const AD_SERVICE_API = axios.create({
-        baseURL: "http://" + process.env.AD_SERVICE_ADDRESS + process.env.AD_SERVICE_BASE_PATH,
-        // forward cookie
-        headers: req.cookies.jwt ? {"Cookie": "jwt=" + req.cookies.jwt} : {},
-    });
-
-    const MEMBERSHIP_SERVICE_API = axios.create({
-        baseURL: "http://" + process.env.MEMBERSHIP_SERVICE_ADDRESS + process.env.MEMBERSHIP_SERVICE_BASE_PATH,
-    });
-
-    const PROFILE_SERVICE_API = axios.create({
-        baseURL: "http://" + process.env.PROFILE_SERVICE_ADDRESS,
-        // forward cookie
-        headers: req.cookies.jwt ? {"Cookie": "jwt=" + req.cookies.jwt} : {}
-    });
-
-	const STATUS_SERVICE_API = axios.create({
-		baseURL: "http://" + process.env.STATUS_SERVICE_ADDRESS + process.env.STATUS_SERVICE_BASE_PATH,
-	});
+    const MICROBLOG_API = createAxiosInstance(req, "http://" + process.env.MICROBLOG_SERVICE_ADDRESS, microblogLogger, cookieHeader);
+    const PROXY = createAxiosInstance(req, "http://" + process.env.PROXY_SERVICE_ADDRESS, proxyLogger);
+    const USER_AUTH_API = createAxiosInstance(req, "http://" + process.env.USER_AUTH_SERVICE_ADDRESS, userAuthApiLogger, cookieHeader);
+    const AD_SERVICE_API = createAxiosInstance(req,"http://" + process.env.AD_SERVICE_ADDRESS + process.env.AD_SERVICE_BASE_PATH, adServiceApiLogger, cookieHeader);
+    const MEMBERSHIP_SERVICE_API = createAxiosInstance(req, "http://" + process.env.MEMBERSHIP_SERVICE_ADDRESS + process.env.MEMBERSHIP_SERVICE_BASE_PATH, membershipServiceApiLogger, cookieHeader)
+    const PROFILE_SERVICE_API = createAxiosInstance(req, "http://" + process.env.PROFILE_SERVICE_ADDRESS, profileServiceLogger);
+    const STATUS_SERVICE_API =createAxiosInstance(req, "http://" + process.env.STATUS_SERVICE_ADDRESS + process.env.STATUS_SERVICE_BASE_PATH, statusServiceApiLogger);
 
 	applyTracingInterceptors(MICROBLOG_API, {span: req.span});
 	applyTracingInterceptors(PROXY, {span: req.span});
@@ -148,41 +133,6 @@ app.use((req, res, next) => {
 	applyTracingInterceptors(AD_SERVICE_API, {span: req.span});
 	applyTracingInterceptors(STATUS_SERVICE_API, {span: req.span});
     applyTracingInterceptors(PROFILE_SERVICE_API, {span: req.span});
-
-    MICROBLOG_API.interceptors.response.use(undefined, function (error) {
-        microblogLogger.log({level: 'error', message: error, errorType: 'http'});
-        return Promise.reject(error)
-    });
-
-    PROXY.interceptors.response.use(undefined, function (error) {
-        proxyLogger.log({level: 'error', message: error, errorType: 'http'});
-        return Promise.reject(error)
-    });
-
-    USER_AUTH_API.interceptors.response.use(undefined, function (error) {
-        userAuthApiLogger.log({level: 'error', message: error, errorType: 'http'});
-        return Promise.reject(error)
-    });
-
-    AD_SERVICE_API.interceptors.response.use(undefined, function (error) {
-        adServiceApiLogger.log({level: 'error', message: error, errorType: 'http'});
-        return Promise.reject(error)
-    });
-
-    MEMBERSHIP_SERVICE_API.interceptors.response.use(undefined, function (error) {
-        membershipServiceApiLogger.log({level: 'error', message: error, errorType: 'http'});
-        return Promise.reject(error)
-    });
-
-    PROFILE_SERVICE_API.interceptors.response.use(undefined, function (error) {
-        profileServiceLogger.log({level: 'error', message: error, errorType: 'http'});
-        return Promise.reject(error)
-    });
-
-    STATUS_SERVICE_API.interceptors.response.use(undefined, function (error) {
-        statusServiceApiLogger.log({ level: 'error', message: error, errorType: 'http' });
-        return Promise.reject(error)
-    });
 
     req.MICROBLOG_API = MICROBLOG_API;
     req.PROXY = PROXY;
