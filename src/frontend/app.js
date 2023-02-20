@@ -98,6 +98,9 @@ const applyTracingInterceptors = createAxiosTracing(tracer);
 // enable express server side tracing
 app.use(expressOpentracing({ tracer }));
 
+// by trusting the proxy, express uses x-forwarded-for header to set the remote ip header
+app.set('trust proxy', true)
+
 // enable cookie parsing
 app.use(cookieParser());
 // for parsing application/xwww-form-urlencoded
@@ -110,6 +113,28 @@ function createAxiosInstance(req, baseURL, logger, headers) {
         logger.log({level: 'error', message: error, errorType: 'http'});
         return Promise.reject(error)
     });
+
+    /**
+     *  Intercept requests to forward x-client-ip header
+     */
+    axiosInstace.interceptors.request.use(
+        config => {
+            let remoteIp = null
+            if (req.headers['x-client-ip']) {
+                // Internal request, x-client-ip is only set by load generators within the cluster.
+                remoteIp = req.headers['x-client-ip'];
+            } else {
+                // Outside traffic (Cluster ingress)
+                remoteIp = req.ip;
+            }
+
+            config.headers['x-client-ip'] = remoteIp
+            return config;
+        },
+        error => {
+            return Promise.reject(error);
+        }
+    );
 
     return axiosInstace;
 }
