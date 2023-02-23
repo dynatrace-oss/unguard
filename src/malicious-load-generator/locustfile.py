@@ -20,16 +20,16 @@ import time
 from locust import HttpUser, task, between
 
 LOCATION_BASED_IPS = ['177.236.37.155',
-                             '49.210.236.225',
-                             '66.96.37.30',
-                             '19.21.221.83',
-                             '134.110.48.221',
-                             '87.130.41.167',
-                             '159.104.0.163',
-                             '91.21.66.164',
-                             '217.69.107.8',
-                             '204.176.161.159',
-                             '18.153.60.55',
+                      '49.210.236.225',
+                      '66.96.37.30',
+                      '19.21.221.83',
+                      '134.110.48.221',
+                      '87.130.41.167',
+                      '159.104.0.163',
+                      '91.21.66.164',
+                      '217.69.107.8',
+                      '204.176.161.159',
+                      '18.153.60.55',
                       '96.16.70.23',
                       '171.72.188.229',
                       '24.253.46.199',
@@ -116,9 +116,9 @@ class UnguardUser(HttpUser):
         USER_INDEX += 1
         return "hacker_" + str(USER_INDEX)
 
-    def get_x_client_ip_header(self):
+    def get_random_x_forwarded_for_header(self):
         return {
-            'x-client-ip': random.choice(LOCATION_BASED_IPS)
+            'x-forwarded-for': random.choice(LOCATION_BASED_IPS)
         }
 
     @task()
@@ -126,14 +126,14 @@ class UnguardUser(HttpUser):
         jndi_post = {'header': "en-US",
                      'urlmessage': random.choice(JNDI_URIS)}
 
-        self.client.post("/post", data=jndi_post, headers=self.get_x_client_ip_header())
+        self.client.post("/post", data=jndi_post, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
     @task()
     def post_cmd(self):
         cmd_post = {'imgurl': random.choice(CMDS)}
 
-        self.client.post("/post", data=cmd_post, headers=self.get_x_client_ip_header())
+        self.client.post("/post", data=cmd_post, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
     @task()
@@ -144,7 +144,7 @@ class UnguardUser(HttpUser):
         self.client.post("/bio/" + self.get_running_username(), data={'bioText': ''})
 
         # post the malicious SQL command
-        self.client.post("/bio/" + self.get_running_username(), data=sql_bio, headers=self.get_x_client_ip_header())
+        self.client.post("/bio/" + self.get_running_username(), data=sql_bio, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
     @task()
@@ -152,7 +152,7 @@ class UnguardUser(HttpUser):
         sql_membership = {'membershipText': random.choice(SQL_CMDS_MEMBERSHIP)}
 
         # post the malicious SQL command
-        self.client.post("/membership/" + self.get_running_username(), data=sql_membership, headers=self.get_x_client_ip_header())
+        self.client.post("/membership/" + self.get_running_username(), data=sql_membership, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
     def on_start(self):
