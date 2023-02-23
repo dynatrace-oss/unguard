@@ -119,16 +119,7 @@ function createAxiosInstance(req, baseURL, logger, headers) {
      */
     axiosInstace.interceptors.request.use(
         config => {
-            let remoteIp = null
-            if (req.headers['x-client-ip']) {
-                // Internal request, x-client-ip is only set by load generators within the cluster.
-                remoteIp = req.headers['x-client-ip'];
-            } else {
-                // Outside traffic (Cluster ingress)
-                remoteIp = req.ip;
-            }
-
-            config.headers['x-client-ip'] = remoteIp
+            config.headers['x-client-ip'] = req.ip
             return config;
         },
         error => {
