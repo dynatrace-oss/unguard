@@ -1,4 +1,4 @@
-# user-auth-service
+# User Auth Service
 
 To install all dependencies with yarn (`npm install -g yarn`) run:
 

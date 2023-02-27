@@ -1,4 +1,4 @@
-# frontend
+# Frontend
 
 To install all dependencies with yarn (`npm install -g yarn`) run:
 
@@ -34,7 +34,7 @@ To run the frontend locally on [localhost:3000](http://localhost:3000), execute:
 yarn start
 ```
 
-If you want to change the override values with the environment variables set in .env 
+If you want to change the override values with the environment variables set in .env
 and then run the frontend, run:
 
 ```
@@ -50,11 +50,11 @@ yarn run dev
 ### Developing with Kubernetes services
 
 For further development at the frontend it may be useful to start Unguard in
-Kubernetes (general README.md) and forward every port to the local build&run frontend.  
-Note that the iframe which loads the ad won't run with manual execution, since the ingress 
+Kubernetes (general README.md) and forward every port to the local build&run frontend.
+Note that the iframe which loads the ad won't run with manual execution, since the ingress
 would normally root it over the frontend ```host address``` + AD_SERVICE_BASE_PATH.
 
-Port forwarding: 
+Port forwarding:
 ```sh
 kubectl port-forward -n unguard service/unguard-microblog-service 8080:80
 kubectl port-forward -n unguard service/unguard-proxy-service 8081:80

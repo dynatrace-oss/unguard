@@ -1,4 +1,4 @@
-﻿# AdService
+﻿# Ad Service
 
 Contains web-app which displays a simple image, and some Endpoints to manage the ads.
 
@@ -7,7 +7,7 @@ Contains web-app which displays a simple image, and some Endpoints to manage the
 ### Requirements
 
 - .net 5 SDK (https://dotnet.microsoft.com/download/dotnet/5.0)
-- environment variables - They are set in Properties/launchSettings.json for local build 
+- environment variables - They are set in Properties/launchSettings.json for local build
 
 ## Building
 
@@ -35,18 +35,18 @@ Service will run on port 8082.
 dotnet run AdService.dll
 ```
 
-##### docker 
+##### docker
 
 Image will be forwarded to port 80
 ```
-docker run -it -p 80:8082 --name ad-service-container ad-service 
+docker run -it -p 80:8082 --name ad-service-container ad-service
 ```
 
-Currently, AdService will show a picture under the path /app/wwwroot/adFolder/bird.jpg.  
+Currently, AdService will show a picture under the path /app/wwwroot/adFolder/bird.jpg.
 Therefore, if your want to a display custom images, you have to mount a folder with a picture named bird.jpg in it and
 state it in the command instead of '<your-directory>'.
 ```
-docker run -it -v <your-directory>:/app/wwwroot/adFolder -p 80:8082 --name ad-service-container ad-service 
+docker run -it -v <your-directory>:/app/wwwroot/adFolder -p 80:8082 --name ad-service-container ad-service
 ```
 
 ##### docker-compose
@@ -58,25 +58,25 @@ docker compose up -d
 
 ### API Endpoints
 
-#### GET /ad 
+#### GET /ad
 
-Return a HTML page which will show an image(ad).  
-This including a js file which will reload the page after certain time. 
-Therefore, the last used image name will be saved in a cookie 
+Return a HTML page which will show an image(ad).
+This including a js file which will reload the page after certain time.
+Therefore, the last used image name will be saved in a cookie
 so that the backend knows which imaged should be loaded next.
 
-#### GET /ads  
+#### GET /ads
 
 Return available files on server.
 
-#### POST /delete-ad 
+#### POST /delete-ad
 
 * "filename": string
 
 Deletes the file with the passed attribute name, if existing.
 
-#### POST /update-ad 
-* "file": zip-file  
+#### POST /update-ad
+* "file": zip-file
 
 Uploads and extracts a passed zip file.
 
