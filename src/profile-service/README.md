@@ -1,4 +1,4 @@
-# profile-service
+# Profile Service
 
 A web service where biography information can be created, read and updated by authenticated users.
 This service is vulnerable to SQL injection.

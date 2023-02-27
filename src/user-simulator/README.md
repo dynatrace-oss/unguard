@@ -1,9 +1,10 @@
-# user-simulator
+# User Simulator
 
 A benign user simulator for Unguard.
-Uses a real browser to simulate a user that does various tasks on the defined Unguard instance.
+Uses a real browser to simulate a user that does various tasks on the specified Unguard frontend.
 
 Executes following tasks:
+
 * register / login
 * visit frontpage
 * visit personal timelines
@@ -18,11 +19,10 @@ Executes following tasks:
 
 ## Prerequisites
 
-* Node 18.* (recommended)
+* Node 14.20 (recommended)
 * [Yarn](https://yarnpkg.com/)
 
-
-* Install all the dependencies by running:
+Install all the dependencies by running:
 
 ```
 yarn install

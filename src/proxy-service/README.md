@@ -1,4 +1,4 @@
-# proxy-service
+# Proxy Service
 
 Contains a SSRF vulnerable web service that proxies requests and returns the result.
 Can be abused to contact internal services (network internal, localhost).
@@ -15,7 +15,7 @@ The ```/curl``` endpoint can be used to create non-http requests (can do anythin
 
 ### Running
 
-To simply run this service, optionally adjust the ```.env``` file for 
+To simply run this service, optionally adjust the ```.env``` file for
 your Jaeger config and then run:
 
 ```
@@ -45,11 +45,11 @@ Running the application should start a webserver accessible on [localhost:8081](
 
 To get more information about the JAEGER config options, see https://www.jaegertracing.io/docs/1.19/client-features/
 
-|         Name         | Example Value | Description                               |
-|----------------------|---------------|-------------------------------------------|
-| SERVER_PORT          | 8081          | The port that the server will run on
-| JAEGER_AGENT_HOST    | localhost     | Change to hostname/IP of your Jaeger agent
-| JAEGER_SERVICE_NAME  | proxy-service |
-| JAEGER_SAMPLER_TYPE  | const         | (optional) Set to const to get all traces
-| JAEGER_SAMPLER_PARAM | 1             | (optional) Set to 1 while sampler is const to get all traces
+| Name                 | Example Value | Description                                                  |
+|----------------------|---------------|--------------------------------------------------------------|
+| SERVER_PORT          | 8081          | The port that the server will run on                         |
+| JAEGER_AGENT_HOST    | localhost     | Change to hostname/IP of your Jaeger agent                   |
+| JAEGER_SERVICE_NAME  | proxy-service |                                                              |
+| JAEGER_SAMPLER_TYPE  | const         | (optional) Set to const to get all traces                    |
+| JAEGER_SAMPLER_PARAM | 1             | (optional) Set to 1 while sampler is const to get all traces |
 
