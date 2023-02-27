@@ -1,19 +1,13 @@
 # ![Unguard Logo](docs/images/logo/unguard-logo-red-small.png) Unguard
 
-___
-
 **Unguard** (🇦🇹 [ˈʊnˌɡuːat] like disquieting, 🇫🇷 [ãˈɡard] like the fencing command) is an **insecure** cloud-native
-microservices demo application. It consists of seven app services, a load generator, and two databases. Unguard
-encompasses vulnerabilities like SSRF, Command/SQL injection and comes with built-in Jaeger traces. The application is
-a web-based Twitter clone where users can:
+microservices demo application. It consists of eight app services, a load generator, and two databases. Unguard
+encompasses vulnerabilities like server-side request forgery (SSRF), Command/SQL injection, JWT key confusion,
+remote code execution and many more.
 
-* register/login
-* post text, URLs and images
-* view global or personalized timelines
-* see ads on the timeline
-* view/follow users
-* edit your user biography
-* manage user memberships
+The application is a web-based Twitter clone where users can register/login, post text, URLs and images and follow
+users.
+Unguard also features fake ads, a possibility to edit your biography and manage your membership.
 
 > **Note**
 > This product is not officially supported by Dynatrace
@@ -28,7 +22,7 @@ a web-based Twitter clone where users can:
 
 Unguard is composed of eight microservices written in different languages that talk to each other over REST.
 
-![Unguard Architecture](docs/images/unguard-architecture.png)
+![Unguard Architecture](docs/images/unguard-architecture.svg)
 
 | Service                                                    | Language        | Service Account | Description                                                                                                                                 |
 |------------------------------------------------------------|-----------------|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------|
@@ -46,12 +40,6 @@ Unguard is composed of eight microservices written in different languages that t
 | redis                                                      |                 | default         | Key-value store that holds all user data (except authentication-related stuff).                                                             |
 | [user-simulator](./src/user-simulator)                     | Node.js Element | default         | Creates synthetic user traffic by simulating an Unguard user using a real browser. Acts as a load generator.                                |
 | [malicious-load-generator](./src/malicious-load-generator) |                 | default         | Malicious load generator that makes CMD, JNDI, and SQL injections.                                                                          |
-
-| Service Account | Permissions                               |
-|-----------------|-------------------------------------------|
-| default         | None                                      |
-| unguard-proxy   | List, get & create pods, create pods/exec |
-| unguard-status  | List & get & pods/deployments             |
 
 ## 🖥️ Local Deployment
 
