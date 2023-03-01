@@ -1,4 +1,4 @@
-{# 
+{#
 Copyright 2023 Dynatrace LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@ limitations under the License.
 {% extends "base.njk" %}
 
 {% block content %}
-    <div class="timeline-page">
-        <div class="timeline-container">
+    <div class="row">
+        <div class="col-12 col-md-9">
             <h1>{{ title }}</h1>
 
             {% include "compose.njk" %}
@@ -28,8 +28,8 @@ limitations under the License.
             {% endfor %}
         </div>
         {% if (membership !== 'PRO') %}
-            <div class="ad-container">
-                <iframe class="ad-website" src="{{ AD_SERVICE_INGRESS_ADDRESS + '/ad' }}"></iframe>
+            <div class="col-12 col-md-3 order-first order-md-0">
+                <iframe class="ad-website sticky-top" src="{{ AD_SERVICE_INGRESS_ADDRESS + '/ad' }}"></iframe>
             </div>
         {% endif %}
     </div>
