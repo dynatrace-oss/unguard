@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+title: "Unguard: An Insecure Cloud-Native Microservice-Based Application"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+- name: "Dynatrace LLC"
+date-released: 2023
+url: "https://github.com/dynatrace-oss/unguard"
+license: Apache-2.0
