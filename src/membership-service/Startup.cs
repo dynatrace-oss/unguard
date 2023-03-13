@@ -49,8 +49,12 @@ namespace MembershipService
             string connectString = $"Server={dbHost};Port=3306;Database=memberships;user=root;password={dbPwd}";
             services.AddDbContext<MariaDbContext>(
                 options => options.UseMySql(
-                connectString,
-                    new MySqlServerVersion(new Version(10, 5, 8))
+                    connectString,
+                    new MySqlServerVersion(new Version(10, 5, 8)),
+                    options => options.EnableRetryOnFailure(
+                        maxRetryCount: 10,
+                        maxRetryDelay: System.TimeSpan.FromSeconds(60),
+                        errorNumbersToAdd: null)
                 )
             );
 
