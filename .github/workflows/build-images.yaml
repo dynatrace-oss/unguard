@@ -1,0 +1,44 @@
+name: Publish
+on:
+#  push:
+#    # Sequence of patterns matched against refs/heads
+#    branches:
+#      - main
+#    # Sequence of patterns matched against refs/tags
+#    tags:
+#      - v*
+  push:
+    paths:
+      - src/**
+      - .github/workflows/build-images.yaml
+jobs:
+  build:
+    name: Skaffold Build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ vars.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache layers
+        uses: actions/cache@v3
+        with:
+          path: "${{ github.workspace }}/.skaffold/cache"
+          key: skaffold-${{ hashFiles('**/cache') }}
+          restore-keys: |
+            skaffold-
+
+      - name: Run Skaffold build pipeline
+        uses: hiberbee/github-action-skaffold@latest
+        id: build
+        with:
+          command: build
+          skip-tests: true
+          repository: ${{ vars.REGISTRY }}/${{ github.repository }}
+          push: true
