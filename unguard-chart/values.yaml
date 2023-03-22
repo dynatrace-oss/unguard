@@ -11,3 +11,8 @@ lovaldev:
 aws:
   enabled: false
 
+
+mariadb:
+  primary:
+    persistence:
+      enabled: false

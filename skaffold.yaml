@@ -46,25 +46,15 @@ build:
     useDockerCLI: true
     # BuildKit provides an improvement on performance
     useBuildkit: true
-manifests:
-  kustomize:
-      paths:
-        - ./k8s-manifests/base
+
 deploy:
   kubectl:
     {}
   helm:
     releases:
-      - name: unguard-mariadb
-        remoteChart: mariadb
-        repo: https://charts.bitnami.com/bitnami
-        namespace: unguard
-        createNamespace: true
-        wait: true # TODO: #22 Might be removed once we have readiness probes
-        overrides:
-          primary:
-            persistence:
-              enabled: false
+      - name: unguard
+        chartPath: ./unguard-chart
+
 profiles:
   - name: aws
     # automatic regex-based activation would conflict with
