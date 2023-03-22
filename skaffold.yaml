@@ -31,7 +31,7 @@ build:
       context: src/user-simulator
     - image: unguard-user-auth-service
       context: src/user-auth-service
-    - image: unguard-ad-service
+    - image: unguard_ad_service
       context: src/ad-service
     - image: unguard-membership-service
       context: src/membership-service
@@ -54,6 +54,13 @@ deploy:
     releases:
       - name: unguard
         chartPath: ./unguard-chart
+        namespace: unguard
+        createNamespace: true
+        setValueTemplates:
+          services.adService.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
+          services.adService.image.tag: "{{.IMAGE_TAG_unguard_ad_service}}@{{.IMAGE_DIGEST_unguard_ad_service}}"
+        setValues:
+          services.adService.image.pullPolicy: "IfNotPresent"
 
 profiles:
   - name: aws

@@ -51,7 +51,8 @@ spec:
     spec:
       containers:
         - name: ad-service
-          image: unguard-ad-service
+          image: {{.Values.services.adService.image.repository}}:{{.Values.services.adService.image.tag}}
+          imagePullPolicy: {{.Values.services.adService.image.pullPolicy}}
           ports:
             - containerPort: 8082
           env:
