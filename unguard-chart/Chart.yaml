@@ -1,5 +1,5 @@
 apiVersion: v2
-name: unguard-chart
+name: unguard
 description: Unguard is an insecure cloud-native microservices demo application.
 
 # A chart can be either an 'application' or a 'library' chart.
