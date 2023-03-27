@@ -69,3 +69,19 @@ spec:
                 secretKeyRef:
                   name: unguard-mariadb
                   key: mariadb-root-password
+      initContainers:
+        - name: db-readiness-check
+          image: {{.Values.services.dbReadinessCheck.image.repository}}:{{.Values.services.dbReadinessCheck.image.tag}}
+          command: ["/check.sh"]
+          env:
+            - name: MYSQL_USER
+              value: "root"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: unguard-mariadb
+                  key: mariadb-root-password
+            - name: MYSQL_HOST
+              value: "unguard-mariadb"
+
+
