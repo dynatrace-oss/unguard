@@ -25,8 +25,10 @@ build:
       context: src/db-readiness-check
 
 
-    - image: unguard-frontend
+    - image: unguard_frontend
       context: src/frontend
+
+
     - image: unguard-microblog-service # adapt jib patch index below if you move this item
       context: src/microblog-service
     - image: unguard-proxy-service
@@ -70,6 +72,9 @@ deploy:
           # db-readiness-check
           services.dbReadinessCheck.image.repository: "{{.IMAGE_REPO_unguard_db_readiness_check}}"
           services.dbReadinessCheck.image.tag: "{{.IMAGE_TAG_unguard_db_readiness_check}}@{{.IMAGE_DIGEST_unguard_db_readiness_check}}"
+           # frontend
+          services.frontend.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
+          services.frontend.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
 
         setValues:
           # ad-service
@@ -78,6 +83,8 @@ deploy:
           services.envoyProxy.image.pullPolicy: "IfNotPresent"
           # db-readiness-check
           services.dbReadinessCheck.image.pullPolicy: "IfNotPresent"
+          # frontend
+          services.frontend.image.pullPolicy: "IfNotPresent"
 
 
 profiles:
