@@ -30,7 +30,7 @@ jobs:
           echo "IMAGE_TAG=${{ steps.release-version.outputs.group1 }}" >> $GITHUB_ENV
 
       - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        uses: docker/login-action@v2
         with:
           registry: ${{ vars.REGISTRY }}
           username: ${{ github.actor }}
@@ -45,7 +45,7 @@ jobs:
             skaffold-
 
       - name: Run Skaffold build pipeline
-        uses: hiberbee/github-action-skaffold@latest
+        uses: hiberbee/github-action-skaffold@1.26.0
         id: build
         with:
           command: build

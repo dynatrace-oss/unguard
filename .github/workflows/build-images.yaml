@@ -22,7 +22,7 @@ jobs:
             skaffold-
 
       - name: Run Skaffold build pipeline
-        uses: hiberbee/github-action-skaffold@latest
+        uses: hiberbee/github-action-skaffold@1.26.0
         id: build
         with:
           command: build
