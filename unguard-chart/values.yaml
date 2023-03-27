@@ -22,9 +22,15 @@ services:
       repository: ghcr.io/dynatrace-oss/unguard/envoy-proxy
       tag: v1.2.0
       pullPolicy: IfNotPresent
+  dbReadinessCheck:
+    image:
+      repository: ghcr.io/dynatrace-oss/unguard/db-readiness-check
+      tag: v1.2.0
+      pullPolicy: IfNotPresent
 
 
 mariadb:
   primary:
     persistence:
       enabled: false
+
