@@ -52,7 +52,8 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: unguard-frontend
+          image: {{.Values.services.frontend.image.repository}}:{{.Values.services.frontend.image.tag}}
+          imagePullPolicy: {{.Values.services.frontend.image.pullPolicy}}
           ports:
             - containerPort: 3000
           env:
