@@ -17,6 +17,11 @@ services:
       repository: ghcr.io/dynatrace-oss/unguard/ad-service
       tag: v1.2.0
       pullPolicy: IfNotPresent
+  envoyProxy:
+    image:
+      repository: ghcr.io/dynatrace-oss/unguard/envoy-proxy
+      tag: v1.2.0
+      pullPolicy: IfNotPresent
 
 
 mariadb:

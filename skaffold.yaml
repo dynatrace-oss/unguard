@@ -19,8 +19,10 @@ metadata:
 build:
   artifacts:
     # context is the directory with the Dockerfile for that image
-    - image: unguard-envoy-proxy
+    - image: unguard_envoy_proxy
       context: src/envoy-proxy
+
+
     - image: unguard-frontend
       context: src/frontend
     - image: unguard-microblog-service # adapt jib patch index below if you move this item
@@ -57,10 +59,19 @@ deploy:
         namespace: unguard
         createNamespace: true
         setValueTemplates:
+          # ad-service
           services.adService.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
           services.adService.image.tag: "{{.IMAGE_TAG_unguard_ad_service}}@{{.IMAGE_DIGEST_unguard_ad_service}}"
+          # envoy-proxy
+          services.envoyProxy.image.repository: "{{.IMAGE_REPO_unguard_envoy_proxy}}"
+          services.envoyProxy.image.tag: "{{.IMAGE_TAG_unguard_envoy_proxy}}@{{.IMAGE_DIGEST_unguard_envoy_proxy}}"
+
         setValues:
+          # ad-service
           services.adService.image.pullPolicy: "IfNotPresent"
+          # envoy-proxy
+          services.envoyProxy.image.pullPolicy: "IfNotPresent"
+
 
 profiles:
   - name: aws

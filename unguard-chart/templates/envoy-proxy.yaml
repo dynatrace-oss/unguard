@@ -56,7 +56,8 @@ spec:
     spec:
       containers:
         - name: envoy-proxy
-          image: unguard-envoy-proxy
+          image: {{.Values.services.envoyProxy.image.repository}}:{{.Values.services.envoyProxy.image.tag}}
+          imagePullPolicy: {{.Values.services.envoyProxy.image.pullPolicy}}
           ports:
             - name: http
               containerPort: 8080
