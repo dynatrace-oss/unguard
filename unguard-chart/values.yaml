@@ -1,6 +1,8 @@
 # Default values for unguard-chart.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+kubernetesClusterDomain: cluster.local
+
 localDev:
   minikube:
     enabled: true
@@ -62,11 +64,39 @@ services:
       repository: ghcr.io/dynatrace-oss/unguard/status-service
       tag: v1.2.0
       pullPolicy: IfNotPresent
-  profileService:
-    image:
-      repository: ghcr.io/dynatrace-oss/unguard/profile-service
-      tag: v1.2.0
-      pullPolicy: IfNotPresent
+
+
+profileService:
+  name: profile-service
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 8080
+        port: 80
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/profile-service
+        tag: v1.2.0
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 8080
+      env:
+        otelMetricsExporter: none
+        otelResourceAttributes: service.name=unguard-profile-service
+        otelTracesExporter: none
+        springDatasourcePassword: password
+        springDatasourceUrl: jdbc:h2:file:./database/bio
+        springDatasourceUsername: sa
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 15
 
 
 mariadb:
