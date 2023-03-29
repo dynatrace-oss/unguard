@@ -92,7 +92,8 @@ spec:
       serviceAccountName: unguard-proxy
       containers:
         - name: proxy-service
-          image: unguard-proxy-service
+          image: {{.Values.services.proxyService.image.repository}}:{{.Values.services.proxyService.image.tag}}
+          imagePullPolicy: {{.Values.services.proxyService.image.pullPolicy}}
           ports:
             - containerPort: 8081
           env:
