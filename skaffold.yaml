@@ -37,14 +37,14 @@ build:
       context: src/ad-service
     - image: unguard_membership_service
       context: src/membership-service
-
-
     - image: unguard_status_service
       context: src/status-service
 
 
-    - image: unguard-profile-service
+    - image: unguard_profile_service
       context: src/profile-service
+
+
     - image: unguard-malicious-load-generator
       context: src/malicious-load-generator
 
@@ -95,6 +95,9 @@ deploy:
            # status-service
           services.statusService.image.repository: "{{.IMAGE_REPO_unguard_status_servicee}}"
           services.statusService.image.tag: "{{.IMAGE_TAG_unguard_status_service}}@{{.IMAGE_DIGEST_unguard_status_service}}"
+           # profile-service
+          services.profileService.image.repository: "{{.IMAGE_REPO_unguard_profile_service}}"
+          services.profileService.image.tag: "{{.IMAGE_TAG_unguard_profile_service}}@{{.IMAGE_DIGEST_unguard_profile_service}}"
 
         setValues:
           # ad-service
@@ -117,6 +120,8 @@ deploy:
           services.membershipService.image.pullPolicy: "IfNotPresent"
           # status-service
           services.statusService.image.pullPolicy: "IfNotPresent"
+          # profile-service
+          services.profileService.image.pullPolicy: "IfNotPresent"
 
 
 profiles:
