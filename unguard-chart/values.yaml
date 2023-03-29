@@ -42,6 +42,11 @@ services:
       repository: ghcr.io/dynatrace-oss/unguard/proxy-service
       tag: v1.2.0
       pullPolicy: IfNotPresent
+  userSimulator:
+    image:
+      repository: ghcr.io/dynatrace-oss/unguard/user-simulator
+      tag: v1.2.0
+      pullPolicy: IfNotPresent
 
 
 mariadb:
