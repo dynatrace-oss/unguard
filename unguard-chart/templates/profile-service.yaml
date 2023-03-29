@@ -52,7 +52,8 @@ spec:
     spec:
       containers:
         - name: profile-service
-          image: unguard-profile-service
+          image: {{.Values.services.profileService.image.repository}}:{{.Values.services.profileService.image.tag}}
+          imagePullPolicy: {{.Values.services.profileService.image.pullPolicy}}
           ports:
             - containerPort: 8080
           livenessProbe:
