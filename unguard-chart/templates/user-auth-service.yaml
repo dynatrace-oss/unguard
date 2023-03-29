@@ -52,7 +52,8 @@ spec:
     spec:
       containers:
         - name: user-auth-service
-          image: unguard-user-auth-service
+          image: {{.Values.services.userAuthService.image.repository}}:{{.Values.services.userAuthService.image.tag}}
+          imagePullPolicy: {{.Values.services.userAuthService.image.pullPolicy}}
           ports:
             - containerPort: 9091
           env:

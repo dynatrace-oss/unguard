@@ -47,6 +47,11 @@ services:
       repository: ghcr.io/dynatrace-oss/unguard/user-simulator
       tag: v1.2.0
       pullPolicy: IfNotPresent
+  userAuthService:
+    image:
+      repository: ghcr.io/dynatrace-oss/unguard/user-auth-service
+      tag: v1.2.0
+      pullPolicy: IfNotPresent
 
 
 mariadb:
