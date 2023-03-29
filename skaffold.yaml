@@ -37,10 +37,10 @@ build:
       context: src/ad-service
     - image: unguard_membership_service
       context: src/membership-service
+
+
     - image: unguard_status_service
       context: src/status-service
-
-
     - image: unguard_profile_service
       context: src/profile-service
 
@@ -93,8 +93,8 @@ deploy:
           services.membershipService.image.repository: "{{.IMAGE_REPO_unguard_membership_service}}"
           services.membershipService.image.tag: "{{.IMAGE_TAG_unguard_membership_service}}@{{.IMAGE_DIGEST_unguard_membership_service}}"
            # status-service
-          services.statusService.image.repository: "{{.IMAGE_REPO_unguard_status_service}}"
-          services.statusService.image.tag: "{{.IMAGE_TAG_unguard_status_service}}@{{.IMAGE_DIGEST_unguard_status_service}}"
+          statusService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_status_service}}"
+          statusService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_status_service}}@{{.IMAGE_DIGEST_unguard_status_service}}"
            # profile-service
           profileService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_profile_service}}"
           profileService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_profile_service}}@{{.IMAGE_DIGEST_unguard_profile_service}}"
@@ -119,7 +119,7 @@ deploy:
           # membership-service
           services.membershipService.image.pullPolicy: "IfNotPresent"
           # status-service
-          services.statusService.image.pullPolicy: "IfNotPresent"
+          statusService.deployment.container.image.pullPolicy: "IfNotPresent"
           # profile-service
           profileService.deployment.container.image.pullPolicy: "IfNotPresent"
 

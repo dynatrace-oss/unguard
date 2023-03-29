@@ -99,6 +99,58 @@ profileService:
         periodSeconds: 15
 
 
+statusService:
+  name: status-service
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 8083
+        port: 80
+
+  serviceAccount:
+    name: unguard-status
+
+  role:
+    name: status-role
+    rules:
+      - apiGroups: [ "apps" ]
+        resources: [ "deployments" ]
+        verbs: [ "get", "list" ]
+      - apiGroups: [ "" ]
+        resources: [ "pods" ]
+        verbs: [ "get", "list" ]
+
+  roleBindings:
+    name: status-rolebinding
+    subjects:
+      - kind: ServiceAccount
+        name: unguard-status
+        apiGroup: ""
+    roleRef:
+      kind: Role
+      name: status-role
+      apiGroup: rbac.authorization.k8s.io
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/status-service
+        tag: v1.2.0
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 8083
+      env:
+        SERVER_PORT: 8083
+        API_PATH: /status-service
+        KUBERNETES_NAMESPACE: unguard
+        IGNORED_DEPLOYMENTS: unguard-user-simulator # add deployments to ignore separated by spaces
+
+
+
+
 mariadb:
   primary:
     persistence:
