@@ -92,7 +92,8 @@ spec:
       serviceAccountName: unguard-status
       containers:
         - name: status-service
-          image: unguard-status-service
+          image: {{.Values.services.statusService.image.repository}}:{{.Values.services.statusService.image.tag}}
+          imagePullPolicy: {{.Values.services.statusService.image.pullPolicy}}
           ports:
             - containerPort: 8083
           env:

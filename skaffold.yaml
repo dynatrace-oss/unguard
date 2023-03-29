@@ -35,18 +35,20 @@ build:
       context: src/user-auth-service
     - image: unguard_ad_service
       context: src/ad-service
-
-
     - image: unguard_membership_service
       context: src/membership-service
 
 
-    - image: unguard-malicious-load-generator
-      context: src/malicious-load-generator
-    - image: unguard-status-service
+    - image: unguard_status_service
       context: src/status-service
+
+
     - image: unguard-profile-service
       context: src/profile-service
+    - image: unguard-malicious-load-generator
+      context: src/malicious-load-generator
+
+
   local:
     # only the docker CLI respects a manually logged-in daemon
     useDockerCLI: true
@@ -90,6 +92,9 @@ deploy:
            # membership-service
           services.membershipService.image.repository: "{{.IMAGE_REPO_unguard_membership_service}}"
           services.membershipService.image.tag: "{{.IMAGE_TAG_unguard_membership_service}}@{{.IMAGE_DIGEST_unguard_membership_service}}"
+           # status-service
+          services.statusService.image.repository: "{{.IMAGE_REPO_unguard_status_servicee}}"
+          services.statusService.image.tag: "{{.IMAGE_TAG_unguard_status_service}}@{{.IMAGE_DIGEST_unguard_status_service}}"
 
         setValues:
           # ad-service
@@ -110,6 +115,8 @@ deploy:
           services.userAuthService.image.pullPolicy: "IfNotPresent"
           # membership-service
           services.membershipService.image.pullPolicy: "IfNotPresent"
+          # status-service
+          services.statusService.image.pullPolicy: "IfNotPresent"
 
 
 profiles:
