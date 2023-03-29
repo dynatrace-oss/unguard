@@ -23,14 +23,14 @@ build:
       context: src/envoy-proxy
     - image: unguard_db_readiness_check
       context: src/db-readiness-check
-
-
     - image: unguard_frontend
       context: src/frontend
 
 
-    - image: unguard-microblog-service # adapt jib patch index below if you move this item
+    - image: unguard_microblog_service # adapt jib patch index below if you move this item
       context: src/microblog-service
+
+
     - image: unguard-proxy-service
       context: src/proxy-service
     - image: unguard-user-simulator
@@ -75,6 +75,9 @@ deploy:
            # frontend
           services.frontend.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
           services.frontend.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
+           # microblog-service
+          services.microblogService.image.repository: "{{.IMAGE_REPO_unguard_microblog_service }}"
+          services.microblogService.image.tag: "{{.IMAGE_TAG_unguard_microblog_service }}@{{.IMAGE_DIGEST_unguard_microblog_service }}"
 
         setValues:
           # ad-service
@@ -85,6 +88,8 @@ deploy:
           services.dbReadinessCheck.image.pullPolicy: "IfNotPresent"
           # frontend
           services.frontend.image.pullPolicy: "IfNotPresent"
+          # microblog-service
+          services.microblogService.image.pullPolicy: "IfNotPresent"
 
 
 profiles:
