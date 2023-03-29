@@ -31,16 +31,16 @@ build:
       context: src/proxy-service
     - image: unguard_user_simulator
       context: src/user-simulator
-
-
     - image: unguard_user_auth_service
       context: src/user-auth-service
-
-
     - image: unguard_ad_service
       context: src/ad-service
-    - image: unguard-membership-service
+
+
+    - image: unguard_membership_service
       context: src/membership-service
+
+
     - image: unguard-malicious-load-generator
       context: src/malicious-load-generator
     - image: unguard-status-service
@@ -87,6 +87,9 @@ deploy:
            # user-auth-service
           services.userAuthService.image.repository: "{{.IMAGE_REPO_unguard_user_auth_service}}"
           services.userAuthService.image.tag: "{{.IMAGE_TAG_unguard_user_auth_service}}@{{.IMAGE_DIGEST_unguard_user_auth_service}}"
+           # membership-service
+          services.membershipService.image.repository: "{{.IMAGE_REPO_unguard_membership_service}}"
+          services.membershipService.image.tag: "{{.IMAGE_TAG_unguard_membership_service}}@{{.IMAGE_DIGEST_unguard_membership_service}}"
 
         setValues:
           # ad-service
@@ -105,6 +108,8 @@ deploy:
           services.userSimulator.image.pullPolicy: "IfNotPresent"
           # user-auth-service
           services.userAuthService.image.pullPolicy: "IfNotPresent"
+          # membership-service
+          services.membershipService.image.pullPolicy: "IfNotPresent"
 
 
 profiles:

@@ -52,6 +52,11 @@ services:
       repository: ghcr.io/dynatrace-oss/unguard/user-auth-service
       tag: v1.2.0
       pullPolicy: IfNotPresent
+  membershipService:
+    image:
+      repository: ghcr.io/dynatrace-oss/unguard/membership-service
+      tag: v1.2.0
+      pullPolicy: IfNotPresent
 
 
 mariadb:
