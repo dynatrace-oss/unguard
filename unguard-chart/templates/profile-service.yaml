@@ -13,65 +13,63 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */}}
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-profile-service
+  name: {{ include "unguard.fullname" . }}-{{.Values.profileService.name}}
   labels:
-    app.kubernetes.io/name: profile-service
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.profileService.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.profileService.service.type }}
   selector:
-    app.kubernetes.io/name: profile-service
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.profileService.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   ports:
-    - targetPort: 8080
-      port: 80
+ {{- .Values.profileService.service.ports | toYaml | nindent 4 }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-profile-service
+  name: {{ include "unguard.fullname" . }}-{{.Values.profileService.name}}
   labels:
-    app.kubernetes.io/name: profile-service
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.profileService.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: profile-service
-      app.kubernetes.io/part-of: unguard
+      app.kubernetes.io/name: {{.Values.profileService.name}}
+      app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   strategy:
-    type: Recreate
+    type: {{.Values.profileService.deployment.strategy.type}}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: profile-service
-        app.kubernetes.io/part-of: unguard
+        app.kubernetes.io/name: {{.Values.profileService.name}}
+        app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
     spec:
       containers:
-        - name: profile-service
-          image: {{.Values.services.profileService.image.repository}}:{{.Values.services.profileService.image.tag}}
-          imagePullPolicy: {{.Values.services.profileService.image.pullPolicy}}
+        - name: {{.Values.profileService.name}}
+          image: {{ .Values.profileService.deployment.container.image.repository }}:{{ .Values.profileService.deployment.container.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{.Values.profileService.deployment.container.image.pullPolicy}}
           ports:
-            - containerPort: 8080
+            - containerPort: {{.Values.profileService.deployment.container.ports.containerPort}}
           livenessProbe:
             httpGet:
-              path: /healthz
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 15
+              path: {{.Values.profileService.deployment.container.livenessProbe.httpGet.path}}
+              port: {{.Values.profileService.deployment.container.livenessProbe.httpGet.port}}
+            initialDelaySeconds: {{.Values.profileService.deployment.container.livenessProbe.initialDelaySeconds}}
+            periodSeconds: {{.Values.profileService.deployment.container.livenessProbe.periodSeconds}}
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:h2:file:./database/bio"
+              value: {{ quote .Values.profileService.deployment.container.env.springDatasourceUrl }}
             - name: SPRING_DATASOURCE_USERNAME
-              value: "sa"
+              value: {{ quote .Values.profileService.deployment.container.env.springDatasourceUsername }}
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "password"
+              value: {{ quote .Values.profileService.deployment.container.env.springDatasourcePassword }}
             - name: OTEL_METRICS_EXPORTER
-              value: "none"
+              value: {{ quote .Values.profileService.deployment.container.env.otelMetricsExporter }}
             - name: OTEL_RESOURCE_ATTRIBUTES
-              value: "service.name=unguard-profile-service"
+              value: {{ quote .Values.profileService.deployment.container.env.otelResourceAttributes }}
             - name: OTEL_TRACES_EXPORTER
-              value: "none"
+              value: {{ quote .Values.profileService.deployment.container.env.otelTracesExporter }}
