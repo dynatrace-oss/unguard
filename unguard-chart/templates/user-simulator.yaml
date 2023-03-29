@@ -31,7 +31,8 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: unguard-user-simulator-job
-              image: unguard-user-simulator
+              image: {{.Values.services.userSimulator.image.repository}}:{{.Values.services.userSimulator.image.tag}}
+              imagePullPolicy: {{.Values.services.userSimulator.image.pullPolicy}}
               env:
                 - name: FRONTEND_ADDR
                   value: "unguard-envoy-proxy:8080/ui"
