@@ -32,6 +32,11 @@ services:
       repository: ghcr.io/dynatrace-oss/unguard/frontend
       tag: v1.2.0
       pullPolicy: IfNotPresent
+  microblogService:
+    image:
+      repository: ghcr.io/dynatrace-oss/unguard/microblog-service
+      tag: v1.2.0
+      pullPolicy: IfNotPresent
 
 
 mariadb:
