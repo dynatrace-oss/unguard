@@ -19,16 +19,7 @@ services:
       repository: ghcr.io/dynatrace-oss/unguard/unguard-envoy-proxy
       tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
       pullPolicy: IfNotPresent
-  frontend:
-    image:
-      repository: ghcr.io/dynatrace-oss/unguard/unguard-frontend
-      tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
-      pullPolicy: IfNotPresent
-  microblogService:
-    image:
-      repository: ghcr.io/dynatrace-oss/unguard/unguard-microblog-service
-      tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
-      pullPolicy: IfNotPresent
+
   proxyService:
     image:
       repository: ghcr.io/dynatrace-oss/unguard/unguard-proxy-service
@@ -193,6 +184,35 @@ adService:
         SERVER_PORT: 8082
         API_PATH: /ad-service
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+
+
+envoyProxy:
+  name: envoy-proxy
+
+  service:
+    type: ClusterIP
+    ports:
+      - name: http
+        targetPort: 8080
+        port: 8080
+      - name: health
+        targetPort: 8081
+        port: 8081
+
+  deployment:
+    strategy:
+      type: RollingUpdate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-envoy-proxy
+        tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
+        pullPolicy: IfNotPresent
+      ports:
+        - name: http
+          containerPort: 8080
+        - name: health
+          containerPort: 8081
+
 
 microblogService:
   name: microblog-service

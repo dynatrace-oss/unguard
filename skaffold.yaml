@@ -21,16 +21,16 @@ build:
     # context is the directory with the Dockerfile for that image
     - image: unguard_proxy_service
       context: src/proxy-service
+
+
     - image: unguard_envoy_proxy
       context: src/envoy-proxy
+
+
     - image: unguard_frontend
       context: src/frontend
-
-
     - image: unguard_microblog_service # adapt jib patch index below if you move this item
       context: src/microblog-service
-
-
     - image: unguard_user_simulator
       context: src/user-simulator
     - image: unguard_user_auth_service
@@ -71,8 +71,8 @@ deploy:
           adService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
           adService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_ad_service}}@{{.IMAGE_DIGEST_unguard_ad_service}}"
           # envoy-proxy
-          services.envoyProxy.image.repository: "{{.IMAGE_REPO_unguard_envoy_proxy}}"
-          services.envoyProxy.image.tag: "{{.IMAGE_TAG_unguard_envoy_proxy}}@{{.IMAGE_DIGEST_unguard_envoy_proxy}}"
+          envoyProxy.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_envoy_proxy}}"
+          envoyProxy.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_envoy_proxy}}@{{.IMAGE_DIGEST_unguard_envoy_proxy}}"
           # db-readiness-check
           dbReadinessCheck.image.repository: "{{.IMAGE_REPO_unguard_db_readiness_check}}"
           dbReadinessCheck.image.tag: "{{.IMAGE_TAG_unguard_db_readiness_check}}@{{.IMAGE_DIGEST_unguard_db_readiness_check}}"
@@ -105,7 +105,7 @@ deploy:
           # ad-service
           adService.deployment.container.image.pullPolicy: "IfNotPresent"
           # envoy-proxy
-          services.envoyProxy.image.pullPolicy: "IfNotPresent"
+          envoyProxy.cronJob.jobTemplate.container.image.pullPolicy: "IfNotPresent"
           # db-readiness-check
           dbReadinessCheck.image.pullPolicy: "IfNotPresent"
           # frontend
