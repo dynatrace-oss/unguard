@@ -35,6 +35,8 @@ build:
       context: src/user-auth-service
     - image: unguard_ad_service
       context: src/ad-service
+
+
     - image: unguard_membership_service
       context: src/membership-service
 
@@ -72,8 +74,8 @@ deploy:
           services.envoyProxy.image.repository: "{{.IMAGE_REPO_unguard_envoy_proxy}}"
           services.envoyProxy.image.tag: "{{.IMAGE_TAG_unguard_envoy_proxy}}@{{.IMAGE_DIGEST_unguard_envoy_proxy}}"
           # db-readiness-check
-          services.dbReadinessCheck.image.repository: "{{.IMAGE_REPO_unguard_db_readiness_check}}"
-          services.dbReadinessCheck.image.tag: "{{.IMAGE_TAG_unguard_db_readiness_check}}@{{.IMAGE_DIGEST_unguard_db_readiness_check}}"
+          dbReadinessCheck.image.repository: "{{.IMAGE_REPO_unguard_db_readiness_check}}"
+          dbReadinessCheck.image.tag: "{{.IMAGE_TAG_unguard_db_readiness_check}}@{{.IMAGE_DIGEST_unguard_db_readiness_check}}"
            # frontend
           services.frontend.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
           services.frontend.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
@@ -90,8 +92,8 @@ deploy:
           services.userAuthService.image.repository: "{{.IMAGE_REPO_unguard_user_auth_service}}"
           services.userAuthService.image.tag: "{{.IMAGE_TAG_unguard_user_auth_service}}@{{.IMAGE_DIGEST_unguard_user_auth_service}}"
            # membership-service
-          services.membershipService.image.repository: "{{.IMAGE_REPO_unguard_membership_service}}"
-          services.membershipService.image.tag: "{{.IMAGE_TAG_unguard_membership_service}}@{{.IMAGE_DIGEST_unguard_membership_service}}"
+          membershipService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_membership_service}}"
+          membershipService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_membership_service}}@{{.IMAGE_DIGEST_unguard_membership_service}}"
            # status-service
           statusService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_status_service}}"
           statusService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_status_service}}@{{.IMAGE_DIGEST_unguard_status_service}}"
@@ -105,7 +107,7 @@ deploy:
           # envoy-proxy
           services.envoyProxy.image.pullPolicy: "IfNotPresent"
           # db-readiness-check
-          services.dbReadinessCheck.image.pullPolicy: "IfNotPresent"
+          dbReadinessCheck.image.pullPolicy: "IfNotPresent"
           # frontend
           services.frontend.image.pullPolicy: "IfNotPresent"
           # microblog-service
@@ -117,7 +119,7 @@ deploy:
           # user-auth-service
           services.userAuthService.image.pullPolicy: "IfNotPresent"
           # membership-service
-          services.membershipService.image.pullPolicy: "IfNotPresent"
+          membershipService.deployment.container.image.pullPolicy: "IfNotPresent"
           # status-service
           statusService.deployment.container.image.pullPolicy: "IfNotPresent"
           # profile-service

@@ -17,72 +17,73 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-membership-service
+  name: {{ include "unguard.fullname" . }}-{{.Values.membershipService.name}}
   labels:
-    app.kubernetes.io/name: membership-service
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.membershipService.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.membershipService.service.type }}
   selector:
-    app.kubernetes.io/name: membership-service
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.membershipService.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   ports:
-    - targetPort: 8083
-      port: 80
+ {{- .Values.membershipService.service.ports | toYaml | nindent 4 }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-membership-service
+  name: {{ include "unguard.fullname" . }}-{{.Values.membershipService.name}}
   labels:
-    app.kubernetes.io/name: membership-service
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.membershipService.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: membership-service
-      app.kubernetes.io/part-of: unguard
+      app.kubernetes.io/name: {{.Values.membershipService.name}}
+      app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   strategy:
-    type: Recreate
+    type: {{.Values.membershipService.deployment.strategy.type}}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: membership-service
-        app.kubernetes.io/part-of: unguard
+        app.kubernetes.io/name: {{.Values.membershipService.name}}
+        app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
     spec:
       containers:
-        - name: membership-service
-          image: {{.Values.services.membershipService.image.repository}}:{{.Values.services.membershipService.image.tag}}
-          imagePullPolicy: {{.Values.services.membershipService.image.pullPolicy}}
+        - name: {{.Values.membershipService.name}}
+          image: {{.Values.membershipService.deployment.container.image.repository}}:{{.Values.membershipService.deployment.container.image.tag}}
+          imagePullPolicy: {{.Values.membershipService.deployment.container.image.pullPolicy}}
           ports:
-            - containerPort: 8083
+            - containerPort: {{.Values.membershipService.deployment.container.ports.containerPort}}
           env:
             - name: ASPNETCORE_ENVIRONMENT
-              value: "Development"
+              value: {{ quote .Values.membershipService.deployment.container.env.ASPNETCORE_ENVIRONMENT }}
             - name: SERVER_PORT
-              value: "8083"
+              value: {{ quote .Values.membershipService.deployment.container.env.SERVER_PORT }}
             - name: API_PATH
-              value: "/membership-service"
+              value: {{ quote .Values.membershipService.deployment.container.env.API_PATH }}
             - name: MARIADB_SERVICE
-              value: "unguard-mariadb"
+              value: {{ quote .Values.membershipService.deployment.container.env.MARIADB_SERVICE }}
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: unguard-mariadb
-                  key: mariadb-root-password
+                  name: {{ .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name }}
+                  key: {{ .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key }}
       initContainers:
-        - name: db-readiness-check
-          image: {{.Values.services.dbReadinessCheck.image.repository}}:{{.Values.services.dbReadinessCheck.image.tag}}
-          command: ["/check.sh"]
+        - name: {{.Values.dbReadinessCheck.name}}
+          image: {{.Values.dbReadinessCheck.image.repository}}:{{.Values.dbReadinessCheck.image.tag}}
+          imagePullPolicy: {{.Values.dbReadinessCheck.image.pullPolicy}}
+          command: [{{quote .Values.dbReadinessCheck.command}}]
           env:
             - name: MYSQL_USER
-              value: "root"
+              value: {{quote .Values.dbReadinessCheck.env.MYSQL_USER}}
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: unguard-mariadb
-                  key: mariadb-root-password
+                  name: {{.Values.dbReadinessCheck.env.MYSQL_PASSWORD.secretKeyRef.name}}
+                  key: {{.Values.dbReadinessCheck.env.MYSQL_PASSWORD.secretKeyRef.key}}
             - name: MYSQL_HOST
-              value: "unguard-mariadb"
+              value: {{quote .Values.dbReadinessCheck.env.MYSQL_HOST}}
+
 
 
