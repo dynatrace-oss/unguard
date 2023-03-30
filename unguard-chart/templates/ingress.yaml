@@ -17,10 +17,15 @@ limitations under the License.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: unguard-ingress
+  name: {{ include "unguard.fullname" . }}-{{.Values.ingress.name}}
   labels:
-    app.kubernetes.io/name: ingress
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.ingress.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
+  {{if .Values.aws.enabled}}
+  annotations:
+    kubernetes.io/ingress.class: {{.Values.ingress.annotations.ingressClass}}
+    alb.ingress.kubernetes.io/scheme: {{.Values.ingress.annotations.scheme}}
+  {{end}}
 spec:
   rules:
     - host: unguard.kube
