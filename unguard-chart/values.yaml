@@ -290,6 +290,44 @@ statusService:
 
 
 
+frontend:
+  name: frontend
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 3000
+        port: 80
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-frontend
+        tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 3000
+      env:
+        JAEGER_SERVICE_NAME: unguard-frontend
+        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_SAMPLER_TYPE: const
+        JAEGER_SAMPLER_PARAM: 0
+        JAEGER_DISABLED: true
+        MICROBLOG_SERVICE_ADDRESS: unguard-microblog-service
+        PROXY_SERVICE_ADDRESS: unguard-proxy-service
+        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+        AD_SERVICE_ADDRESS: unguard-ad-service
+        STATUS_SERVICE_ADDRESS: unguard-status-service
+        MEMBERSHIP_SERVICE_ADDRESS: unguard-membership-service
+        PROFILE_SERVICE_ADDRESS: unguard-profile-service
+        FRONTEND_BASE_PATH: /ui
+        AD_SERVICE_BASE_PATH: /ad-service
+        MEMBERSHIP_SERVICE_BASE_PATH: /membership-service
+        STATUS_SERVICE_BASE_PATH: /status-service
+
+
 
 mariadb:
   primary:
