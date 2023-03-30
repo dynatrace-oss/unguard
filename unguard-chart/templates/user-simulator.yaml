@@ -17,31 +17,31 @@ limitations under the License.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: unguard-user-simulator
+  name:  {{ include "unguard.fullname" . }}-{{.Values.userSimulator.name}}
   labels:
-    app.kubernetes.io/name: user-simulator
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.userSimulator.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
-  schedule: "*/3 * * * *"
-  startingDeadlineSeconds: 180
+  schedule: {{quote .Values.userSimulator.cronJob.schedule}}
+  startingDeadlineSeconds: {{ .Values.userSimulator.cronJob.startingDeadlineSeconds}}
   jobTemplate:
     spec:
       template:
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: {{.Values.userSimulator.cronJob.jobTemplate.restartPolicy}}
           containers:
-            - name: unguard-user-simulator-job
-              image: {{.Values.services.userSimulator.image.repository}}:{{.Values.services.userSimulator.image.tag}}
-              imagePullPolicy: {{.Values.services.userSimulator.image.pullPolicy}}
+            - name: {{ include "unguard.fullname" . }}-{{.Values.userSimulator.name}}
+              image: {{.Values.userSimulator.cronJob.jobTemplate.container.image.repository}}:{{.Values.userSimulator.cronJob.jobTemplate.container.image.tag}}
+              imagePullPolicy: {{.Values.userSimulator.cronJob.jobTemplate.container.image.pullPolicy}}
               env:
                 - name: FRONTEND_ADDR
-                  value: "unguard-envoy-proxy:8080/ui"
+                  value: {{quote .Values.userSimulator.cronJob.jobTemplate.container.env.FRONTEND_ADDR}}
                 - name: SIMULATE_PRIVATE_RANGES
-                  value: "false"
+                  value: {{quote .Values.userSimulator.cronJob.jobTemplate.container.env.SIMULATE_PRIVATE_RANGES}}
               resources:
                 requests:
-                  cpu: 10m
-                  memory: 256Mi
+                  cpu: {{quote .Values.userSimulator.cronJob.jobTemplate.container.resources.requests.cpu}}
+                  memory: {{quote .Values.userSimulator.cronJob.jobTemplate.container.resources.requests.memory}}
                 limits:
-                  cpu: 500m
-                  memory: 512Mi
+                  cpu: {{quote .Values.userSimulator.cronJob.jobTemplate.container.resources.limits.cpu}}
+                  memory: {{quote .Values.userSimulator.cronJob.jobTemplate.container.resources.limits.memory}}
