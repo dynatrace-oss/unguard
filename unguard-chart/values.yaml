@@ -14,17 +14,11 @@ aws:
   enabled: false
 
 services:
-  adService:
-    image:
-      repository: ghcr.io/dynatrace-oss/unguard/unguard-ad-service
-      tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
-      pullPolicy: IfNotPresent
   envoyProxy:
     image:
       repository: ghcr.io/dynatrace-oss/unguard/unguard-envoy-proxy
       tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
       pullPolicy: IfNotPresent
-
   frontend:
     image:
       repository: ghcr.io/dynatrace-oss/unguard/unguard-frontend
@@ -113,6 +107,42 @@ membershipService:
           secretKeyRef:
             name: unguard-mariadb
             key: mariadb-root-password
+
+
+userAuthService:
+  name: user-auth-service
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 9091
+        port: 80
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-ad-service
+        tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 9091
+      env:
+        SERVER_PORT: 9091
+        MARIADB_SERVICE: unguard-mariadb
+        MARIADB_PASSWORD:
+          secretKeyRef:
+            name: unguard-mariadb
+            key: mariadb-root-password
+        JAEGER_SERVICE_NAME: unguard-user-auth-service
+        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_SAMPLER_TYPE: const
+        JAEGER_SAMPLER_PARAM: 0
+        JAEGER_DISABLED: true
+        ASPNETCORE_ENVIRONMENT: Production
+        API_PATH: /ad-service
+        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
 
 
 adService:
