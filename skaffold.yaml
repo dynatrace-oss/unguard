@@ -77,8 +77,8 @@ deploy:
           dbReadinessCheck.image.repository: "{{.IMAGE_REPO_unguard_db_readiness_check}}"
           dbReadinessCheck.image.tag: "{{.IMAGE_TAG_unguard_db_readiness_check}}@{{.IMAGE_DIGEST_unguard_db_readiness_check}}"
            # frontend
-          services.frontend.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
-          services.frontend.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
+          frontend.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
+          frontend.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
            # microblog-service
           microblogService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_microblog_service }}"
           microblogService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_microblog_service }}@{{.IMAGE_DIGEST_unguard_microblog_service }}"
@@ -109,7 +109,7 @@ deploy:
           # db-readiness-check
           dbReadinessCheck.image.pullPolicy: "IfNotPresent"
           # frontend
-          services.frontend.image.pullPolicy: "IfNotPresent"
+          frontend.deployment.container.image.pullPolicy: "IfNotPresent"
           # microblog-service
           microblogService.deployment.container.image.pullPolicy: "IfNotPresent"
           # proxy-service
