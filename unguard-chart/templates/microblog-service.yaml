@@ -52,8 +52,8 @@ spec:
     spec:
       containers:
         - name: {{.Values.microblogService.name}}
-          image: {{.Values.services.microblogService.image.repository}}:{{.Values.services.microblogService.image.tag}}
-          imagePullPolicy: {{.Values.services.microblogService.image.pullPolicy}}
+          image: {{.Values.microblogService.deployment.container.image.repository}}:{{.Values.microblogService.deployment.container.image.tag}}
+          imagePullPolicy: {{.Values.microblogService.deployment.container.image.pullPolicy}}
           ports:
             - containerPort: {{.Values.microblogService.deployment.container.ports.containerPort}}
           env:
