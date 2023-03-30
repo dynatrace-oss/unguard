@@ -62,14 +62,22 @@ spec:
             periodSeconds: {{.Values.profileService.deployment.container.livenessProbe.periodSeconds}}
           env:
             - name: SPRING_DATASOURCE_URL
-              value: {{ quote .Values.profileService.deployment.container.env.springDatasourceUrl }}
+              value: {{ quote .Values.profileService.deployment.container.env.SPRING_DATASOURCE_URL }}
             - name: SPRING_DATASOURCE_USERNAME
-              value: {{ quote .Values.profileService.deployment.container.env.springDatasourceUsername }}
+              value: {{ quote .Values.profileService.deployment.container.env.SPRING_DATASOURCE_USERNAME }}
             - name: SPRING_DATASOURCE_PASSWORD
-              value: {{ quote .Values.profileService.deployment.container.env.springDatasourcePassword }}
+              value: {{ quote .Values.profileService.deployment.container.env.SPRING_DATASOURCE_PASSWORD }}
             - name: OTEL_METRICS_EXPORTER
-              value: {{ quote .Values.profileService.deployment.container.env.otelMetricsExporter }}
+              value: {{ quote .Values.profileService.deployment.container.env.OTEL_METRICS_EXPORTER }}
             - name: OTEL_RESOURCE_ATTRIBUTES
-              value: {{ quote .Values.profileService.deployment.container.env.otelResourceAttributes }}
+              value: {{ quote .Values.profileService.deployment.container.env.OTEL_RESOURCE_ATTRIBUTES }}
             - name: OTEL_TRACES_EXPORTER
-              value: {{ quote .Values.profileService.deployment.container.env.otelTracesExporter }}
+              value: {{ quote .Values.profileService.deployment.container.env.OTEL_TRACES_EXPORTER }}
+            {{if .Values.tracing.enabled}}
+            - name: OTEL_EXPERIMENTAL_SDK_ENABLED
+              value: {{ quote .Values.profileService.deployment.container.env.OTEL_EXPERIMENTAL_SDK_ENABLED }}
+            - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+              value: {{ quote .Values.profileService.deployment.container.env.OTEL_EXPORTER_JAEGER_ENDPOINT }}
+            - name: OTEL_PROPAGATORS
+              value: {{ quote .Values.profileService.deployment.container.env.OTEL_PROPAGATORS }}
+            {{end}}

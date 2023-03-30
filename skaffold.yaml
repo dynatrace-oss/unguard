@@ -194,3 +194,21 @@ profiles:
       - op: add
         path: /manifests/kustomize/paths/-
         value: ./k8s-manifests/tracing
+
+  - name: tracing-helm
+    patches:
+      - op: add
+        path: /deploy/helm/releases/0/valuesFiles
+        value: ["./unguard-chart/tracing.yaml"]
+
+  - name: aws-helm
+    patches:
+      - op: add
+        path: /deploy/helm/releases/0/valuesFiles
+        value: ["./unguard-chart/aws.yaml"]
+
+  - name: localdev-minikube-helm
+    patches:
+      - op: add
+        path: /deploy/helm/releases/0/valuesFiles
+        value: ["./unguard-chart/localDevMinikube.yaml"]
