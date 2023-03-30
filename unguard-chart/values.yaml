@@ -79,6 +79,34 @@ profileService:
         initialDelaySeconds: 5
         periodSeconds: 15
 
+userSimulator:
+  name: user-simulator
+
+  cronJob:
+    schedule: "*/3 * * * *"
+    startingDeadlineSeconds: 180
+    jobTemplate:
+      restartPolicy: OnFailure
+
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-user-simulator
+          tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
+          pullPolicy: IfNotPresent
+
+        env:
+          FRONTEND_ADDR: unguard-envoy-proxy:8080/ui
+          SIMULATE_PRIVATE_RANGES: false
+
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+
 membershipService:
   name: membership-service
 
