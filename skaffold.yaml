@@ -21,12 +21,8 @@ build:
     # context is the directory with the Dockerfile for that image
     - image: unguard_proxy_service
       context: src/proxy-service
-
-
     - image: unguard_envoy_proxy
       context: src/envoy-proxy
-
-
     - image: unguard_frontend
       context: src/frontend
     - image: unguard_microblog_service # adapt jib patch index below if you move this item
@@ -83,8 +79,8 @@ deploy:
           microblogService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_microblog_service }}"
           microblogService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_microblog_service }}@{{.IMAGE_DIGEST_unguard_microblog_service }}"
            # proxy-service
-          services.proxyService.image.repository: "{{.IMAGE_REPO_unguard_proxy_service}}"
-          services.proxyService.image.tag: "{{.IMAGE_TAG_unguard_proxy_service}}@{{.IMAGE_DIGEST_unguard_proxy_service}}"
+          proxyService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_proxy_service}}"
+          proxyService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_proxy_service}}@{{.IMAGE_DIGEST_unguard_proxy_service}}"
            # user-simulator
           userSimulator.cronJob.jobTemplate.container.image.repository: "{{.IMAGE_REPO_unguard_user_simulator}}"
           userSimulator.cronJob.jobTemplate.container.image.tag: "{{.IMAGE_TAG_unguard_user_simulator}}@{{.IMAGE_DIGEST_unguard_user_simulator}}"
@@ -113,7 +109,7 @@ deploy:
           # microblog-service
           microblogService.deployment.container.image.pullPolicy: "IfNotPresent"
           # proxy-service
-          services.proxyService.image.pullPolicy: "IfNotPresent"
+          proxyService.deployment.container.image.pullPolicy: "IfNotPresent"
           # user-simulator
           userSimulator.cronJob.jobTemplate.container.image.pullPolicy: "IfNotPresent"
           # user-auth-service

@@ -13,21 +13,6 @@ localDev:
 aws:
   enabled: false
 
-services:
-  envoyProxy:
-    image:
-      repository: ghcr.io/dynatrace-oss/unguard/unguard-envoy-proxy
-      tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
-      pullPolicy: IfNotPresent
-
-  proxyService:
-    image:
-      repository: ghcr.io/dynatrace-oss/unguard/unguard-proxy-service
-      tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
-      pullPolicy: IfNotPresent
-
-
-
 
 profileService:
   name: profile-service
@@ -308,6 +293,57 @@ statusService:
         KUBERNETES_NAMESPACE: unguard
         IGNORED_DEPLOYMENTS: unguard-user-simulator # add deployments to ignore separated by spaces
 
+################################################################
+proxyService:
+  name: proxy-service
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 8081
+        port: 80
+
+  serviceAccount:
+    name: unguard-proxy
+
+  role:
+    name: proxy-role
+    rules:
+      - apiGroups: [""] # "" indicates the core API group
+        resources: ["pods"]
+        verbs: ["create", "list", "get"]
+      - apiGroups: [""]
+        resources: ["pods/exec"]
+        verbs: ["create"]
+
+  roleBindings:
+    name: proxy-rolebinding
+    subjects:
+      - kind: ServiceAccount
+        name: unguard-proxy
+        apiGroup: ""
+    roleRef:
+      kind: Role
+      name: proxy-role
+      apiGroup: rbac.authorization.k8s.io
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/proxy-status-service
+        tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 8081
+      env:
+        SERVER_PORT: 8081
+        JAEGER_SERVICE_NAME: unguard-proxy-service
+        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_SAMPLER_TYPE: const
+        JAEGER_SAMPLER_PARAM: 0
+        OPENTRACING_JAEGER_ENABLED: false
 
 
 frontend:
