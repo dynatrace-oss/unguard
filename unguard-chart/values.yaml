@@ -114,6 +114,38 @@ membershipService:
             name: unguard-mariadb
             key: mariadb-root-password
 
+
+adService:
+  name: ad-service
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 8082
+        port: 80
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-ad-service
+        tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 8082
+      env:
+        JAEGER_SERVICE_NAME: unguard-ad-service
+        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_SAMPLER_TYPE: const
+        JAEGER_SAMPLER_PARAM: 0
+        JAEGER_DISABLED: true
+        ASPNETCORE_ENVIRONMENT: Production
+        SERVER_PORT: 8082
+        API_PATH: /ad-service
+        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+
+
 dbReadinessCheck:
   name: db-readiness-check
   image:

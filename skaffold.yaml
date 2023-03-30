@@ -33,14 +33,14 @@ build:
       context: src/user-simulator
     - image: unguard_user_auth_service
       context: src/user-auth-service
+
+
     - image: unguard_ad_service
       context: src/ad-service
 
 
     - image: unguard_membership_service
       context: src/membership-service
-
-
     - image: unguard_status_service
       context: src/status-service
     - image: unguard_profile_service
@@ -68,8 +68,8 @@ deploy:
         createNamespace: true
         setValueTemplates:
           # ad-service
-          services.adService.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
-          services.adService.image.tag: "{{.IMAGE_TAG_unguard_ad_service}}@{{.IMAGE_DIGEST_unguard_ad_service}}"
+          adService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
+          adService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_ad_service}}@{{.IMAGE_DIGEST_unguard_ad_service}}"
           # envoy-proxy
           services.envoyProxy.image.repository: "{{.IMAGE_REPO_unguard_envoy_proxy}}"
           services.envoyProxy.image.tag: "{{.IMAGE_TAG_unguard_envoy_proxy}}@{{.IMAGE_DIGEST_unguard_envoy_proxy}}"
@@ -103,7 +103,7 @@ deploy:
 
         setValues:
           # ad-service
-          services.adService.image.pullPolicy: "IfNotPresent"
+          adService.deployment.container.image.pullPolicy: "IfNotPresent"
           # envoy-proxy
           services.envoyProxy.image.pullPolicy: "IfNotPresent"
           # db-readiness-check
