@@ -2,17 +2,23 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 kubernetesClusterDomain: cluster.local
+tracing:
+  enabled: false
 
 localDev:
   minikube:
-    enabled: true
+    enabled: false
   kind:
     enabled: false
-
 
 aws:
   enabled: false
 
+ingress:
+  name: ingress
+  annotations:
+    ingressClass: alb
+    scheme: internal
 
 profileService:
   name: profile-service
@@ -33,12 +39,15 @@ profileService:
       ports:
         containerPort: 8080
       env:
-        otelMetricsExporter: none
-        otelResourceAttributes: service.name=unguard-profile-service
-        otelTracesExporter: none
-        springDatasourcePassword: password
-        springDatasourceUrl: jdbc:h2:file:./database/bio
-        springDatasourceUsername: sa
+        OTEL_METRICS_EXPORTER: none
+        OTEL_RESOURCE_ATTRIBUTES: service.name=unguard-profile-service
+        OTEL_TRACES_EXPORTER: none
+        OTEL_EXPERIMENTAL_SDK_ENABLED: false
+        OTEL_EXPORTER_JAEGER_ENDPOINT: "http://jaeger-collector:14250"
+        OTEL_PROPAGATORS: "jaeger"
+        SPRING_DATASOURCE_PASSWORD: password
+        SPRING_DATASOURCE_URL: jdbc:h2:file:./database/bio
+        SPRING_DATASOURCE_USERNAME: sa
       livenessProbe:
         httpGet:
           path: /healthz
