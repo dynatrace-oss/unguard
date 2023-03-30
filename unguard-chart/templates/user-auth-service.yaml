@@ -17,65 +17,65 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-user-auth-service
+  name: {{ include "unguard.fullname" . }}-{{.Values.userAuthService.name}}
   labels:
-    app.kubernetes.io/name: user-auth-service
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.userAuthService.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.userAuthService.service.type }}
   selector:
-    app.kubernetes.io/name: user-auth-service
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.userAuthService.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   ports:
-    - targetPort: 9091
-      port: 80
+ {{- .Values.userAuthService.service.ports | toYaml | nindent 4 }}
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-user-auth-service
+  name: {{ include "unguard.fullname" . }}-{{.Values.userAuthService.name}}
   labels:
-    app.kubernetes.io/name: user-auth-service
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.userAuthService.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: user-auth-service
-      app.kubernetes.io/part-of: unguard
+      app.kubernetes.io/name: {{.Values.userAuthService.name}}
+      app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   strategy:
-    type: Recreate
+    type: {{.Values.userAuthService.deployment.strategy.type}}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: user-auth-service
-        app.kubernetes.io/part-of: unguard
+        app.kubernetes.io/name: {{.Values.userAuthService.name}}
+        app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
     spec:
       containers:
-        - name: user-auth-service
-          image: {{.Values.services.userAuthService.image.repository}}:{{.Values.services.userAuthService.image.tag}}
-          imagePullPolicy: {{.Values.services.userAuthService.image.pullPolicy}}
+        - name: {{.Values.userAuthService.name}}
+          image: {{.Values.userAuthService.deployment.container.image.repository}}:{{.Values.userAuthService.deployment.container.image.tag}}
+          imagePullPolicy: {{.Values.userAuthService.deployment.container.image.pullPolicy}}
           ports:
-            - containerPort: 9091
+            - containerPort: {{.Values.userAuthService.deployment.container.ports.containerPort}}
           env:
             - name: SERVER_PORT
-              value: "9091"
+              value: {{ quote .Values.userAuthService.deployment.container.env.SERVER_PORT }}
             - name: JAEGER_SERVICE_NAME
-              value: "unguard-user-auth-service"
+              value: {{ quote .Values.userAuthService.deployment.container.env.JAEGER_SERVICE_NAME }}
             - name: JAEGER_AGENT_HOST
-              value: "jaeger-agent" # change depending on your jaeger deployment
+              value: {{ quote .Values.userAuthService.deployment.container.env.JAEGER_AGENT_HOST }} # change depending on your jaeger deployment
             - name: JAEGER_SAMPLER_TYPE
-              value: "const"
+              value: {{ quote .Values.userAuthService.deployment.container.env.JAEGER_SAMPLER_TYPE }}
             - name: JAEGER_SAMPLER_PARAM
-              value: "0"
+              value: {{ quote .Values.userAuthService.deployment.container.env.JAEGER_SAMPLER_PARAM }}
             - name: JAEGER_DISABLED
-              value: "true"
+              value: {{ quote .Values.userAuthService.deployment.container.env.JAEGER_DISABLED }}
             - name: MARIADB_SERVICE
-              value: "unguard-mariadb"
+              value: {{ quote .Values.userAuthService.deployment.container.env.MARIADB_SERVICE }}
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: unguard-mariadb
-                  key: mariadb-root-password
+                  name: {{ .Values.userAuthService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name }}
+                  key: {{ .Values.userAuthService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key }}
       initContainers:
         - name: {{.Values.dbReadinessCheck.name}}
           image: {{.Values.dbReadinessCheck.image.repository}}:{{.Values.dbReadinessCheck.image.tag}}

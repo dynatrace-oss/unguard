@@ -31,14 +31,14 @@ build:
       context: src/proxy-service
     - image: unguard_user_simulator
       context: src/user-simulator
+
+
     - image: unguard_user_auth_service
       context: src/user-auth-service
 
 
     - image: unguard_ad_service
       context: src/ad-service
-
-
     - image: unguard_membership_service
       context: src/membership-service
     - image: unguard_status_service
@@ -89,8 +89,8 @@ deploy:
           services.userSimulator.image.repository: "{{.IMAGE_REPO_unguard_user_simulator}}"
           services.userSimulator.image.tag: "{{.IMAGE_TAG_unguard_user_simulator}}@{{.IMAGE_DIGEST_unguard_user_simulator}}"
            # user-auth-service
-          services.userAuthService.image.repository: "{{.IMAGE_REPO_unguard_user_auth_service}}"
-          services.userAuthService.image.tag: "{{.IMAGE_TAG_unguard_user_auth_service}}@{{.IMAGE_DIGEST_unguard_user_auth_service}}"
+          userAuthService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_user_auth_service}}"
+          userAuthService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_user_auth_service}}@{{.IMAGE_DIGEST_unguard_user_auth_service}}"
            # membership-service
           membershipService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_membership_service}}"
           membershipService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_membership_service}}@{{.IMAGE_DIGEST_unguard_membership_service}}"
@@ -117,7 +117,7 @@ deploy:
           # user-simulator
           services.userSimulator.image.pullPolicy: "IfNotPresent"
           # user-auth-service
-          services.userAuthService.image.pullPolicy: "IfNotPresent"
+          userAuthService.deployment.container.image.pullPolicy: "IfNotPresent"
           # membership-service
           membershipService.deployment.container.image.pullPolicy: "IfNotPresent"
           # status-service
