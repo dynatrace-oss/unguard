@@ -34,16 +34,7 @@ services:
       repository: ghcr.io/dynatrace-oss/unguard/unguard-proxy-service
       tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
       pullPolicy: IfNotPresent
-  userSimulator:
-    image:
-      repository: ghcr.io/dynatrace-oss/unguard/unguard-user-simulator
-      tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
-      pullPolicy: IfNotPresent
-  userAuthService:
-    image:
-      repository: ghcr.io/dynatrace-oss/unguard/unguard-user-auth-service
-      tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
-      pullPolicy: IfNotPresent
+
 
 
 
@@ -201,6 +192,35 @@ adService:
         ASPNETCORE_ENVIRONMENT: Production
         SERVER_PORT: 8082
         API_PATH: /ad-service
+        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+
+microblogService:
+  name: microblog-service
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 8080
+        port: 80
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-microblog-service
+        tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 8080
+      env:
+        SERVER_PORT: 8080
+        JAEGER_SERVICE_NAME: unguard-microblog-service
+        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_SAMPLER_TYPE: const
+        JAEGER_SAMPLER_PARAM: 0
+        OPENTRACING_JAEGER_ENABLED: false
+        REDIS_SERVICE_ADDRESS: unguard-redis
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
 
 

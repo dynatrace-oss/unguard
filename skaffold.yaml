@@ -19,22 +19,20 @@ metadata:
 build:
   artifacts:
     # context is the directory with the Dockerfile for that image
-    - image: unguard_envoy_proxy
-      context: src/envoy-proxy
-    - image: unguard_db_readiness_check
-      context: src/db-readiness-check
-    - image: unguard_frontend
-      context: src/frontend
-    - image: unguard_microblog_service # adapt jib patch index below if you move this item
-      context: src/microblog-service
     - image: unguard_proxy_service
       context: src/proxy-service
+    - image: unguard_envoy_proxy
+      context: src/envoy-proxy
+    - image: unguard_frontend
+      context: src/frontend
+
+
+    - image: unguard_microblog_service # adapt jib patch index below if you move this item
+      context: src/microblog-service
 
 
     - image: unguard_user_simulator
       context: src/user-simulator
-
-
     - image: unguard_user_auth_service
       context: src/user-auth-service
     - image: unguard_ad_service
@@ -45,6 +43,8 @@ build:
       context: src/status-service
     - image: unguard_profile_service
       context: src/profile-service
+    - image: unguard_db_readiness_check
+      context: src/db-readiness-check
 
 
     - image: unguard-malicious-load-generator
@@ -80,8 +80,8 @@ deploy:
           services.frontend.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
           services.frontend.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
            # microblog-service
-          services.microblogService.image.repository: "{{.IMAGE_REPO_unguard_microblog_service }}"
-          services.microblogService.image.tag: "{{.IMAGE_TAG_unguard_microblog_service }}@{{.IMAGE_DIGEST_unguard_microblog_service }}"
+          microblogService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_microblog_service }}"
+          microblogService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_microblog_service }}@{{.IMAGE_DIGEST_unguard_microblog_service }}"
            # proxy-service
           services.proxyService.image.repository: "{{.IMAGE_REPO_unguard_proxy_service}}"
           services.proxyService.image.tag: "{{.IMAGE_TAG_unguard_proxy_service}}@{{.IMAGE_DIGEST_unguard_proxy_service}}"
@@ -111,7 +111,7 @@ deploy:
           # frontend
           services.frontend.image.pullPolicy: "IfNotPresent"
           # microblog-service
-          services.microblogService.image.pullPolicy: "IfNotPresent"
+          microblogService.deployment.container.image.pullPolicy: "IfNotPresent"
           # proxy-service
           services.proxyService.image.pullPolicy: "IfNotPresent"
           # user-simulator
