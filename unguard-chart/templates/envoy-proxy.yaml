@@ -17,49 +17,42 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-envoy-proxy
+  name: {{ include "unguard.fullname" . }}-{{.Values.envoyProxy.name}}
   labels:
-    app.kubernetes.io/name: envoy-proxy
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.envoyProxy.service.type }}
   selector:
-    app.kubernetes.io/name: envoy-proxy
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   ports:
-    - name: http
-      targetPort: 8080
-      port: 8080
-    - name: health
-      targetPort: 8081
-      port: 8081
+ {{- .Values.envoyProxy.service.ports | toYaml | nindent 4 }}
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-envoy-proxy
+  name: {{ include "unguard.fullname" . }}-{{.Values.envoyProxy.name}}
   labels:
-    app.kubernetes.io/name: envoy-proxy
-    app.kubernetes.io/part-of: unguard
+    app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: envoy-proxy
-      app.kubernetes.io/part-of: unguard
+      app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+      app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   strategy:
-    type: RollingUpdate
+    type: {{.Values.envoyProxy.deployment.strategy.type}}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: envoy-proxy
-        app.kubernetes.io/part-of: unguard
+        app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+        app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
     spec:
       containers:
-        - name: envoy-proxy
-          image: {{.Values.services.envoyProxy.image.repository}}:{{.Values.services.envoyProxy.image.tag}}
-          imagePullPolicy: {{.Values.services.envoyProxy.image.pullPolicy}}
+        - name: {{.Values.envoyProxy.name}}
+          image: {{.Values.envoyProxy.deployment.container.image.repository}}:{{.Values.envoyProxy.deployment.container.image.tag}}
+          imagePullPolicy: {{.Values.envoyProxy.deployment.container.image.pullPolicy}}
           ports:
-            - name: http
-              containerPort: 8080
-            - name: health
-              containerPort: 8081
+            {{- .Values.envoyProxy.deployment.container.ports | toYaml | nindent 12 }}
