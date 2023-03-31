@@ -6,6 +6,9 @@ kubernetesClusterDomain: cluster.local
 tracing:
   enabled: false
 
+jaegerDev:
+  enabled: false
+
 maliciousLoadGenerator:
   enabled: false
   name: malicious-load-generator
