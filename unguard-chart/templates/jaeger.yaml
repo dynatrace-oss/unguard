@@ -18,5 +18,5 @@ apiVersion: jaegertracing.io/v1
 kind: Jaeger
 metadata:
   # if you change this name, also adapt all "<name>-agent" references elsewhere
-  name: jaeger
+  name: {{.Values.jaegerDev.name}}
 {{end}}
