@@ -8,6 +8,7 @@ tracing:
 
 jaegerDev:
   enabled: false
+  name: jaeger # if you change this name, also adapt all "<name>-agent" references elsewhere
 
 maliciousLoadGenerator:
   enabled: false

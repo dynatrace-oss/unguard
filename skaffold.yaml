@@ -60,6 +60,7 @@ deploy:
         chartPath: ./unguard-chart
         namespace: unguard
         createNamespace: true
+        valuesFiles: ["./unguard-chart/values.yaml"]
         setValueTemplates:
           # ad-service
           adService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
@@ -133,10 +134,10 @@ profiles:
   - name: jaeger-dev-helm
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles
-        value: ["./unguard-chart/jaegerDev.yaml"]
+        path: /deploy/helm/releases/0/valuesFiles/-
+        value: "./unguard-chart/jaegerDev.yaml"
       - op: add
-        path: /deploy/helm/releases/-
+        path: /deploy/helm/releases/0
         value:
           name: jaeger-operator
           remoteChart: jaeger-operator
@@ -144,6 +145,7 @@ profiles:
           version: 2.22.0
           namespace: unguard
           createNamespace: true
+          wait: true
 
   - name: jib
     patches:
@@ -153,23 +155,23 @@ profiles:
   - name: tracing-helm
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles
-        value: ["./unguard-chart/tracing.yaml"]
+        path: /deploy/helm/releases/0/valuesFiles/-
+        value: "./unguard-chart/tracing.yaml"
   - name: aws-helm
     # automatic regex-based activation would conflict with
     # aws profiles that inherit from this skaffold.yaml file
     # activation: [{ kubeContext: arn:aws:eks:* }]
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles
-        value: ["./unguard-chart/aws.yaml"]
+        path: /deploy/helm/releases/0/valuesFiles/-
+        value: "./unguard-chart/aws.yaml"
   - name: localdev-minikube-helm
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles
-        value: ["./unguard-chart/localDevMinikube.yaml"]
+        path: /deploy/helm/releases/0/valuesFiles/-
+        value: "./unguard-chart/localDevMinikube.yaml"
   - name: malicious-load-generator-helm
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles
-        value: ["./unguard-chart/maliciousLoadGenerator.yaml"]
+        path: /deploy/helm/releases/0/valuesFiles/-
+        value: "./unguard-chart/maliciousLoadGenerator.yaml"
