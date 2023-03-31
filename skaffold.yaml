@@ -70,31 +70,31 @@ deploy:
           # db-readiness-check
           dbReadinessCheck.image.repository: "{{.IMAGE_REPO_unguard_db_readiness_check}}"
           dbReadinessCheck.image.tag: "{{.IMAGE_TAG_unguard_db_readiness_check}}@{{.IMAGE_DIGEST_unguard_db_readiness_check}}"
-           # frontend
+          # frontend
           frontend.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
           frontend.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
-           # microblog-service
+          # microblog-service
           microblogService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_microblog_service }}"
           microblogService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_microblog_service }}@{{.IMAGE_DIGEST_unguard_microblog_service }}"
-           # proxy-service
+          # proxy-service
           proxyService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_proxy_service}}"
           proxyService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_proxy_service}}@{{.IMAGE_DIGEST_unguard_proxy_service}}"
-           # user-simulator
+          # user-simulator
           userSimulator.cronJob.jobTemplate.container.image.repository: "{{.IMAGE_REPO_unguard_user_simulator}}"
           userSimulator.cronJob.jobTemplate.container.image.tag: "{{.IMAGE_TAG_unguard_user_simulator}}@{{.IMAGE_DIGEST_unguard_user_simulator}}"
-           # user-auth-service
+          # user-auth-service
           userAuthService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_user_auth_service}}"
           userAuthService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_user_auth_service}}@{{.IMAGE_DIGEST_unguard_user_auth_service}}"
-           # membership-service
+          # membership-service
           membershipService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_membership_service}}"
           membershipService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_membership_service}}@{{.IMAGE_DIGEST_unguard_membership_service}}"
-           # status-service
+          # status-service
           statusService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_status_service}}"
           statusService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_status_service}}@{{.IMAGE_DIGEST_unguard_status_service}}"
-           # profile-service
+          # profile-service
           profileService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_profile_service}}"
           profileService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_profile_service}}@{{.IMAGE_DIGEST_unguard_profile_service}}"
-           # malicious-load-generator
+          # malicious-load-generator
           maliciousLoadGenerator.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_malicious_load_generator}}"
           maliciousLoadGenerator.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_malicious_load_generator}}@{{.IMAGE_DIGEST_unguard_malicious_load_generator}}"
 
@@ -125,19 +125,6 @@ deploy:
           maliciousLoadGenerator.deployment.container.image.pullPolicy: "IfNotPresent"
 
 profiles:
-  - name: aws
-    # automatic regex-based activation would conflict with
-    # aws profiles that inherit from this skaffold.yaml file
-    # activation: [{ kubeContext: arn:aws:eks:* }]
-    manifests:
-      kustomize:
-        paths:
-          - ./k8s-manifests/aws
-  - name: localdev-minikube
-    manifests:
-      kustomize:
-        paths:
-          - ./k8s-manifests/localdev/minikube
   - name: localdev-kind
     manifests:
       kustomize:
@@ -157,65 +144,30 @@ profiles:
           version: 2.22.0
           namespace: unguard
           createNamespace: true
-  - name: jaeger
-    patches:
-      - op: add
-        path: /deploy/helm/releases/-
-        value:
-          name: jaeger
-          remoteChart: jaeger
-          repo: https://jaegertracing.github.io/helm-charts
-          namespace: unguard
-          createNamespace: true
-          overrides:
-            provisionDataStore:
-              cassandra: false
-              elasticsearch: true
-            storage:
-              type: elasticsearch
-            elasticsearch:
-              antiAffinity: soft
-              replicas: 1
-              minimumMasterNodes: 1
-            esIndexCleaner:
-              enabled: true
-              tag: 1.22
-              schedule: "55 23 * * *"
-              numberOfDays: 7
+
   - name: jib
     patches:
       - op: add
         path: /build/artifacts/2/jib
         value: {}
-  - name: malicious-load-generator
-    patches:
-      - op: add
-        path: /manifests/kustomize/paths/-
-        value: ./k8s-manifests/malicious-load-generator
-  - name: tracing
-    patches:
-      - op: add
-        path: /manifests/kustomize/paths/-
-        value: ./k8s-manifests/tracing
-
   - name: tracing-helm
     patches:
       - op: add
         path: /deploy/helm/releases/0/valuesFiles
         value: ["./unguard-chart/tracing.yaml"]
-
   - name: aws-helm
+    # automatic regex-based activation would conflict with
+    # aws profiles that inherit from this skaffold.yaml file
+    # activation: [{ kubeContext: arn:aws:eks:* }]
     patches:
       - op: add
         path: /deploy/helm/releases/0/valuesFiles
         value: ["./unguard-chart/aws.yaml"]
-
   - name: localdev-minikube-helm
     patches:
       - op: add
         path: /deploy/helm/releases/0/valuesFiles
         value: ["./unguard-chart/localDevMinikube.yaml"]
-
   - name: malicious-load-generator-helm
     patches:
       - op: add
