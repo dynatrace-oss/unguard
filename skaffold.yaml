@@ -53,14 +53,14 @@ build:
 
 deploy:
   kubectl:
-    { }
+    {}
   helm:
     releases:
       - name: unguard
         chartPath: ./unguard-chart
         namespace: unguard
         createNamespace: true
-        valuesFiles: [ "./unguard-chart/values.yaml" ]
+        valuesFiles: ["./unguard-chart/values.yaml"]
         setValueTemplates:
           # ad-service
           adService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
