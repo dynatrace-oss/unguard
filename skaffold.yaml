@@ -41,9 +41,7 @@ build:
       context: src/profile-service
     - image: unguard_db_readiness_check
       context: src/db-readiness-check
-
-
-    - image: unguard-malicious-load-generator
+    - image: unguard_malicious_load_generator
       context: src/malicious-load-generator
 
 
@@ -96,6 +94,9 @@ deploy:
            # profile-service
           profileService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_profile_service}}"
           profileService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_profile_service}}@{{.IMAGE_DIGEST_unguard_profile_service}}"
+           # malicious-load-generator
+          maliciousLoadGenerator.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_malicious_load_generator}}"
+          maliciousLoadGenerator.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_malicious_load_generator}}@{{.IMAGE_DIGEST_unguard_malicious_load_generator}}"
 
         setValues:
           # ad-service
@@ -120,6 +121,8 @@ deploy:
           statusService.deployment.container.image.pullPolicy: "IfNotPresent"
           # profile-service
           profileService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # malicious-load-generator
+          maliciousLoadGenerator.deployment.container.image.pullPolicy: "IfNotPresent"
 
 profiles:
   - name: aws
@@ -212,3 +215,9 @@ profiles:
       - op: add
         path: /deploy/helm/releases/0/valuesFiles
         value: ["./unguard-chart/localDevMinikube.yaml"]
+
+  - name: malicious-load-generator-helm
+    patches:
+      - op: add
+        path: /deploy/helm/releases/0/valuesFiles
+        value: ["./unguard-chart/maliciousLoadGenerator.yaml"]

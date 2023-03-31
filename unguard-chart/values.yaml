@@ -2,8 +2,31 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 kubernetesClusterDomain: cluster.local
+
 tracing:
   enabled: false
+
+maliciousLoadGenerator:
+  enabled: false
+  name: malicious-load-generator
+
+  deployment:
+    strategy:
+      type: Recreate
+    terminationGracePeriodSeconds: 5
+    restartPolicy: Always
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-malicious-load-generator
+        tag: 21d9943b5f45e4c615296ad48a8f4b969972ab70
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 8083
+      env:
+        FRONTEND_ADDR: unguard-envoy-proxy:8080/ui
+        USERS: 1
+        WAIT_TIME: 1800
+
 
 localDev:
   minikube:
