@@ -99,6 +99,30 @@ deploy:
           maliciousLoadGenerator.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_malicious_load_generator}}"
           maliciousLoadGenerator.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_malicious_load_generator}}@{{.IMAGE_DIGEST_unguard_malicious_load_generator}}"
 
+        setValues:
+          # ad-service
+          adService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # envoy-proxy
+          envoyProxy.cronJob.jobTemplate.container.image.pullPolicy: "IfNotPresent"
+          # db-readiness-check
+          dbReadinessCheck.image.pullPolicy: "IfNotPresent"
+          # frontend
+          frontend.deployment.container.image.pullPolicy: "IfNotPresent"
+          # microblog-service
+          microblogService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # proxy-service
+          proxyService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # user-simulator
+          userSimulator.cronJob.jobTemplate.container.image.pullPolicy: "IfNotPresent"
+          # user-auth-service
+          userAuthService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # membership-service
+          membershipService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # status-service
+          statusService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # profile-service
+          profileService.deployment.container.image.pullPolicy: "IfNotPresent"
+
 
 profiles:
   - name: jaeger-dev
@@ -143,7 +167,7 @@ profiles:
   - name: localdev-minikube
     patches:
       - op: add
-        path: /deploy/helm/releases/1/valuesFiles/-
+        path: /deploy/helm/releases/0/valuesFiles/-
         value: "./unguard-chart/localDevMinikube.yaml"
 
   - name: malicious-load-generator
