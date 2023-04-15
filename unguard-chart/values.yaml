@@ -265,6 +265,21 @@ microblogService:
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
 
 
+dbReadinessCheck:
+  name: db-readiness-check
+  image:
+    repository: ghcr.io/dynatrace-oss/unguard/unguard-db-readiness-check
+    tag: latest
+    pullPolicy: IfNotPresent
+  command: /check.sh
+  env:
+    MYSQL_USER: root
+    MYSQL_HOST: unguard-mariadb
+    MYSQL_PASSWORD:
+      secretKeyRef:
+        name: unguard-mariadb
+        key: mariadb-root-password
+
 statusService:
   name: status-service
 
