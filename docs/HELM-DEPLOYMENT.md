@@ -8,8 +8,7 @@ This guide assumes that an EKS cluster (and ECR repositories) already exist.
 
 ### 🗒️ Prerequisites
 
-* [Docker](https://www.docker.com/products/docker-desktop)
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/), [Helm](https://helm.sh/docs/intro/install/), [Skaffold](https://skaffold.dev/docs/install/), and [Kustomize](https://kubernetes-sigs.github.io/kustomize/installation/)
+* [Helm](https://helm.sh/docs/intro/install/)
 * [AWS CLI](https://aws.amazon.com/cli/)
 
 ### ⛵ AWS [EKS](https://aws.amazon.com/eks/) Deployment
@@ -21,21 +20,24 @@ This guide assumes that an EKS cluster (and ECR repositories) already exist.
    ```sh
    aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${REGION}
    ```
-2. Add Unguard helm repository
+
+2. Let `aws` log you into your ECR repository so that Docker pushes images to that.
 
    ```sh
-   # do a standard deployment
-   he
-
+   aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
    ```
+3. Add bitnami repo for the mariadb dependency
+    ```sh
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+    ```
 
-3Deploy to AWS. This might take up to 30 minutes for a cold build.
+4. Update unguard-chart dependencies
+     ```sh
+     helm dependency update .././unguard-chart
+     ```
 
-   ```sh
-   # do a standard deployment
-   he
-   skaffold run -p aws --default-repo ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
+5. Deploy to AWS.
 
-   # for extra services add the corresponding profile
-   skaffold run -p aws,jaeger --default-repo ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
-   ```
+     ```sh
+     helm install unguard .././unguard-chart
+     ```
