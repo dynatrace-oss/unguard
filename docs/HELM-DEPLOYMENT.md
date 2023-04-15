@@ -36,8 +36,8 @@ This guide assumes that an EKS cluster (and ECR repositories) already exist.
      helm dependency update .././unguard-chart
      ```
 
-5. Deploy to AWS.
+5. Deploy to Cluster.
 
      ```sh
-     helm install unguard .././unguard-chart
+     helm install unguard .././unguard-chart --wait --namespace unguard --create-namespace
      ```
