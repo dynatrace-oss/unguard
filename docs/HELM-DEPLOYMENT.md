@@ -31,9 +31,9 @@ This guide assumes that an EKS cluster (and ECR repositories) already exist.
     helm repo add bitnami https://charts.bitnami.com/bitnami
     ```
 
-4. Update unguard-chart dependencies
+4. Install mariadb
      ```sh
-     helm dependency update .././unguard-chart
+     helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
      ```
 
 5. Deploy to Cluster.
