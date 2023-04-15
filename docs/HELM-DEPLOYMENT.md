@@ -1,17 +1,18 @@
 # Deployment Guide
 
-This document explains how to deploy Unguard to your cloud. Currently, this documentation covers only AWS.
+This document explains how to deploy Unguard to your cloud. This can be either a local minikube cluster or AWS.
 
-## ☸️ AWS Quickstart
+## ☸️ AWS/Minikube Quickstart
 
-This guide assumes that an EKS cluster (and ECR repositories) already exist.
+This guide assumes that an EKS (and ECR repositories) or a minikube cluster already exist.
 
 ### 🗒️ Prerequisites
 
 * [Helm](https://helm.sh/docs/intro/install/)
+* [Minikube](https://minikube.sigs.k8s.io)
 * [AWS CLI](https://aws.amazon.com/cli/)
 
-### ⛵ AWS [EKS](https://aws.amazon.com/eks/) Deployment
+### 🅰 AWS [EKS](https://aws.amazon.com/eks/) Deployment
 
 1. Let `aws` update your kubeconfig to be connected to EKS.
    This command will also return you the account ID that you need in the next step.
@@ -41,3 +42,30 @@ This guide assumes that an EKS cluster (and ECR repositories) already exist.
      ```sh
      helm install unguard .././unguard-chart --wait --namespace unguard --create-namespace
      ```
+
+### 🅱 Minikube [Minikube](https://minikube.sigs.k8s.io) Deployment
+
+1. Follow the [Development Guide](./DEV-GUIDE.md) to set up a local minikube cluster
+
+2. Add bitnami repo for the mariadb dependency
+    ```sh
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+    ```
+
+3. Install mariadb
+     ```sh
+     helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
+     ```
+
+4. Deploy to Cluster.
+
+     ```sh
+     helm install unguard .././unguard-chart --wait --namespace unguard --create-namespace
+     ```
+
+## Uninstall Unguard
+
+1. Uninstall unguard and mariadb chart
+    ```sh
+    helm uninstall unguard -n unguard && helm uninstall unguard-mariadb -n unguard
+    ```
