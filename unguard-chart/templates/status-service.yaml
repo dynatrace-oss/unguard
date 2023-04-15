@@ -27,7 +27,7 @@ spec:
     app.kubernetes.io/name: {{.Values.statusService.name}}
     app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   ports:
- {{- .Values.profileService.service.ports | toYaml | nindent 4 }}
+ {{- .Values.statusService.service.ports | toYaml | nindent 4 }}
 
 ---
 apiVersion: v1

@@ -116,7 +116,7 @@ membershipService:
   service:
     type: ClusterIP
     ports:
-      - targetPort: 8080
+      - targetPort: 8083
         port: 80
 
   deployment:
