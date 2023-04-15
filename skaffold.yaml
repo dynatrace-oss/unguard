@@ -39,8 +39,6 @@ build:
       context: src/status-service
     - image: unguard_profile_service
       context: src/profile-service
-    - image: unguard_db_readiness_check
-      context: src/db-readiness-check
     - image: unguard_malicious_load_generator
       context: src/malicious-load-generator
 
@@ -78,9 +76,6 @@ deploy:
           # envoy-proxy
           envoyProxy.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_envoy_proxy}}"
           envoyProxy.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_envoy_proxy}}@{{.IMAGE_DIGEST_unguard_envoy_proxy}}"
-          # db-readiness-check
-          dbReadinessCheck.image.repository: "{{.IMAGE_REPO_unguard_db_readiness_check}}"
-          dbReadinessCheck.image.tag: "{{.IMAGE_TAG_unguard_db_readiness_check}}@{{.IMAGE_DIGEST_unguard_db_readiness_check}}"
           # frontend
           frontend.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
           frontend.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
@@ -114,8 +109,6 @@ deploy:
           adService.deployment.container.image.pullPolicy: "IfNotPresent"
           # envoy-proxy
           envoyProxy.cronJob.jobTemplate.container.image.pullPolicy: "IfNotPresent"
-          # db-readiness-check
-          dbReadinessCheck.image.pullPolicy: "IfNotPresent"
           # frontend
           frontend.deployment.container.image.pullPolicy: "IfNotPresent"
           # microblog-service
@@ -177,7 +170,7 @@ profiles:
   - name: localdev-minikube
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles/-
+        path: /deploy/helm/releases/1/valuesFiles/-
         value: "./unguard-chart/localDevMinikube.yaml"
 
   - name: malicious-load-generator
