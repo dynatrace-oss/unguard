@@ -69,21 +69,3 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name }}
                   key: {{ .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key }}
-      initContainers:
-        - name: {{.Values.dbReadinessCheck.name}}
-          image: {{.Values.dbReadinessCheck.image.repository}}:{{.Values.dbReadinessCheck.image.tag}}
-          imagePullPolicy: {{.Values.dbReadinessCheck.image.pullPolicy}}
-          command: [{{quote .Values.dbReadinessCheck.command}}]
-          env:
-            - name: MYSQL_USER
-              value: {{quote .Values.dbReadinessCheck.env.MYSQL_USER}}
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{.Values.dbReadinessCheck.env.MYSQL_PASSWORD.secretKeyRef.name}}
-                  key: {{.Values.dbReadinessCheck.env.MYSQL_PASSWORD.secretKeyRef.key}}
-            - name: MYSQL_HOST
-              value: {{quote .Values.dbReadinessCheck.env.MYSQL_HOST}}
-
-
-
