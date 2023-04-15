@@ -53,14 +53,14 @@ build:
 
 deploy:
   kubectl:
-    {}
+    { }
   helm:
     releases:
       - name: unguard
         chartPath: ./unguard-chart
         namespace: unguard
         createNamespace: true
-        valuesFiles: ["./unguard-chart/values.yaml"]
+        valuesFiles: [ "./unguard-chart/values.yaml" ]
         setValueTemplates:
           # ad-service
           adService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
@@ -101,12 +101,9 @@ deploy:
 
 
 profiles:
-  - name: localdev-kind
-    manifests:
-      kustomize:
-        paths:
-          - ./k8s-manifests/localdev/kind
-  - name: jaeger-dev-helm
+  - name: jaeger-dev
+    # IF THIS PROFILE IS USED IT HAS TO BE INVOKED AS THE LAST PROFILE IN THE LIST
+    # E.g.: "skaffold run -p localdev-minikube,tracing,jaeger-dev"
     patches:
       - op: add
         path: /deploy/helm/releases/0/valuesFiles/-
@@ -126,13 +123,15 @@ profiles:
     patches:
       - op: add
         path: /build/artifacts/2/jib
-        value: {}
-  - name: tracing-helm
+        value: { }
+
+  - name: tracing
     patches:
       - op: add
         path: /deploy/helm/releases/0/valuesFiles/-
         value: "./unguard-chart/tracing.yaml"
-  - name: aws-helm
+
+  - name: aws
     # automatic regex-based activation would conflict with
     # aws profiles that inherit from this skaffold.yaml file
     # activation: [{ kubeContext: arn:aws:eks:* }]
@@ -140,13 +139,22 @@ profiles:
       - op: add
         path: /deploy/helm/releases/0/valuesFiles/-
         value: "./unguard-chart/aws.yaml"
-  - name: localdev-minikube-helm
+
+  - name: localdev-minikube
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles/-
+        path: /deploy/helm/releases/1/valuesFiles/-
         value: "./unguard-chart/localDevMinikube.yaml"
-  - name: malicious-load-generator-helm
+
+  - name: malicious-load-generator
     patches:
       - op: add
         path: /deploy/helm/releases/0/valuesFiles/-
         value: "./unguard-chart/maliciousLoadGenerator.yaml"
+
+# KIND IS NOT YET SUPPORTED
+#  - name: localdev-kind
+#    manifests:
+#      kustomize:
+#        paths:
+#          - ./k8s-manifests/localdev/kind
