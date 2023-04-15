@@ -56,6 +56,16 @@ deploy:
     {}
   helm:
     releases:
+      - name: unguard-mariadb
+        remoteChart: mariadb
+        repo: https://charts.bitnami.com/bitnami
+        namespace: unguard
+        createNamespace: true
+        wait: true # TODO: #22 Might be removed once we have readiness probes
+        overrides:
+          primary:
+            persistence:
+              enabled: false
       - name: unguard
         chartPath: ./unguard-chart
         namespace: unguard
@@ -152,7 +162,7 @@ profiles:
   - name: tracing
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles/-
+        path: /deploy/helm/releases/1/valuesFiles/-
         value: "./unguard-chart/tracing.yaml"
 
   - name: aws
@@ -161,7 +171,7 @@ profiles:
     # activation: [{ kubeContext: arn:aws:eks:* }]
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles/-
+        path: /deploy/helm/releases/1/valuesFiles/-
         value: "./unguard-chart/aws.yaml"
 
   - name: localdev-minikube
@@ -173,7 +183,7 @@ profiles:
   - name: malicious-load-generator
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles/-
+        path: /deploy/helm/releases/1/valuesFiles/-
         value: "./unguard-chart/maliciousLoadGenerator.yaml"
 
 # KIND IS NOT YET SUPPORTED
