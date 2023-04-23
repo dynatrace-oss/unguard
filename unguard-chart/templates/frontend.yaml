@@ -20,12 +20,12 @@ metadata:
   name: {{ include "unguard.fullname" . }}-{{.Values.frontend.name}}
   labels:
     app.kubernetes.io/name: {{.Values.frontend.name}}
-    app.kubernetes.io/part-of:  {{ include "unguard.fullname" . }}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
   type: {{ .Values.frontend.service.type }}
   selector:
     app.kubernetes.io/name: {{.Values.frontend.name}}
-    app.kubernetes.io/part-of:  {{ include "unguard.fullname" . }}
+    app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   ports:
  {{- .Values.frontend.service.ports | toYaml | nindent 4 }}
 
@@ -57,16 +57,6 @@ spec:
           ports:
             - containerPort: {{.Values.frontend.deployment.container.ports.containerPort}}
           env:
-            - name: JAEGER_SERVICE_NAME
-              value: {{ quote .Values.frontend.deployment.container.env.JAEGER_SERVICE_NAME }}
-            - name: JAEGER_AGENT_HOST
-              value: {{ quote .Values.frontend.deployment.container.env.JAEGER_AGENT_HOST }} # change depending on your jaeger deployment
-            - name: JAEGER_SAMPLER_TYPE
-              value: {{ quote .Values.frontend.deployment.container.env.JAEGER_SAMPLER_TYPE }}
-            - name: JAEGER_SAMPLER_PARAM
-              value: {{ quote .Values.frontend.deployment.container.env.JAEGER_SAMPLER_PARAM }}
-            - name: JAEGER_DISABLED
-              value: {{ quote .Values.frontend.deployment.container.env.JAEGER_DISABLED }}
             - name: MICROBLOG_SERVICE_ADDRESS
               value: {{ quote .Values.frontend.deployment.container.env.MICROBLOG_SERVICE_ADDRESS }}
             - name: PROXY_SERVICE_ADDRESS
@@ -89,4 +79,15 @@ spec:
               value: {{ quote .Values.frontend.deployment.container.env.MEMBERSHIP_SERVICE_BASE_PATH }}
             - name: STATUS_SERVICE_BASE_PATH
               value: {{ quote .Values.frontend.deployment.container.env.STATUS_SERVICE_BASE_PATH }}
-
+            {{if .Values.jaegerDev.enabled}}
+            - name: JAEGER_SERVICE_NAME
+              value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.frontend.name) }}
+            - name: JAEGER_AGENT_HOST
+              value: {{ quote (printf "%s-%s" .Values.jaegerDev.name .Values.frontend.deployment.container.env.JAEGER_AGENT_HOST) }}
+            - name: JAEGER_SAMPLER_TYPE
+              value: {{ quote .Values.frontend.deployment.container.env.JAEGER_SAMPLER_TYPE }}
+            - name: JAEGER_SAMPLER_PARAM
+              value: {{ quote .Values.frontend.deployment.container.env.JAEGER_SAMPLER_PARAM }}
+            - name: JAEGER_DISABLED
+              value: {{ quote .Values.frontend.deployment.container.env.JAEGER_DISABLED }}
+            {{end}}

@@ -17,7 +17,7 @@ limitations under the License.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name:  {{ include "unguard.fullname" . }}-{{.Values.userSimulator.name}}
+  name: {{ include "unguard.fullname" . }}-{{.Values.userSimulator.name}}
   labels:
     app.kubernetes.io/name: {{.Values.userSimulator.name}}
     app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
