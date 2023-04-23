@@ -15,7 +15,7 @@ This document explains how to deploy Unguard with Jaeger tracing.
 3. Deploy to Minikube-Cluster.
 
    ```sh
-    helm install -f ./unguard-chart/localDevMinikube.yaml -f ./unguard-chart/jaegerDev.yaml -f ./unguard-chart/tracing.yaml unguard ./unguard-chart --wait --namespace unguard --create-namespace
+    helm install -f ./chart/localDevMinikube.yaml -f ./chart/jaegerDev.yaml -f ./chart/tracing.yaml unguard ./chart --wait --namespace unguard --create-namespace
    ```
 
 

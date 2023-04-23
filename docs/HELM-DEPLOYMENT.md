@@ -27,7 +27,7 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
    ```sh
    aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
    ```
-3. Add bitnami repo for the ;ariadb dependency
+3. Add bitnami repo for the Mariadb dependency
    ```sh
     helm repo add bitnami https://charts.bitnami.com/bitnami
    ```
@@ -40,7 +40,7 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
 5. Deploy to Cluster.
 
    ```sh
-     helm install unguard .././unguard-chart --wait --namespace unguard --create-namespace
+     helm install unguard ./chart --wait --namespace unguard --create-namespace
    ```
 
 ### 🅱 Minikube [Minikube](https://minikube.sigs.k8s.io) Deployment
@@ -63,7 +63,7 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
 5. Deploy to Minikube-Cluster.
 
    ```sh
-     helm install -f ./unguard-chart/localDevMinikube.yaml unguard ./unguard-chart --wait --namespace unguard --create-namespace
+     helm install -f ./chart/localDevMinikube.yaml unguard ./chart --wait --namespace unguard --create-namespace
    ```
 
 ## Uninstall Unguard
