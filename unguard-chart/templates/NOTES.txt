@@ -1,1 +1,1 @@
-Blabla blub
+This is the helm chart for Unguard, an insecure cloud-native microservices demo application.
