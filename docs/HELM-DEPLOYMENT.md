@@ -1,10 +1,10 @@
 # Deployment Guide
 
-This document explains how to deploy Unguard to your cloud. This can be either a local minikube cluster or AWS.
+This document explains how to deploy Unguard to your cloud. This can be either a local Minikube-Cluster or AWS.
 
 ## ☸️ AWS/Minikube Quickstart
 
-This guide assumes that an EKS (and ECR repositories) or a minikube cluster already exist.
+This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster already exist.
 
 ### 🗒️ Prerequisites
 
@@ -27,45 +27,48 @@ This guide assumes that an EKS (and ECR repositories) or a minikube cluster alre
    ```sh
    aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
    ```
-3. Add bitnami repo for the mariadb dependency
-    ```sh
+3. Add bitnami repo for the ;ariadb dependency
+   ```sh
     helm repo add bitnami https://charts.bitnami.com/bitnami
-    ```
+   ```
 
 4. Install mariadb
-     ```sh
+   ```sh
      helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
-     ```
+   ```
 
 5. Deploy to Cluster.
 
-     ```sh
+   ```sh
      helm install unguard .././unguard-chart --wait --namespace unguard --create-namespace
-     ```
+   ```
 
 ### 🅱 Minikube [Minikube](https://minikube.sigs.k8s.io) Deployment
 
-1. Follow the [Development Guide](./DEV-GUIDE.md) to set up a local minikube cluster
+1. Follow the [Development Guide](./DEV-GUIDE.md) to set up a local Minikube-Cluster
 
-2. Add bitnami repo for the mariadb dependency
-    ```sh
+2. Add bitnami repo for the Mariadb dependency
+   ```sh
     helm repo add bitnami https://charts.bitnami.com/bitnami
-    ```
+   ```
 
-3. Install mariadb
-     ```sh
+3. Install Mariadb
+   ```sh
      helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
-     ```
+   ```
 
-4. Deploy to Cluster.
+4. (Optional) Install Jaeger
+   * See [JAEGER-DEPLOYMENT](./JAEGER-DEPLOYMENT.md)
 
-     ```sh
-     helm install unguard .././unguard-chart --wait --namespace unguard --create-namespace
-     ```
+5. Deploy to Minikube-Cluster.
+
+   ```sh
+     helm install -f ./unguard-chart/localDevMinikube.yaml unguard ./unguard-chart --wait --namespace unguard --create-namespace
+   ```
 
 ## Uninstall Unguard
 
-1. Uninstall unguard and mariadb chart
-    ```sh
+1. Uninstall Unguard and mariadb chart
+   ```sh
     helm uninstall unguard -n unguard && helm uninstall unguard-mariadb -n unguard
-    ```
+   ```
