@@ -56,16 +56,6 @@ spec:
           ports:
             - containerPort: {{.Values.adService.deployment.container.ports.containerPort}}
           env:
-            - name: JAEGER_SERVICE_NAME
-              value: {{ quote .Values.adService.deployment.container.env.JAEGER_SERVICE_NAME }}
-            - name: JAEGER_AGENT_HOST
-              value: {{ quote .Values.adService.deployment.container.env.JAEGER_AGENT_HOST }} # change depending on your jaeger deployment
-            - name: JAEGER_SAMPLER_TYPE
-              value: {{ quote .Values.adService.deployment.container.env.JAEGER_SAMPLER_TYPE }}
-            - name: JAEGER_SAMPLER_PARAM
-              value: {{ quote .Values.adService.deployment.container.env.JAEGER_SAMPLER_PARAM }}
-            - name: JAEGER_DISABLED
-              value: {{ quote .Values.adService.deployment.container.env.JAEGER_DISABLED }}
             - name: ASPNETCORE_ENVIRONMENT
               value: {{ quote .Values.adService.deployment.container.env.ASPNETCORE_ENVIRONMENT }}
             - name: SERVER_PORT
@@ -74,3 +64,15 @@ spec:
               value: {{ quote .Values.adService.deployment.container.env.API_PATH }}
             - name: USER_AUTH_SERVICE_ADDRESS
               value: {{ quote .Values.adService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
+            {{if .Values.jaegerDev.enabled}}
+            - name: JAEGER_SERVICE_NAME
+              value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.adService.name) }}
+            - name: JAEGER_AGENT_HOST
+              value: {{ quote (printf "%s-%s" .Values.jaegerDev.name .Values.adService.deployment.container.env.JAEGER_AGENT_HOST) }}
+            - name: JAEGER_SAMPLER_TYPE
+              value: {{ quote .Values.adService.deployment.container.env.JAEGER_SAMPLER_TYPE }}
+            - name: JAEGER_SAMPLER_PARAM
+              value: {{ quote .Values.adService.deployment.container.env.JAEGER_SAMPLER_PARAM }}
+            - name: JAEGER_DISABLED
+              value: {{ quote .Values.adService.deployment.container.env.JAEGER_DISABLED }}
+            {{end}}

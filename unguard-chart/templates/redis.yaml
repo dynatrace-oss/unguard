@@ -93,7 +93,7 @@ spec:
               memory: 200Mi
       volumes:
         - name: redis-data
-          emptyDir: {}
+          emptyDir: { }
         - name: config
           configMap:
             name: unguard-redis-config

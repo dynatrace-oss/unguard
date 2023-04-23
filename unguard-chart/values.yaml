@@ -8,7 +8,7 @@ tracing:
 
 jaegerDev:
   enabled: false
-  name: jaeger # if you change this name, also adapt all "<name>-agent" references elsewhere
+  name: jaeger
 
 maliciousLoadGenerator:
   enabled: false
@@ -166,8 +166,7 @@ userAuthService:
           secretKeyRef:
             name: unguard-mariadb
             key: mariadb-root-password
-        JAEGER_SERVICE_NAME: unguard-user-auth-service
-        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         JAEGER_DISABLED: true
@@ -196,8 +195,7 @@ adService:
       ports:
         containerPort: 8082
       env:
-        JAEGER_SERVICE_NAME: unguard-ad-service
-        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         JAEGER_DISABLED: true
@@ -256,8 +254,7 @@ microblogService:
         containerPort: 8080
       env:
         SERVER_PORT: 8080
-        JAEGER_SERVICE_NAME: unguard-microblog-service
-        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         OPENTRACING_JAEGER_ENABLED: false
@@ -358,8 +355,7 @@ proxyService:
         containerPort: 8081
       env:
         SERVER_PORT: 8081
-        JAEGER_SERVICE_NAME: unguard-proxy-service
-        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         OPENTRACING_JAEGER_ENABLED: false
@@ -385,8 +381,7 @@ frontend:
       ports:
         containerPort: 3000
       env:
-        JAEGER_SERVICE_NAME: unguard-frontend
-        JAEGER_AGENT_HOST: jaeger-agent # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         JAEGER_DISABLED: true
