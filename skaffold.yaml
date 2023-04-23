@@ -50,8 +50,6 @@ build:
     useBuildkit: true
 
 deploy:
-  kubectl:
-    {}
   helm:
     releases:
       - name: unguard-mariadb
@@ -133,7 +131,7 @@ profiles:
     # E.g.: "skaffold run -p localdev-minikube,tracing,jaeger-dev"
     patches:
       - op: add
-        path: /deploy/helm/releases/0/valuesFiles/-
+        path: /deploy/helm/releases/1/valuesFiles/-
         value: "./unguard-chart/jaegerDev.yaml"
       - op: add
         path: /deploy/helm/releases/0
