@@ -63,10 +63,10 @@ deploy:
             persistence:
               enabled: false
       - name: unguard
-        chartPath: ./unguard-chart
+        chartPath: ./chart
         namespace: unguard
         createNamespace: true
-        valuesFiles: ["./unguard-chart/values.yaml"]
+        valuesFiles: ["./chart/values.yaml"]
         setValueTemplates:
           # ad-service
           adService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
@@ -132,7 +132,7 @@ profiles:
     patches:
       - op: add
         path: /deploy/helm/releases/1/valuesFiles/-
-        value: "./unguard-chart/jaegerDev.yaml"
+        value: "./chart/jaegerDev.yaml"
       - op: add
         path: /deploy/helm/releases/0
         value:
@@ -154,7 +154,7 @@ profiles:
     patches:
       - op: add
         path: /deploy/helm/releases/1/valuesFiles/-
-        value: "./unguard-chart/tracing.yaml"
+        value: "./chart/tracing.yaml"
 
   - name: aws
     # automatic regex-based activation would conflict with
@@ -163,19 +163,19 @@ profiles:
     patches:
       - op: add
         path: /deploy/helm/releases/1/valuesFiles/-
-        value: "./unguard-chart/aws.yaml"
+        value: "./chart/aws.yaml"
 
   - name: localdev-minikube
     patches:
       - op: add
         path: /deploy/helm/releases/1/valuesFiles/-
-        value: "./unguard-chart/localDevMinikube.yaml"
+        value: "./chart/localDevMinikube.yaml"
 
   - name: malicious-load-generator
     patches:
       - op: add
         path: /deploy/helm/releases/1/valuesFiles/-
-        value: "./unguard-chart/maliciousLoadGenerator.yaml"
+        value: "./chart/maliciousLoadGenerator.yaml"
 
 # KIND IS NOT YET SUPPORTED
 #  - name: localdev-kind
