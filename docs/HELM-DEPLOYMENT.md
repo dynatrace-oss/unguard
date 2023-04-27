@@ -40,7 +40,7 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
 5. Deploy to Cluster.
 
    ```sh
-     helm install unguard ./chart --wait --namespace unguard --create-namespace
+     helm install -f ./chart/aws.yaml unguard ./chart --wait --namespace unguard --create-namespace
    ```
 
 ### 🅱 Minikube [Minikube](https://minikube.sigs.k8s.io) Deployment
