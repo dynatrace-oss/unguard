@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - 'release/**'
+
 jobs:
   build:
     name: Publish on container registry
@@ -52,4 +52,16 @@ jobs:
           skip-tests: true
           tag: ${{ env.IMAGE_TAG }}
           repository: ${{ vars.REGISTRY }}/${{ github.repository }}
-          push: true
+          push: false
+
+      - name: Update helm image tags
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "tag: (.)*"
+          replace: "tag: {{ env.IMAGE_TAG }}"
+          include: "chart/values.yaml"
+
+      - name: Publish Helm chart to GHCR
+        run: |
+          helm package chart
+          helm push unguard-0.1.0.tgz oci://ghcr.io/dynatrace-oss/unguard/chart
