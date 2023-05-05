@@ -61,7 +61,30 @@ jobs:
           replace: "tag: {{ env.IMAGE_TAG }}"
           include: "chart/values.yaml"
 
+      - name: Update helm chart appVersion
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "appVersion: (.)*"
+          replace: "appVersion: {{ env.IMAGE_TAG }}"
+          include: "chart/Chart.yaml"
+
+      - name: Update helm chart version if release
+        uses: jacobtomlinson/gha-find-replace@v3
+        if: ${{ steps.release-version.outputs.match != '' }}
+        with:
+          find: "version: (.)*"
+          replace: "appVersion: {{ env.IMAGE_TAG }}"
+          include: "chart/Chart.yaml"
+
+      - name: Update helm chart version if no release
+        uses: jacobtomlinson/gha-find-replace@v3
+        if: ${{ steps.release-version.outputs.match == '' }}
+        with:
+          find: "version: (.)*"
+          replace: "appVersion: {{ env.IMAGE_TAG }}"
+          include: "chart/Chart.yaml"
+
       - name: Publish Helm chart to GHCR
         run: |
           helm package chart
-          helm push unguard-0.1.0.tgz oci://ghcr.io/dynatrace-oss/unguard/chart
+          helm push unguard-0.8.0.tgz oci://ghcr.io/dynatrace-oss/unguard/chart
