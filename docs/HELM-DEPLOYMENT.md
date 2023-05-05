@@ -62,9 +62,16 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
 
 5. Deploy to Minikube-Cluster.
 
+    1. Using the local chart.
    ```sh
      helm install -f ./chart/localDevMinikube.yaml unguard ./chart --wait --namespace unguard --create-namespace
    ```
+   2. Pulling the remote chart from GitHub.
+      Replace __version__ with the helm chart version you want to install.
+   ```sh
+     helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version 0.1.0 --set localDev.minikube.enabled=true --wait --namespace unguard --create-namespace
+   ```
+
 
 ## Uninstall Unguard
 
@@ -72,3 +79,5 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
    ```sh
     helm uninstall unguard -n unguard && helm uninstall unguard-mariadb -n unguard
    ```
+
+
