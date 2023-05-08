@@ -18,7 +18,7 @@ jobs:
         id: release-version
         with:
           text: ${{ github.ref_name }}
-          regex: '^release\/(.*)$'
+          regex: '^release\/v(.*)$'
 
       - name: Set image tag
         run: |
