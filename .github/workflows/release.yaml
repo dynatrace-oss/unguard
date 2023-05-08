@@ -2,7 +2,7 @@ name: Publish images
 on:
   push:
     branches:
-      - main
+      - feature/transition-unguard-to-helm
 
 jobs:
   build:
