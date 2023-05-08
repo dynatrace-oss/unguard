@@ -19,27 +19,27 @@ metadata:
 build:
   artifacts:
     # context is the directory with the Dockerfile for that image
-    - image: unguard_proxy_service
+    - image: unguard-proxy-service
       context: src/proxy-service
-    - image: unguard_envoy_proxy
+    - image: unguard-envoy-proxy
       context: src/envoy-proxy
-    - image: unguard_frontend
+    - image: unguard-frontend
       context: src/frontend
-    - image: unguard_microblog_service # adapt jib patch index below if you move this item
+    - image: unguard-microblog-service # adapt jib patch index below if you move this item
       context: src/microblog-service
-    - image: unguard_user_simulator
+    - image: unguard-user-simulator
       context: src/user-simulator
-    - image: unguard_user_auth_service
+    - image: unguard-user-auth-service
       context: src/user-auth-service
-    - image: unguard_ad_service
+    - image: unguard-ad-service
       context: src/ad-service
-    - image: unguard_membership_service
+    - image: unguard-membership-service
       context: src/membership-service
-    - image: unguard_status_service
+    - image: unguard-status-service
       context: src/status-service
-    - image: unguard_profile_service
+    - image: unguard-profile-service
       context: src/profile-service
-    - image: unguard_malicious_load_generator
+    - image: unguard-malicious-load-generator
       context: src/malicious-load-generator
 
 
