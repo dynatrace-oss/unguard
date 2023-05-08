@@ -20,9 +20,23 @@ jobs:
           text: ${{ github.ref_name }}
           regex: '^release\/v(.*)$'
 
-      - name: Set image tag
+      - name: Get fallback release version from chart
+        id: fallback-release-version
         run: |
-          echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+          echo "FALLBACK_RELEASE_VERSION=$(grep 'appVersion' chart/Chart.yaml | cut -d " " -f2)" >> $GITHUB_ENV
+
+      - name: Get Previous tag
+        id: previousTag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: ${{ env.FALLBACK_RELEASE_VERSION }}
+
+      - name: Set build time
+        run: echo "BUILD_TIME=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+
+      - name: Set image tag if no release
+        run: |
+          echo "IMAGE_TAG=${{ steps.previousTag.outputs.tag }}-${{ env.BUILD_TIME }}" >> $GITHUB_ENV
 
       - name: Set image release tag
         if: ${{ steps.release-version.outputs.match != '' }}
@@ -52,39 +66,30 @@ jobs:
           skip-tests: true
           tag: ${{ env.IMAGE_TAG }}
           repository: ${{ vars.REGISTRY }}/${{ github.repository }}
-          push: false
+          push: true
 
       - name: Update helm image tags
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "tag: (.)*"
-          replace: "tag: {{ env.IMAGE_TAG }}"
+          replace: "tag: ${{ env.IMAGE_TAG }}"
           include: "chart/values.yaml"
 
       - name: Update helm chart appVersion
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "appVersion: (.)*"
-          replace: "appVersion: {{ env.IMAGE_TAG }}"
+          replace: "appVersion: ${{ env.IMAGE_TAG }}"
           include: "chart/Chart.yaml"
 
-      - name: Update helm chart version if release
+      - name: Update helm chart version
         uses: jacobtomlinson/gha-find-replace@v3
-        if: ${{ steps.release-version.outputs.match != '' }}
         with:
           find: "version: (.)*"
-          replace: "appVersion: {{ env.IMAGE_TAG }}"
-          include: "chart/Chart.yaml"
-
-      - name: Update helm chart version if no release
-        uses: jacobtomlinson/gha-find-replace@v3
-        if: ${{ steps.release-version.outputs.match == '' }}
-        with:
-          find: "version: (.)*"
-          replace: "appVersion: {{ env.IMAGE_TAG }}"
+          replace: "version: ${{ env.IMAGE_TAG }}"
           include: "chart/Chart.yaml"
 
       - name: Publish Helm chart to GHCR
         run: |
           helm package chart
-          helm push unguard-0.8.0.tgz oci://ghcr.io/dynatrace-oss/unguard/chart
+          helm push unguard-${{ env.IMAGE_TAG }}.tgz oci://ghcr.io/dynatrace-oss/unguard/chart
