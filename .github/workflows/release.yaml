@@ -25,18 +25,12 @@ jobs:
         run: |
           echo "FALLBACK_RELEASE_VERSION=$(grep 'appVersion' chart/Chart.yaml | cut -d " " -f2)" >> $GITHUB_ENV
 
-      - name: Get Previous tag
-        id: previousTag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: ${{ env.FALLBACK_RELEASE_VERSION }}
-
       - name: Set build time
         run: echo "BUILD_TIME=$(date +%s)" >> $GITHUB_ENV
 
       - name: Set image tag if no release
         run: |
-          echo "IMAGE_TAG=${{ steps.previousTag.outputs.tag }}-${{ env.BUILD_TIME }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ env.FALLBACK_RELEASE_VERSION }}-${{ env.BUILD_TIME }}" >> $GITHUB_ENV
 
       - name: Set image release tag
         if: ${{ steps.release-version.outputs.match != '' }}
