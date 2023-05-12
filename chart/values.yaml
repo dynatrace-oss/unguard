@@ -40,12 +40,11 @@ localDev:
 
 aws:
   enabled: false
+  ingress:
+    annotations:
 
 ingress:
   name: ingress
-  annotations:
-    ingressClass: alb
-    scheme: internal
 
 profileService:
   name: profile-service

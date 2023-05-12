@@ -23,8 +23,7 @@ metadata:
     app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
   {{if .Values.aws.enabled}}
   annotations:
-    kubernetes.io/ingress.class: {{.Values.ingress.annotations.ingressClass}}
-    alb.ingress.kubernetes.io/scheme: {{.Values.ingress.annotations.scheme}}
+  {{- .Values.aws.ingress.annotations | toYaml | nindent 4 }}
   {{end}}
 spec:
   rules:
