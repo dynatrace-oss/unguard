@@ -27,8 +27,15 @@ metadata:
   {{end}}
 spec:
   rules:
+    {{if .Values.localDev.minikube.enabled}}
     - host: unguard.kube
+    {{end}}
+    {{if .Values.localDev.minikube.enabled}}
       http:
+    {{end}}
+    {{if .Values.aws.enabled}}
+    - http:
+    {{end}}
         paths:
           - path: /healthz
             pathType: Prefix
