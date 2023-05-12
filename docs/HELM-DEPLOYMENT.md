@@ -43,7 +43,7 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
      helm install -f ./chart/aws.yaml unguard ./chart --wait --namespace unguard --create-namespace
    ```
 
-### 🅱 Minikube [Minikube](https://minikube.sigs.k8s.io) Deployment
+### 🅱 [Minikube](https://minikube.sigs.k8s.io) Deployment
 
 1. Follow the [Development Guide](./DEV-GUIDE.md) to set up a local Minikube-Cluster
 
