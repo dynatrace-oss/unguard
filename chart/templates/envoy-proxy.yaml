@@ -22,10 +22,7 @@ metadata:
     app.kubernetes.io/name: {{.Values.envoyProxy.name}}
     app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 spec:
-  // TODO type if aws true to node prt
   {{if .Values.aws.enabled}}
-  # aws-load-balancer-controller only supports NodePort or LoadBalancer service types
-  # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/guide/ingress/annotations/#traffic-routing
   type: NodePort
   {{else}}
   type: {{ .Values.envoyProxy.service.type }}
