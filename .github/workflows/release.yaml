@@ -35,8 +35,7 @@ jobs:
       - name: Set image release tag
         if: ${{ steps.release-version.outputs.match != '' }}
         run: |
-          echo TAG_WITH_PREFIX=${{ steps.release-version.outputs.group1 }}
-          echo "IMAGE_TAG=${TAG_WITH_PREFIX#v.}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ steps.release-version.outputs.group1 }}" >> $GITHUB_ENV
 
       - name: Log in to the Container registry
         uses: docker/login-action@v2
