@@ -15,8 +15,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../../base
-  - ../ingress
   - https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.1/deploy/static/provider/kind/deploy.yaml
 
 # make this the default ingress class so that we don't have to annotate it explicitly
