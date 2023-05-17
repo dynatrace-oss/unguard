@@ -22,7 +22,7 @@ maliciousLoadGenerator:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-malicious-load-generator
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8083
@@ -60,7 +60,7 @@ profileService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-profile-service
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8080
@@ -93,7 +93,7 @@ userSimulator:
       container:
         image:
           repository: ghcr.io/dynatrace-oss/unguard/unguard-user-simulator
-          tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+          tag: 0.8.0
           pullPolicy: IfNotPresent
 
         env:
@@ -124,7 +124,7 @@ membershipService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-membership-service
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8083
@@ -154,7 +154,7 @@ userAuthService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-user-auth-service
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         containerPort: 9091
@@ -189,7 +189,7 @@ adService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-ad-service
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8082
@@ -223,7 +223,7 @@ envoyProxy:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-envoy-proxy
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         - name: http
@@ -247,7 +247,7 @@ microblogService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-microblog-service
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8080
@@ -299,7 +299,7 @@ statusService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-status-service
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8083
@@ -348,7 +348,7 @@ proxyService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-proxy-service
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8081
@@ -375,7 +375,7 @@ frontend:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-frontend
-        tag: 7524cd7798fc36e3c2ee3cab9c9f4e16a2826d25
+        tag: 0.8.0
         pullPolicy: IfNotPresent
       ports:
         containerPort: 3000
