@@ -126,24 +126,6 @@ deploy:
 
 
 profiles:
-  - name: jaeger-dev
-    # IF THIS PROFILE IS USED IT HAS TO BE INVOKED AS THE LAST PROFILE IN THE LIST
-    # E.g.: "skaffold run -p localdev-minikube,tracing,jaeger-dev"
-    patches:
-      - op: add
-        path: /deploy/helm/releases/1/valuesFiles/-
-        value: "./chart/jaegerDev.yaml"
-      - op: add
-        path: /deploy/helm/releases/0
-        value:
-          name: jaeger-operator
-          remoteChart: jaeger-operator
-          repo: https://jaegertracing.github.io/helm-charts
-          version: 2.22.0
-          namespace: unguard
-          createNamespace: true
-          wait: true
-
   - name: jib
     patches:
       - op: add
