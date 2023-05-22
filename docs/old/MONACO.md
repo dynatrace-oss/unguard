@@ -2,7 +2,7 @@
 
 > For more information see [dynatrace-monitoring-as-code](https://github.com/dynatrace-oss/dynatrace-monitoring-as-code).
 
-Configuration for the unguard managment zone is at [`monaco/management-zone`](../monaco/management-zone/management-zone.yaml).  
+Configuration for the unguard managment zone is at [`monaco/management-zone`](../../monaco/management-zone/management-zone.yaml).
 For setup, read the [official Monaco docs](https://dynatrace-oss.github.io/dynatrace-monitoring-as-code/).
 
 ## ❓ FAQ

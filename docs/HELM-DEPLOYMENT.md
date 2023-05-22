@@ -45,7 +45,7 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
 
 ### 🅱 [Minikube](https://minikube.sigs.k8s.io) Deployment
 
-1. Follow the [Development Guide](./DEV-GUIDE.md) to set up a local Minikube-Cluster
+1. Follow the [Development Guide](old/DEV-GUIDE.md) to set up a local Minikube-Cluster
 
 2. Add bitnami repo for the Mariadb dependency
    ```sh

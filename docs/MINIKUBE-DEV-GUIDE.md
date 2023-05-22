@@ -101,4 +101,4 @@ A great tool that makes this process faster is [kubectx](https://github.com/ahme
 
 ### Is there more?
 
-Maybe you find something in the other [FAQ](FAQ.md) document.
+Maybe you find something in the other [FAQ](old/FAQ.md) document.

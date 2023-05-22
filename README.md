@@ -43,11 +43,11 @@ Unguard is composed of eight microservices written in different languages that t
 
 ## 🖥️ Local Deployment
 
-See the [Development Guide](./docs/DEV-GUIDE.md) on how to develop Unguard on a local K8S cluster.
+See the [Development Guide](docs/old/DEV-GUIDE.md) on how to develop Unguard on a local K8S cluster.
 
 ## ☁️ Cloud Deployment
 
-See the [Deployment Guide](./docs/DEPLOYMENT.md) on how to deploy Unguard to your cloud. Currently, the documentation
+See the [Deployment Guide](docs/old/DEPLOYMENT.md) on how to deploy Unguard to your cloud. Currently, the documentation
 only covers AWS.
 
 ## ✨ Features
@@ -60,12 +60,12 @@ only covers AWS.
   the [Element](https://element.flood.io/) browser-based load generation library.
 * **[Exploits](./exploit-toolkit/exploits/README.md)**: Different automated attack scenarios like JWT key confusion
   attacks or remote code execution.
-* **[Monitoring](./docs/MONACO.md)**: Dynatrace monitoring by
+* **[Monitoring](docs/old/MONACO.md)**: Dynatrace monitoring by
   utilizing [MONACO](https://github.com/dynatrace-oss/dynatrace-monitoring-as-code).
 
 ## ➕ Additional Deployment Options
 
-* **Tracing**: [See these instructions](./docs/TRACING.md)
+* **Tracing**: [See these instructions](docs/old/TRACING.md)
 * **Malicious Load Generator**: [See these instructions](src/malicious-load-generator/README.md)
 
 ---
