@@ -64,12 +64,12 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
 
     1. Using the local chart.
    ```sh
-     helm install -f ./chart/localDevMinikube.yaml unguard ./chart --wait --namespace unguard --create-namespace
+     helm install unguard ./chart --set localDev.enabled=true --wait --namespace unguard --create-namespace
    ```
    2. Pulling the remote chart from GitHub.
       Replace __version__ with the helm chart version you want to install.
    ```sh
-     helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version 0.8.0 --set localDev.minikube.enabled=true --wait --namespace unguard --create-namespace
+     helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version 0.8.0 --set localDev.enabled=true --wait --namespace unguard --create-namespace
    ```
 
 

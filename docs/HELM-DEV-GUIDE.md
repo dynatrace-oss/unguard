@@ -46,7 +46,7 @@ This document explains how to build and run Unguard locally inside Kubernetes us
     * Deploy with **minikube** and don't forget to forward the Docker daemon first (see above)
 
         ```sh
-        skaffold run -p localdev-minikube --detect-minikube
+        skaffold run -p localdev
         ```
 
 2. Add an entry in your `/etc/hosts` file to access the ingress exposing the frontend on **[unguard.kube](http://unguard.kube/)**
@@ -63,7 +63,7 @@ This document explains how to build and run Unguard locally inside Kubernetes us
 Run `skaffold delete` with the chosen profile used to start unguard to clean up the deployed resources.
 
 ```sh
-skaffold delete -p localdev-minikube
+skaffold delete -p localdev
 ```
 
 ## 🙋‍♀️ FAQ
@@ -76,7 +76,7 @@ Often, you might also want to also deploy Jaeger.
 #### The _jaeger-dev_ profile has to be invoked as last profile in the list!
 
 ```sh
-skaffold run -p localdev-minikube,tracing,jaeger-dev
+skaffold run -p localdev,tracing,jaeger-dev
 ```
 
 ### How can I have fast, incremental Java builds during development?
@@ -87,7 +87,7 @@ and [Jib](https://github.com/GoogleContainerTools/jib).
 You may then append the `jib` profile which adapts the build section so that it uses your locally installed Jib.
 
 ```sh
-skaffold run -p localdev-minikube,jib
+skaffold run -p localdev,jib
 ```
 
 ### How can I switch between multiple clusters?
