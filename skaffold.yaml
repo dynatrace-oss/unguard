@@ -147,12 +147,6 @@ profiles:
         path: /deploy/helm/releases/1/valuesFiles/-
         value: "./chart/aws.yaml"
 
-  - name: localdev-minikube
-    patches:
-      - op: add
-        path: /deploy/helm/releases/1/valuesFiles/-
-        value: "./chart/localDevMinikube.yaml"
-
   - name: malicious-load-generator
     patches:
       - op: add
