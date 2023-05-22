@@ -58,7 +58,7 @@ This guide assumes that an EKS (and ECR repositories) or a Minikube-Cluster alre
    ```
 
 4. (Optional) Install Jaeger
-   * See [JAEGER-DEPLOYMENT](./JAEGER-DEPLOYMENT.md)
+   * See [JAEGER-DEPLOYMENT](./JAEGER-HELM-DEPLOYMENT.md)
 
 5. Deploy to Minikube-Cluster.
 
