@@ -177,9 +177,8 @@ profiles:
         path: /deploy/helm/releases/1/valuesFiles/-
         value: "./chart/maliciousLoadGenerator.yaml"
 
-# KIND IS NOT YET SUPPORTED
-#  - name: localdev-kind
-#    manifests:
-#      kustomize:
-#        paths:
-#          - ./k8s-manifests/localdev/kind
+  - name: localdev
+    patches:
+      - op: add
+        path: /deploy/helm/releases/1/setValues/localDev.enabled
+        value: "true"
