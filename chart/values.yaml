@@ -3,13 +3,34 @@
 # Declare variables to be passed into your templates.
 kubernetesClusterDomain: cluster.local
 
+# Local Development
+# Enable if deploying locally on minikube or kind
+# Creates an ingress
+localDev:
+  enabled: false
+
+# Cloud deployment to AWS
+# Enable if deploying ta an aws cluster
+# Creates an ingress and adds annotations
+aws:
+  enabled: false
+  ingress:
+    annotations:
+
+# Ingress
+ingress:
+  name: ingress
+
+# Tracing
 tracing:
   enabled: false
 
+# Jaeger
 jaegerDev:
   enabled: false
   name: jaeger
 
+# Malicious load generator
 maliciousLoadGenerator:
   enabled: false
   name: malicious-load-generator
@@ -31,21 +52,7 @@ maliciousLoadGenerator:
         USERS: 1
         WAIT_TIME: 1800
 
-
-localDev:
-  minikube:
-    enabled: false
-  kind:
-    enabled: false
-
-aws:
-  enabled: false
-  ingress:
-    annotations:
-
-ingress:
-  name: ingress
-
+# Profile Service
 profileService:
   name: profile-service
 
@@ -81,6 +88,7 @@ profileService:
         initialDelaySeconds: 5
         periodSeconds: 15
 
+# User Simulator
 userSimulator:
   name: user-simulator
 
@@ -108,7 +116,7 @@ userSimulator:
             cpu: 500m
             memory: 512Mi
 
-
+# Membership Service
 membershipService:
   name: membership-service
 
@@ -138,7 +146,7 @@ membershipService:
             name: unguard-mariadb
             key: mariadb-root-password
 
-
+# User Auth Service
 userAuthService:
   name: user-auth-service
 
@@ -173,7 +181,7 @@ userAuthService:
         API_PATH: /ad-service
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
 
-
+# Add Service
 adService:
   name: ad-service
 
@@ -203,7 +211,7 @@ adService:
         API_PATH: /ad-service
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
 
-
+# Envoy Proxy
 envoyProxy:
   name: envoy-proxy
 
@@ -231,7 +239,7 @@ envoyProxy:
         - name: health
           containerPort: 8081
 
-
+# Microblog Service
 microblogService:
   name: microblog-service
 
@@ -260,6 +268,7 @@ microblogService:
         REDIS_SERVICE_ADDRESS: unguard-redis
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
 
+# Status Service
 statusService:
   name: status-service
 
@@ -309,6 +318,7 @@ statusService:
         KUBERNETES_NAMESPACE: unguard
         IGNORED_DEPLOYMENTS: unguard-user-simulator # add deployments to ignore separated by spaces
 
+# Proxy Service
 proxyService:
   name: proxy-service
 
@@ -359,7 +369,7 @@ proxyService:
         JAEGER_SAMPLER_PARAM: 0
         OPENTRACING_JAEGER_ENABLED: false
 
-
+# Frontend
 frontend:
   name: frontend
 

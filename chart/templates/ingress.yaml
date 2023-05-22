@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */}}
-{{- if or .Values.localDev.minikube.enabled .Values.localDev.kind.enabled .Values.aws.enabled -}}
+{{- if or .Values.localDev.enabled .Values.aws.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -27,10 +27,10 @@ metadata:
   {{end}}
 spec:
   rules:
-    {{if .Values.localDev.minikube.enabled}}
+    {{if .Values.localDev.enabled}}
     - host: unguard.kube
     {{end}}
-    {{if .Values.localDev.minikube.enabled}}
+    {{if .Values.localDev.enabled}}
       http:
     {{end}}
     {{if .Values.aws.enabled}}
