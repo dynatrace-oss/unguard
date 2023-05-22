@@ -1,3 +1,0 @@
-localDev:
-  minikube:
-    enabled: true
