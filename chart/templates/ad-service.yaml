@@ -66,9 +66,9 @@ spec:
               value: {{ quote .Values.adService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
             - name: JAEGER_SERVICE_NAME
               value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.adService.name) }}
-            {{if .Values.jaegerDev.enabled}}
+            {{if .Values.jaeger.enabled}}
             - name: JAEGER_AGENT_HOST
-              value: {{ quote (printf "%s-%s" .Values.jaegerDev.name .Values.adService.deployment.container.env.JAEGER_AGENT_HOST) }}
+              value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.adService.deployment.container.env.JAEGER_AGENT_HOST) }}
             - name: JAEGER_SAMPLER_TYPE
               value: {{ quote .Values.adService.deployment.container.env.JAEGER_SAMPLER_TYPE }}
             - name: JAEGER_SAMPLER_PARAM

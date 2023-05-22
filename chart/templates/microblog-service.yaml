@@ -63,13 +63,13 @@ spec:
               value: {{ quote .Values.microblogService.deployment.container.env.REDIS_SERVICE_ADDRESS }}
             - name: USER_AUTH_SERVICE_ADDRESS
               value: {{ quote .Values.microblogService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
-            {{if .Values.jaegerDev.enabled}}
+            {{if .Values.jaeger.enabled}}
             - name: OPENTRACING_JAEGER_ENABLED
               value: {{ quote .Values.microblogService.deployment.container.env.OPENTRACING_JAEGER_ENABLED }}
             - name: JAEGER_SERVICE_NAME
               value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.microblogService.name) }}
             - name: JAEGER_AGENT_HOST
-              value: {{quote (printf "%s-%s" .Values.jaegerDev.name .Values.microblogService.deployment.container.env.JAEGER_AGENT_HOST) }}
+              value: {{quote (printf "%s-%s" .Values.jaeger.name .Values.microblogService.deployment.container.env.JAEGER_AGENT_HOST) }}
             - name: JAEGER_SAMPLER_TYPE
               value: {{ quote .Values.microblogService.deployment.container.env.JAEGER_SAMPLER_TYPE }}
             - name: JAEGER_SAMPLER_PARAM
