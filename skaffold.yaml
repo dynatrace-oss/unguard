@@ -42,7 +42,6 @@ build:
     - image: unguard-profile-service
       context: src/profile-service
 
-
   local:
     # only the docker CLI respects a manually logged-in daemon
     useDockerCLI: true
@@ -123,7 +122,6 @@ deploy:
           statusService.deployment.container.image.pullPolicy: "IfNotPresent"
           # profile-service
           profileService.deployment.container.image.pullPolicy: "IfNotPresent"
-
 
 profiles:
   - name: jib
