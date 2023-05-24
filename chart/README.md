@@ -12,7 +12,7 @@ package manager.
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
-> **Note**: This chart presumes an already running and configured MariaDB database in the cluster
+> **Note**: This chart presumes an already running MariaDB database in the cluster. The default naming requirement is ```unguard-mariadb```
 
 ```console
 helm install my-release oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
@@ -52,7 +52,7 @@ helm install my-release \
     my-release oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
 ```
 
-The above command sets `localDev.enabled` to `true`. Which creates and configures an ingress for local deployment.
+The above command sets `localDev.enabled` to `true` which creates and configures an ingress for local deployment.
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
