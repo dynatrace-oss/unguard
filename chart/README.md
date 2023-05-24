@@ -12,7 +12,7 @@ package manager.
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
-> **Note**: This chart presumes an already running and configured mariaDB database in the cluster
+> **Note**: This chart presumes an already running and configured MariaDB database in the cluster
 
 ```console
 helm install my-release oci://ghcr.io/dynatrace-oss/unguard/chart/unguard

@@ -47,7 +47,7 @@ See the [Development Guide](docs/DEV-GUIDE.md) on how to develop Unguard on a lo
 
 ## ☁️ Cloud Deployment
 
-See the [Deployment Guide](docs/old/DEPLOYMENT.md) on how to deploy Unguard to your cloud. Currently, the documentation
+See the [Deployment Guide](docs/DEPLOYMENT.md) on how to deploy Unguard to your cloud. Currently, the documentation
 only covers AWS.
 
 ## ✨ Features
@@ -66,6 +66,7 @@ only covers AWS.
 ## ➕ Additional Deployment Options
 
 * **Tracing**: [See these instructions](docs/TRACING.md)
+* **Jaeger**: [See these instructions](docs/JAEGER-TRACING-DEPLOYMENT.md)
 * **Malicious Load Generator**: [See these instructions](src/malicious-load-generator/README.md)
 
 ---
