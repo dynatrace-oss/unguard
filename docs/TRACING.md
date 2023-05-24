@@ -47,4 +47,4 @@ skaffold run -p jaeger-dev,tracing
 
 2. Open [localhost:16686](http://localhost:16686)
 
-   ![Jaeger UI](../images/jaeger-ui.png)
+   ![Jaeger UI](images/jaeger-ui.png)

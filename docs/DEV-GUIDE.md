@@ -23,6 +23,11 @@ This document explains how to build and run Unguard locally inside Kubernetes us
         kind create cluster --name unguard --config ./k8s-manifests/localdev/kind/cluster-config.yaml
         ```
 
+      * Optional add NGINX-Ingress
+          ```sh
+          kubectl apply -k ./k8s-manifests/localdev/kind/
+           ```
+
     * Or, launch a `minikube` cluster with the ingress addon
 
         ```sh
@@ -49,18 +54,11 @@ This document explains how to build and run Unguard locally inside Kubernetes us
 1. Use `skaffold` to build and deploy the application.
    The first full build will take up to 20 minutes.
    If the images should be rebuilt automatically, run `skaffold dev`.
+    > **Note**: If you deploy with **minikube** don't forget to forward the Docker daemon first (see above)
 
-    * Deploy with **kind**, where the images will be moved automatically into the cluster
-
-        ```sh
-        skaffold run -p localdev-kind
-        ```
-
-    * Or, deploy with **minikube** and don't forget to forward the Docker daemon first (see above)
-
-        ```sh
-        skaffold run -p localdev-minikube --detect-minikube
-        ```
+    ```sh
+    skaffold run -p localdev
+    ```
 
 2. Add an entry in your `/etc/hosts` file to access the ingress exposing the frontend on **[unguard.kube](http://unguard.kube/)**
 
@@ -81,7 +79,7 @@ This document explains how to build and run Unguard locally inside Kubernetes us
 Run `skaffold delete` with the chosen profile used to start unguard to clean up the deployed resources.
 
 ```sh
-skaffold delete -p {localdev-minikube|localdev-kind}
+skaffold delete -p localdev
 ```
 
 ## 🙋‍♀️ FAQ
@@ -89,10 +87,10 @@ skaffold delete -p {localdev-minikube|localdev-kind}
 ### What are skaffold profiles?
 
 Have a look at the profiles that are supported in `skaffold.yaml`.
-Often, you might also want to also deploy Jaeger.
+Often, you might also want to also deploy **Jaeger**. [See these instructions](TRACING.md)
 
 ```sh
-skaffold run -p localdev-kind,jaeger-dev,tracing
+skaffold run -p localdev,tracing
 ```
 
 ### How can I have fast, incremental Java builds during development?
@@ -102,7 +100,7 @@ To benefit from incremental Java builds in the container, install [OpenJDK 11](h
 You may then append the `jib` profile which adapts the build section so that it uses your locally installed Jib.
 
 ```sh
-skaffold run -p localdev-minikube,jib
+skaffold run -p localdev,jib
 ```
 
 ### How can I switch between multiple clusters?

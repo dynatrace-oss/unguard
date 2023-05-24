@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This chart bootstraps a Unguard deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh)
+This chart bootstraps an Unguard deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh)
 package manager.
 
 ## Prerequisites
