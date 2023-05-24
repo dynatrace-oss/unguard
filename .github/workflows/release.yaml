@@ -87,4 +87,4 @@ jobs:
       - name: Publish Helm chart to GHCR
         run: |
           helm package chart
-          helm push unguard-${{ env.IMAGE_TAG }}.tgz oci://ghcr.io/dynatrace-oss/unguard/chart
+          helm push unguard-${{ env.IMAGE_TAG }}.tgz oci://${{ vars.REGISTRY }}/${{ github.repository }}/chart
