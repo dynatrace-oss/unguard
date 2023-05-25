@@ -7,16 +7,46 @@ package manager.
 
 ## Prerequisites
 
-- Helm 3.8.0+
+- [Kubernetes](https://kubernetes.io/)
+- [Helm 3.8.0+](https://helm.sh/)
 
 ## Installing the Chart
 
-To install the chart with the release name `my-release`:
-> **Note**: This chart presumes an already running MariaDB database in the cluster. The default naming requirement is ```unguard-mariadb```
+> **Note**: This chart presumes an already running MariaDB database in the cluster. The default naming requirement
+> is ```unguard-mariadb```
 
-```console
-helm install my-release oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
-```
+To install the chart with the release name `unguard` in a new namespace `unguard` with an `unguard-mariadb` MariaDB instance:
+
+1. Add the bitnami repository for the MariaDB dependency
+   ```sh
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+   ```
+
+2. Install MariaDB
+   ```sh
+   helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
+   ```
+   > **Note:** \
+   The `--wait` flag waits for the installation to be completed \
+   `--namespace unguard` specifiers the desired namespace \
+   `--create-namespace` creates the namespace if it doesn't exist \
+   For more details see the [Helm documentation](https://helm.sh/docs/helm/helm_install/)
+
+3. Install Unguard
+   > **Note**:\
+   The default configuration is for deployment on a local cluster! \
+   To deploy to an EKS cluster append: `--set localDev.enabled=false,aws.enabled=true`
+
+    1. Using the **remote chart** from GitHub
+
+       ```sh
+       helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --wait --namespace unguard --create-namespace
+       ```
+
+    2. Using the **local chart**
+        ```sh
+        helm install unguard ./chart --wait --namespace unguard --create-namespace
+        ```
 
 These commands deploy Unguard in the default configuration.
 
@@ -24,13 +54,27 @@ These commands deploy Unguard in the default configuration.
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-release` deployment:
+To uninstall/delete the `unguard` deployment:
 
-```console
-helm delete my-release
+```sh
+helm uninstall unguard -n unguard
+```
+
+To also uninstall the MariaDB deployment:
+
+```sh
+helm uninstall unguard-mariadb -n unguard
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
+
+## Install a specific version of Unguard
+
+To install Unguard in a specific version provide the `--version` flag with the version you want to install:
+
+```sh
+helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version 0.8.0
+```
 
 ## Parameters
 
@@ -38,7 +82,7 @@ The command removes all the Kubernetes components associated with the chart and 
 
 | Name                             | Description                                     | Default Value |
 |----------------------------------|-------------------------------------------------|---------------|
-| `localDev.enabled`               | Enable for local (minikube/kind) deployment     | `false`       |
+| `localDev.enabled`               | Enable for local (minikube/kind) deployment     | `true`        |
 | `aws.enabled`                    | Enable for AWS cluster deployment               | `false`       |
 | `tracing.enabled`                | Enable to activate tracing                      | `false`       |
 | `jaeger.enabled`                 | Enable to activate jaeger                       | `false`       |
@@ -46,24 +90,41 @@ The command removes all the Kubernetes components associated with the chart and 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
-```console
+```sh
 helm install my-release \
-  --localDev.enabled=true \
-    my-release oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
+  --set localDev.enabled=false,aws.enabled=true \
+  unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
 ```
 
-The above command sets `localDev.enabled` to `true` which creates and configures an ingress for local deployment.
+The above command sets `localDev.enabled` to `false` and `aws.enabled` to `true ` which creates and configures an ingress for EKS
+deployment.
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
-```console
-helm install my-release -f values.yaml oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
+```sh
+helm install unguard -f values.yaml oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
 
+## Tracing and Jaeger
+
+To enable tracing, provide the YAML file [tracing.yaml](tracing.yaml) during installation. The default values there are configured
+for Jaeger.
+
+```sh
+helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard -f ./chart/tracing.yaml
+```
+
+To install Unguard with Jaeger tracing follow the [TRACING](../docs/TRACING.md) guide and install Jaeger in the cluster. \
+Then install the chart with the default tracing configuration and Jaeger enabled:
+
+```sh
+helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard -f ./chart/tracing.yaml --set jaeger.enabled=true
+```
 
 ## License
+
 Copyright 2023 Dynatrace LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");

@@ -41,14 +41,12 @@ Unguard is composed of eight microservices written in different languages that t
 | [user-simulator](./src/user-simulator)                     | Node.js Element | default         | Creates synthetic user traffic by simulating an Unguard user using a real browser. Acts as a load generator.                                |
 | [malicious-load-generator](./src/malicious-load-generator) |                 | default         | Malicious load generator that makes CMD, JNDI, and SQL injections.                                                                          |
 
-## 🖥️ Local Deployment
 
-See the [Development Guide](docs/DEV-GUIDE.md) on how to develop Unguard on a local K8S cluster.
+## 🖥️ Local Development
+See the [Development Guide](docs/DEV-GUIDE.md) on how to set up and develop Unguard on a local Kubernetes cluster.
 
-## ☁️ Cloud Deployment
-
-See the [Deployment Guide](docs/DEPLOYMENT.md) on how to deploy Unguard to your cloud. Currently, the documentation
-only covers AWS.
+## ☁️ Kubernetes Deployment
+See the Unguard Chart [README](chart/README.md) on how to install Unguard in your Kubernetes cluster using the Helm package manager.
 
 ## ✨ Features
 
@@ -65,8 +63,7 @@ only covers AWS.
 
 ## ➕ Additional Deployment Options
 
-* **Tracing**: [See these instructions](docs/TRACING.md)
-* **Jaeger**: [See these instructions](docs/JAEGER-TRACING-DEPLOYMENT.md)
+* **Tracing and Jaeger**: [See these instructions](docs/TRACING.md)
 * **Malicious Load Generator**: [See these instructions](src/malicious-load-generator/README.md)
 
 ---

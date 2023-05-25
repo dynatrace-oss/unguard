@@ -1,41 +1,51 @@
 # Tracing
 
-Most of the services contain different jaeger-client libraries to export traces that can be collected using Jaeger.
+Most of the services contain different jaeger-client libraries to export traces that can be collected using e.g. Jaeger.
 
 ## Enable tracing in services
 
-By using the default Skaffold deployment tracing would be disabled for all services. To enable it, the corresponding
-environment variables has to be set by e.g. specifying the `tracing` Skaffold profile during deployment:
+By using the default deployment, either using Skaffold or Helm, tracing would be disabled for all services. To enable it, the
+corresponding
+environment variables has to be set. This can be done in two ways:
 
-```sh
-skaffold run -p tracing
-```
+> **Note:** Tracing is configured for Jaeger by default. If you want to use a different service the values have to be adopted.
 
-If tracing is enabled, it is assumed that a Jaeger instance is running.
+1. Using Skaffold with specifying the `tracing` profile during deployment:
+    ```sh
+    skaffold run -p tracing
+    ```
+2. Using Helm and passing the values file containing the necessary configuration with `-f ./chart/tracing.yaml` \
+   See in the Unguard Chart [README](../chart/README.md#tracing-and-jaeger)
 
-## ⚙️ Jaeger Installation
+# Jaeger Installation Guide
 
-Specifying the `jaeger` Skaffold profile deploys the scalable Jaeger stack with an Elasticsearch backend.
-This is not recommended for local development, due to the high memory / CPU demand.
+This document explains how to deploy Unguard with Jaeger tracing.
 
-```sh
-skaffold run -p jaeger
-```
+1. Add Jaegertracing chart repo
+   ```sh
+    helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+   ```
 
-For local development, the Jaeger all-in-one deployment can be used as a drop-in replacement for the more production
-ready Jaeger stack. This can be deployed using the `jaeger-dev` Skaffold profile.
+## Install Jaeger
 
-```sh
-skaffold run -p jaeger-dev
-```
+1. For local development
+    1. Install the Jaeger-Operator
+       ```sh
+        helm install jaeger-operator jaegertracing/jaeger-operator --version 2.22.0 --wait --namespace unguard --create-namespace
+       ```
+    2. Deploy the AllInOne image for local development
+       ```sh
+        kubectl apply -f ./k8s-manifests/jaeger/jaeger.yaml
+       ```
+2. For production
+    1. Install Jaeger
+        ```sh
+        helm install jaeger jaegertracing/jaeger -f ./chart/jaeger.yaml --wait --namespace unguard --create-namespace
+        ```
 
-To deploy Jaeger and enable tracing for all the supported services, both profiles have to be specified:
+## Deploy Unguard with tracing and Jaeger enabled to Cluster.
 
-```sh
-skaffold run -p jaeger,tracing
-# or for dev environments:
-skaffold run -p jaeger-dev,tracing
-```
+See in the Unguard Chart [README](../chart/README.md#tracing-and-jaeger)
 
 ## 🖥️ Usage
 
@@ -47,4 +57,20 @@ skaffold run -p jaeger-dev,tracing
 
 2. Open [localhost:16686](http://localhost:16686)
 
-   ![Jaeger UI](images/jaeger-ui.png)
+   ![Jaeger UI](./images/jaeger-ui.png)
+
+## Uninstall
+
+1. Uninstall unguard, mariadb
+   ```sh
+    helm uninstall unguard -n unguard && helm uninstall unguard-mariadb -n unguard
+   ```
+2. Uninstall Jaeger
+    1. For local development
+        ```sh
+        helm uninstall jaeger-operator -n unguard
+        ```
+    2. For production
+        ```sh
+        helm uninstall jaeger -n unguard
+        ```
