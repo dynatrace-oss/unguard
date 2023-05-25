@@ -7,7 +7,7 @@ kubernetesClusterDomain: cluster.local
 # Enable if deploying locally on minikube or kind
 # Creates an ingress
 localDev:
-  enabled: false
+  enabled: true
 
 # Cloud deployment to AWS
 # Enable if deploying ta an aws cluster
