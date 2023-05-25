@@ -41,6 +41,27 @@ Unguard is composed of eight microservices written in different languages that t
 | [user-simulator](./src/user-simulator)                     | Node.js Element | default         | Creates synthetic user traffic by simulating an Unguard user using a real browser. Acts as a load generator.                                |
 | [malicious-load-generator](./src/malicious-load-generator) |                 | default         | Malicious load generator that makes CMD, JNDI, and SQL injections.                                                                          |
 
+## Quickstart
+To install Unguard, use the Unguard Helm chart. This chart contains all the required components to get started.
+
+> **DISCLAIMER:** \
+> Unguard is **insecure** and a careless installation in a Kubernetes cluster **exposes that cluster to security vulnerabilities!**
+
+1. Add the bitnami repository for the MariaDB dependency
+   ```sh
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+   ```
+
+2. Install MariaDB
+   ```sh
+   helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
+   ```
+
+3. Install Unguard
+
+   ```sh
+   helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --wait --namespace unguard --create-namespace
+   ```
 
 ## 🖥️ Local Development
 See the [Development Guide](docs/DEV-GUIDE.md) on how to set up and develop Unguard on a local Kubernetes cluster.
