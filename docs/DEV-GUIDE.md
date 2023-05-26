@@ -112,7 +112,7 @@ Maybe you find something in the other [FAQ](FAQ.md) document.
 1. Skaffold did not detect the running minikube:
 
    Skaffold normally detects reliably a running minikube and should adapt automatically, if not forwarding minikubes's docker
-   daemen might help:
+   daemon might help:
 
    For more information see :https://skaffold.dev/docs/environment/local-cluster/#auto-detection
 
