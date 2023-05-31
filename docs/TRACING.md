@@ -5,8 +5,7 @@ Most of the services contain different jaeger-client libraries to export traces 
 ## Enable tracing in services
 
 By using the default deployment, either using Skaffold or Helm, tracing would be disabled for all services. To enable it, the
-corresponding
-environment variables has to be set. This can be done in two ways:
+corresponding environment variables has to be set. This can be done in two ways:
 
 > **Note:** Tracing is configured for Jaeger by default. If you want to use a different service the values have to be adopted.
 

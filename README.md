@@ -5,8 +5,7 @@ microservices demo application. It consists of eight app services, a load genera
 encompasses vulnerabilities like server-side request forgery (SSRF), Command/SQL injection, JWT key confusion,
 remote code execution and many more.
 
-The application is a web-based Twitter clone where users can register/login, post text, URLs and images and follow
-users.
+The application is a web-based Twitter clone where users can register/login, post text, URLs and images and follow users.
 Unguard also features fake ads, a possibility to edit your biography and manage your membership.
 
 > **Note**
@@ -42,17 +41,20 @@ Unguard is composed of eight microservices written in different languages that t
 | [malicious-load-generator](./src/malicious-load-generator) |                 | default         | Malicious load generator that makes CMD, JNDI, and SQL injections.                                                                          |
 
 ## Quickstart
-To install Unguard, use the Unguard Helm chart. This chart contains all the required components to get started.
 
-> **DISCLAIMER:** \
-> Unguard is **insecure** and a careless installation in a Kubernetes cluster **exposes that cluster to security vulnerabilities!**
+To quickly get started with Unguard, install the Unguard Helm chart using the [Helm package manager](https://helm.sh/)
+
+> **Warning** \
+> Unguard is **insecure** by design and a careless installation will leave you exposed to severe security vulnerabilities. Make sure to restrict access and/or run it in a sandboxed environment.
 
 1. Add the bitnami repository for the MariaDB dependency
+
    ```sh
     helm repo add bitnami https://charts.bitnami.com/bitnami
    ```
 
 2. Install MariaDB
+
    ```sh
    helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
    ```
@@ -63,10 +65,15 @@ To install Unguard, use the Unguard Helm chart. This chart contains all the requ
    helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --wait --namespace unguard --create-namespace
    ```
 
+To customize your Unguard chart installation, see the [chart README](chart/README.md)
+
+
 ## 🖥️ Local Development
+
 See the [Development Guide](docs/DEV-GUIDE.md) on how to set up and develop Unguard on a local Kubernetes cluster.
 
 ## ☁️ Kubernetes Deployment
+
 See the Unguard Chart [README](chart/README.md) on how to install Unguard in your Kubernetes cluster using the Helm package manager.
 
 ## ✨ Features

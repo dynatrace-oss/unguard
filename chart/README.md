@@ -5,6 +5,9 @@
 This chart bootstraps an Unguard deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh)
 package manager.
 
+> **Warning** \
+> Unguard is **insecure** by design and a careless installation will leave you exposed to severe security vulnerabilities. Make sure to restrict access and/or run it in a sandboxed environment.
+
 ## Prerequisites
 
 - [Kubernetes](https://kubernetes.io/)
@@ -18,14 +21,17 @@ package manager.
 To install the chart with the release name `unguard` in a new namespace `unguard` with an `unguard-mariadb` MariaDB instance:
 
 1. Add the bitnami repository for the MariaDB dependency
+
    ```sh
     helm repo add bitnami https://charts.bitnami.com/bitnami
    ```
 
 2. Install MariaDB
+
    ```sh
    helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
    ```
+
    > **Note:** \
    The `--wait` flag waits for the installation to be completed \
    `--namespace unguard` specifiers the desired namespace \
@@ -33,6 +39,7 @@ To install the chart with the release name `unguard` in a new namespace `unguard
    For more details see the [Helm documentation](https://helm.sh/docs/helm/helm_install/)
 
 3. Install Unguard
+
    > **Note**:\
    The default configuration is for deployment on a local cluster! \
    To deploy to an EKS cluster append: `--set localDev.enabled=false,aws.enabled=true`
@@ -44,6 +51,7 @@ To install the chart with the release name `unguard` in a new namespace `unguard
        ```
 
     2. Using the **local chart**
+
         ```sh
         helm install unguard ./chart --wait --namespace unguard --create-namespace
         ```
