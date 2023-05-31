@@ -16,7 +16,7 @@ package manager.
 ## Installing the Chart
 
 > **Note**: This chart presumes an already running MariaDB database in the cluster. The default naming requirement
-> is ```unguard-mariadb```
+> is ```unguard-mariadb```.
 
 To install the chart with the release name `unguard` in a new namespace `unguard` with an `unguard-mariadb` MariaDB instance:
 
@@ -28,15 +28,18 @@ To install the chart with the release name `unguard` in a new namespace `unguard
 
 2. Install MariaDB
 
-   ```sh
-   helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
-   ```
+    > **Note:** The default release-name of the database installation is ```unguard-mariadb```.
+    If you want to change this you also have to adopt the ```mariaDB.serviceName```value.
 
-   > **Note:** \
-   The `--wait` flag waits for the installation to be completed \
-   `--namespace unguard` specifiers the desired namespace \
-   `--create-namespace` creates the namespace if it doesn't exist \
-   For more details see the [Helm documentation](https://helm.sh/docs/helm/helm_install/)
+    ```sh
+    helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
+    ```
+
+    > **Note:** \
+    The `--wait` flag waits for the installation to be completed \
+    `--namespace unguard` specifiers the desired namespace \
+    `--create-namespace` creates the namespace if it doesn't exist \
+    For more details see the [Helm documentation](https://helm.sh/docs/helm/helm_install/)
 
 3. Install Unguard
 
@@ -88,13 +91,14 @@ helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --versio
 
 ### Global parameters
 
-| Name                             | Description                                     | Default Value |
-|----------------------------------|-------------------------------------------------|---------------|
-| `localDev.enabled`               | Enable for local (minikube/kind) deployment     | `true`        |
-| `aws.enabled`                    | Enable for AWS cluster deployment               | `false`       |
-| `tracing.enabled`                | Enable to activate tracing                      | `false`       |
-| `jaeger.enabled`                 | Enable to activate jaeger                       | `false`       |
-| `maliciousLoadGenerator.enabled` | Enable to activate the malicious load generator | `false`       |
+| Name                             | Description                                     | Default Value     |
+|----------------------------------|-------------------------------------------------|-------------------|
+| `localDev.enabled`               | Enable for local (minikube/kind) deployment     | `true`            |
+| `aws.enabled`                    | Enable for AWS cluster deployment               | `false`           |
+| `tracing.enabled`                | Enable to activate tracing                      | `false`           |
+| `jaeger.enabled`                 | Enable to activate jaeger                       | `false`           |
+| `maliciousLoadGenerator.enabled` | Enable to activate the malicious load generator | `false`           |
+| `mariaDB.serviceName`            | Name of the MariaDB installation release-name   | `unguard-mariadb` |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 

@@ -30,6 +30,12 @@ jaeger:
   enabled: false
   name: jaeger
 
+# MariaDB
+mariaDB:
+  serviceName: unguard-mariadb
+  password: mariadb-root-password
+
+
 # Malicious load generator
 maliciousLoadGenerator:
   enabled: false
@@ -140,11 +146,11 @@ membershipService:
         ASPNETCORE_ENVIRONMENT: Development
         SERVER_PORT: 8083
         API_PATH: /membership-service
-        MARIADB_SERVICE: unguard-mariadb
+        MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
         MARIADB_PASSWORD:
           secretKeyRef:
-            name: unguard-mariadb
-            key: mariadb-root-password
+            name: "{{ .Values.mariaDB.serviceName }}"
+            key: "{{ .Values.mariaDB.password }}"
 
 # User Auth Service
 userAuthService:
@@ -168,11 +174,11 @@ userAuthService:
         containerPort: 9091
       env:
         SERVER_PORT: 9091
-        MARIADB_SERVICE: unguard-mariadb
+        MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
         MARIADB_PASSWORD:
           secretKeyRef:
-            name: unguard-mariadb
-            key: mariadb-root-password
+            name: "{{ .Values.mariaDB.serviceName }}"
+            key: "{{ .Values.mariaDB.password }}"
         JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0

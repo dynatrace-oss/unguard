@@ -63,9 +63,9 @@ spec:
             - name: API_PATH
               value: {{ quote .Values.membershipService.deployment.container.env.API_PATH }}
             - name: MARIADB_SERVICE
-              value: {{ quote .Values.membershipService.deployment.container.env.MARIADB_SERVICE }}
+              value: {{ tpl .Values.membershipService.deployment.container.env.MARIADB_SERVICE . | quote }}
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name }}
-                  key: {{ .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key }}
+                  name: {{ tpl .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name . }}
+                  key: {{ tpl .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key . }}

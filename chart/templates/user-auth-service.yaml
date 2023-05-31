@@ -60,12 +60,12 @@ spec:
             - name: SERVER_PORT
               value: {{ quote .Values.userAuthService.deployment.container.env.SERVER_PORT }}
             - name: MARIADB_SERVICE
-              value: {{ quote .Values.userAuthService.deployment.container.env.MARIADB_SERVICE }}
+              value: {{ tpl .Values.userAuthService.deployment.container.env.MARIADB_SERVICE . | quote }}
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.userAuthService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name }}
-                  key: {{ .Values.userAuthService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key }}
+                  name: {{ tpl .Values.userAuthService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name . }}
+                  key: {{ tpl .Values.userAuthService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key .  }}
             - name: JAEGER_SERVICE_NAME
               value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.userAuthService.name) }}
             {{if .Values.jaeger.enabled}}
