@@ -10,7 +10,7 @@ package manager.
 
 ## Prerequisites
 
-- [Kubernetes](https://kubernetes.io/)
+- [Kubernetes 1.21+](https://kubernetes.io/)
 - [Helm 3.8.0+](https://helm.sh/)
 
 ## Installing the Chart
@@ -103,19 +103,21 @@ helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --versio
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```sh
-helm install my-release \
-  --set localDev.enabled=false,aws.enabled=true \
+helm install unguard \
+  --set mariaDB.serviceName=mariadb \
   unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
 ```
 
-The above command sets `localDev.enabled` to `false` and `aws.enabled` to `true ` which creates and configures an ingress for EKS
-deployment.
+The above command changes the MariaDB installation release-name to `mariadb`.
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```sh
-helm install unguard -f values.yaml oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
+helm install unguard -f aws.yaml oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
 ```
+
+The above command applies the values from `aws.yaml` which creates and configures an ingress for EKS deployment.
+
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
 
