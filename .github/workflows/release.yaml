@@ -66,21 +66,21 @@ jobs:
       - name: Update helm image tags
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: "tag: (.)*"
+          find: "\b(tag:.*)"
           replace: "tag: ${{ env.IMAGE_TAG }}"
           include: "chart/values.yaml"
 
       - name: Update helm chart appVersion
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: "appVersion: (.)*"
+          find: "\b(appVersion:.*)"
           replace: "appVersion: ${{ env.IMAGE_TAG }}"
           include: "chart/Chart.yaml"
 
       - name: Update helm chart version
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: "version: (.)*"
+          find: "\b(version:.*)"
           replace: "version: ${{ env.IMAGE_TAG }}"
           include: "chart/Chart.yaml"
 
