@@ -18,7 +18,7 @@ corresponding environment variables has to be set. This can be done in two ways:
 
 # Jaeger Installation Guide
 
-This document explains how to deploy Unguard with Jaeger tracing.
+This document explains how to install Jaeger tracing using Helm to the cluster.
 
 1. Add Jaegertracing chart repo
    ```sh

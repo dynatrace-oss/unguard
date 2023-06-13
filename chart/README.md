@@ -123,18 +123,11 @@ The above command applies the values from `aws.yaml` which creates and configure
 
 ## Tracing and Jaeger
 
-To enable tracing, provide the YAML file [tracing.yaml](tracing.yaml) during installation. The default values there are configured
-for Jaeger.
+To enable tracing, provide the YAML file [tracing.yaml](tracing.yaml) during installation. **Unguard is configured for Jaeger tracing.** \
+To also install Jaeger tracing follow the [TRACING](../docs/TRACING.md#jaeger-installation-guide) guide.
 
 ```sh
 helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard -f ./chart/tracing.yaml
-```
-
-To install Unguard with Jaeger tracing follow the [TRACING](../docs/TRACING.md) guide and install Jaeger in the cluster. \
-Then install the chart with the default tracing configuration and Jaeger enabled:
-
-```sh
-helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard -f ./chart/tracing.yaml --set jaeger.enabled=true
 ```
 
 ## License
