@@ -79,7 +79,7 @@ spec:
               value: {{ quote .Values.frontend.deployment.container.env.MEMBERSHIP_SERVICE_BASE_PATH }}
             - name: STATUS_SERVICE_BASE_PATH
               value: {{ quote .Values.frontend.deployment.container.env.STATUS_SERVICE_BASE_PATH }}
-            {{if .Values.jaeger.enabled}}
+            {{if .Values.tracing.enabled}}
             - name: JAEGER_SERVICE_NAME
               value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.frontend.name) }}
             - name: JAEGER_AGENT_HOST

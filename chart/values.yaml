@@ -27,7 +27,6 @@ tracing:
 
 # Jaeger
 jaeger:
-  enabled: false
   name: jaeger
 
 # MariaDB
@@ -111,7 +110,7 @@ userSimulator:
           pullPolicy: IfNotPresent
 
         env:
-          FRONTEND_ADDR: unguard-envoy-proxy:8080/ui
+          FRONTEND_ADDR: envoy-proxy:8080/ui
           SIMULATE_PRIVATE_RANGES: false
 
         resources:

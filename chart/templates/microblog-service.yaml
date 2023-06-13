@@ -63,7 +63,7 @@ spec:
               value: {{ quote .Values.microblogService.deployment.container.env.REDIS_SERVICE_ADDRESS }}
             - name: USER_AUTH_SERVICE_ADDRESS
               value: {{ quote .Values.microblogService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
-            {{if .Values.jaeger.enabled}}
+            {{if .Values.tracing.enabled}}
             - name: OPENTRACING_JAEGER_ENABLED
               value: {{ quote .Values.microblogService.deployment.container.env.OPENTRACING_JAEGER_ENABLED }}
             - name: JAEGER_SERVICE_NAME
