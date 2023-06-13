@@ -91,21 +91,18 @@ helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --versio
 
 ### Global parameters
 
-| Name                             | Description                                     | Default Value     |
-|----------------------------------|-------------------------------------------------|-------------------|
-| `localDev.enabled`               | Enable for local (minikube/kind) deployment     | `true`            |
-| `aws.enabled`                    | Enable for AWS cluster deployment               | `false`           |
-| `tracing.enabled`                | Enable to activate tracing                      | `false`           |
-| `jaeger.enabled`                 | Enable to activate jaeger                       | `false`           |
-| `maliciousLoadGenerator.enabled` | Enable to activate the malicious load generator | `false`           |
-| `mariaDB.serviceName`            | Name of the MariaDB installation release-name   | `unguard-mariadb` |
+| Name                             | Description                                                               | Default Value     |
+|----------------------------------|---------------------------------------------------------------------------|-------------------|
+| `localDev.enabled`               | Creates an Ingress and configures it for local (minikube/kind) deployment | `true`            |
+| `aws.enabled`                    | Creates an Ingress and configures it for AWS EKS cluster deployment       | `false`           |
+| `tracing.enabled`                | Activates tracing in services                                             | `false`           |
+| `maliciousLoadGenerator.enabled` | Deploys the malicious load generator                                      | `false`           |
+| `mariaDB.serviceName`            | Expected release-name of the MariaDB installation by Unguard              | `unguard-mariadb` |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```sh
-helm install unguard \
-  --set mariaDB.serviceName=mariadb \
-  unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
+helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --set mariaDB.serviceName=mariadb
 ```
 
 The above command changes the MariaDB installation release-name to `mariadb`.
