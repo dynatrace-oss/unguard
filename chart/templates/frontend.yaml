@@ -58,19 +58,19 @@ spec:
             - containerPort: {{.Values.frontend.deployment.container.ports.containerPort}}
           env:
             - name: MICROBLOG_SERVICE_ADDRESS
-              value: {{ quote .Values.frontend.deployment.container.env.MICROBLOG_SERVICE_ADDRESS }}
+              value: {{ quote (printf "%s-%s" (include "unguard.fullname" .) .Values.frontend.deployment.container.env.MICROBLOG_SERVICE_ADDRESS) }}
             - name: PROXY_SERVICE_ADDRESS
-              value: {{ quote .Values.frontend.deployment.container.env.PROXY_SERVICE_ADDRESS }}
+              value: {{ quote (printf "%s-%s" (include "unguard.fullname" .) .Values.frontend.deployment.container.env.PROXY_SERVICE_ADDRESS) }}
             - name: USER_AUTH_SERVICE_ADDRESS
-              value: {{ quote .Values.frontend.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
+              value: {{ quote (printf "%s-%s" (include "unguard.fullname" .) .Values.frontend.deployment.container.env.USER_AUTH_SERVICE_ADDRESS) }}
             - name: AD_SERVICE_ADDRESS
-              value: {{ quote .Values.frontend.deployment.container.env.AD_SERVICE_ADDRESS }}
+              value: {{ quote (printf "%s-%s" (include "unguard.fullname" .) .Values.frontend.deployment.container.env.AD_SERVICE_ADDRESS) }}
             - name: STATUS_SERVICE_ADDRESS
-              value: {{ quote .Values.frontend.deployment.container.env.STATUS_SERVICE_ADDRESS }}
+              value: {{ quote (printf "%s-%s" (include "unguard.fullname" .) .Values.frontend.deployment.container.env.STATUS_SERVICE_ADDRESS) }}
             - name: MEMBERSHIP_SERVICE_ADDRESS
-              value: {{ quote .Values.frontend.deployment.container.env.MEMBERSHIP_SERVICE_ADDRESS }}
+              value: {{ quote (printf "%s-%s" (include "unguard.fullname" .)  .Values.frontend.deployment.container.env.MEMBERSHIP_SERVICE_ADDRESS) }}
             - name: PROFILE_SERVICE_ADDRESS
-              value: {{ quote .Values.frontend.deployment.container.env.PROFILE_SERVICE_ADDRESS }}
+              value: {{ quote (printf "%s-%s" (include "unguard.fullname" .)  .Values.frontend.deployment.container.env.PROFILE_SERVICE_ADDRESS) }}
             - name: FRONTEND_BASE_PATH
               value: {{ quote .Values.frontend.deployment.container.env.FRONTEND_BASE_PATH }}
             - name: AD_SERVICE_BASE_PATH

@@ -53,7 +53,7 @@ maliciousLoadGenerator:
       ports:
         containerPort: 8083
       env:
-        FRONTEND_ADDR: unguard-envoy-proxy:8080/ui
+        FRONTEND_ADDR: envoy-proxy:8080/ui
         USERS: 1
         WAIT_TIME: 1800
 
@@ -77,15 +77,15 @@ profileService:
       ports:
         containerPort: 8080
       env:
+        SPRING_DATASOURCE_PASSWORD: password
+        SPRING_DATASOURCE_URL: jdbc:h2:file:./database/bio
+        SPRING_DATASOURCE_USERNAME: sa
         OTEL_METRICS_EXPORTER: none
-        OTEL_RESOURCE_ATTRIBUTES: service.name=unguard-profile-service
+        OTEL_RESOURCE_ATTRIBUTES: '{{ printf "service.name=%s-%s" (include "unguard.fullname" .) (.Values.profileService.name) }}'
         OTEL_TRACES_EXPORTER: none
         OTEL_EXPERIMENTAL_SDK_ENABLED: false
         OTEL_EXPORTER_JAEGER_ENDPOINT: "http://jaeger-collector:14250"
         OTEL_PROPAGATORS: "jaeger"
-        SPRING_DATASOURCE_PASSWORD: password
-        SPRING_DATASOURCE_URL: jdbc:h2:file:./database/bio
-        SPRING_DATASOURCE_USERNAME: sa
       livenessProbe:
         httpGet:
           path: /healthz
@@ -182,9 +182,7 @@ userAuthService:
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         JAEGER_DISABLED: true
-        ASPNETCORE_ENVIRONMENT: Production
-        API_PATH: /ad-service
-        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+
 
 # Add Service
 adService:
@@ -214,7 +212,7 @@ adService:
         ASPNETCORE_ENVIRONMENT: Production
         SERVER_PORT: 8082
         API_PATH: /ad-service
-        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+        USER_AUTH_SERVICE_ADDRESS: user-auth-service
 
 # Envoy Proxy
 envoyProxy:
@@ -270,8 +268,8 @@ microblogService:
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         OPENTRACING_JAEGER_ENABLED: false
-        REDIS_SERVICE_ADDRESS: unguard-redis
-        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+        REDIS_SERVICE_ADDRESS: redis
+        USER_AUTH_SERVICE_ADDRESS: user-auth-service
 
 # Status Service
 statusService:
@@ -284,7 +282,7 @@ statusService:
         port: 80
 
   serviceAccount:
-    name: unguard-status
+    name: status
 
   role:
     name: status-role
@@ -300,7 +298,7 @@ statusService:
     name: status-rolebinding
     subjects:
       - kind: ServiceAccount
-        name: unguard-status
+        name: '{{ printf "%s-status" (include "unguard.fullname" .) }}'
         apiGroup: ""
     roleRef:
       kind: Role
@@ -320,8 +318,7 @@ statusService:
       env:
         SERVER_PORT: 8083
         API_PATH: /status-service
-        KUBERNETES_NAMESPACE: unguard
-        IGNORED_DEPLOYMENTS: unguard-user-simulator # add deployments to ignore separated by spaces
+        IGNORED_DEPLOYMENTS: user-simulator # add deployments to ignore separated by spaces
 
 # Proxy Service
 proxyService:
@@ -334,7 +331,7 @@ proxyService:
         port: 80
 
   serviceAccount:
-    name: unguard-proxy
+    name: proxy
 
   role:
     name: proxy-role
@@ -350,7 +347,7 @@ proxyService:
     name: proxy-rolebinding
     subjects:
       - kind: ServiceAccount
-        name: unguard-proxy
+        name: '{{ printf "%s-proxy" (include "unguard.fullname" .) }}'
         apiGroup: ""
     roleRef:
       kind: Role
@@ -399,14 +396,40 @@ frontend:
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         JAEGER_DISABLED: true
-        MICROBLOG_SERVICE_ADDRESS: unguard-microblog-service
-        PROXY_SERVICE_ADDRESS: unguard-proxy-service
-        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
-        AD_SERVICE_ADDRESS: unguard-ad-service
-        STATUS_SERVICE_ADDRESS: unguard-status-service
-        MEMBERSHIP_SERVICE_ADDRESS: unguard-membership-service
-        PROFILE_SERVICE_ADDRESS: unguard-profile-service
+        MICROBLOG_SERVICE_ADDRESS: microblog-service
+        PROXY_SERVICE_ADDRESS: proxy-service
+        USER_AUTH_SERVICE_ADDRESS: user-auth-service
+        AD_SERVICE_ADDRESS: ad-service
+        STATUS_SERVICE_ADDRESS: status-service
+        MEMBERSHIP_SERVICE_ADDRESS: membership-service
+        PROFILE_SERVICE_ADDRESS: profile-service
         FRONTEND_BASE_PATH: /ui
         AD_SERVICE_BASE_PATH: /ad-service
         MEMBERSHIP_SERVICE_BASE_PATH: /membership-service
         STATUS_SERVICE_BASE_PATH: /status-service
+
+# Redis
+redis:
+  name: redis
+
+  service:
+    type: ClusterIP
+    ports:
+      - name: redis
+        port: 6379
+        targetPort: 6379
+
+  configMap:
+    metadata:
+      name: config
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: redis
+        tag: 5.0
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 6379

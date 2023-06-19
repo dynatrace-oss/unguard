@@ -70,7 +70,7 @@ spec:
             - name: OTEL_METRICS_EXPORTER
               value: {{ quote .Values.profileService.deployment.container.env.OTEL_METRICS_EXPORTER }}
             - name: OTEL_RESOURCE_ATTRIBUTES
-              value: {{ quote .Values.profileService.deployment.container.env.OTEL_RESOURCE_ATTRIBUTES }}
+              value: {{ tpl .Values.profileService.deployment.container.env.OTEL_RESOURCE_ATTRIBUTES . }}
             - name: OTEL_TRACES_EXPORTER
               value: {{ quote .Values.profileService.deployment.container.env.OTEL_TRACES_EXPORTER }}
             {{if .Values.tracing.enabled}}

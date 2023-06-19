@@ -42,7 +42,7 @@ spec:
           imagePullPolicy: {{.Values.maliciousLoadGenerator.deployment.container.image.pullPolicy}}
           env: # could add here run time as well
             - name: FRONTEND_ADDR
-              value: {{ quote .Values.maliciousLoadGenerator.deployment.container.env.FRONTEND_ADDR }}
+              value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.maliciousLoadGenerator.deployment.container.env.FRONTEND_ADDR) }}
             - name: USERS # USERS and WAIT_TIME (in seconds) are optional, default value for USERS = 1, WAIT_TIME = 1800
               value: {{ quote .Values.maliciousLoadGenerator.deployment.container.env.USERS }}
             - name: WAIT_TIME

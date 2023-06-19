@@ -33,7 +33,7 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{.Values.statusService.serviceAccount.name}}
+  name:  {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.statusService.serviceAccount.name) }}
   labels:
     app.kubernetes.io/name: {{.Values.statusService.name}}
     app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
@@ -58,7 +58,7 @@ metadata:
     app.kubernetes.io/name: {{.Values.statusService.name}}
     app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
 subjects:
-  {{- .Values.statusService.roleBindings.subjects | toYaml | nindent 2}}
+  {{- include "tplvalues.render" (dict "value" .Values.statusService.roleBindings.subjects "context" $) | nindent 2 }}
 roleRef:
   kind: {{.Values.statusService.roleBindings.roleRef.kind}}
   name: {{.Values.statusService.roleBindings.roleRef.name}}
@@ -85,7 +85,7 @@ spec:
         app.kubernetes.io/name: {{.Values.statusService.name}}
         app.kubernetes.io/part-of: {{ include "unguard.fullname" . }}
     spec:
-      serviceAccountName: {{.Values.statusService.serviceAccount.name}}
+      serviceAccountName: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.statusService.serviceAccount.name) }}
       containers:
         - name: {{.Values.statusService.name}}
           image: {{.Values.statusService.deployment.container.image.repository}}:{{.Values.statusService.deployment.container.image.tag}}
@@ -98,6 +98,7 @@ spec:
             - name: API_PATH
               value: {{ quote .Values.statusService.deployment.container.env.API_PATH }}
             - name: KUBERNETES_NAMESPACE
-              value: {{ quote .Values.statusService.deployment.container.env.KUBERNETES_NAMESPACE }}
+              value: {{ .Release.Namespace }}
             - name: IGNORED_DEPLOYMENTS # add deployments to ignore separated by spaces
-              value: {{ quote .Values.statusService.deployment.container.env.IGNORED_DEPLOYMENTS }}
+              value: {{ quote (printf "%s-%s" (include "unguard.fullname" .) .Values.statusService.deployment.container.env.IGNORED_DEPLOYMENTS) }}
+

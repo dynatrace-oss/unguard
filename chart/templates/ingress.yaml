@@ -41,14 +41,14 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: unguard-envoy-proxy
+                name: {{ include "unguard.fullname" . }}-envoy-proxy
                 port:
                   number: 8081
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: unguard-envoy-proxy
+                name: {{ include "unguard.fullname" . }}-envoy-proxy
                 port:
                   number: 8080
 {{end}}

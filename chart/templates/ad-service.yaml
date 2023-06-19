@@ -63,10 +63,10 @@ spec:
             - name: API_PATH
               value: {{ quote .Values.adService.deployment.container.env.API_PATH }}
             - name: USER_AUTH_SERVICE_ADDRESS
-              value: {{ quote .Values.adService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
-            {{if .Values.tracing.enabled}}
+              value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.adService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS) }}
             - name: JAEGER_SERVICE_NAME
               value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.adService.name) }}
+            {{if .Values.tracing.enabled}}
             - name: JAEGER_AGENT_HOST
               value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.adService.deployment.container.env.JAEGER_AGENT_HOST) }}
             - name: JAEGER_SAMPLER_TYPE

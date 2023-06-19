@@ -35,7 +35,7 @@ spec:
               imagePullPolicy: {{.Values.userSimulator.cronJob.jobTemplate.container.image.pullPolicy}}
               env:
                 - name: FRONTEND_ADDR
-                  value: {{quote .Values.userSimulator.cronJob.jobTemplate.container.env.FRONTEND_ADDR}}
+                  value: {{quote (printf "%s-%s" (include "unguard.fullname" .) .Values.userSimulator.cronJob.jobTemplate.container.env.FRONTEND_ADDR) }}
                 - name: SIMULATE_PRIVATE_RANGES
                   value: {{quote .Values.userSimulator.cronJob.jobTemplate.container.env.SIMULATE_PRIVATE_RANGES}}
               resources:
