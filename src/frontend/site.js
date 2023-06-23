@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const {handleError, statusCodeForError} = require("./controller/errorHandler");
-const {getJwtUser, hasJwtRole, getJwtUserId} = require('./controller/cookie');
-const {roles} = require('./model/role');
-const {extendURL, extendRenderData} = require("./controller/utilities.js");
+const { handleError, statusCodeForError } = require("./controller/errorHandler");
+const { getJwtUser, hasJwtRole, getJwtUserId } = require('./controller/cookie');
+const { roles } = require('./model/role');
+const { extendURL, extendRenderData } = require("./controller/utilities.js");
 
 const adManagerRouter = require('./controller/adManager');
 
@@ -122,14 +122,14 @@ function getBioText(req, username) {
                 .then((response) => {
                     resolve(response.data.bioText);
                 }).catch(reason => {
-                // If a bio for the userId doesn't exist yet and a status code 404 is returned, this catch block will set
-                // the bioText to an empty string which allows for the profile page to be displayed rather than the error page
-                if (statusCodeForError(reason) === 404) {
-                    resolve("");
-                } else {
-                    reject(reason)
-                }
-            })
+                    // If a bio for the userId doesn't exist yet and a status code 404 is returned, this catch block will set
+                    // the bioText to an empty string which allows for the profile page to be displayed rather than the error page
+                    if (statusCodeForError(reason) === 404) {
+                        resolve("");
+                    } else {
+                        reject(reason)
+                    }
+                })
         });
     });
 }
@@ -189,7 +189,7 @@ function doLogin(req, res) {
     const usernameToLogin = req.body.username;
     const passwordToLogin = req.body.password;
     if (!usernameToLogin || !passwordToLogin) {
-        res.render('error.njk', {error: "Username and password must be supplied to login"});
+        res.render('error.njk', { error: "Username and password must be supplied to login" });
         return;
     }
 
@@ -212,7 +212,7 @@ function registerUser(req, res) {
     const usernameToLogin = req.body.username;
     const passwordToLogin = req.body.password;
     if (!usernameToLogin || !passwordToLogin) {
-        res.render('error.njk', {error: "Username and password must be supplied to register"});
+        res.render('error.njk', { error: "Username and password must be supplied to register" });
         return;
     }
 
@@ -310,7 +310,7 @@ function getPost(req, res) {
 }
 
 function postMembership(req, res) {
-    const membership = {userid: getJwtUserId(req.cookies), membership: req.body.membershipText};
+    const membership = { userid: getJwtUserId(req.cookies), membership: req.body.membershipText };
     fetchUsingDeploymentBase(req, () => req.MEMBERSHIP_SERVICE_API.post('/', membership)).then((response) => {
         res.redirect(extendURL(`/user/${getJwtUser(req.cookies)}`));
     }, (error) => res.status(statusCodeForError(error)).render('error.njk', handleError(error)));
@@ -328,8 +328,8 @@ function postBio(req, res) {
         .then((_) => {
             res.redirect(extendURL(`/user/${getJwtUser(req.cookies)}`));
         }).catch(error => {
-        res.status(statusCodeForError(error)).render('error.njk', handleError(error));
-    });
+            res.status(statusCodeForError(error)).render('error.njk', handleError(error));
+        });
 }
 
 /**
