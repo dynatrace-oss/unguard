@@ -96,7 +96,7 @@ function showUserProfile(req, res) {
     const username = req.params.username;
     fetchUsingDeploymentBase(req, () =>
         Promise.all([
-            getBioText(req),
+            getBioText(req, username),
             req.MICROBLOG_API.get(`/users/${username}/posts`),
             getMembership(req, username)
         ])
@@ -115,20 +115,22 @@ function showUserProfile(req, res) {
     }, (err) => displayError(err, res));
 }
 
-function getBioText(req) {
-    return new Promise((resolve, reject) => {
-        req.PROFILE_SERVICE_API.get(`/user/${getJwtUserId(req.cookies)}/bio`)
-            .then((response) => {
-                resolve(response.data.bioText);
-            }).catch(reason => {
-            // If a bio for the userId doesn't exist yet and a status code 404 is returned, this catch block will set
-            // the bioText to an empty string which allows for the profile page to be displayed rather than the error page
-            if (statusCodeForError(reason) === 404) {
-                resolve("");
-            } else {
-                reject(reason)
-            }
-        })
+function getBioText(req, username) {
+    return getUserIdForName(req, username).then((userId) => {
+        return new Promise((resolve, reject) => {
+            req.PROFILE_SERVICE_API.get(`/user/${userId}/bio`)
+                .then((response) => {
+                    resolve(response.data.bioText);
+                }).catch(reason => {
+                // If a bio for the userId doesn't exist yet and a status code 404 is returned, this catch block will set
+                // the bioText to an empty string which allows for the profile page to be displayed rather than the error page
+                if (statusCodeForError(reason) === 404) {
+                    resolve("");
+                } else {
+                    reject(reason)
+                }
+            })
+        });
     });
 }
 
