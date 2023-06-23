@@ -55,7 +55,7 @@ function showGlobalTimeline(req, res) {
     fetchUsingDeploymentBase(req, () =>
         Promise.all([
             req.MICROBLOG_API.get('/timeline'),
-            getMembership(req)
+            getMembershipOfLoggedInUser(req)
         ]))
         .then(([timeline, membership]) => {
             let data = extendRenderData({
@@ -76,7 +76,7 @@ function showPersonalTimeline(req, res) {
     fetchUsingDeploymentBase(req, () =>
         Promise.all([
             req.MICROBLOG_API.get('/mytimeline'),
-            getMembership(req)
+            getMembershipOfLoggedInUser(req)
         ]))
         .then(([myTimeline, membership]) => {
             let data = extendRenderData({
@@ -93,18 +93,17 @@ function showPersonalTimeline(req, res) {
 }
 
 function showUserProfile(req, res) {
-    const usernameProfile = req.params.username;
-
+    const username = req.params.username;
     fetchUsingDeploymentBase(req, () =>
         Promise.all([
             getBioText(req),
-            req.MICROBLOG_API.get(`/users/${usernameProfile}/posts`),
-            getMembership(req)
+            req.MICROBLOG_API.get(`/users/${username}/posts`),
+            getMembership(req, username)
         ])
     ).then(([bioText, microblogServiceResponse, membership]) => {
         let data = extendRenderData({
             data: microblogServiceResponse.data,
-            profileName: usernameProfile,
+            profileName: username,
             username: getJwtUser(req.cookies),
             isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
             bio: bioText,
@@ -134,7 +133,7 @@ function getBioText(req) {
 }
 
 function showMembership(req, res) {
-    fetchUsingDeploymentBase(req, () => getMembership(req))
+    fetchUsingDeploymentBase(req, () => getMembershipOfLoggedInUser(req))
         .then((membership) => {
             let data = extendRenderData({
                 title: 'Membership',
@@ -148,13 +147,27 @@ function showMembership(req, res) {
         }, (err) => displayError(err, res));
 }
 
-function getMembership(req) {
+function getMembershipOfLoggedInUser(req) {
     let jwtUserId = getJwtUserId(req.cookies);
     if (!jwtUserId) {
         return Promise.resolve();
     }
 
     return req.MEMBERSHIP_SERVICE_API.get(`/${jwtUserId}`);
+}
+
+function getMembership(req, username) {
+    return getUserIdForName(req, username).then((userId) => {
+        return req.MEMBERSHIP_SERVICE_API.get(`/${userId}`)
+    });
+}
+
+function getUserIdForName(req, username) {
+    return req.USER_AUTH_API.post('/user/useridForName', {
+        "jwt": req.cookies.jwt, "username": username
+    }).then((response) => {
+        return response.data.userId;
+    });
 }
 
 function doLogout(req, res) {
@@ -210,10 +223,10 @@ function registerUser(req, res) {
 }
 
 function followUser(req, res) {
-    const usernameProfile = req.params.username;
-    fetchUsingDeploymentBase(req, () => req.MICROBLOG_API.post(`/users/${usernameProfile}/follow`))
+    const username = req.params.username;
+    fetchUsingDeploymentBase(req, () => req.MICROBLOG_API.post(`/users/${username}/follow`))
         .then(_ => {
-            res.redirect(extendURL(`/user/${usernameProfile}`));
+            res.redirect(extendURL(`/user/${username}`));
         }, (err) => displayError(err, res));
 }
 
