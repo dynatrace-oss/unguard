@@ -1,0 +1,14 @@
+provisionDataStore:
+  cassandra: false
+  elasticsearch: true
+storage:
+  type: elasticsearch
+elasticsearch:
+  antiAffinity: soft
+  replicas: 1
+  minimumMasterNodes: 1
+esIndexCleaner:
+  enabled: true
+  tag: 1.22
+  schedule: "55 23 * * *"
+  numberOfDays: 7
