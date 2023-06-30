@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - 'release/**'
+
 jobs:
   build:
     name: Publish on container registry
@@ -20,9 +21,17 @@ jobs:
           text: ${{ github.ref_name }}
           regex: '^release\/v(.*)$'
 
-      - name: Set image tag
+      - name: Get fallback release version from chart
+        id: fallback-release-version
         run: |
-          echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+          echo "FALLBACK_RELEASE_VERSION=$(grep 'appVersion' chart/Chart.yaml | cut -d " " -f2)" >> $GITHUB_ENV
+
+      - name: Set build time
+        run: echo "BUILD_TIME=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Set image tag if no release
+        run: |
+          echo "IMAGE_TAG=${{ env.FALLBACK_RELEASE_VERSION }}-${{ env.BUILD_TIME }}" >> $GITHUB_ENV
 
       - name: Set image release tag
         if: ${{ steps.release-version.outputs.match != '' }}
@@ -53,3 +62,38 @@ jobs:
           tag: ${{ env.IMAGE_TAG }}
           repository: ${{ vars.REGISTRY }}/${{ github.repository }}
           push: true
+
+      - name: Update helm image tags
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'chart/values.yaml'
+          commitChange: false
+          changes: |
+            {
+              "maliciousLoadGenerator.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "profileService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "membershipService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "userAuthService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "adService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "envoyProxy.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "microblogService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "statusService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "proxyService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "frontend.deployment.container.image.tag": "${{ env.IMAGE_TAG }}"
+            }
+
+      - name: Update helm chart appVersion / version
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'chart/Chart.yaml'
+          commitChange: false
+          changes: |
+            {
+              "appVersion": "${{ env.IMAGE_TAG }}",
+              "version": "${{ env.IMAGE_TAG }}"
+            }
+
+      - name: Publish Helm chart to GHCR
+        run: |
+          helm package chart
+          helm push unguard-${{ env.IMAGE_TAG }}.tgz oci://${{ vars.REGISTRY }}/${{ github.repository }}/chart
