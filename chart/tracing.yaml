@@ -1,0 +1,44 @@
+tracing:
+  enabled: true
+
+adService:
+  deployment:
+    container:
+      env:
+        JAEGER_SAMPLER_PARAM: 1
+        JAEGER_DISABLED: false
+
+frontend:
+  deployment:
+    container:
+      env:
+        JAEGER_SAMPLER_PARAM: 1
+        JAEGER_DISABLED: false
+
+microblogService:
+  deployment:
+    container:
+      env:
+        JAEGER_SAMPLER_PARAM: 1
+        OPENTRACING_JAEGER_ENABLED: true
+
+profileService:
+  deployment:
+    container:
+      env:
+        OTEL_TRACES_EXPORTER: jaeger
+        OTEL_EXPERIMENTAL_SDK_ENABLED: true
+
+proxyService:
+  deployment:
+    container:
+      env:
+        JAEGER_SAMPLER_PARAM: 1
+        OPENTRACING_JAEGER_ENABLED: true
+
+userAuthService:
+  deployment:
+    container:
+      env:
+        JAEGER_SAMPLER_PARAM: 1
+        JAEGER_DISABLED: false

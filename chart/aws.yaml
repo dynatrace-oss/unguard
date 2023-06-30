@@ -1,0 +1,10 @@
+localDev:
+  enabled: false
+
+aws:
+  enabled: true
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/target-type: ip
