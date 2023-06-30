@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: skaffold/v3alpha1
+apiVersion: skaffold/v3
 kind: Config
 metadata:
   name: unguard
@@ -41,18 +41,14 @@ build:
       context: src/status-service
     - image: unguard-profile-service
       context: src/profile-service
+
   local:
     # only the docker CLI respects a manually logged-in daemon
     useDockerCLI: true
     # BuildKit provides an improvement on performance
     useBuildkit: true
-manifests:
-  kustomize:
-      paths:
-        - ./k8s-manifests/base
+
 deploy:
-  kubectl:
-    {}
   helm:
     releases:
       - name: unguard-mariadb
@@ -65,76 +61,92 @@ deploy:
           primary:
             persistence:
               enabled: false
+      - name: unguard
+        chartPath: ./chart
+        namespace: unguard
+        createNamespace: true
+        valuesFiles: ["./chart/values.yaml"]
+        setValueTemplates:
+          # ad-service
+          adService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
+          adService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_ad_service}}@{{.IMAGE_DIGEST_unguard_ad_service}}"
+          # envoy-proxy
+          envoyProxy.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_envoy_proxy}}"
+          envoyProxy.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_envoy_proxy}}@{{.IMAGE_DIGEST_unguard_envoy_proxy}}"
+          # frontend
+          frontend.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
+          frontend.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
+          # microblog-service
+          microblogService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_microblog_service }}"
+          microblogService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_microblog_service }}@{{.IMAGE_DIGEST_unguard_microblog_service }}"
+          # proxy-service
+          proxyService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_proxy_service}}"
+          proxyService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_proxy_service}}@{{.IMAGE_DIGEST_unguard_proxy_service}}"
+          # user-simulator
+          userSimulator.cronJob.jobTemplate.container.image.repository: "{{.IMAGE_REPO_unguard_user_simulator}}"
+          userSimulator.cronJob.jobTemplate.container.image.tag: "{{.IMAGE_TAG_unguard_user_simulator}}@{{.IMAGE_DIGEST_unguard_user_simulator}}"
+          # user-auth-service
+          userAuthService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_user_auth_service}}"
+          userAuthService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_user_auth_service}}@{{.IMAGE_DIGEST_unguard_user_auth_service}}"
+          # membership-service
+          membershipService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_membership_service}}"
+          membershipService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_membership_service}}@{{.IMAGE_DIGEST_unguard_membership_service}}"
+          # status-service
+          statusService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_status_service}}"
+          statusService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_status_service}}@{{.IMAGE_DIGEST_unguard_status_service}}"
+          # profile-service
+          profileService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_profile_service}}"
+          profileService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_profile_service}}@{{.IMAGE_DIGEST_unguard_profile_service}}"
+          # malicious-load-generator
+          maliciousLoadGenerator.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_malicious_load_generator}}"
+          maliciousLoadGenerator.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_malicious_load_generator}}@{{.IMAGE_DIGEST_unguard_malicious_load_generator}}"
+
+        setValues:
+          # ad-service
+          adService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # envoy-proxy
+          envoyProxy.cronJob.jobTemplate.container.image.pullPolicy: "IfNotPresent"
+          # frontend
+          frontend.deployment.container.image.pullPolicy: "IfNotPresent"
+          # microblog-service
+          microblogService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # proxy-service
+          proxyService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # user-simulator
+          userSimulator.cronJob.jobTemplate.container.image.pullPolicy: "IfNotPresent"
+          # user-auth-service
+          userAuthService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # membership-service
+          membershipService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # status-service
+          statusService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # profile-service
+          profileService.deployment.container.image.pullPolicy: "IfNotPresent"
+
 profiles:
-  - name: aws
-    # automatic regex-based activation would conflict with
-    # aws profiles that inherit from this skaffold.yaml file
-    # activation: [{ kubeContext: arn:aws:eks:* }]
-    manifests:
-      kustomize:
-        paths:
-          - ./k8s-manifests/aws
-  - name: localdev-minikube
-    manifests:
-      kustomize:
-        paths:
-          - ./k8s-manifests/localdev/minikube
-  - name: localdev-kind
-    manifests:
-      kustomize:
-        paths:
-          - ./k8s-manifests/localdev/kind
-  - name: jaeger-dev
-    patches:
-      - op: add
-        path: /deploy/kustomize/paths/-
-        value: ./k8s-manifests/jaeger
-      - op: add
-        path: /deploy/helm/releases/-
-        value:
-          name: jaeger-operator
-          remoteChart: jaeger-operator
-          repo: https://jaegertracing.github.io/helm-charts
-          version: 2.22.0
-          namespace: unguard
-          createNamespace: true
-  - name: jaeger
-    patches:
-      - op: add
-        path: /deploy/helm/releases/-
-        value:
-          name: jaeger
-          remoteChart: jaeger
-          repo: https://jaegertracing.github.io/helm-charts
-          namespace: unguard
-          createNamespace: true
-          overrides:
-            provisionDataStore:
-              cassandra: false
-              elasticsearch: true
-            storage:
-              type: elasticsearch
-            elasticsearch:
-              antiAffinity: soft
-              replicas: 1
-              minimumMasterNodes: 1
-            esIndexCleaner:
-              enabled: true
-              tag: 1.22
-              schedule: "55 23 * * *"
-              numberOfDays: 7
   - name: jib
     patches:
       - op: add
         path: /build/artifacts/2/jib
-        value: {}
-  - name: malicious-load-generator
-    patches:
-      - op: add
-        path: /manifests/kustomize/paths/-
-        value: ./k8s-manifests/malicious-load-generator
+        value: { }
+
   - name: tracing
     patches:
       - op: add
-        path: /manifests/kustomize/paths/-
-        value: ./k8s-manifests/tracing
+        path: /deploy/helm/releases/1/valuesFiles/-
+        value: "./chart/tracing.yaml"
+
+  - name: aws
+    # automatic regex-based activation would conflict with
+    # aws profiles that inherit from this skaffold.yaml file
+    # activation: [{ kubeContext: arn:aws:eks:* }]
+    patches:
+      - op: add
+        path: /deploy/helm/releases/1/valuesFiles/-
+        value: "./chart/aws.yaml"
+
+  - name: malicious-load-generator
+    patches:
+      - op: add
+        path: /deploy/helm/releases/1/setValues/maliciousLoadGenerator.enabled
+        value: "true"
