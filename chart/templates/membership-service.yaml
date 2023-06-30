@@ -1,0 +1,71 @@
+{{- /*
+Copyright 2023 Dynatrace LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/}}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: unguard-{{.Values.membershipService.name}}
+  labels:
+    app.kubernetes.io/name: {{.Values.membershipService.name}}
+    app.kubernetes.io/part-of: unguard
+spec:
+  type: {{ .Values.membershipService.service.type }}
+  selector:
+    app.kubernetes.io/name: {{.Values.membershipService.name}}
+    app.kubernetes.io/part-of: unguard
+  ports:
+ {{- .Values.membershipService.service.ports | toYaml | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unguard-{{.Values.membershipService.name}}
+  labels:
+    app.kubernetes.io/name: {{.Values.membershipService.name}}
+    app.kubernetes.io/part-of: unguard
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{.Values.membershipService.name}}
+      app.kubernetes.io/part-of: unguard
+  strategy:
+    type: {{.Values.membershipService.deployment.strategy.type}}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{.Values.membershipService.name}}
+        app.kubernetes.io/part-of: unguard
+    spec:
+      containers:
+        - name: {{.Values.membershipService.name}}
+          image: {{.Values.membershipService.deployment.container.image.repository}}:{{.Values.membershipService.deployment.container.image.tag}}
+          imagePullPolicy: {{.Values.membershipService.deployment.container.image.pullPolicy}}
+          ports:
+            - containerPort: {{.Values.membershipService.deployment.container.ports.containerPort}}
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ quote .Values.membershipService.deployment.container.env.ASPNETCORE_ENVIRONMENT }}
+            - name: SERVER_PORT
+              value: {{ quote .Values.membershipService.deployment.container.env.SERVER_PORT }}
+            - name: API_PATH
+              value: {{ quote .Values.membershipService.deployment.container.env.API_PATH }}
+            - name: MARIADB_SERVICE
+              value: {{ tpl .Values.membershipService.deployment.container.env.MARIADB_SERVICE . | quote }}
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ tpl .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name . }}
+                  key: {{ tpl .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key . }}

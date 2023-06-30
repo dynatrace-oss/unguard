@@ -1,0 +1,56 @@
+{{- /*
+Copyright 2023 Dynatrace LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/}}
+{{if .Values.maliciousLoadGenerator.enabled}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unguard-{{.Values.maliciousLoadGenerator.name}}
+  labels:
+    app.kubernetes.io/name: {{.Values.maliciousLoadGenerator.name}}
+    app.kubernetes.io/part-of: unguard
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{.Values.maliciousLoadGenerator.name}}
+      app.kubernetes.io/part-of: unguard
+  strategy:
+    type: {{.Values.maliciousLoadGenerator.deployment.strategy.type}}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{.Values.maliciousLoadGenerator.name}}
+        app.kubernetes.io/part-of: unguard
+    spec:
+      terminationGracePeriodSeconds: {{.Values.maliciousLoadGenerator.deployment.terminationGracePeriodSeconds}}
+      restartPolicy: {{.Values.maliciousLoadGenerator.deployment.restartPolicy}}
+      containers:
+        - name: {{.Values.maliciousLoadGenerator.name}}
+          image: {{.Values.maliciousLoadGenerator.deployment.container.image.repository}}:{{.Values.maliciousLoadGenerator.deployment.container.image.tag}}
+          imagePullPolicy: {{.Values.maliciousLoadGenerator.deployment.container.image.pullPolicy}}
+          env: # could add here run time as well
+            - name: FRONTEND_ADDR
+              value: {{ quote .Values.maliciousLoadGenerator.deployment.container.env.FRONTEND_ADDR }}
+            - name: USERS # USERS and WAIT_TIME (in seconds) are optional, default value for USERS = 1, WAIT_TIME = 1800
+              value: {{ quote .Values.maliciousLoadGenerator.deployment.container.env.USERS }}
+            - name: WAIT_TIME
+              value: {{ quote .Values.maliciousLoadGenerator.deployment.container.env.WAIT_TIME }}
+      initContainers:
+        - name: wait-for-frontend
+          image: curlimages/curl
+          command: [ "/bin/sh", "-c" ]
+          # TODO: #22 Replace this endpoint with a proper health check endpoint
+          args: [ 'while [ $(curl -ksw "%{http_code}" "http://unguard-frontend:80/ui/img/logo.svg" -o /dev/null) -ne 200 ]; do sleep 5; echo "health check failed . Waiting for the service..."; done' ]
+{{end}}
