@@ -5,8 +5,7 @@ microservices demo application. It consists of eight app services, a load genera
 encompasses vulnerabilities like server-side request forgery (SSRF), Command/SQL injection, JWT key confusion,
 remote code execution and many more.
 
-The application is a web-based Twitter clone where users can register/login, post text, URLs and images and follow
-users.
+The application is a web-based Twitter clone where users can register/login, post text, URLs and images and follow users.
 Unguard also features fake ads, a possibility to edit your biography and manage your membership.
 
 > **Note**
@@ -41,14 +40,41 @@ Unguard is composed of eight microservices written in different languages that t
 | [user-simulator](./src/user-simulator)                     | Node.js Element | default         | Creates synthetic user traffic by simulating an Unguard user using a real browser. Acts as a load generator.                                |
 | [malicious-load-generator](./src/malicious-load-generator) |                 | default         | Malicious load generator that makes CMD, JNDI, and SQL injections.                                                                          |
 
-## 🖥️ Local Deployment
+## Quickstart
 
-See the [Development Guide](./docs/DEV-GUIDE.md) on how to develop Unguard on a local K8S cluster.
+To quickly get started with Unguard, install the Unguard Helm chart using the [Helm package manager](https://helm.sh/)
 
-## ☁️ Cloud Deployment
+> **Warning** \
+> Unguard is **insecure** by design and a careless installation will leave you exposed to severe security vulnerabilities. Make sure to restrict access and/or run it in a sandboxed environment.
 
-See the [Deployment Guide](./docs/DEPLOYMENT.md) on how to deploy Unguard to your cloud. Currently, the documentation
-only covers AWS.
+1. Add the bitnami repository for the MariaDB dependency
+
+   ```sh
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+   ```
+
+2. Install MariaDB
+
+   ```sh
+   helm install unguard-mariadb bitnami/mariadb --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
+   ```
+
+3. Install Unguard
+
+   ```sh
+   helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --wait --namespace unguard --create-namespace
+   ```
+
+To customize your Unguard chart installation, see the [chart README](chart/README.md)
+
+
+## 🖥️ Local Development
+
+See the [Development Guide](docs/DEV-GUIDE.md) on how to set up and develop Unguard on a local Kubernetes cluster.
+
+## ☁️ Kubernetes Deployment
+
+See the Unguard Chart [README](chart/README.md) on how to install Unguard in your Kubernetes cluster using the Helm package manager.
 
 ## ✨ Features
 
@@ -60,12 +86,12 @@ only covers AWS.
   the [Element](https://element.flood.io/) browser-based load generation library.
 * **[Exploits](./exploit-toolkit/exploits/README.md)**: Different automated attack scenarios like JWT key confusion
   attacks or remote code execution.
-* **[Monitoring](./docs/MONACO.md)**: Dynatrace monitoring by
+* **[Monitoring](docs/MONACO.md)**: Dynatrace monitoring by
   utilizing [MONACO](https://github.com/dynatrace-oss/dynatrace-monitoring-as-code).
 
 ## ➕ Additional Deployment Options
 
-* **Tracing**: [See these instructions](./docs/TRACING.md)
+* **Tracing and Jaeger**: [See these instructions](docs/TRACING.md)
 * **Malicious Load Generator**: [See these instructions](src/malicious-load-generator/README.md)
 
 ---
