@@ -2,4 +2,6 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto encoding=UTF-8
-*.sh text eol=lf
+
+*.sh            text eol=lf
+gradlew         text eol=lf
