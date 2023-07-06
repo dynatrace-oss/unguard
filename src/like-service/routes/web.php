@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get(env('API_PATH').'/', function () {
     return view('welcome');
 });
 
-Route::get('/ping', function (){
+Route::get(env('API_PATH') . '/ping', function (){
     return "pong";
 });
