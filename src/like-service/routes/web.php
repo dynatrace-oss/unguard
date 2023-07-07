@@ -13,10 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get(env('API_PATH').'/', function () {
+//include ('app/Http/Controllers/DoLikeController.php');
+
+Route::get('/like-service/', function () {
     return view('welcome');
 });
 
 Route::get(env('API_PATH') . '/ping', function (){
     return "pong";
 });
+
+//Route::post(env('API_PATH') . '/like-post', function(Request $request){
+  //  return DoLikeController::doLike($request);
+//});

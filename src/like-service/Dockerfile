@@ -2,11 +2,18 @@ FROM php:8.0-cli
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY . /var/www
-
 WORKDIR /var/www
 
+RUN apt update
+
+RUN apt -y install git
+
 ENV COMPOSER_ALLOW_SUPERUSER=1
+
+COPY . /var/www
+
+#This is faster because reasons https://github.com/composer/composer/issues/8205#issuecomment-507256979
+RUN php /usr/bin/composer config --global repos.packagist composer https://packagist.org
 
 RUN php /usr/bin/composer install
 
