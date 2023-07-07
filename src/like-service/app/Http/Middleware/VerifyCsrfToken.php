@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        //
+        '/like-service/like-post'
     ];
 }
