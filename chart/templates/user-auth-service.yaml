@@ -68,7 +68,6 @@ spec:
                   key: {{ tpl .Values.userAuthService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key .  }}
             - name: JAEGER_SERVICE_NAME
               value: {{quote (printf "unguard-%s" .Values.userAuthService.name) }}
-            {{if .Values.tracing.enabled}}
             - name: JAEGER_AGENT_HOST
               value: {{quote (printf "%s-%s" .Values.jaeger.name .Values.userAuthService.deployment.container.env.JAEGER_AGENT_HOST) }}
             - name: JAEGER_SAMPLER_TYPE
@@ -77,4 +76,3 @@ spec:
               value: {{ quote .Values.userAuthService.deployment.container.env.JAEGER_SAMPLER_PARAM }}
             - name: JAEGER_DISABLED
               value: {{ quote .Values.userAuthService.deployment.container.env.JAEGER_DISABLED }}
-            {{end}}
