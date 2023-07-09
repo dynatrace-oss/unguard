@@ -66,7 +66,6 @@ spec:
               value: {{ quote .Values.adService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
             - name: JAEGER_SERVICE_NAME
               value: {{quote (printf "unguard-%s" .Values.adService.name) }}
-            {{if .Values.tracing.enabled}}
             - name: JAEGER_AGENT_HOST
               value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.adService.deployment.container.env.JAEGER_AGENT_HOST) }}
             - name: JAEGER_SAMPLER_TYPE
@@ -75,4 +74,3 @@ spec:
               value: {{ quote .Values.adService.deployment.container.env.JAEGER_SAMPLER_PARAM }}
             - name: JAEGER_DISABLED
               value: {{ quote .Values.adService.deployment.container.env.JAEGER_DISABLED }}
-            {{end}}

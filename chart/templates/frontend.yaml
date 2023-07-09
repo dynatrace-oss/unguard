@@ -79,7 +79,6 @@ spec:
               value: {{ quote .Values.frontend.deployment.container.env.MEMBERSHIP_SERVICE_BASE_PATH }}
             - name: STATUS_SERVICE_BASE_PATH
               value: {{ quote .Values.frontend.deployment.container.env.STATUS_SERVICE_BASE_PATH }}
-            {{if .Values.tracing.enabled}}
             - name: JAEGER_SERVICE_NAME
               value: {{quote (printf "unguard-%s" .Values.frontend.name) }}
             - name: JAEGER_AGENT_HOST
@@ -90,4 +89,3 @@ spec:
               value: {{ quote .Values.frontend.deployment.container.env.JAEGER_SAMPLER_PARAM }}
             - name: JAEGER_DISABLED
               value: {{ quote .Values.frontend.deployment.container.env.JAEGER_DISABLED }}
-            {{end}}

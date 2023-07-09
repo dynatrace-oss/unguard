@@ -92,7 +92,6 @@ spec:
           env:
             - name: SERVER_PORT
               value: {{ quote .Values.proxyService.deployment.container.env.SERVER_PORT }}
-            {{if .Values.tracing.enabled}}
             - name: OPENTRACING_JAEGER_ENABLED
               value: {{ quote .Values.proxyService.deployment.container.env.OPENTRACING_JAEGER_ENABLED }}
             - name: JAEGER_SERVICE_NAME
@@ -103,4 +102,3 @@ spec:
               value: {{ quote .Values.proxyService.deployment.container.env.JAEGER_SAMPLER_TYPE }}
             - name: JAEGER_SAMPLER_PARAM
               value: {{ quote .Values.proxyService.deployment.container.env.JAEGER_SAMPLER_PARAM }}
-            {{end}}
