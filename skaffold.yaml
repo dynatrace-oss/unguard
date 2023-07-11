@@ -41,6 +41,8 @@ build:
       context: src/status-service
     - image: unguard-profile-service
       context: src/profile-service
+    - image: unguard-like-service
+      context: src/like-service
 
   local:
     # only the docker CLI respects a manually logged-in daemon
@@ -100,6 +102,9 @@ deploy:
           # malicious-load-generator
           maliciousLoadGenerator.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_malicious_load_generator}}"
           maliciousLoadGenerator.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_malicious_load_generator}}@{{.IMAGE_DIGEST_unguard_malicious_load_generator}}"
+          # like-service
+          likeService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_like_service}}"
+          likeService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_like_service}}@{{.IMAGE_DIGEST_unguard_like_service}}"
 
         setValues:
           # ad-service
@@ -122,6 +127,8 @@ deploy:
           statusService.deployment.container.image.pullPolicy: "IfNotPresent"
           # profile-service
           profileService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # like-service
+          likeService.deployment.container.image.pullPolicy: "IfNotPresent"
 
 profiles:
   - name: jib

@@ -374,6 +374,35 @@ proxyService:
         JAEGER_SAMPLER_PARAM: 0
         OPENTRACING_JAEGER_ENABLED: false
 
+# Like Service
+likeService:
+  name: like-service
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 8000
+        port: 80
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-like-service
+        tag: 0.8.1
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 8000
+      env:
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
+        JAEGER_SAMPLER_TYPE: const
+        JAEGER_SAMPLER_PARAM: 0
+        JAEGER_DISABLED: true
+        SERVER_PORT: 8000
+        API_PATH: /like-service
+
+
 # Frontend
 frontend:
   name: frontend
@@ -406,7 +435,10 @@ frontend:
         STATUS_SERVICE_ADDRESS: unguard-status-service
         MEMBERSHIP_SERVICE_ADDRESS: unguard-membership-service
         PROFILE_SERVICE_ADDRESS: unguard-profile-service
+        LIKE_SERVICE_ADDRES: unguard-like-service
         FRONTEND_BASE_PATH: /ui
         AD_SERVICE_BASE_PATH: /ad-service
+        LIKE_SERVICE_BASE_PATH: /like-service
         MEMBERSHIP_SERVICE_BASE_PATH: /membership-service
         STATUS_SERVICE_BASE_PATH: /status-service
+

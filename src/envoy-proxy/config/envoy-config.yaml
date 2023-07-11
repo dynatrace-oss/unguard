@@ -62,6 +62,10 @@ static_resources:
                             prefix: /ad-service
                           route:
                             cluster: ad_service_cluster
+                        - match:
+                            prefix: /like-service
+                          route:
+                            cluster: like_service_cluster
   clusters:
     - name: frontend_cluster
       dns_lookup_family: V4_ONLY
@@ -86,4 +90,16 @@ static_resources:
                   address:
                     socket_address:
                       address: unguard-ad-service
+                      port_value: 80
+    - name: like_service_cluster
+      dns_lookup_family: V4_ONLY
+      type: STRICT_DNS
+      load_assignment:
+        cluster_name: like_service_cluster
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: unguard-like-service
                       port_value: 80

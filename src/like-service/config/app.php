@@ -52,7 +52,12 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', '
+    http://
+    0.0.0.0:'.
+    env('SERVER_PORT', '8000').
+    env('API_PATH', '/like-service')),
+
 
     'asset_url' => env('ASSET_URL', null),
 
