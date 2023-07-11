@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,16 +14,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//include ('app/Http/Controllers/DoLikeController.php');
+include (__DIR__.'/api.php');
 
-Route::get('/like-service/', function () {
+
+Route::get('/like-service', function () {
     return view('welcome');
 });
 
-Route::get(env('API_PATH') . '/ping', function (){
+Route::get('/like-service/ping', function (){
     return "pong";
 });
 
-//Route::post(env('API_PATH') . '/like-post', function(Request $request){
-  //  return DoLikeController::doLike($request);
-//});
+include (__DIR__.'/../app/Http/Controllers/DoLikeController.php');
+
+Route::post('/like-service/like-post', function(Request $request){
+    $doLikeController = new DoLikeController();
+   return $doLikeController->doLike($request);
+});

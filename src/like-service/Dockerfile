@@ -19,5 +19,11 @@ RUN php /usr/bin/composer install
 
 EXPOSE 8000
 
+#Fixes error while connecting since laravel requires a key
+RUN php artisan key:generate
+
 CMD php artisan serve --host=0.0.0.0 --port=8000
+
+#Fixes error while accessing enviroment variables
+RUN php artisan config:clear
 

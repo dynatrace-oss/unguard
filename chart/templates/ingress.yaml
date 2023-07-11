@@ -51,4 +51,11 @@ spec:
                 name: unguard-envoy-proxy
                 port:
                   number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: unguard-envoy-proxy
+                port:
+                  number: 8000
 {{end}}

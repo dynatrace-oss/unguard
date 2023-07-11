@@ -401,6 +401,7 @@ likeService:
         JAEGER_DISABLED: true
         SERVER_PORT: 8000
         API_PATH: /like-service
+        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
 
 
 # Frontend
