@@ -20,9 +20,18 @@ RUN php /usr/bin/composer install
 EXPOSE 8000
 
 #Fixes error while connecting since laravel requires a key
-RUN php artisan key:generate
+RUN php artisan --env=local key:generate
 
-#Fixes error while accessing environment variables
-RUN php artisan config:clear
+#MySqlDriver
+RUN docker-php-ext-install mysqli pdo pdo_mysql;
 
-CMD php artisan serve --host=0.0.0.0 --port=8000
+#Fixes error while accessing enviroment variables
+RUN php artisan --env=local config:clear
+
+RUN php artisan --env=local optimize:clear
+
+RUN php /usr/bin/composer dump-autoload
+
+RUN php /usr/bin/composer clear-cache
+
+CMD php artisan --env=local make:database && php artisan migrate:fresh --force && php artisan --env=local serve --host=0.0.0.0 --port=8000
