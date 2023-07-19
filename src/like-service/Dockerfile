@@ -1,4 +1,4 @@
-FROM php:8.0-cli
+FROM php:7.3-cli
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -15,18 +15,19 @@ COPY . /var/www
 #This is faster https://github.com/composer/composer/issues/8205#issuecomment-507256979
 RUN php /usr/bin/composer config --global repos.packagist composer https://packagist.org
 
+RUN php /usr/bin/composer update --no-cache
+
 RUN php /usr/bin/composer install
 
 EXPOSE 8000
-
 #Fixes error while connecting since laravel requires a key
 RUN php artisan --env=local key:generate
 
+#Fixes error while accessing enviroment variables
+RUN php artisan config:clear
+
 #MySqlDriver
 RUN docker-php-ext-install mysqli pdo pdo_mysql;
-
-#Fixes error while accessing enviroment variables
-RUN php artisan --env=local config:clear
 
 RUN php artisan --env=local optimize:clear
 
@@ -34,4 +35,4 @@ RUN php /usr/bin/composer dump-autoload
 
 RUN php /usr/bin/composer clear-cache
 
-CMD php artisan --env=local make:database && php artisan migrate:fresh --force && php artisan --env=local serve --host=0.0.0.0 --port=8000
+CMD php artisan --env=local make:database && php artisan migrate:fresh --force && php -S 0.0.0.0:8000 -t public

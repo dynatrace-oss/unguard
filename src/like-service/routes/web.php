@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LikeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -21,13 +22,23 @@ Route::get('/like-service', function () {
     return view('welcome');
 });
 
+Route::get('/like-service/like-count', function (Request $request){
+    $likeController = new LikeController();
+    return $likeController->getLikeCountAndState($request);
+});
+
+Route::delete('/like-service/like-delete', function (Request $request){
+    $likeController = new LikeController();
+    return $likeController->removeLike($request);
+});
+
 Route::get('/like-service/ping', function (){
     return "pong";
 });
 
-include (__DIR__.'/../app/Http/Controllers/DoLikeController.php');
+include (__DIR__ . '/../app/Http/Controllers/LikeController.php');
 
 Route::post('/like-service/like-post', function(Request $request){
-    $doLikeController = new DoLikeController();
+    $doLikeController = new LikeController();
    return $doLikeController->doLike($request);
 });
