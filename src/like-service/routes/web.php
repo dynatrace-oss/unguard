@@ -22,12 +22,12 @@ Route::get('/like-service', function () {
     return view('welcome');
 });
 
-Route::get('/like-service/like-count', function (Request $request){
+Route::get('/like-service/like-count/{postId}', function (Request $request){
     $likeController = new LikeController();
     return $likeController->getLikeCountAndState($request);
 });
 
-Route::delete('/like-service/like-delete', function (Request $request){
+Route::post('/like-service/like-delete', function (Request $request){
     $likeController = new LikeController();
     return $likeController->removeLike($request);
 });

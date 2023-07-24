@@ -1,4 +1,4 @@
-{# 
+{#
 Copyright 2023 Dynatrace LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,4 +44,22 @@ limitations under the License.
             </div>
         </div>
     </div>
+    <div class="card-footer">
+        <div style="float:right">
+            <div style="display: inline-block;">
+                <p style="text-align:right; height:30px; font-size:25px;">{{post.likeCount}}</p>
+            </div>
+                {% if (post.userLiked) %}
+                    <form action="{{extendURL('/like/' + post.postId)}}" method="post" style="display: inline-block; height:46px">
+                        <input type="image" src="{{ extendURL('/img/thumb_up_liked.png') }}" width="30" height="30" style="vertical-align: bottom;"/>
+                  </form>
+                {% else %}
+                    <form action="{{extendURL('/like/' + post.postId)}}" method="post" style="display: inline-block; height:46px">
+                        <input type="image" src="{{ extendURL('/img/thumb_up.png') }}" width="30" height="30" style="vertical-align: bottom;"/>
+                    </form>
+                {% endif %}
+        </div>
+    </div>
 </div>
+
+
