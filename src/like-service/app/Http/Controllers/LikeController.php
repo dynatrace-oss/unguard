@@ -8,7 +8,6 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class LikeController extends BaseController
 {
@@ -17,7 +16,7 @@ class LikeController extends BaseController
     function doLike($request)
     {
         $user_token = $request->cookie('jwt');
-        $postId = $request->header('postId');
+        $postId = $request->input('postId');
 
         if (!$this->validateToken($user_token)) {
             return response()->json([
@@ -38,7 +37,9 @@ class LikeController extends BaseController
     function getLikeCountAndState($request)
     {
         $user_token = $request->cookie('jwt');
-        $postId = $request->header('postId');
+        $uri = $request->path();
+        $uriParts = explode('/', $uri);
+        $postId = $uriParts[2];
 
         if (!$this->validateToken($user_token)) {
             return response()->json([
@@ -49,6 +50,7 @@ class LikeController extends BaseController
 
         $count = DB::table('like')->where('postId', '=', $postId)->count('*');
         $userLiked = DB::table('like')->where('userId', '=', $userId)->where('postId', '=', $postId)->count('*') > 0;
+
 
         return response()->json([
             'likeCount' => $count,
@@ -92,8 +94,6 @@ class LikeController extends BaseController
     function validateToken($user_token)
     {
         $auth_service_validate_host = config('app.auth_service_url');
-
-        Log::notice('Sending request to: ' . $auth_service_validate_host);
 
         $response = Http::post($auth_service_validate_host, [
             'jwt' => $user_token
