@@ -1,0 +1,55 @@
+name: Run Skaffold Pipeline, Deploy to Minikube Cluster and run Unguard Helm Test
+on:
+  pull_request:
+    paths:
+      - src/**
+      - skaffold.yaml
+      - chart/**
+
+jobs:
+  lint-build-run-test-unguard:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3.5
+        with:
+          version: v3.12.3
+
+      - name: Kubectl tool installer
+        uses: Azure/setup-kubectl@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          check-latest: true
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+
+      - name: Run chart-testing (lint)
+        run: ct lint --chart-dirs . --charts ./chart --validate-maintainers=false --check-version-increment=false --target-branch ${{ github.event.repository.default_branch }}
+
+      - name: Set up Minikube
+        uses: medyagh/setup-minikube@v0.0.14
+        with:
+          addons: ingress
+
+      - name: Cache Skaffold layers
+        uses: actions/cache@v3
+        with:
+          path: ~/.skaffold/
+          key: fixed-${{ github.sha }}
+
+      - name: Run Skaffold and Deploy to Minikube Cluster
+        uses: hiberbee/github-action-skaffold@1.27.0
+        with:
+          command: run
+          skip-tests: true
+
+      - name: Run chart-testing
+        run: helm test unguard --namespace unguard --timeout 10m0s --logs
