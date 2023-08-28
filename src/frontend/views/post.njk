@@ -1,4 +1,4 @@
-{# 
+{#
 Copyright 2023 Dynatrace LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,12 +33,14 @@ limitations under the License.
     </div>
 
     <div class="card-body">
+        {% if (post.imageUrl) %}
         <div class="row">
-            {% if (post.imageUrl) %}
-                <div class="col-auto">
-                    <img src="{{ post.imageUrl }}" height="150px" alt="">
-                </div>
-            {% endif %}
+            <div class="p-15">
+                <img src="{{ post.imageUrl }}" class="postImg" alt="">
+            </div>
+        </div>
+        {% endif %}
+        <div class="row">
             <div class="col">
                 <h5 class="card-title post-body">{{ post.body }}</h5>
             </div>
