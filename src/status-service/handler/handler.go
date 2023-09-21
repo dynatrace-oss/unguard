@@ -18,14 +18,15 @@ package handler
 
 import (
 	"context"
-	"github.com/labstack/echo/v4"
-	v12 "k8s.io/api/apps/v1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/http"
 	"status-service/connections"
 	"status-service/utils"
 	"strings"
 	"time"
+
+	"github.com/labstack/echo/v4"
+	v12 "k8s.io/api/apps/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type DeploymentsDto = map[string]v12.Deployment
@@ -39,10 +40,16 @@ type HealthDto struct {
 	Total         int               `json:"total"`
 }
 
+type UserEntry struct {
+	UserId   *string
+	Username *string
+	Role     *string
+}
+
 type UserDto struct {
-	UserId   *string `json:"userId"`
-	Username *string `json:"username"`
-	Role     *string `json:"role"`
+	UserId   *string  `json:"userId"`
+	Username *string  `json:"username"`
+	Roles    []string `json:"roles"`
 }
 
 var deploymentsToIgnore = utils.GetEnv("IGNORED_DEPLOYMENTS", "")
@@ -100,17 +107,37 @@ func GetUsers(c echo.Context) error {
 	}
 	defer rows.Close()
 
-	var users []UserDto
+	var userEntries []UserEntry
 
 	for rows.Next() {
-		var user UserDto
-		if err := rows.Scan(&user.UserId, &user.Username, &user.Role); err != nil {
+		var userEntry UserEntry
+		if err := rows.Scan(&userEntry.UserId, &userEntry.Username, &userEntry.Role); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
 		}
-		users = append(users, user)
+		userEntries = append(userEntries, userEntry)
 	}
 	if err = rows.Err(); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	var users []UserDto
+
+	for _, userEntry := range userEntries {
+		found := false
+		for i, user := range users {
+			if *user.UserId == *userEntry.UserId {
+				users[i].Roles = append(users[i].Roles, *userEntry.Role)
+				found = true
+				break
+			}
+		}
+		if !found {
+			newUser := UserDto{UserId: userEntry.UserId, Username: userEntry.Username, Roles: []string{}}
+			if userEntry.Role != nil {
+				newUser.Roles = append(newUser.Roles, *userEntry.Role)
+			}
+			users = append(users, newUser)
+		}
 	}
 
 	return c.JSON(http.StatusOK, users)
