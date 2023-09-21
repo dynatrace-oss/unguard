@@ -39,6 +39,7 @@ func main() {
 
 	api.GET("/deployments", handler.GetDeployments)
 	api.GET("/deployments/health", handler.GetHealth)
+	api.GET("/users", handler.GetUsers)
 
 	if err := server.Start(fmt.Sprintf(":%s", serverPort)); err != http.ErrServerClosed {
 		log.Fatal(err)
