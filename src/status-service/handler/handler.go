@@ -25,6 +25,7 @@ import (
 	"status-service/connections"
 	"status-service/utils"
 	"strings"
+	"time"
 )
 
 type DeploymentsDto = map[string]v12.Deployment
@@ -36,6 +37,12 @@ type HealthDto struct {
 	Microservices map[string]Health `json:"microservices"`
 	Available     int               `json:"available"`
 	Total         int               `json:"total"`
+}
+
+type UserDto struct {
+	UserId   *string `json:"userId"`
+	Username *string `json:"username"`
+	Role     *string `json:"role"`
 }
 
 var deploymentsToIgnore = utils.GetEnv("IGNORED_DEPLOYMENTS", "")
@@ -72,6 +79,41 @@ func GetHealth(c echo.Context) error {
 		Available:     available,
 		Total:         total,
 	})
+}
+
+// GetUsers queries the MariaDB database for users and allows for SQL Injection attacks. Takes a "name" parameter to filter by username.
+func GetUsers(c echo.Context) error {
+	nameFilter := c.QueryParam("name")
+
+	db, err := connections.GetDB()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// this allows injecting SQL code
+	rows, err := db.QueryContext(ctxTimeout, "SELECT users.id, users.username, roles.name as role_name FROM users LEFT JOIN users_roles ON users.id=users_roles.user_id LEFT JOIN roles ON roles.id=users_roles.role_id WHERE users.username LIKE '%%"+nameFilter+"%%';")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+	defer rows.Close()
+
+	var users []UserDto
+
+	for rows.Next() {
+		var user UserDto
+		if err := rows.Scan(&user.UserId, &user.Username, &user.Role); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+		}
+		users = append(users, user)
+	}
+	if err = rows.Err(); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return c.JSON(http.StatusOK, users)
 }
 
 // getDeployments fetch deployments from the Kubernetes API within the specified namespace (environment) and construct a DeploymentsDto

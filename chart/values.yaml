@@ -322,6 +322,11 @@ statusService:
         API_PATH: /status-service
         KUBERNETES_NAMESPACE: unguard
         IGNORED_DEPLOYMENTS: unguard-user-simulator # add deployments to ignore separated by spaces
+        MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
+        MARIADB_PASSWORD:
+          secretKeyRef:
+            name: "{{ .Values.mariaDB.serviceName }}"
+            key: "{{ .Values.mariaDB.password }}"
 
 # Proxy Service
 proxyService:
