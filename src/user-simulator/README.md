@@ -11,6 +11,7 @@ Executes following tasks:
 * post text posts
 * post URL posts
 * post image posts
+* visit users page and search for admanager user
 * upgrades membership status
 * log out
 

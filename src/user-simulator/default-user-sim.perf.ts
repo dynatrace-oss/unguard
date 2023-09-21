@@ -217,6 +217,19 @@ export default () => {
         console.log(`${user.username} updated bio: '${bio.text}'`)
     })
 
+    step('Visit Users page and search for admanager', async browser => {
+        await browser.visit(config.frontendUrl + '/users')
+
+
+        const searchBar = await browser.findElement(By.css('input[name=name]'))
+        await searchBar.type("admanager")
+
+        const searchButton = await browser.findElement(By.css('input[name=name] ~ button[type=submit]'))
+        await searchButton.click()
+
+        console.log(`${user.username} searched for admanager user.`)
+    })
+
     step('Upgrade to PRO membership', async (browser, _) => {
         await browser.visit(`${config.frontendUrl}/membership`)
 
