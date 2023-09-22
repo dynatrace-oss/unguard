@@ -75,24 +75,32 @@ function showGlobalTimeline(req, res) {
 }
 
 function showUsers(req, res) {
-    let params;
+    let params = {}
     if (req.query.name) {
-        params = {name: req.query.name}
-    } else {
-        params = {}
+        params.name = req.query.name
+    }
+    if(req.query.roles) {
+        params.roles = req.query.roles
     }
     fetchUsingDeploymentBase(req, () =>
         Promise.all([
+            req.STATUS_SERVICE_API.get('/roles'),
             req.STATUS_SERVICE_API.get('/users', {
                 params: params
             }),
             getMembershipOfLoggedInUser(req)
         ]))
-        .then(([users, membership]) => {
+        .then(([roles, users, membership]) => {
             let data = extendRenderData({
                 data: users.data,
+                roles: roles.data,
                 title: 'Users',
                 searchTerm: req.query.name,
+                searchRoles: req.query.roles,
+                shouldRoleBeChecked: (role) => {
+                    return (typeof req.query.roles == "string" && req.query.roles == role.name) // only one checkbox checked
+                    || (typeof req.query.roles == "object" && req.query.roles.includes(role.name)) // multiple checkboxes checked
+                }, 
                 username: getJwtUser(req.cookies),
                 isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
                 baseData: baseRequestFactory.baseData,
