@@ -8,8 +8,8 @@ the [kubernetes API docs, deployment v1 apps](https://kubernetes.io/docs/referen
 
 > GET status-service/deployments/health
 
-Gets a list of users from the MariaDB database. You can filter by the username using the `name` parameter, which is vulnerable to SQL Injection attacks:
-> GET status-service/users?name=robot
+Gets a list of users from the MariaDB database. You can filter by the username using the `name` parameter and by the role(s) using the `roles`/`roles[]` parameter. The parameters are vulnerable to SQL Injection attacks:
+> GET status-service/users?name=robot&roles=AD_MANAGER
 
 start a minikube k8s cluster and deploy unguard into minikube with skaffold (also shortly explain how to do that)
 run it locally
