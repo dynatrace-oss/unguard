@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"status-service/connections"
 	"status-service/utils"
+	"strconv"
 	"strings"
 	"time"
 
@@ -56,6 +57,7 @@ type RoleDto struct {
 	Name *string `json:"name"`
 }
 
+var MAX_USER_ENTRIES = 50
 var deploymentsToIgnore = utils.GetEnv("IGNORED_DEPLOYMENTS", "")
 
 /**
@@ -113,12 +115,14 @@ func GetUsers(c echo.Context) error {
 	defer cancel()
 
 	// this allows injecting SQL code
-	sql_stmt := "SELECT users.id, users.username, roles.name as role_name FROM users LEFT JOIN users_roles ON users.id=users_roles.user_id LEFT JOIN roles ON roles.id=users_roles.role_id WHERE users.username LIKE '%%" + nameFilter + "%%'"
+	sql_stmt := "SELECT users.id, users.username, roles.name as role_name FROM users " +
+		"LEFT JOIN users_roles ON users.id=users_roles.user_id " +
+		"LEFT JOIN roles ON roles.id=users_roles.role_id WHERE users.username LIKE '%%" + nameFilter + "%%'"
 	if len(roles) > 0 {
 		// this also allows injecting SQL code
 		sql_stmt += " and roles.name in ('" + strings.Join(roles, "', '") + "')"
 	}
-	sql_stmt += ";"
+	sql_stmt += " LIMIT " + strconv.Itoa(MAX_USER_ENTRIES) + ";"
 	rows, err := db.QueryContext(ctxTimeout, sql_stmt)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)

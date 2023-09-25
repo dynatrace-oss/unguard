@@ -102,10 +102,9 @@ spec:
             - name: IGNORED_DEPLOYMENTS # add deployments to ignore separated by spaces
               value: {{ quote .Values.statusService.deployment.container.env.IGNORED_DEPLOYMENTS }}
             - name: MARIADB_SERVICE
-              value: {{ tpl .Values.membershipService.deployment.container.env.MARIADB_SERVICE . | quote }}
+              value: {{ tpl .Values.statusService.deployment.container.env.MARIADB_SERVICE . | quote }}
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ tpl .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name . }}
-                  key: {{ tpl .Values.membershipService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key . }}
-              
+                  name: {{ tpl .Values.statusService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name . }}
+                  key: {{ tpl .Values.statusService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key . }}

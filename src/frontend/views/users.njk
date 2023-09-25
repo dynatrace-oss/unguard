@@ -21,7 +21,7 @@ limitations under the License.
         <div class="col-12 col-md-9">
             <h1>{{ title }}</h1>
 
-            <form action="?" method="get">
+            <form action="#" method="get">
                 <div class="card gedf-card">
                     <div class="card-body">
                         <div class="form-inline">
@@ -32,7 +32,7 @@ limitations under the License.
                                     <div class="form-check flex-column">
                                         {% for role in roles %}
                                             <div class="form-inline mr-auto ml-2">
-                                                <input class="form-check-input" type="checkbox" name="roles" value="{{role.name}}" id="check{{loop.index0}}" 
+                                                <input class="form-check-input" type="checkbox" name="roles" value="{{role.name}}" id="check{{loop.index0}}"
                                                 {% if shouldRoleBeChecked(role) %} checked {% endif%}>
                                                 <label class="form-check-label" for="check{{loop.index0}}">
                                                     {{role.name}}
