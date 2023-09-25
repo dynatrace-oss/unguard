@@ -11,9 +11,6 @@ the [kubernetes API docs, deployment v1 apps](https://kubernetes.io/docs/referen
 Gets a list of users from the MariaDB database. You can filter by the username using the `name` parameter and by the role(s) using the `roles`/`roles[]` parameter. The parameters are vulnerable to SQL Injection attacks:
 > GET status-service/users?name=robot&roles=AD_MANAGER
 
-start a minikube k8s cluster and deploy unguard into minikube with skaffold (also shortly explain how to do that)
-run it locally
-
 ## How to Run
 
 * Locally (convenient for development)
@@ -36,15 +33,8 @@ development speed boost.
 
 ### Run MariaDB locally
 The status-service requires a running relational database MariaDB.
-To run it locally using docker, you can run:
-
-```bash
-docker run --detach --name user-auth-db \
-  --env MARIADB_PASSWORD=mariadb-root-password \
-  --env MARIADB_DATABASE=my_database \
-   -p 3306:3306 \
-   mariadb:latest
-```
+This database needs to be initialized by the user-auth-service. Therefore, before you run the status-service locally,
+you need to start the user-auth-service, as described in [the user-auth-service's Readme](../user-auth-service/README.md).
 And then update the environment variables for the status-service to fit:
 ```bash
 export MARIADB_PASSWORD=mariadb-root-password

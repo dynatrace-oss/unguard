@@ -90,10 +90,10 @@ function showUsers(req, res) {
             }),
             getMembershipOfLoggedInUser(req)
         ]))
-        .then(([roles, users, membership]) => {
+        .then(([allRoles, users, membership]) => {
             let data = extendRenderData({
                 data: users.data,
-                roles: roles.data,
+                roles: allRoles.data,
                 title: 'Users',
                 searchTerm: req.query.name,
                 searchRoles: req.query.roles,

@@ -220,7 +220,6 @@ export default () => {
     step('Visit Users page and search for admanager', async browser => {
         await browser.visit(config.frontendUrl + '/users')
 
-
         const searchBar = await browser.findElement(By.css('input[name=name]'))
         await searchBar.type("admanager")
 
