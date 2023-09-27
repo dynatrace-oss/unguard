@@ -38,7 +38,7 @@ router.post('/user/:username/follow', followUser);
 // Create post
 router.post('/post', createPost);
 // get single post
-router.get('/post/:postid', getPost);
+router.get('/post', getPost);
 // Logout
 router.post('/logout', doLogout);
 // Login
@@ -50,8 +50,6 @@ router.post('/bio/:username', postBio);
 //Membership
 router.get('/membership', showMembership);
 router.post('/membership/:username', postMembership);
-//Like
-router.post('/like/:postId', postLike);
 
 router.use('/ad-manager', adManagerRouter);
 
@@ -319,7 +317,7 @@ function createPost(req, res) {
                     imageUrl: metaImgSrc
                 }))
             }, (err) => displayError(err, res))
-            .then((postResponse) => res.redirect(extendURL(`/post/${postResponse.data.postId}`)), (err) => displayError(err, res));
+            .then((postResponse) => res.redirect(extendURL(`/post?postId=${postResponse.data.postId}`)), (err) => displayError(err, res));
     } else if (req.body.imgurl) {
         // the image post calls a different endpoint that has a different ssrf vulnerability
         fetchUsingDeploymentBase(req, () => req.PROXY.get("/image", {
@@ -332,13 +330,13 @@ function createPost(req, res) {
                 imageUrl: response.data
             }));
         }, (err) => displayError(err, res))
-            .then((postResponse) => res.redirect(extendURL(`/post/${postResponse.data.postId}`)), (err) => displayError(err, res));
+            .then((postResponse) => res.redirect(extendURL(`/post?postId=${postResponse.data.postId}`)), (err) => displayError(err, res));
     } else if (req.body.message) {
         // this is a normal message
         fetchUsingDeploymentBase(req, () => req.MICROBLOG_API.post('/post', {
             content: req.body.message
         })).then((postResponse) => {
-            res.redirect(extendURL(`/post/${postResponse.data.postId}`));
+            res.redirect(extendURL(`/post?postId=${postResponse.data.postId}`));
         }, (err) => displayError(err, res));
     } else {
         // when nothing is set, just redirect back
@@ -347,7 +345,17 @@ function createPost(req, res) {
 }
 
 async function getPost(req, res) {
-    const postId = req.params.postid;
+    const postId = req.query.postId;
+    try {
+        if(req.query.like_post !== undefined) {
+            await fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.post(`/like-service/like-post`, {postId: postId}))
+        }
+        else if (req.query.like_delete !== undefined) {
+            await fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.post(`/like-service/like-delete`, {postId: postId}));
+        }
+    } catch {}
+
+
     const likeData = await getLikeCount(req, postId)
 
     fetchUsingDeploymentBase(req, () => req.MICROBLOG_API.get(`/post/${postId}`)).then((response) => {//
@@ -389,28 +397,10 @@ function postBio(req, res) {
     });
 }
 
-async function postLike(req, res) {
-    const postId = req.params.postId;
-    let response = await fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.get(`/like-service/like-count/` + postId))
-    let likeData = response.data;
-    if (likeData.userLiked) {
-        console.log(postId)
-        fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.post(`/like-service/like-delete`, {postId: postId})).then(response => {
-            res.redirect(extendURL('/post/' + postId))
-        });
-    } else {
-        fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.post(`/like-service/like-post`, {postId: postId}
-        )).then((response => {
-            res.redirect(extendURL('/post/' + postId))
-        }))
-    }
-}
-
 
 async function getLikeCount(req, postId) {
     let response = await fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.get(`/like-service/like-count/` + postId))
     return response.data
-
 }
 
 async function insertLikeCountIntoPostArray(req, data) {

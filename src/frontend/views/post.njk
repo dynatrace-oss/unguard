@@ -50,12 +50,20 @@ limitations under the License.
                 <p style="text-align:right; height:30px; font-size:25px;">{{post.likeCount}}</p>
             </div>
                 {% if (post.userLiked) %}
-                    <form action="{{extendURL('/like/' + post.postId)}}" method="post" style="display: inline-block; height:46px">
-                        <input type="image" src="{{ extendURL('/img/thumb_up_liked.png') }}" width="30" height="30" style="vertical-align: bottom;"/>
+                    <form action="{{extendURL('/post')}}" method="get" style="display: inline-block; height:46px">
+                        <button type="submit" style="background: transparent; border: none;">
+                            <img src="{{ extendURL('/img/thumb_up_liked.png') }}" width="30" height="30" style="vertical-align: bottom;"/>
+                        </button>
+                        <input type="hidden" id="postId" name="postId" value="{{post.postId}}">
+                        <input type="hidden" id="like_delete" name="like_delete">
                   </form>
                 {% else %}
-                    <form action="{{extendURL('/like/' + post.postId)}}" method="post" style="display: inline-block; height:46px">
-                        <input type="image" src="{{ extendURL('/img/thumb_up.png') }}" width="30" height="30" style="vertical-align: bottom;"/>
+                    <form action="{{extendURL('/post')}}" method="get" style="display: inline-block; height:46px">
+                        <button type="submit" style="background: transparent; border: none;">
+                            <img src="{{ extendURL('/img/thumb_up.png') }}" width="30" height="30" style="vertical-align: bottom;"/>
+                        </button>
+                        <input type="hidden" id="postId" name="postId" value="{{post.postId}}">
+                        <input type="hidden" id="like_post" name="like_post">
                     </form>
                 {% endif %}
         </div>

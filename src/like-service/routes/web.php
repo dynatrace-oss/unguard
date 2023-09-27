@@ -15,30 +15,17 @@ use Illuminate\Http\Request;
 |
 */
 
-include (__DIR__.'/api.php');
+include (__DIR__ . '/../app/Http/Controllers/LikeController.php');
 
 
-Route::get('/like-service', function () {
-    return view('welcome');
-});
-
-Route::get('/like-service/like-count/{postId}', function (Request $request){
-    $likeController = new LikeController();
-    return $likeController->getLikeCountAndState($request);
+Route::get('/like-service/like-count/{postId}', function (Request $request, string $postId){
+    return LikeController::getLikeCountAndState($request, $postId);
 });
 
 Route::post('/like-service/like-delete', function (Request $request){
-    $likeController = new LikeController();
-    return $likeController->removeLike($request);
+    return LikeController::removeLike($request);
 });
-
-Route::get('/like-service/ping', function (){
-    return "pong";
-});
-
-include (__DIR__ . '/../app/Http/Controllers/LikeController.php');
 
 Route::post('/like-service/like-post', function(Request $request){
-    $doLikeController = new LikeController();
-   return $doLikeController->doLike($request);
+   return LikeController::doLike($request);
 });

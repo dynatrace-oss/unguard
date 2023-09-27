@@ -13,17 +13,17 @@ class LikeController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    function doLike($request)
+    static function doLike($request)
     {
         $user_token = $request->cookie('jwt');
         $postId = $request->input('postId');
 
-        if (!$this->validateToken($user_token)) {
+        if (!self::validateToken($user_token)) {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
         }
-        $userId = $this->extractUserIdFromToken($user_token);
+        $userId = self::extractUserIdFromToken($user_token);
 
         DB::table('like')->insert([
             'userId' => $userId,
@@ -34,19 +34,16 @@ class LikeController extends BaseController
         ], 200);
     }
 
-    function getLikeCountAndState($request)
+    static function getLikeCountAndState($request, $postId)
     {
         $user_token = $request->cookie('jwt');
-        $uri = $request->path();
-        $uriParts = explode('/', $uri);
-        $postId = $uriParts[2];
 
-        if (!$this->validateToken($user_token)) {
+        if (!self::validateToken($user_token)) {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
         }
-        $userId = $userId = $this->extractUserIdFromToken($user_token);
+        $userId = self::extractUserIdFromToken($user_token);
 
         $count = DB::table('like')->where('postId', '=', $postId)->count('*');
         $userLiked = DB::table('like')->where('userId', '=', $userId)->where('postId', '=', $postId)->count('*') > 0;
@@ -63,17 +60,17 @@ class LikeController extends BaseController
         * When "postId" is an array, all contents of the array are added to the SQL-Bindings of the subsequent query.
         * This means that, when passing an array it is possible to manipulate the userId value of the query -> unlike another user's like.
  */
-    function removeLike($request)
+    static function removeLike($request)
     {
         $user_token = $request->cookie('jwt');
         $postId = $request->input('postId');
 
-        if (!$this->validateToken($user_token)) {
+        if (!self::validateToken($user_token)) {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
         }
-        $userId = $userId = $this->extractUserIdFromToken($user_token);
+        $userId = $userId = self::extractUserIdFromToken($user_token);
 
         $query = DB::table('like')->where([
             ['postId', '=', $postId],
@@ -91,7 +88,7 @@ class LikeController extends BaseController
         ], 200);
     }
 
-    function validateToken($user_token)
+    static function validateToken($user_token)
     {
         $auth_service_validate_host = config('app.auth_service_url');
 
@@ -103,7 +100,7 @@ class LikeController extends BaseController
         return $responseCode == 200;
     }
 
-    function extractUserIdFromToken($jwt)
+    static function extractUserIdFromToken($jwt)
     {
         $jwtPayload = explode(".", $jwt, 3)[1];
         $jsonJwtPayload = base64_decode($jwtPayload);
