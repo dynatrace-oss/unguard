@@ -6,7 +6,7 @@ WORKDIR /var/www
 
 RUN apt update
 
-RUN apt -y install git
+RUN apt -y install git zip
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
