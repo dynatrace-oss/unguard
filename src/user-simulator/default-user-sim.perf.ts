@@ -149,6 +149,14 @@ export default () => {
         await browser.visit(config.frontendUrl + '/')
     })
 
+    step('Like post', async browser => {
+        await browser.visit(config.frontendUrl + '/')
+        const likeButton = await browser.maybeFindElement(By.css('input[type=hidden][name=postId] ~ button[type=submit]'))
+        await likeButton?.click();
+
+        console.log(`${user.username} liked a post: ${browser.getUrl()}`)
+    })
+
     step('Visit Timeline', async browser => {
         await browser.visit(config.frontendUrl + '/my-timeline')
     })

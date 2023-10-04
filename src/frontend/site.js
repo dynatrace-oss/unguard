@@ -117,15 +117,13 @@ function showUsers(req, res) {
 
 async function showPersonalTimeline(req, res) {
     try {
-
-
         let [myTimeline, membership] = await fetchUsingDeploymentBase(req, () =>
             Promise.all([
                 req.MICROBLOG_API.get('/mytimeline'),
                 getMembershipOfLoggedInUser(req)
             ]))
 
-        let postArray = myTimeline.data;//
+        let postArray = myTimeline.data;
         postArray = await insertLikeCountIntoPostArray(req, postArray);
 
         let data = extendRenderData({
@@ -150,9 +148,12 @@ function showUserProfile(req, res) {
             req.MICROBLOG_API.get(`/users/${username}/posts`),
             getMembership(req, username)
         ])
-    ).then(([bioText, microblogServiceResponse, membership]) => {
+    ).then(async ([bioText, microblogServiceResponse, membership]) => {
+        let postArray = microblogServiceResponse.data;
+        postArray = await insertLikeCountIntoPostArray(req, postArray);
+
         let data = extendRenderData({
-            data: microblogServiceResponse.data,
+            data: postArray,
             profileName: username,
             username: getJwtUser(req.cookies),
             isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
