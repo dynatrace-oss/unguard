@@ -72,10 +72,10 @@ spec:
             {{if .Values.tracing.enabled}}
             - name: JAEGER_AGENT_HOST
               value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.likeService.deployment.container.env.JAEGER_AGENT_HOST) }}
-            - name: JAEGER_SAMPLER_TYPE
-              value: {{ quote .Values.likeService.deployment.container.env.JAEGER_SAMPLER_TYPE }}
-            - name: JAEGER_SAMPLER_PARAM
-              value: {{ quote .Values.likeService.deployment.container.env.JAEGER_SAMPLER_PARAM }}
+            - name: JAEGER_PORT
+              value: {{ quote .Values.likeService.deployment.container.env.JAEGER_PORT }}
+            - name: SERVICE_NAME
+              value: {{ quote .Values.likeService.deployment.container.env.SERVICE_NAME }}
             - name: JAEGER_DISABLED
               value: {{ quote .Values.likeService.deployment.container.env.JAEGER_DISABLED }}
             {{end}}

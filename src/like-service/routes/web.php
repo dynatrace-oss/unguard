@@ -18,6 +18,10 @@ use Illuminate\Http\Request;
 include (__DIR__ . '/../app/Http/Controllers/LikeController.php');
 
 
+Route::get('/like-service/like-count', function (Request $request){
+    return LikeController::getMultipleLikeCountsAndStates($request);
+});
+
 Route::get('/like-service/like-count/{postId}', function (Request $request, string $postId){
     return LikeController::getLikeCountAndState($request, $postId);
 });

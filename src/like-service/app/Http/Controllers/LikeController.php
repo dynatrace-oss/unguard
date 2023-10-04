@@ -55,6 +55,27 @@ class LikeController extends BaseController
         ], 200);
     }
 
+    static function getMultipleLikeCountsAndStates($request)
+    {
+        $user_token = $request->cookie('jwt');
+        $postIds = $request->query('postIds', $request->query('postIds[]', []));
+
+        if (!self::validateToken($user_token)) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+        $userId = self::extractUserIdFromToken($user_token);
+
+        $counts = DB::table('like')->select('postId', DB::raw('count(*) as likeCount'))->whereIn('postId', $postIds)->groupBy('postId')->get();
+        $userLiked = DB::table('like')->select('postId')->where('userId', '=', $userId)->whereIn('postId', $postIds)->get();
+
+        return response()->json([
+            'likeCounts' => $counts,
+            'likedPosts' => $userLiked
+        ], 200);
+    }
+
     /*
         * Function removeLike is vulnerable to SQL-Injection-Attacks.
         * When "postId" is an array, all contents of the array are added to the SQL-Bindings of the subsequent query.
