@@ -51,19 +51,19 @@ limitations under the License.
             </div>
                 {% if (post.userLiked) %}
                     <form action="{{extendURL('/post')}}" method="get" style="display: inline-block; height:46px">
+                        <input type="hidden" name="postId" value="{{post.postId}}">
+                        <input type="hidden" name="like_delete">
                         <button type="submit" style="background: transparent; border: none;">
                             <img src="{{ extendURL('/img/thumb_up_liked.png') }}" width="30" height="30" style="vertical-align: bottom;"/>
                         </button>
-                        <input type="hidden" id="postId" name="postId" value="{{post.postId}}">
-                        <input type="hidden" id="like_delete" name="like_delete">
                   </form>
                 {% else %}
                     <form action="{{extendURL('/post')}}" method="get" style="display: inline-block; height:46px">
+                        <input type="hidden" name="postId" value="{{post.postId}}">
+                        <input type="hidden" name="like_post">
                         <button type="submit" style="background: transparent; border: none;">
                             <img src="{{ extendURL('/img/thumb_up.png') }}" width="30" height="30" style="vertical-align: bottom;"/>
                         </button>
-                        <input type="hidden" id="postId" name="postId" value="{{post.postId}}">
-                        <input type="hidden" id="like_post" name="like_post">
                     </form>
                 {% endif %}
         </div>
