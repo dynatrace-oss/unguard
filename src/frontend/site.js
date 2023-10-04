@@ -403,21 +403,19 @@ async function getLikeCount(req, postId) {
     return response.data
 }
 
+async function getMultipleLikeCounts(req, postIds) {
+    let response = await fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.get(`/like-service/like-count/`, { params: { postIds: postIds } }))
+    return response.data
+}
+
 async function insertLikeCountIntoPostArray(req, data) {
-    //return new Promise(async (resolve, reject) => {
-    let finalData = [];
-    await Promise.all(
-        data.map(async (post) => {
-            let postId = post.postId;
-            let likeData = await getLikeCount(req, postId);
-            let likeCount = likeData.likeCount;
-            let userLiked = likeData.userLiked;
-            post = {...post, likeCount: likeCount, userLiked: userLiked};
-            finalData.push(post);
-        })
-    );
-    return finalData;
-    //})
+    let likeData = await getMultipleLikeCounts(req, data.map(post => post.postId));
+
+    return data.map(post => {
+        let likeCount = likeData.likeCounts.find(likeCount => likeCount.postId == post.postId)?.likeCount ?? 0;
+        let userLiked = likeData.likedPosts.some(like => like.postId == post.postId);
+        return {...post, likeCount: likeCount, userLiked: userLiked};
+    });
 }
 
 

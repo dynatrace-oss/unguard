@@ -15,6 +15,12 @@ frontend:
         JAEGER_SAMPLER_PARAM: 1
         JAEGER_DISABLED: false
 
+likeService:
+  deployment:
+    container:
+      env:
+        JAEGER_DISABLED: false
+
 microblogService:
   deployment:
     container:
