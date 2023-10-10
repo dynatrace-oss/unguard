@@ -29,10 +29,10 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('SERVICE_NAME', 'unguard-like-service'),
 
     'auth_service_url' => 'http://' .
-        getenv('UNGUARD_USER_AUTH_SERVICE_ADDRESS') .
+        getenv('USER_AUTH_SERVICE_ADDRESS') .
         '/auth/isValid/',
 
     /*

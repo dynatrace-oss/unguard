@@ -15,7 +15,7 @@ COPY . /var/www
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions opentelemetry
+    install-php-extensions opentelemetry-1.0.0RC1
 
 #This is faster https://github.com/composer/composer/issues/8205#issuecomment-507256979
 RUN php /usr/bin/composer config --global repos.packagist composer https://packagist.org

@@ -78,7 +78,7 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 if (strtolower(getenv('JAEGER_DISABLED', false)) === "false") {
     Globals::registerInitializer(function (Configurator $configurator) {
         $propagator = JaegerPropagator::getInstance();
-        $transport = (new OtlpHttpTransportFactory())->create('http://' . getenv('JAEGER_AGENT_HOST', false) . ':' . getenv('JAEGER_PORT', false) . '/v1/traces', ContentTypes::JSON);
+        $transport = (new OtlpHttpTransportFactory())->create('http://' . getenv('JAEGER_COLLECTOR_HOST', false) . ':' . getenv('JAEGER_PORT', false) . '/v1/traces', ContentTypes::JSON);
         $exporter = new SpanExporter($transport);
 
         $resource = ResourceInfo::create(Attributes::create([
