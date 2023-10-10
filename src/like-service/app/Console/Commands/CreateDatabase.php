@@ -55,9 +55,9 @@ class CreateDatabase extends Command
      */
     public function handle()
     {
-        $host = getenv('UNGUARD_MARIADB_SERVICE_HOST', false);
-        $port = getenv('UNGUARD_MARIADB_SERVICE_PORT_MYSQL', false);
-        $rootuser = 'root';
+        $host = getenv('DB_HOST', false);
+        $port = getenv('DB_PORT', false);
+        $rootuser = getenv('DB_USERNAME', false);
         $password = getenv('MARIADB_PASSWORD', false);
         $address = $host . ":" . $port;
         $dbName = getenv('DB_DATABASE', false);

@@ -52,13 +52,11 @@ return [
     'connections' => [
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('UNGUARD_MARIADB_SERVICE_HOST', '127.0.0.1'),
-            'port' => env('UNGUARD_MARIADB_SERVICE_PORT_MYSQL', '3306'),
-            'database' => env('DB_DATABASE', 'forge'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'likeDb'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('MARIADB_PASSWORD', ''),
-            'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',

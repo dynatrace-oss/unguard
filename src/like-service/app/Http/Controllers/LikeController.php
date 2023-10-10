@@ -44,9 +44,7 @@ class LikeController extends BaseController
             'userId' => $userId,
             'postId' => $postId
         ]);
-        return response()->json([
-            'message' => 'Authorized'
-        ], 200);
+        return response()->make();
     }
 
     static function getLikeCountAndState($request, $postId)
@@ -119,9 +117,7 @@ class LikeController extends BaseController
 
         $query->setBindings($bindings)->delete();
 
-        return response()->json([
-            'userId' => $userId,
-        ], 200);
+        return response()->make();
     }
 
     static function validateToken($user_token)

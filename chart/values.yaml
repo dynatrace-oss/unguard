@@ -404,7 +404,7 @@ likeService:
       ports:
         containerPort: 8000
       env:
-        JAEGER_AGENT_HOST: collector # PHP OpenTelemetry sends data to jaeger-collector instead of jaeger-agent
+        JAEGER_COLLECTOR_HOST: collector # PHP OpenTelemetry sends data to jaeger-collector instead of jaeger-agent
         JAEGER_DISABLED: true
         JAEGER_PORT: 4318
         SERVICE_NAME: unguard-like-service

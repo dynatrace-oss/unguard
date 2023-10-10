@@ -70,8 +70,8 @@ spec:
             - name: JAEGER_SERVICE_NAME
               value: {{quote (printf "unguard-%s" .Values.likeService.name) }}
             {{if .Values.tracing.enabled}}
-            - name: JAEGER_AGENT_HOST
-              value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.likeService.deployment.container.env.JAEGER_AGENT_HOST) }}
+            - name: JAEGER_COLLECTOR_HOST
+              value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.likeService.deployment.container.env.JAEGER_COLLECTOR_HOST) }}
             - name: JAEGER_PORT
               value: {{ quote .Values.likeService.deployment.container.env.JAEGER_PORT }}
             - name: SERVICE_NAME
