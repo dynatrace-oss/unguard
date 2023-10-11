@@ -16,6 +16,10 @@ aws:
   enabled: false
   ingress:
     annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/load-balancer-name: "unguard-lb"
 
 # Ingress
 ingress:
