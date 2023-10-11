@@ -33,18 +33,14 @@ use Illuminate\Http\Request;
 include (__DIR__ . '/../app/Http/Controllers/LikeController.php');
 
 
-Route::get('/like-service/like-count', function (Request $request){
-    return LikeController::getMultipleLikeCountsAndStates($request);
+Route::get('/like', function (Request $request){
+    return LikeController::getLikeCountsAndStates($request);
 });
 
-Route::get('/like-service/like-count/{postId}', function (Request $request, string $postId){
-    return LikeController::getLikeCountAndState($request, $postId);
-});
-
-Route::post('/like-service/like-delete', function (Request $request){
+Route::delete('/like', function (Request $request){
     return LikeController::removeLike($request);
 });
 
-Route::post('/like-service/like-post', function(Request $request){
-   return LikeController::doLike($request);
+Route::post('/like/{postId}', function(Request $request, string $postId){
+   return LikeController::doLike($request, $postId);
 });

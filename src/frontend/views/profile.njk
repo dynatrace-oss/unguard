@@ -1,4 +1,4 @@
-{# 
+{#
 Copyright 2023 Dynatrace LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,13 +20,13 @@ limitations under the License.
     <div>
         <div class="d-flex align-items-center">
             <div class="mr-2">
-                <img class="rounded-circle" style="background-color: white"
+                <img class="rounded-circle bg-white"
                      width="150" src="//robohash.org/{{ profileName }}.png?set=set1&size=150x150"
                      alt="{{ profileName }}">
             </div>
             <div class="ml-5">
                 <div class="h1 m-0">{{ profileName }}
-                    <span style="vertical-align: text-top">
+                    <span class="align-text-top">
                         {% if (membership !== 'PRO') %}
                             <a href="{{ extendURL('/membership') }}"><span class="membership-tag badge badge-light">
                             {{membership}}

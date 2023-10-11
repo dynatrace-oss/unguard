@@ -28,10 +28,9 @@ class LikeController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    static function doLike($request)
+    static function doLike($request, $postId)
     {
         $user_token = $request->cookie('jwt');
-        $postId = $request->input('postId');
 
         if (!self::validateToken($user_token)) {
             return response()->json([
@@ -47,31 +46,14 @@ class LikeController extends BaseController
         return response()->make();
     }
 
-    static function getLikeCountAndState($request, $postId)
+    static function getLikeCountsAndStates($request)
     {
         $user_token = $request->cookie('jwt');
+        $postIds = $request->query('postId', $request->query('postId[]', []));
 
-        if (!self::validateToken($user_token)) {
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
+        if(!is_array($postIds)) {
+            $postIds = [$postIds];
         }
-        $userId = self::extractUserIdFromToken($user_token);
-
-        $count = DB::table('like')->where('postId', '=', $postId)->count('*');
-        $userLiked = DB::table('like')->where('userId', '=', $userId)->where('postId', '=', $postId)->count('*') > 0;
-
-
-        return response()->json([
-            'likeCount' => $count,
-            'userLiked' => $userLiked
-        ], 200);
-    }
-
-    static function getMultipleLikeCountsAndStates($request)
-    {
-        $user_token = $request->cookie('jwt');
-        $postIds = $request->query('postIds', $request->query('postIds[]', []));
 
         if (!self::validateToken($user_token)) {
             return response()->json([
@@ -93,11 +75,11 @@ class LikeController extends BaseController
         * Function removeLike is vulnerable to SQL-Injection-Attacks.
         * When "postId" is an array, all contents of the array are added to the SQL-Bindings of the subsequent query.
         * This means that, when passing an array it is possible to manipulate the userId value of the query -> unlike another user's like.
- */
+    */
     static function removeLike($request)
     {
         $user_token = $request->cookie('jwt');
-        $postId = $request->input('postId');
+        $postId = $request->query('postId');
 
         if (!self::validateToken($user_token)) {
             return response()->json([
