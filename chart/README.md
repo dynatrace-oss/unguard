@@ -115,8 +115,43 @@ helm install unguard -f aws.yaml oci://ghcr.io/dynatrace-oss/unguard/chart/ungua
 
 The above command applies the values from `aws.yaml` which creates and configures an ingress for EKS deployment.
 
-
 > **Tip**: You can use the default [values.yaml](values.yaml)
+
+
+## Installation on an AWS EKS cluster
+
+> **Warning** \
+> Unguard is **insecure** by design and a careless installation will leave you exposed to severe security vulnerabilities. \
+> When installing Unguard with the `aws.enabled=true` value set, an ingress gets created. Please make sure to review its configuration.
+
+> **Note**:\
+These steps assume that an AWS Load Balancer Controller is installed. See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.6/ for more information.
+
+This Chart is prepared to install Unguard on an AWS EKS cluster. \
+To install Unguard on an AWS EKS cluster running an AWS load balancer, you can run the following `helm` command:
+
+```sh
+helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --set localDev.enabled=false,aws.enabled=true
+```
+
+This creates an ingress and adds the following default annotations:
+
+```yaml
+kubernetes.io/ingress.class: alb
+alb.ingress.kubernetes.io/target-type: ip
+alb.ingress.kubernetes.io/scheme: internal
+alb.ingress.kubernetes.io/load-balancer-name: "unguard-lb"
+```
+
+These annotations can be adjusted by modifying and extending the `aws.yaml` values file and then passing it to the Unguard helm install command like shown bellow.
+
+```sh
+helm install unguard -f aws.yaml oci://ghcr.io/dynatrace-oss/unguard/chart/unguard
+```
+
+> **Note**:\
+Passing the `aws.yaml` values file removes and overrides ALL default annotations. 
+
 
 ## Tracing and Jaeger
 
