@@ -176,7 +176,7 @@ class UnguardUser(HttpUser):
         user_id = 1
 
         # try to remove the like of the admanger account (user ID 1) on the first post (post ID 1).
-        self.client.get("/post", params={'postId': [post_id, user_id], 'like_delete': ''}, headers=self.get_random_x_forwarded_for_header())
+        self.client.get("/unlike", params={'postId': [post_id, user_id]}, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
     def on_start(self):

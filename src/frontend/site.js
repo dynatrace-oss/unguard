@@ -38,7 +38,11 @@ router.post('/user/:username/follow', followUser);
 // Create post
 router.post('/post', createPost);
 // get single post
-router.get('/post', getPost);
+router.get('/post/:postId', getPost);
+// Like post
+router.get('/like', likePost);
+// Unlike post
+router.get('/unlike', unlikePost);
 // Logout
 router.post('/logout', doLogout);
 // Login
@@ -53,29 +57,26 @@ router.post('/membership/:username', postMembership);
 
 router.use('/ad-manager', adManagerRouter);
 
-async function showGlobalTimeline(req, res) {
-    try {
-        let [timeline, membership] = await fetchUsingDeploymentBase(req, () =>
-            Promise.all([
-                req.MICROBLOG_API.get('/timeline'),
-                getMembershipOfLoggedInUser(req)
-            ]))
-        let postArray = timeline.data;
-        postArray = await insertLikeCountIntoPostArray(req, postArray);
+function showGlobalTimeline(req, res) {
+    fetchUsingDeploymentBase(req, () =>
+        Promise.all([
+            req.MICROBLOG_API.get('/timeline'),
+            getMembershipOfLoggedInUser(req)
+        ])).
+        then(([timeline, membership]) => {
+            insertLikeCountIntoPostArray(req, timeline.data).then(postArray => {
+                let data = extendRenderData({
+                    data: postArray,
+                    title: 'Timeline',
+                    username: getJwtUser(req.cookies),
+                    isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
+                    baseData: baseRequestFactory.baseData,
+                    membership: membership.data.membership
 
-        let data = extendRenderData({
-            data: postArray,
-            title: 'Timeline',
-            username: getJwtUser(req.cookies),
-            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
-            baseData: baseRequestFactory.baseData,
-            membership: membership.data.membership
-
-        }, req);
-        res.render('index.njk', data)
-    } catch (err) {
-        displayError(err, res)
-    }
+                }, req);
+                res.render('index.njk', data)
+            }, (err) => displayError(err, res))
+        }, (err) => displayError(err, res))
 }
 
 function showUsers(req, res) {
@@ -115,29 +116,25 @@ function showUsers(req, res) {
         }, (err) => displayError(err, res));
 }
 
-async function showPersonalTimeline(req, res) {
-    try {
-        let [myTimeline, membership] = await fetchUsingDeploymentBase(req, () =>
-            Promise.all([
-                req.MICROBLOG_API.get('/mytimeline'),
-                getMembershipOfLoggedInUser(req)
-            ]))
-
-        let postArray = myTimeline.data;
-        postArray = await insertLikeCountIntoPostArray(req, postArray);
-
-        let data = extendRenderData({
-            data: postArray,
-            title: 'My Timeline',
-            username: getJwtUser(req.cookies),
-            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
-            baseData: baseRequestFactory.baseData,
-            membership: membership.data.membership
-        }, req);
-        res.render('index.njk', data);
-    } catch (err) {
-        displayError(err, res)
-    }
+function showPersonalTimeline(req, res) {
+    fetchUsingDeploymentBase(req, () =>
+        Promise.all([
+            req.MICROBLOG_API.get('/mytimeline'),
+            getMembershipOfLoggedInUser(req)
+        ]))
+        .then(([myTimeline, membership]) => {
+            insertLikeCountIntoPostArray(req, myTimeline.data).then(postArray => {
+                let data = extendRenderData({
+                    data: postArray,
+                    title: 'My Timeline',
+                    username: getJwtUser(req.cookies),
+                    isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
+                    baseData: baseRequestFactory.baseData,
+                    membership: membership.data.membership
+                }, req);
+                res.render('index.njk', data);
+            }, (err) => displayError(err, res))
+        }, (err) => displayError(err, res))
 }
 
 function showUserProfile(req, res) {
@@ -148,21 +145,20 @@ function showUserProfile(req, res) {
             req.MICROBLOG_API.get(`/users/${username}/posts`),
             getMembership(req, username)
         ])
-    ).then(async ([bioText, microblogServiceResponse, membership]) => {
-        let postArray = microblogServiceResponse.data;
-        postArray = await insertLikeCountIntoPostArray(req, postArray);
+    ).then(([bioText, microblogServiceResponse, membership]) => {
+        insertLikeCountIntoPostArray(req, microblogServiceResponse.data).then(postArray => {
+            let data = extendRenderData({
+                data: postArray,
+                profileName: username,
+                username: getJwtUser(req.cookies),
+                isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
+                bio: bioText,
+                baseData: baseRequestFactory.baseData,
+                membership: membership.data.membership
+            }, req);
 
-        let data = extendRenderData({
-            data: postArray,
-            profileName: username,
-            username: getJwtUser(req.cookies),
-            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
-            bio: bioText,
-            baseData: baseRequestFactory.baseData,
-            membership: membership.data.membership
-        }, req);
-
-        res.render('profile.njk', data);
+            res.render('profile.njk', data);
+        }, (err) => displayError(err, res))
     }, (err) => displayError(err, res));
 }
 
@@ -318,7 +314,7 @@ function createPost(req, res) {
                     imageUrl: metaImgSrc
                 }))
             }, (err) => displayError(err, res))
-            .then((postResponse) => res.redirect(extendURL(`/post?postId=${postResponse.data.postId}`)), (err) => displayError(err, res));
+            .then((postResponse) => res.redirect(extendURL(`/post/${postResponse.data.postId}`)), (err) => displayError(err, res));
     } else if (req.body.imgurl) {
         // the image post calls a different endpoint that has a different ssrf vulnerability
         fetchUsingDeploymentBase(req, () => req.PROXY.get("/image", {
@@ -331,13 +327,13 @@ function createPost(req, res) {
                 imageUrl: response.data
             }));
         }, (err) => displayError(err, res))
-            .then((postResponse) => res.redirect(extendURL(`/post?postId=${postResponse.data.postId}`)), (err) => displayError(err, res));
+            .then((postResponse) => res.redirect(extendURL(`/post/${postResponse.data.postId}`)), (err) => displayError(err, res));
     } else if (req.body.message) {
         // this is a normal message
         fetchUsingDeploymentBase(req, () => req.MICROBLOG_API.post('/post', {
             content: req.body.message
         })).then((postResponse) => {
-            res.redirect(extendURL(`/post?postId=${postResponse.data.postId}`));
+            res.redirect(extendURL(`/post/${postResponse.data.postId}`));
         }, (err) => displayError(err, res));
     } else {
         // when nothing is set, just redirect back
@@ -345,34 +341,35 @@ function createPost(req, res) {
     }
 }
 
-async function getPost(req, res) {
-    const postId = req.query.postId;
-    try {
-        if(req.query.like_post !== undefined) {
-            await fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.post(`/like-service/like-post`, {postId: postId}))
-        }
-        else if (req.query.like_delete !== undefined) {
-            await fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.post(`/like-service/like-delete`, {postId: postId}));
-        }
-    } catch {}
+function getPost(req, res) {
+    const postId = req.params.postId;
+    fetchUsingDeploymentBase(req, () => req.MICROBLOG_API.get(`/post/${postId}`)).then((response) => {
+        insertLikeCountIntoPostArray(req, [response.data]).then(postArray => {
+            let postData = postArray[0];
+            let data = extendRenderData({
+                post: postData,
+                username: getJwtUser(req.cookies),
+                isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
+                baseData: baseRequestFactory.baseData
+            }, req);
 
-
-    const likeData = await getLikeCount(req, postId)
-
-    fetchUsingDeploymentBase(req, () => req.MICROBLOG_API.get(`/post/${postId}`)).then((response) => {//
-
-        let postData = response.data;
-        postData = {...postData, likeCount: likeData.likeCount, userLiked: likeData.userLiked};
-
-        let data = extendRenderData({
-            post: postData,
-            username: getJwtUser(req.cookies),
-            isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
-            baseData: baseRequestFactory.baseData
-        }, req);
-
-        res.render('singlepost.njk', data);
+            res.render('singlepost.njk', data);
+        }, (err) => displayError(err, res))
     }, (err) => displayError(err, res))
+}
+
+function likePost(req, res) {
+    const postId = req.query.postId;
+    fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.post(`/like/` + postId)).then((response) => {
+        res.redirect(extendURL(`/post/${postId}`));
+    }, (error) => res.status(statusCodeForError(error)).render('error.njk', handleError(error)));
+}
+
+function unlikePost(req, res) {
+    const postId = req.query.postId;
+    fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.delete(`/like`, {params: {postId: postId}})).then((response) => {
+        res.redirect(extendURL(`/post/${postId}`));
+    }, (error) => res.status(statusCodeForError(error)).render('error.njk', handleError(error)));
 }
 
 function postMembership(req, res) {
@@ -394,29 +391,18 @@ function postBio(req, res) {
         .then((_) => {
             res.redirect(extendURL(`/user/${getJwtUser(req.cookies)}`));
         }).catch(error => {
-        res.status(statusCodeForError(error)).render('error.njk', handleError(error));
-    });
+            res.status(statusCodeForError(error)).render('error.njk', handleError(error));
+        });
 }
 
-
-async function getLikeCount(req, postId) {
-    let response = await fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.get(`/like-service/like-count/` + postId))
-    return response.data
-}
-
-async function getMultipleLikeCounts(req, postIds) {
-    let response = await fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.get(`/like-service/like-count/`, { params: { postIds: postIds } }))
-    return response.data
-}
-
-async function insertLikeCountIntoPostArray(req, data) {
-    let likeData = await getMultipleLikeCounts(req, data.map(post => post.postId));
-
-    return data.map(post => {
-        let likeCount = likeData.likeCounts.find(likeCount => likeCount.postId == post.postId)?.likeCount ?? 0;
-        let userLiked = likeData.likedPosts.some(like => like.postId == post.postId);
-        return {...post, likeCount: likeCount, userLiked: userLiked};
-    });
+function insertLikeCountIntoPostArray(req, posts) {
+    return fetchUsingDeploymentBase(req, () => req.LIKE_SERVICE_API.get(`/like`, { params: { postId: posts.map(post => post.postId) } }))
+        .then(likeResponse => likeResponse.data)
+        .then(likeData => posts.map(post => {
+            let likeCount = likeData.likeCounts.find(likeCount => likeCount.postId == post.postId)?.likeCount ?? 0;
+            let userLiked = likeData.likedPosts.some(like => like.postId == post.postId);
+            return {...post, likeCount: likeCount, userLiked: userLiked};
+    }));
 }
 
 

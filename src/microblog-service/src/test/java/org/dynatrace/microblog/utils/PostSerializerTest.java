@@ -15,7 +15,7 @@ class PostSerializerTest {
 	@Test
 	void serializePost_ReturnsTrue_WhenObjectCouldBeDeserialized() {
 		assertThat(postSerializer.serializePost(
-				new SerializedPost("username", "body", "imageURL", new Date(), "1", UUID.randomUUID())))
+				new SerializedPost("1", "username", "body", "imageURL", new Date(), UUID.randomUUID())))
 				.isTrue();
 	}
 }

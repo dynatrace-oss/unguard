@@ -30,13 +30,13 @@ This document explains how to install Jaeger tracing using Helm to the cluster.
 1. For local development
     1. Install Jaeger (takes a couple of minutes)
        ```sh
-        helm install jaeger jaegertracing/jaeger --version 0.71.14 --wait --namespace unguard --create-namespace --values ./chart/jaeger-otlp-values.yaml
+        helm install jaeger jaegertracing/jaeger --version 0.71.14 --wait --namespace unguard --create-namespace --values ./docs/jaeger/jaeger-otlp-values.yaml
        ```
     2. Install the Jaeger-Operator
        ```sh
         helm install jaeger-operator jaegertracing/jaeger-operator --version 2.22.0 --wait --namespace unguard --create-namespace
        ```
-    2. Deploy the AllInOne image for local development
+    3. Deploy the AllInOne image for local development
        ```sh
         kubectl apply -f ./k8s-manifests/jaeger/jaeger.yaml
        ```

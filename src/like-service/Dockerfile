@@ -1,6 +1,6 @@
 FROM php:8.0-cli
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.6.5 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
@@ -12,10 +12,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 COPY . /var/www
 
-ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-
-RUN chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions opentelemetry-1.0.0RC1
+RUN pecl install opentelemetry-1.0.0RC1 && docker-php-ext-enable opentelemetry
 
 #This is faster https://github.com/composer/composer/issues/8205#issuecomment-507256979
 RUN php /usr/bin/composer config --global repos.packagist composer https://packagist.org

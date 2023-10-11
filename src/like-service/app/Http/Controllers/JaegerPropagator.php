@@ -34,7 +34,7 @@ use OpenTelemetry\Context\Propagation\PropagationSetterInterface;
 use OpenTelemetry\Context\Propagation\TextMapPropagatorInterface;
 
 /**
- * There's different formats used for propagation (reading/transmitting trace and span data to identify
+ * There are different formats used for propagation (reading/transmitting trace and span data to identify
  * causal relationships between spans or, put differently, connect spans of different services)
  * The PHP OpenTelemetry library seemingly only supports the W3C Trace Context format
  * (https://www.w3.org/TR/trace-context/); that class is found here: OpenTelemetry\API\Trace\Propagation\TraceContextPropagator.
@@ -46,7 +46,7 @@ use OpenTelemetry\Context\Propagation\TextMapPropagatorInterface;
  * The W3C traceparent is structured like this:
  * version "-" trace-id "-" parent-id "-" trace-flags ------ version seems to always be 00, trace-id is a 32-digit hex string, parent-id is a 16-digit hex string, and trace-flags is a 2-digit hex string
  *
- *  The Jaeger uber-trace-id is strcutured thus:
+ *  The Jaeger uber-trace-id is structured thus:
  * trace-id ":" span-id ":" parent-span-id ":" flags  ------ trace-id is a 16- or 32-digit hex string, span-id is a 16-digit hex string, parent-span-id is a 16-digit hex string (and deprecated), flags is a 1- or 2-digit hex string
  *
  * The formats are very similar. Therefore, this class is mostly adapted from the official TraceContextPropagator class.

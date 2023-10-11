@@ -196,7 +196,7 @@ public class RedisClient {
         String imageUrl = postMap.get("imageUrl");
         Date timestamp = new Date(Long.parseLong(postMap.get("time")));
 
-        return new Post(userName, body, imageUrl, timestamp, postId);
+        return new Post(postId, userName, body, imageUrl, timestamp);
     }
 
     public List<Post> getTimeline(String jwtToken) {
