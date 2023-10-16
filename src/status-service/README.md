@@ -8,8 +8,8 @@ the [kubernetes API docs, deployment v1 apps](https://kubernetes.io/docs/referen
 
 > GET status-service/deployments/health
 
-start a minikube k8s cluster and deploy unguard into minikube with skaffold (also shortly explain how to do that)
-run it locally
+Gets a list of users from the MariaDB database. You can filter by the username using the `name` parameter and by the role(s) using the `roles`/`roles[]` parameter. The parameters are vulnerable to SQL Injection attacks:
+> GET status-service/users?name=robot&roles=AD_MANAGER
 
 ## How to Run
 
@@ -29,6 +29,18 @@ development speed boost.
     * [Configure GO_ROOT and GO_PATH](https://www.jetbrains.com/help/idea/configuring-goroot-and-gopath.html#goroot)
     * Enable GO Modules integration: in Settings navigate to Language & Frameworks > Go > Go Modules and tick the
       checkbox "Enable Go modules integration"
+* A running MariaDB
+
+### Run MariaDB locally
+The status-service requires a running relational database MariaDB.
+This database needs to be initialized by the user-auth-service. Therefore, before you run the status-service locally,
+you need to start the user-auth-service, as described in [the user-auth-service's Readme](../user-auth-service/README.md).
+And then update the environment variables for the status-service to fit:
+```bash
+export MARIADB_PASSWORD=mariadb-root-password
+export MARIADB_SERVICE=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' user-auth-db)
+```
+
 
 ### Switch Kubernetes API connection approach to from outside-cluster
 
@@ -57,3 +69,5 @@ E.g GET `localhost:8083/status-service/deployments`
 | API_PATH             | /status-service        | Api entrypoint path                          |
 | KUBERNETES_NAMESPACE | unguard                | Namespace to fetch deployments from          |
 | IGNORED_DEPLOYMENTS  | unguard-user-simulator | That should be ignored for health assessment |
+| MARIADB_SERVICE      | localhost              | Address of MariaDB database                  |
+| MARIADB_PASSWORD     | mariadb-root-password  | Password of MariaDB database                 |

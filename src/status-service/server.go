@@ -18,12 +18,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/gommon/log"
 	"net/http"
 	"status-service/handler"
 	"status-service/utils"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 )
 
 var serverPort = utils.GetEnv("SERVER_PORT", "8083")
@@ -39,6 +40,8 @@ func main() {
 
 	api.GET("/deployments", handler.GetDeployments)
 	api.GET("/deployments/health", handler.GetHealth)
+	api.GET("/users", handler.GetUsers)
+	api.GET("/roles", handler.GetRoles)
 
 	if err := server.Start(fmt.Sprintf(":%s", serverPort)); err != http.ErrServerClosed {
 		log.Fatal(err)

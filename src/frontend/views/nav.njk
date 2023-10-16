@@ -32,6 +32,12 @@ limitations under the License.
                 </a>
             </li>
             {% if (username) %}
+                <li class="nav-item {{'active' if (currentPath != undefined) and (extendURL('/users') == currentPath)}}">
+                    <a class="nav-link" href="{{ extendURL('/users') }}" name="navUsers">
+                        Users
+                    </a>
+                </li>
+            
                 <li class="nav-item {{'active' if (currentPath != undefined) and (extendURL('/my-timeline') == currentPath)}}">
                     <a class="nav-link" href="{{ extendURL('/my-timeline') }}"  name="navMyTimeline">
                         My Timeline

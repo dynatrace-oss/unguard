@@ -27,6 +27,8 @@ const router = express.Router();
 
 // Global Timeline route
 router.get('/', showGlobalTimeline);
+// Show users
+router.get('/users', showUsers);
 // Personalized Timeline (only works when logged in)
 router.get('/my-timeline', showPersonalTimeline);
 // User Profile route
@@ -69,6 +71,43 @@ function showGlobalTimeline(req, res) {
             }, req);
 
             res.render('index.njk', data)
+        }, (err) => displayError(err, res));
+}
+
+function showUsers(req, res) {
+    let params = {}
+    if (req.query.name) {
+        params.name = req.query.name
+    }
+    if(req.query.roles) {
+        params.roles = req.query.roles
+    }
+    fetchUsingDeploymentBase(req, () =>
+        Promise.all([
+            req.STATUS_SERVICE_API.get('/roles'),
+            req.STATUS_SERVICE_API.get('/users', {
+                params: params
+            }),
+            getMembershipOfLoggedInUser(req)
+        ]))
+        .then(([allRoles, users, membership]) => {
+            let data = extendRenderData({
+                data: users.data,
+                roles: allRoles.data,
+                title: 'Users',
+                searchTerm: req.query.name,
+                searchRoles: req.query.roles,
+                shouldRoleBeChecked: (role) => {
+                    return (typeof req.query.roles == "string" && req.query.roles == role.name) // only one checkbox checked
+                    || (typeof req.query.roles == "object" && req.query.roles.includes(role.name)) // multiple checkboxes checked
+                }, 
+                username: getJwtUser(req.cookies),
+                isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
+                baseData: baseRequestFactory.baseData,
+                membership: membership.data.membership
+
+            }, req);
+            res.render('users.njk', data);
         }, (err) => displayError(err, res));
 }
 
