@@ -26,7 +26,7 @@ This document explains how to build and run Unguard locally inside Kubernetes us
         kind create cluster --name unguard --config ./k8s-manifests/localdev/kind/cluster-config.yaml
         ```
 
-        * Optionally add an nginx ingress controller if you want to expose Unguard locally without port-forwarding
+        * Also, make sure to deploy an nginx ingress controller so that Unguard can be exposed locally (without port-forwarding)
             ```sh
             kubectl apply -k ./k8s-manifests/localdev/kind/
              ```
