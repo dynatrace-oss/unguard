@@ -38,6 +38,18 @@ static_resources:
                   - name: envoy.access_loggers.stdout
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                      log_format:
+                        json_format:
+                          content_type: "%REQ(Content-Type)%"
+                          downstream_remote_address: "%DOWNSTREAM_REMOTE_ADDRESS%"
+                          hostname: "%HOSTNAME%"
+                          message: "%LOCAL_REPLY_BODY%"
+                          original_path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+                          response_code: "%RESPONSE_CODE%"
+                          response_code_details: "%RESPONSE_CODE_DETAILS%"
+                          timestamp: "%START_TIME%"
+                          upstream_remote_address: "%UPSTREAM_REMOTE_ADDRESS%"
+                          user_agent: "%REQ(User-Agent)%"
                 http_filters:
                   - name: envoy.filters.http.router
                     typed_config:
