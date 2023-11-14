@@ -50,7 +50,17 @@ static_resources:
                           timestamp: "%START_TIME%"
                           upstream_remote_address: "%UPSTREAM_REMOTE_ADDRESS%"
                           user_agent: "%REQ(User-Agent)%"
+                          payload: "%DYNAMIC_METADATA(envoy.filters.http.lua.request-filter:payload)%"
                 http_filters:
+                  - name: envoy.filters.http.lua
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+                      default_source_code:
+                        inline_string: |
+                          local request_logger = require("/etc/envoy/unguard/request-logger")
+                          function envoy_on_request(request_handle)
+                            request_logger.log_payload(request_handle)
+                          end
                   - name: envoy.filters.http.router
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
