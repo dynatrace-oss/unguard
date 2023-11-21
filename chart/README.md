@@ -84,7 +84,7 @@ The command removes all the Kubernetes components associated with the chart and 
 To install Unguard in a specific version provide the `--version` flag with the version you want to install:
 
 ```sh
-helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version 0.8.1
+helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version 0.9.0
 ```
 
 ## Parameters
@@ -150,7 +150,7 @@ helm install unguard -f aws.yaml oci://ghcr.io/dynatrace-oss/unguard/chart/ungua
 ```
 
 > **Note**:\
-Passing the `aws.yaml` values file removes and overrides ALL default annotations. 
+Passing the `aws.yaml` values file removes and overrides ALL default annotations.
 
 
 ## Tracing and Jaeger
