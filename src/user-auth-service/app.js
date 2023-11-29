@@ -45,12 +45,11 @@ logger.token('body', function (req) {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-	app.use(logger('[:date[iso]] :status :userid :req[header] ":method :url HTTP/:http-version" - :body :response-time ms'));
-
+	app.use(logger('[:date[iso]] :remote-addr :userid :req[header] ":method :url HTTP/:http-version" - :body ":user-agent" ":referrer" :status :response-time ms'));
 	// load environment variable from .env; needed for ./utils/database
 	require('dotenv').config()
 } else {
-	app.use(logger('[:date[iso]] :status :userid :req[header] ":method :url HTTP/:http-version" - :response-time ms'));
+	app.use(logger('[:date[iso]] :remote-addr :userid :req[header] ":method :url HTTP/:http-version" - - ":user-agent" ":referrer" :status :response-time ms'));
 }
 
 const tracer = initTracer(process.env.JAEGER_SERVICE_NAME);
