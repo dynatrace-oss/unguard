@@ -24,6 +24,7 @@ const adManagerRouter = require('./controller/adManager');
 const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
+const querystring = require('querystring');
 
 // Global Timeline route
 router.get('/', showGlobalTimeline);
@@ -71,7 +72,7 @@ function showGlobalTimeline(req, res) {
                     username: getJwtUser(req.cookies),
                     isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
                     baseData: baseRequestFactory.baseData,
-                    membership: membership.data.membership
+                    membership: membership.data
 
                 }, req);
                 res.render('index.njk', data)
@@ -109,7 +110,7 @@ function showUsers(req, res) {
                 username: getJwtUser(req.cookies),
                 isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
                 baseData: baseRequestFactory.baseData,
-                membership: membership.data.membership
+                membership: membership.data
 
             }, req);
             res.render('users.njk', data);
@@ -130,7 +131,7 @@ function showPersonalTimeline(req, res) {
                     username: getJwtUser(req.cookies),
                     isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
                     baseData: baseRequestFactory.baseData,
-                    membership: membership.data.membership
+                    membership: membership.data
                 }, req);
                 res.render('index.njk', data);
             }, (err) => displayError(err, res))
@@ -154,7 +155,7 @@ function showUserProfile(req, res) {
                 isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
                 bio: bioText,
                 baseData: baseRequestFactory.baseData,
-                membership: membership.data.membership
+                membership: membership.data
             }, req);
 
             res.render('profile.njk', data);
@@ -189,7 +190,7 @@ function showMembership(req, res) {
                 username: getJwtUser(req.cookies),
                 isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
                 baseData: baseRequestFactory.baseData,
-                membership: membership.data.membership
+                membership: membership.data
             }, req);
 
             res.render('membership.njk', data);
@@ -373,11 +374,28 @@ function unlikePost(req, res) {
 }
 
 function postMembership(req, res) {
-    const membership = {userid: getJwtUserId(req.cookies), membership: req.body.membershipText};
-    fetchUsingDeploymentBase(req, () => req.MEMBERSHIP_SERVICE_API.post('/', membership)).then((response) => {
-        res.redirect(extendURL(`/user/${getJwtUser(req.cookies)}`));
-    }, (error) => res.status(statusCodeForError(error)).render('error.njk', handleError(error)));
-
+    const formData = {
+        membership: req.body.membershipText,
+    };
+    fetchUsingDeploymentBase(req, () =>
+        req.MEMBERSHIP_SERVICE_API.post(
+            `/add/${getJwtUserId(req.cookies)}`,
+            querystring.stringify(formData),
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            }
+        )
+    ).then(
+        (response) => {
+            res.redirect(extendURL(`/user/${getJwtUser(req.cookies)}`));
+        },
+        (error) =>
+            res
+                .status(statusCodeForError(error))
+                .render("error.njk", handleError(error))
+    );
 }
 
 function postBio(req, res) {
