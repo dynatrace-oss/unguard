@@ -63,13 +63,10 @@ docker run -it -p 80:8083 --name membership-service-container membership-service
 
 Returns the current membership of the requested user ID.
 
-#### POST /membership-service
+#### POST /membership-service/add/{userid}
 
-Insert or update the current membership of the user ID specified in the HTTP body:
+Update the user membership by providing it as simple form params to the post request:
 
-```json
-{
-    "userid": 234145,
-    "membership": "PRO"
-}
+```
+membership={membershipText}
 ```
