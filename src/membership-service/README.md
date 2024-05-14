@@ -65,7 +65,7 @@ Returns the current membership of the requested user ID.
 
 #### POST /membership-service/add/{userid}
 
-Update the user membership by providing it as simple form params to the post request:
+Update the user membership by providing it as simple form parameter to the post request:
 
 ```
 membership={membershipText}
