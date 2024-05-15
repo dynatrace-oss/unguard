@@ -38,7 +38,6 @@ mariaDB:
   serviceName: unguard-mariadb
   password: mariadb-root-password
 
-
 # Malicious load generator
 maliciousLoadGenerator:
   enabled: false
@@ -52,7 +51,7 @@ maliciousLoadGenerator:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-malicious-load-generator
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8083
@@ -110,7 +109,7 @@ userSimulator:
       container:
         image:
           repository: ghcr.io/dynatrace-oss/unguard/unguard-user-simulator
-          tag: 0.9.1
+          tag: 0.9.2
           pullPolicy: IfNotPresent
 
         env:
@@ -141,7 +140,7 @@ membershipService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-membership-service
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8083
@@ -171,7 +170,7 @@ userAuthService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-user-auth-service
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         containerPort: 9091
@@ -182,7 +181,7 @@ userAuthService:
           secretKeyRef:
             name: "{{ .Values.mariaDB.serviceName }}"
             key: "{{ .Values.mariaDB.password }}"
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         JAEGER_DISABLED: true
@@ -206,12 +205,12 @@ adService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-ad-service
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8082
       env:
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         JAEGER_DISABLED: true
@@ -240,7 +239,7 @@ envoyProxy:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-envoy-proxy
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         - name: http
@@ -264,13 +263,13 @@ microblogService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-microblog-service
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8080
       env:
         SERVER_PORT: 8080
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         OPENTRACING_JAEGER_ENABLED: false
@@ -317,7 +316,7 @@ statusService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-status-service
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8083
@@ -325,7 +324,7 @@ statusService:
         SERVER_PORT: 8083
         API_PATH: /status-service
         KUBERNETES_NAMESPACE: unguard
-        IGNORED_DEPLOYMENTS: unguard-user-simulator  # add deployments to ignore separated by spaces
+        IGNORED_DEPLOYMENTS: unguard-user-simulator # add deployments to ignore separated by spaces
         MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
         MARIADB_PASSWORD:
           secretKeyRef:
@@ -348,7 +347,7 @@ proxyService:
   role:
     name: proxy-role
     rules:
-      - apiGroups: [""]  # "" indicates the core API group
+      - apiGroups: [""] # "" indicates the core API group
         resources: ["pods"]
         verbs: ["create", "list", "get"]
       - apiGroups: [""]
@@ -372,13 +371,13 @@ proxyService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-proxy-service
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8081
       env:
         SERVER_PORT: 8081
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         OPENTRACING_JAEGER_ENABLED: false
@@ -399,12 +398,12 @@ likeService:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-like-service
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         containerPort: 8000
       env:
-        JAEGER_COLLECTOR_HOST: collector  # PHP OpenTelemetry sends data to jaeger-collector instead of jaeger-agent
+        JAEGER_COLLECTOR_HOST: collector # PHP OpenTelemetry sends data to jaeger-collector instead of jaeger-agent
         JAEGER_DISABLED: true
         JAEGER_PORT: 4318
         SERVICE_NAME: unguard-like-service
@@ -415,7 +414,6 @@ likeService:
           secretKeyRef:
             name: "{{ .Values.mariaDB.serviceName }}"
             key: "{{ .Values.mariaDB.password }}"
-
 
 # Frontend
 frontend:
@@ -433,12 +431,12 @@ frontend:
     container:
       image:
         repository: ghcr.io/dynatrace-oss/unguard/unguard-frontend
-        tag: 0.9.1
+        tag: 0.9.2
         pullPolicy: IfNotPresent
       ports:
         containerPort: 3000
       env:
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+        JAEGER_AGENT_HOST: agent # change depending on your jaeger deployment
         JAEGER_SAMPLER_TYPE: const
         JAEGER_SAMPLER_PARAM: 0
         JAEGER_DISABLED: true
