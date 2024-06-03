@@ -38,7 +38,7 @@ Unguard is composed of eight microservices written in different languages that t
 | jaeger                                                     |                 | default         | The [Jaeger](https://www.jaegertracing.io/) stack for distributed tracing.                                                                  |
 | mariadb                                                    |                 | unguard-mariadb | Relational database that holds user and token data.                                                                                         |
 | redis                                                      |                 | default         | Key-value store that holds all user data (except authentication-related stuff).                                                             |
-| [user-simulator](./src/user-simulator)                     | Node.js Element | default         | Creates synthetic user traffic by simulating an Unguard user using a real browser. Acts as a load generator.                                |
+| [user-simulator](./src/user-simulator)                     | Node.js         | default         | Creates synthetic user traffic by simulating an Unguard user using a real browser. Acts as a load generator.                                |
 | [malicious-load-generator](./src/malicious-load-generator) |                 | default         | Malicious load generator that makes CMD, JNDI, and SQL injections.                                                                          |
 
 ## Quickstart
