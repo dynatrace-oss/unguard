@@ -1,16 +1,6 @@
-import { beforeAll, By, step, TestData, TestSettings } from '@flood/element'
-import {
-    Bio,
-    BioList,
-    Config,
-    ImageUrlPost,
-    ImageUrlPosts,
-    TextPost,
-    TextPosts,
-    UrlPost,
-    UrlPosts,
-    User,
-} from './types'
+import fs from "fs";
+import {BioList, ImageUrlPosts, TextPosts, UrlPosts} from "./types";
+import puppeteer from "puppeteer";
 
 const random_ips_pub = ['177.236.37.155',
     '49.210.236.225',
@@ -77,179 +67,162 @@ const random_ips_priv = ['10.0.1.2',
     '192.168.10.10',
     '172.16.10.10']
 
-const privateRanges = process.env.SIMULATE_PRIVATE_RANGES === 'true'
+const privateRanges = process.env.SIMULATE_PRIVATE_RANGES === 'true';
 
-const ip = privateRanges ? random_ips_priv[getRandomInt(random_ips_priv.length)] : random_ips_pub[getRandomInt(random_ips_pub.length)]
+const ip = privateRanges ? random_ips_priv[getRandomInt(random_ips_priv.length)] : random_ips_pub[getRandomInt(random_ips_pub.length)];
 
-// noinspection JSUnusedGlobalSymbols
-export const settings: TestSettings = {
-    userAgent: 'simulated-browser-user',
-    loopCount: 1,
-    screenshotOnFailure: false,
-    // Automatically wait for elements before trying to interact with them
-    waitUntil: 'visible',
-    actionDelay: 3,
-    stepDelay: 5,
-    // Simulate a client ip from the public internet for this user
-    extraHTTPHeaders: {
-        'X-Client-Ip': `${ip}`,
-    },
-}
-
-function checkEnvVariable(envVar: string) {
+function checkEnvVariable(envVar) {
     if (!process.env[envVar]) {
-        console.error(`env variable ${envVar} is not set.`)
-        throw Error(`env variable ${envVar} is not set.`)
+        console.error(`env variable ${envVar} is not set.`);
+        throw Error(`env variable ${envVar} is not set.`);
     }
 }
 
-function getRandomInt(max: number) {
-    return Math.floor(Math.random() * max)
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
 }
 
-const BIOLIST_KEY = 'biolist'
-const TEXTPOSTS_KEY = 'textposts'
-const IMGPOSTS_KEY = 'imgposts'
-const URLPOSTS_KEY = 'urlposts'
+function delay(time) {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, time);
+    });
+}
 
-TestData.fromJSON<TextPosts>('./data/textposts.json').shuffle().as(TEXTPOSTS_KEY)
-TestData.fromJSON<ImageUrlPosts>('./data/imgposts.json').shuffle().as(IMGPOSTS_KEY)
-TestData.fromJSON<UrlPosts>('./data/urlposts.json').shuffle().as(URLPOSTS_KEY)
-TestData.fromJSON<BioList>('./data/biolist.json').shuffle().as(BIOLIST_KEY)
+const textPosts: TextPosts = JSON.parse(fs.readFileSync('./data/textposts.json', 'utf-8')).posts;
+const imgPosts: ImageUrlPosts = JSON.parse(fs.readFileSync('./data/imgposts.json', 'utf-8')).posts;
+const urlPosts: UrlPosts = JSON.parse(fs.readFileSync('./data/urlposts.json', 'utf-8')).posts;
+const bioList: BioList = JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8')).bioList;
 
-// noinspection JSUnusedGlobalSymbols
-export default () => {
-    beforeAll(async () => {
-        checkEnvVariable('FRONTEND_ADDR')
-    })
+(async () => {
+    checkEnvVariable('FRONTEND_ADDR');
 
-    const config: Config = { frontendUrl: 'http://' + process.env.FRONTEND_ADDR }
-    const username = 'ROBOT_' + getRandomInt(10000).toString(16)
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+    const page = await browser.newPage();
+    await page.setUserAgent('simulated-browser-user');
+    await page.setExtraHTTPHeaders({ 'X-Client-Ip': ip });
 
-    const user: User = { username: username, password: username }
+    const config = { frontendUrl: 'http://' + process.env.FRONTEND_ADDR };
+    const username = 'ROBOT_' + getRandomInt(10000).toString(16);
 
-    step('Register', async browser => {
-        await browser.visit(config.frontendUrl + '/login')
-        await browser.type(By.css('input[name=username]'), String(user.username))
-        await browser.type(By.css('input[name=password]'), String(user.password))
-        const registerButton = await browser.findElement(By.css('button[name=register]'))
-        await registerButton.click()
-    })
+    const user = { username: username, password: username };
 
-    step('Log in', async browser => {
-        console.log(JSON.stringify(user))
-        await browser.visit(config.frontendUrl + '/login')
-        await browser.type(By.css('input[name=username]'), String(user.username))
-        await browser.type(By.css('input[name=password]'), String(user.password))
-        const loginButton = await browser.findElement(By.css('button[name=login]'))
-        await loginButton.click()
-    })
+    await register(page, config, user);
+    await login(page, config, user);
+    await visitHomepage(page, config);
+    await likePost(page, config, user);
+    await visitTimeline(page, config);
+    await createTextPost(page, config, user, textPosts);
+    await createUrlPost(page, config, user, urlPosts);
+    await createImagePost(page, config, user, imgPosts);
+    await updateBioText(page, config, user, bioList);
+    await visitUsersPageAndSearch(page, config);
+    await upgradeToProMembership(page, config, user);
+    await logout(page);
 
-    step('Visit Homepage', async browser => {
-        await browser.visit(config.frontendUrl + '/')
-    })
+    await browser.close();
+})();
 
-    step('Like post', async browser => {
-        await browser.visit(config.frontendUrl + '/')
-        const likeButton = await browser.maybeFindElement(By.css('input[type=hidden][name=postId] ~ button[type=submit]'))
-        await likeButton?.click();
+async function register(page, config, user) {
+    await page.goto(config.frontendUrl + '/login');
+    await page.type('input[name=username]', user.username);
+    await page.type('input[name=password]', user.password);
+    await page.click('button[name=register]');
+    await delay(3000); // wait for 3 seconds
+}
 
-        console.log(`${user.username} liked a post: ${browser.getUrl()}`)
-    })
+async function login(page, config, user) {
+    await page.goto(config.frontendUrl + '/login');
+    await page.type('input[name=username]', user.username);
+    await page.type('input[name=password]', user.password);
+    await page.click('button[name=login]');
+    await delay(3000); // wait for 3 seconds
+}
 
-    step('Visit Timeline', async browser => {
-        await browser.visit(config.frontendUrl + '/my-timeline')
-    })
+async function visitHomepage(page, config) {
+    await page.goto(config.frontendUrl + '/');
+    await delay(5000)
+}
 
-    step('Create text post', async (browser, data) => {
-        const posts: [TextPost] = data[TEXTPOSTS_KEY].posts
-        const post = posts[getRandomInt(posts.length)]
+async function likePost(page, config, user) {
+    await page.goto(config.frontendUrl + '/');
+    const likeButton = await page.$('input[type=hidden][name=postId] ~ button[type=submit]');
+    if (likeButton) {
+        await likeButton.click();
+        console.log(`${user.username} liked a post: ${await page.url()}`);
+    }
+    await delay(3000); // wait for 3 seconds
+}
 
-        await browser.visit(config.frontendUrl + '/')
-        await browser.type(By.css('textarea[id=message]'), String(post.text))
-        const postButton = await browser.findElement(By.css('button[name=postSubmit]'))
-        await postButton.click()
-        console.log(`${user.username} posted text: '${post.text}'`)
-    })
+async function visitTimeline(page, config) {
+    await page.goto(config.frontendUrl + '/my-timeline');
+    await delay(5000) // wait for 5 seconds
+}
 
-    step('Create URL post', async (browser, data) => {
-        const posts: [UrlPost] = data[URLPOSTS_KEY].posts
-        const post: UrlPost = posts[getRandomInt(posts.length)]
+async function createTextPost(page, config, user, textPosts) {
+    const post = textPosts[getRandomInt(textPosts.length)];
+    await page.goto(config.frontendUrl + '/');
+    await page.type('textarea[id=message]', post.text);
+    await page.click('button[name=postSubmit]');
+    console.log(`${user.username} posted text: '${post.text}'`);
+    await delay(3000); // wait for 3 seconds
+}
 
-        await browser.visit(config.frontendUrl + '/')
+async function createUrlPost(page, config, user, urlPosts) {
+    const post = urlPosts[getRandomInt(urlPosts.length)];
+    await page.goto(config.frontendUrl + '/');
+    await page.click('a[id=url-tab]');
+    await page.type('textarea[id=urlmessage]', post.url);
+    await page.type('textarea[id=header]', post.language);
+    await page.click('button[name=postSubmit]');
+    console.log(`${user.username} posted URL: '${post.url}'`);
+    await delay(3000); // wait for 3 seconds
+}
 
-        const imgUrlButton = await browser.findElement(By.css('a[id=url-tab]'))
-        await imgUrlButton.click()
-        await browser.type(By.css('textarea[id=urlmessage]'), String(post.url))
-        await browser.type(By.css('textarea[id=header]'), String(post.language))
-        const postButton = await browser.findElement(By.css('button[name=postSubmit]'))
-        await postButton.click()
+async function createImagePost(page, config, user, imgPosts) {
+    const post = imgPosts[getRandomInt(imgPosts.length)];
+    await page.goto(config.frontendUrl + '/');
+    await page.click('a[id=image-tab]');
+    await page.type('textarea[id=imgurl]', post.url);
+    await page.type('textarea[id=description]', post.text);
+    await page.click('button[name=postSubmit]');
+    console.log(`${user.username} posted image: '${post.url}'`);
+    await delay(3000); // wait for 3 seconds
+}
 
-        console.log(`${user.username} posted URL: '${post.url}'`)
-    })
-
-    step('Create image post', async (browser, data) => {
-        const posts: [ImageUrlPost] = data[IMGPOSTS_KEY].posts
-        const post: ImageUrlPost = posts[getRandomInt(posts.length)]
-
-        await browser.visit(config.frontendUrl + '/')
-
-        const imgUrlButton = await browser.findElement(By.css('a[id=image-tab]'))
-        await imgUrlButton.click()
-        await browser.type(By.css('textarea[id=imgurl]'), String(post.url))
-        await browser.type(By.css('textarea[id=description]'), String(post.text))
-        const postButton = await browser.findElement(By.css('button[name=postSubmit]'))
-        await postButton.click()
-
-        console.log(`${user.username} posted image: '${post.url}'`)
-    })
-
-    step('Update bio text', async (browser, data) => {
-        const bioList: [Bio] = data[BIOLIST_KEY].bioList
-        const bio: Bio = bioList[getRandomInt(bioList.length)]
-
-        await browser.visit(`${config.frontendUrl}/user/${username}`)
-
-        const enableMarkdownCheckbox = await browser.findElement(By.css('input[id=enableMarkdown]'))
-        if (bio.isMarkdown) {
-            const isChecked = await enableMarkdownCheckbox.isSelected()
-            if (!isChecked) {
-                await enableMarkdownCheckbox.click()
-            }
+async function updateBioText(page, config, user, bioList) {
+    const bio = bioList[getRandomInt(bioList.length)];
+    await page.goto(`${config.frontendUrl}/user/${user.username}`);
+    if (bio.isMarkdown) {
+        const enableMarkdownCheckbox = await page.$('input[id=enableMarkdown]');
+        const isChecked = await (await enableMarkdownCheckbox.getProperty('checked')).jsonValue();
+        if (!isChecked) {
+            await enableMarkdownCheckbox.click();
         }
-        await browser.type(By.css('textarea[name=bioText]'), String(bio.text))
+    }
+    await page.type('textarea[name=bioText]', bio.text);
+    await page.click('button[name=postBio]');
+    console.log(`${user.username} updated bio: '${bio.text}'`);
+    await delay(3000); // wait for 3 seconds
+}
 
-        const postButton = await browser.findElement(By.css('button[name=postBio]'))
-        await postButton.click()
+async function visitUsersPageAndSearch(page, config) {
+    await page.goto(config.frontendUrl + '/users');
+    await page.type('input[name=name]', 'admanager');
+    await page.click('input[name=name] ~ button[type=submit]');
+    console.log(`Searched for admanager user.`);
+    await delay(3000); // wait for 3 seconds
+}
 
-        console.log(`${user.username} updated bio: '${bio.text}'`)
-    })
+async function upgradeToProMembership(page, config, user) {
+    await page.goto(`${config.frontendUrl}/membership`);
+    await page.type('input[id=membershipInputList]', 'PRO');
+    await page.click('button[name=postMembership]');
+    console.log(`${user.username} upgraded to PRO membership`);
+    await delay(3000); // wait for 3 seconds
+}
 
-    step('Visit Users page and search for admanager', async browser => {
-        await browser.visit(config.frontendUrl + '/users')
-
-        const searchBar = await browser.findElement(By.css('input[name=name]'))
-        await searchBar.type("admanager")
-
-        const searchButton = await browser.findElement(By.css('input[name=name] ~ button[type=submit]'))
-        await searchButton.click()
-
-        console.log(`${user.username} searched for admanager user.`)
-    })
-
-    step('Upgrade to PRO membership', async (browser, _) => {
-        await browser.visit(`${config.frontendUrl}/membership`)
-
-        await browser.type(By.css('input[id=membershipInputList]'), "PRO")
-
-        const postButton = await browser.findElement(By.css('button[name=postMembership]'))
-        await postButton.click()
-
-        console.log(`${user.username} upgraded to PRO membership'`)
-    })
-
-    step('Log out', async browser => {
-        const logoutButton = await browser.findElement(By.css('button[name=navLogoutButton]'))
-        await logoutButton.click()
-    })
+async function logout(page) {
+    await page.click('button[name=navLogoutButton]');
+    console.log('Logged out');
+    await delay(3000); // wait for 3 seconds
 }
