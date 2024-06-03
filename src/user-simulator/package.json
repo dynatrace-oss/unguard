@@ -3,8 +3,10 @@
     "version": "1.0.0",
     "description": "Simulates a real browser unguard user.",
     "scripts": {
-        "start": "element run default-user-sim.perf.ts"
+        "build": "tsc",
+        "start": "node default-user-sim.perf.js"
     },
+    "type": "module",
     "private": true,
     "prettier": {
         "semi": false,
@@ -18,16 +20,8 @@
         "arrowParens": "avoid"
     },
     "dependencies": {
-        "@flood/element": "^2.0.4",
-        "@flood/element-cli": "^2.0.4",
-        "prettier": "^2.8.3"
-    },
-    "devDependencies": {
-        "@types/node": "18.11.18"
-    },
-    "element": {
-        "testMatch": [
-            "**/*.perf.[tj]s"
-        ]
+        "prettier": "^2.8.3",
+        "puppeteer": "14.4.0",
+        "typescript": "5.4.5"
     }
 }

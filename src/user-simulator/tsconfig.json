@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ES6",
     "target": "es2015",
     "moduleResolution": "node",
     "removeComments": true,
@@ -8,13 +8,14 @@
       "esnext",
       "dom"
     ],
+    "strict": false,
     "pretty": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
     "alwaysStrict": true,
     "noUnusedLocals": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -24,6 +25,6 @@
     "checkJs": false
   },
   "files": [
-    "./browser-load-generator.perf.ts"
+    "./default-user-sim.perf.ts"
   ]
 }
