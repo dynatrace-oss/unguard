@@ -15,7 +15,7 @@ docker run --detach --name memberships-db \
   --env MARIADB_PASSWORD=mariadb-root-password \
   --env MARIADB_DATABASE=memberships \
    -p 3306:3306 \
-   mariadb:latest
+   mariadb:10.6.12
 ```
 
 And then update the environment variables for the membership-service to fit:
