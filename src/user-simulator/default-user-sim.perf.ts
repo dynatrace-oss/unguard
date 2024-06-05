@@ -1,228 +1,234 @@
-import fs from "fs";
-import {BioList, ImageUrlPosts, TextPosts, UrlPosts} from "./types";
-import puppeteer from "puppeteer";
+import fs from 'fs'
+import { BioList, ImageUrlPosts, TextPosts, UrlPosts } from './types'
+import puppeteer from 'puppeteer'
 
-const random_ips_pub = ['177.236.37.155',
-    '49.210.236.225',
-    '66.96.37.30',
-    '19.21.221.83',
-    '134.110.48.221',
-    '87.130.41.167',
-    '159.104.0.163',
-    '91.21.66.164',
-    '217.69.107.8',
-    '204.176.161.159',
-    '18.153.60.55',
-    '227.194.148.108',
-    '96.16.70.23',
-    '171.72.188.229',
-    '24.253.46.199',
-    '122.62.252.49',
-    '48.130.188.78',
-    '168.172.80.223',
-    '107.60.18.49',
-    '238.227.33.197',
-    '7.255.47.168',
-    '147.99.166.57',
-    '102.99.216.105',
-    '161.210.123.218',
-    '35.183.42.70',
-    '51.229.182.255',
-    '159.3.105.62',
-    '35.102.238.6',
-    '32.221.32.66',
-    '92.111.134.241',
-    '106.203.123.108',
-    '239.91.223.239',
-    '81.223.64.234',
-    '172.175.183.17',
-    '175.127.203.9',
-    '253.40.37.243',
-    '42.61.224.189',
-    '79.236.195.22',
-    '182.7.180.66',
-    '184.195.3.131',
-    '141.70.56.232',
-    '104.9.77.242',
-    '126.47.188.82',
-    '211.40.123.204',
-    '177.116.53.144',
-    '241.243.168.0',
-    '183.66.217.182',
-    '50.164.50.137',
-    '101.58.202.167',
-    '195.86.230.231',
-    '119.241.63.127',
-    '151.42.34.115',
-    '102.46.70.77',
-    '120.21.221.110',
-    '212.102.231.31',
-    '194.132.161.92',
-    '62.179.239.135',
-    '113.167.100.35']
+const random_ips_pub = [
+	'177.236.37.155',
+	'49.210.236.225',
+	'66.96.37.30',
+	'19.21.221.83',
+	'134.110.48.221',
+	'87.130.41.167',
+	'159.104.0.163',
+	'91.21.66.164',
+	'217.69.107.8',
+	'204.176.161.159',
+	'18.153.60.55',
+	'227.194.148.108',
+	'96.16.70.23',
+	'171.72.188.229',
+	'24.253.46.199',
+	'122.62.252.49',
+	'48.130.188.78',
+	'168.172.80.223',
+	'107.60.18.49',
+	'238.227.33.197',
+	'7.255.47.168',
+	'147.99.166.57',
+	'102.99.216.105',
+	'161.210.123.218',
+	'35.183.42.70',
+	'51.229.182.255',
+	'159.3.105.62',
+	'35.102.238.6',
+	'32.221.32.66',
+	'92.111.134.241',
+	'106.203.123.108',
+	'239.91.223.239',
+	'81.223.64.234',
+	'172.175.183.17',
+	'175.127.203.9',
+	'253.40.37.243',
+	'42.61.224.189',
+	'79.236.195.22',
+	'182.7.180.66',
+	'184.195.3.131',
+	'141.70.56.232',
+	'104.9.77.242',
+	'126.47.188.82',
+	'211.40.123.204',
+	'177.116.53.144',
+	'241.243.168.0',
+	'183.66.217.182',
+	'50.164.50.137',
+	'101.58.202.167',
+	'195.86.230.231',
+	'119.241.63.127',
+	'151.42.34.115',
+	'102.46.70.77',
+	'120.21.221.110',
+	'212.102.231.31',
+	'194.132.161.92',
+	'62.179.239.135',
+	'113.167.100.35',
+]
 
-const random_ips_priv = ['10.0.1.2',
-    '192.168.10.1',
-    '192.168.10.5',
-    '192.168.10.10',
-    '172.16.10.10']
+const random_ips_priv = [
+	'10.0.1.2',
+	'192.168.10.1',
+	'192.168.10.5',
+	'192.168.10.10',
+	'172.16.10.10',
+]
 
-const privateRanges = process.env.SIMULATE_PRIVATE_RANGES === 'true';
+const privateRanges = process.env.SIMULATE_PRIVATE_RANGES === 'true'
 
-const ip = privateRanges ? random_ips_priv[getRandomInt(random_ips_priv.length)] : random_ips_pub[getRandomInt(random_ips_pub.length)];
+const ip = privateRanges
+	? random_ips_priv[getRandomInt(random_ips_priv.length)]
+	: random_ips_pub[getRandomInt(random_ips_pub.length)]
 
 function checkEnvVariable(envVar) {
-    if (!process.env[envVar]) {
-        console.error(`env variable ${envVar} is not set.`);
-        throw Error(`env variable ${envVar} is not set.`);
-    }
+	if (!process.env[envVar]) {
+		console.error(`env variable ${envVar} is not set.`)
+		throw Error(`env variable ${envVar} is not set.`)
+	}
 }
 
 function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
+	return Math.floor(Math.random() * max)
 }
 
 function delay(time) {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, time);
-    });
+	return new Promise(function (resolve) {
+		setTimeout(resolve, time)
+	})
 }
 
-const textPosts: TextPosts = JSON.parse(fs.readFileSync('./data/textposts.json', 'utf-8')).posts;
-const imgPosts: ImageUrlPosts = JSON.parse(fs.readFileSync('./data/imgposts.json', 'utf-8')).posts;
-const urlPosts: UrlPosts = JSON.parse(fs.readFileSync('./data/urlposts.json', 'utf-8')).posts;
-const bioList: BioList = JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8')).bioList;
+const textPosts: TextPosts = JSON.parse(fs.readFileSync('./data/textposts.json', 'utf-8')).posts
+const imgPosts: ImageUrlPosts = JSON.parse(fs.readFileSync('./data/imgposts.json', 'utf-8')).posts
+const urlPosts: UrlPosts = JSON.parse(fs.readFileSync('./data/urlposts.json', 'utf-8')).posts
+const bioList: BioList = JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8')).bioList
 
-(async () => {
-    checkEnvVariable('FRONTEND_ADDR');
+;(async () => {
+	checkEnvVariable('FRONTEND_ADDR')
 
-    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
-    const page = await browser.newPage();
-    await page.setUserAgent('simulated-browser-user');
-    await page.setExtraHTTPHeaders({ 'X-Client-Ip': ip });
+	const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] })
+	const page = await browser.newPage()
+	await page.setUserAgent('simulated-browser-user')
+	await page.setExtraHTTPHeaders({ 'X-Client-Ip': ip })
 
-    const config = { frontendUrl: 'http://' + process.env.FRONTEND_ADDR };
-    const username = 'ROBOT_' + getRandomInt(10000).toString(16);
+	const config = { frontendUrl: 'http://' + process.env.FRONTEND_ADDR }
+	const username = 'ROBOT_' + getRandomInt(10000).toString(16)
 
-    const user = { username: username, password: username };
+	const user = { username: username, password: username }
 
-    await register(page, config, user);
-    await login(page, config, user);
-    await visitHomepage(page, config);
-    await likePost(page, config, user);
-    await visitTimeline(page, config);
-    await createTextPost(page, config, user, textPosts);
-    await createUrlPost(page, config, user, urlPosts);
-    await createImagePost(page, config, user, imgPosts);
-    await updateBioText(page, config, user, bioList);
-    await visitUsersPageAndSearch(page, config);
-    await upgradeToProMembership(page, config, user);
-    await logout(page);
+	await register(page, config, user)
+	await login(page, config, user)
+	await visitHomepage(page, config)
+	await likePost(page, config, user)
+	await visitTimeline(page, config)
+	await createTextPost(page, config, user, textPosts)
+	await createUrlPost(page, config, user, urlPosts)
+	await createImagePost(page, config, user, imgPosts)
+	await updateBioText(page, config, user, bioList)
+	await visitUsersPageAndSearch(page, config)
+	await upgradeToProMembership(page, config, user)
+	await logout(page)
 
-    await browser.close();
-})();
+	await browser.close()
+})()
 
 async function register(page, config, user) {
-    await page.goto(config.frontendUrl + '/login');
-    await page.type('input[name=username]', user.username);
-    await page.type('input[name=password]', user.password);
-    await page.click('button[name=register]');
-    await delay(3000); // wait for 3 seconds
+	await page.goto(config.frontendUrl + '/login')
+	await page.type('input[name=username]', user.username)
+	await page.type('input[name=password]', user.password)
+	await page.click('button[name=register]')
+	await delay(3000) // wait for 3 seconds
 }
 
 async function login(page, config, user) {
-    await page.goto(config.frontendUrl + '/login');
-    await page.type('input[name=username]', user.username);
-    await page.type('input[name=password]', user.password);
-    await page.click('button[name=login]');
-    await delay(3000); // wait for 3 seconds
+	await page.goto(config.frontendUrl + '/login')
+	await page.type('input[name=username]', user.username)
+	await page.type('input[name=password]', user.password)
+	await page.click('button[name=login]')
+	await delay(3000) // wait for 3 seconds
 }
 
 async function visitHomepage(page, config) {
-    await page.goto(config.frontendUrl + '/');
-    await delay(5000)
+	await page.goto(config.frontendUrl + '/')
+	await delay(5000)
 }
 
 async function likePost(page, config, user) {
-    await page.goto(config.frontendUrl + '/');
-    const likeButton = await page.$('input[type=hidden][name=postId] ~ button[type=submit]');
-    if (likeButton) {
-        await likeButton.click();
-        console.log(`${user.username} liked a post: ${await page.url()}`);
-    }
-    await delay(3000); // wait for 3 seconds
+	await page.goto(config.frontendUrl + '/')
+	const likeButton = await page.$('input[type=hidden][name=postId] ~ button[type=submit]')
+	if (likeButton) {
+		await likeButton.click()
+		console.log(`${user.username} liked a post: ${await page.url()}`)
+	}
+	await delay(3000) // wait for 3 seconds
 }
 
 async function visitTimeline(page, config) {
-    await page.goto(config.frontendUrl + '/my-timeline');
-    await delay(5000) // wait for 5 seconds
+	await page.goto(config.frontendUrl + '/my-timeline')
+	await delay(5000) // wait for 5 seconds
 }
 
 async function createTextPost(page, config, user, textPosts) {
-    const post = textPosts[getRandomInt(textPosts.length)];
-    await page.goto(config.frontendUrl + '/');
-    await page.type('textarea[id=message]', post.text);
-    await page.click('button[name=postSubmit]');
-    console.log(`${user.username} posted text: '${post.text}'`);
-    await delay(3000); // wait for 3 seconds
+	const post = textPosts[getRandomInt(textPosts.length)]
+	await page.goto(config.frontendUrl + '/')
+	await page.type('textarea[id=message]', post.text)
+	await page.click('button[name=postSubmit]')
+	console.log(`${user.username} posted text: '${post.text}'`)
+	await delay(3000) // wait for 3 seconds
 }
 
 async function createUrlPost(page, config, user, urlPosts) {
-    const post = urlPosts[getRandomInt(urlPosts.length)];
-    await page.goto(config.frontendUrl + '/');
-    await page.click('a[id=url-tab]');
-    await page.type('textarea[id=urlmessage]', post.url);
-    await page.type('textarea[id=header]', post.language);
-    await page.click('button[name=postSubmit]');
-    console.log(`${user.username} posted URL: '${post.url}'`);
-    await delay(3000); // wait for 3 seconds
+	const post = urlPosts[getRandomInt(urlPosts.length)]
+	await page.goto(config.frontendUrl + '/')
+	await page.click('a[id=url-tab]')
+	await page.type('textarea[id=urlmessage]', post.url)
+	await page.type('textarea[id=header]', post.language)
+	await page.click('button[name=postSubmit]')
+	console.log(`${user.username} posted URL: '${post.url}'`)
+	await delay(3000) // wait for 3 seconds
 }
 
 async function createImagePost(page, config, user, imgPosts) {
-    const post = imgPosts[getRandomInt(imgPosts.length)];
-    await page.goto(config.frontendUrl + '/');
-    await page.click('a[id=image-tab]');
-    await page.type('textarea[id=imgurl]', post.url);
-    await page.type('textarea[id=description]', post.text);
-    await page.click('button[name=postSubmit]');
-    console.log(`${user.username} posted image: '${post.url}'`);
-    await delay(3000); // wait for 3 seconds
+	const post = imgPosts[getRandomInt(imgPosts.length)]
+	await page.goto(config.frontendUrl + '/')
+	await page.click('a[id=image-tab]')
+	await page.type('textarea[id=imgurl]', post.url)
+	await page.type('textarea[id=description]', post.text)
+	await page.click('button[name=postSubmit]')
+	console.log(`${user.username} posted image: '${post.url}'`)
+	await delay(3000) // wait for 3 seconds
 }
 
 async function updateBioText(page, config, user, bioList) {
-    const bio = bioList[getRandomInt(bioList.length)];
-    await page.goto(`${config.frontendUrl}/user/${user.username}`);
-    if (bio.isMarkdown) {
-        const enableMarkdownCheckbox = await page.$('input[id=enableMarkdown]');
-        const isChecked = await (await enableMarkdownCheckbox.getProperty('checked')).jsonValue();
-        if (!isChecked) {
-            await enableMarkdownCheckbox.click();
-        }
-    }
-    await page.type('textarea[name=bioText]', bio.text);
-    await page.click('button[name=postBio]');
-    console.log(`${user.username} updated bio: '${bio.text}'`);
-    await delay(3000); // wait for 3 seconds
+	const bio = bioList[getRandomInt(bioList.length)]
+	await page.goto(`${config.frontendUrl}/user/${user.username}`)
+	if (bio.isMarkdown) {
+		const enableMarkdownCheckbox = await page.$('input[id=enableMarkdown]')
+		const isChecked = await (await enableMarkdownCheckbox.getProperty('checked')).jsonValue()
+		if (!isChecked) {
+			await enableMarkdownCheckbox.click()
+		}
+	}
+	await page.type('textarea[name=bioText]', bio.text)
+	await page.click('button[name=postBio]')
+	console.log(`${user.username} updated bio: '${bio.text}'`)
+	await delay(3000) // wait for 3 seconds
 }
 
 async function visitUsersPageAndSearch(page, config) {
-    await page.goto(config.frontendUrl + '/users');
-    await page.type('input[name=name]', 'admanager');
-    await page.click('input[name=name] ~ button[type=submit]');
-    console.log(`Searched for admanager user.`);
-    await delay(3000); // wait for 3 seconds
+	await page.goto(config.frontendUrl + '/users')
+	await page.type('input[name=name]', 'admanager')
+	await page.click('input[name=name] ~ button[type=submit]')
+	console.log(`Searched for admanager user.`)
+	await delay(3000) // wait for 3 seconds
 }
 
 async function upgradeToProMembership(page, config, user) {
-    await page.goto(`${config.frontendUrl}/membership`);
-    await page.type('input[id=membershipInputList]', 'PRO');
-    await page.click('button[name=postMembership]');
-    console.log(`${user.username} upgraded to PRO membership`);
-    await delay(3000); // wait for 3 seconds
+	await page.goto(`${config.frontendUrl}/membership`)
+	await page.type('input[id=membershipInputList]', 'PRO')
+	await page.click('button[name=postMembership]')
+	console.log(`${user.username} upgraded to PRO membership`)
+	await delay(3000) // wait for 3 seconds
 }
 
 async function logout(page) {
-    await page.click('button[name=navLogoutButton]');
-    console.log('Logged out');
-    await delay(3000); // wait for 3 seconds
+	await page.click('button[name=navLogoutButton]')
+	console.log('Logged out')
+	await delay(3000) // wait for 3 seconds
 }
