@@ -80,6 +80,7 @@ profileService:
       ports:
         containerPort: 8080
       env:
+        OTEL_LOGS_EXPORTER: none
         OTEL_METRICS_EXPORTER: none
         OTEL_RESOURCE_ATTRIBUTES: service.name=unguard-profile-service
         OTEL_TRACES_EXPORTER: none
