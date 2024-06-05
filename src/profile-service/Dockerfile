@@ -7,6 +7,7 @@ RUN gradle bootJar
 FROM youtaqiu/jre-trace:17
 EXPOSE 8080
 COPY --from=builder /home/gradle/src/build/libs/**.jar /app/app.jar
+RUN apk --no-cache add markdown
 WORKDIR /app
-# RUN apt-get update && apt-get install markdown -y
+
 ENTRYPOINT ["java", "-javaagent:/opentelemetry.jar", "-jar", "app.jar"]

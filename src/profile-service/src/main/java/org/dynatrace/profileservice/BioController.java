@@ -75,7 +75,7 @@ public class BioController {
 
     private String markdownToHtml(String markdown) {
         // Unsafe code below, vulnerable to command injection, as 'markdown' is user controlled
-        final String[] command = {"/bin/bash", "-c", "echo '" + markdown + "' | markdown"};
+        final String[] command = {"/bin/sh", "-c", "echo '" + markdown + "' | markdown"};
 
         final ProcessBuilder processBuilder = new ProcessBuilder(command);
 
