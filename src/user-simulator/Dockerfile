@@ -17,9 +17,7 @@ RUN apt-get update \
 COPY . .
 
 RUN npm install
-RUN npm install -g tsc
 RUN npm run build
 
-#ENV FRONTEND_ADDR="unguard.kube/ui"
 ENV NODE_ENV=production
 CMD ["npm", "start"]
