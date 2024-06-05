@@ -67,6 +67,8 @@ spec:
               value: {{ quote .Values.profileService.deployment.container.env.SPRING_DATASOURCE_USERNAME }}
             - name: SPRING_DATASOURCE_PASSWORD
               value: {{ quote .Values.profileService.deployment.container.env.SPRING_DATASOURCE_PASSWORD }}
+            - name: OTEL_LOGS_EXPORTER
+              value: {{ quote .Values.profileService.deployment.container.env.OTEL_LOGS_EXPORTER}}
             - name: OTEL_METRICS_EXPORTER
               value: {{ quote .Values.profileService.deployment.container.env.OTEL_METRICS_EXPORTER }}
             - name: OTEL_RESOURCE_ATTRIBUTES
