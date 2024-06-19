@@ -1,5 +1,5 @@
 # based on snippet from https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md
-FROM node:14.20-slim AS base
+FROM --platform=linux/amd64 node:14.20-slim AS base
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
