@@ -10,6 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/src/status-service/unguard.status-service.iml" filepath="$PROJECT_DIR$/src/status-service/unguard.status-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/user-auth-service/unguard.user-auth-service.iml" filepath="$PROJECT_DIR$/src/user-auth-service/unguard.user-auth-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/user-simulator/unguard.user-simulator.iml" filepath="$PROJECT_DIR$/src/user-simulator/unguard.user-simulator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/payment-service/unguard.payment-service.iml" filepath="$PROJECT_DIR$/src/payment-service/unguard.payment-service.iml" />
     </modules>
   </component>
 </project>
