@@ -43,6 +43,8 @@ build:
       context: src/profile-service
     - image: unguard-like-service
       context: src/like-service
+    - image: unguard-payment-service
+      context: src/payment-service
 
   local:
     # only the docker CLI respects a manually logged-in daemon
@@ -105,6 +107,9 @@ deploy:
           # like-service
           likeService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_like_service}}"
           likeService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_like_service}}@{{.IMAGE_DIGEST_unguard_like_service}}"
+          # payment-service
+          paymentService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_payment_service}}"
+          paymentService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_payment_service}}@{{.IMAGE_DIGEST_unguard_payment_service}}"
 
         setValues:
           # ad-service
@@ -129,6 +134,8 @@ deploy:
           profileService.deployment.container.image.pullPolicy: "IfNotPresent"
           # like-service
           likeService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # payment-service
+          paymentService.deployment.container.image.pullPolicy: "IfNotPresent"
 
 profiles:
   - name: jib
