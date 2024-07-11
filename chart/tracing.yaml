@@ -48,3 +48,11 @@ userAuthService:
       env:
         JAEGER_SAMPLER_PARAM: 1
         JAEGER_DISABLED: false
+
+paymentService:
+  deployment:
+    container:
+      env:
+        OTEL_TRACES_EXPORTER: otlp
+        OTEL_EXPERIMENTAL_SDK_ENABLED: true
+        OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: true
