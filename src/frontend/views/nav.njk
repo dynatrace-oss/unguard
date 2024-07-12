@@ -37,7 +37,7 @@ limitations under the License.
                         Users
                     </a>
                 </li>
-            
+
                 <li class="nav-item {{'active' if (currentPath != undefined) and (extendURL('/my-timeline') == currentPath)}}">
                     <a class="nav-link" href="{{ extendURL('/my-timeline') }}"  name="navMyTimeline">
                         My Timeline
@@ -55,26 +55,29 @@ limitations under the License.
             {% if (username) %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="dropdownUser" data-toggle="dropdown" aria-haspopup="true"
-                       aria-expanded="false">{{ username }}</a>
-                    <ul class="dropdown-menu pb-0">
-                        <li align="center" class="well">
-                            <img width="150"
-                                 src="//robohash.org/{{ username }}.png?set=set1&size=150x150" alt="{{ username }}">
+                       aria-expanded="false" style="cursor: pointer; font-weight: bold;">
+                        <img width="35" class="rounded-circle bg-white mr-1"
+                             src="//robohash.org/{{ username }}.png?set=set1&size=35x35" alt="{{ username }}">
+                        <span>{{ username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right pb-0">
+                        <li align="center" class="well" style="min-width: 200px">
+                            <img width="200"
+                                 src="//robohash.org/{{ username }}.png?set=set1&size=200x200" alt="{{ username }}">
                             <div class="list-group">
                                 <a href="{{ extendURL('/user/'+ username ) }}"
                                    class="list-group-item list-group-item-action">Profile</a>
+                                <a href="{{ extendURL('/user/'+ username + '/payment' ) }}"
+                                   class="list-group-item list-group-item-action">Payment information</a>
                                 <form action="{{ extendURL('/logout') }}" method="post">
                                     <button class="list-group-item list-group-item-action list-group-item-warning"
-                                            type="submit">Logout
+                                            type="submit" name="navLogoutButton" >Log out
                                     </button>
                                 </form>
                             </div>
                         </li>
                     </ul>
                 </li>
-                <form class="form-inline" action="{{ extendURL('/logout') }}" method="post">
-                    <button class="btn btn-warning my-2 my-sm-0" type="submit" name="navLogoutButton">Logout</button>
-                </form>
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ extendURL('/login') }}" name="navLoginRegisterButton">Login/Register</a>

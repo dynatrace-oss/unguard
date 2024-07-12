@@ -1,4 +1,4 @@
-{# 
+{#
 Copyright 2023 Dynatrace LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,18 +24,18 @@ limitations under the License.
             <h4>Log in to see this content.</h4>
         </div>
     {% else %}
-    <div class="error-bg" id="errorBg">
-        <h3>Error</h3>
-        <h4>{{ error }}</h4>
-        {% if (message) %}
-            <div class="card">
-                <div class="card-body">
-<pre><code>{% for index, elem in message %}{{ index }}: {{ elem }}
-{% endfor %}</code></pre>
+        <div class="error-bg" id="errorBg">
+            <h3>Error</h3>
+            <h4>{{ error }}</h4>
+            {% if (message) %}
+                <div class="card">
+                    <div class="card-body">
+<pre><code>{{ message | dump(2) }}
+</code></pre>
+                    </div>
                 </div>
-            </div>
-        {% endif %}
-    </div>
+            {% endif %}
+        </div>
     {% endif %}
 {% endblock %}
 

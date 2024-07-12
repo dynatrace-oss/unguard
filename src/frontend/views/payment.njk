@@ -1,0 +1,94 @@
+{#
+Copyright 2023 Dynatrace LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% extends "base.njk" %}
+
+{% block content %}
+    <div>
+        {% include "profile-header.njk" %}
+        <div class="mt-3">
+            <hr/>
+            <h4 class="mb-3">Payment information</h4>
+            <form class="needs-validation" method="post" novalidate>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="cardHolderName">Name on card</label>
+                        <input type="text" class="form-control" id="cardHolderName" name="cardHolderName" placeholder="John Doe"
+                               value="{{ paymentInformation.cardHolderName }}" required>
+                        <small class="text-muted">Full name as displayed on card</small>
+                        <div class="invalid-feedback">
+                            Name on card is required
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="cardNumber">Credit card number</label>
+                        <input type="number" class="form-control" id="cardNumber" name="cardNumber" autocomplete="off"
+                               placeholder="4556737586899855"
+                               value="{{ paymentInformation.cardNumber }}" required>
+                        <div class="invalid-feedback">
+                            Credit card number is required
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="expiryDate">Expiration</label>
+                        <input type="text" class="form-control" id="expiryDate" name="expiryDate" autocomplete="off"
+                               placeholder="MM/YY"
+                               value="{{ paymentInformation.expiryDate }}" required>
+                        <div class="invalid-feedback">
+                            Expiration date required
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="cvv">CVV</label>
+                        <input type="number" class="form-control" id="cvv" name="cvv" autocomplete="off" placeholder="123"
+                               value="{{ paymentInformation.cvv }}" required>
+                        <div class="invalid-feedback">
+                            Security code required
+                        </div>
+                    </div>
+                </div>
+                <hr class="mb-4">
+                <button class="btn btn-primary btn-lg btn-block" type="submit" name="updatePaymentInfo">Update payment information</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict'
+
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                const forms = document.getElementsByClassName('needs-validation');
+
+                // Loop over them and prevent submission
+                Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+            }, false)
+        })()
+
+    </script>
+{% endblock %}
