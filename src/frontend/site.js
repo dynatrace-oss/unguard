@@ -36,6 +36,9 @@ router.get('/my-timeline', showPersonalTimeline);
 router.get('/user/:username', showUserProfile);
 // Follow a user
 router.post('/user/:username/follow', followUser);
+// Payment method
+router.get('/user/:username/payment', showPaymentMethod);
+router.post('/user/:username/payment', postPaymentMethod);
 // Create post
 router.post('/post', createPost);
 // get single post
@@ -161,6 +164,63 @@ function showUserProfile(req, res) {
             res.render('profile.njk', data);
         }, (err) => displayError(err, res))
     }, (err) => displayError(err, res));
+}
+
+function showPaymentMethod(req, res) {
+    const username = req.params.username;
+    fetchUsingDeploymentBase(req, () =>
+        Promise.all([
+            getCreditCardInfo(req),
+            getMembership(req, username)
+        ])
+    ).then(([paymentInformation, membership]) => {
+        let data = extendRenderData({
+            paymentInformation: paymentInformation,
+            profileName: username,
+            username: getJwtUser(req.cookies),
+            // isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
+            baseData: baseRequestFactory.baseData,
+            membership: membership.data
+        }, req);
+
+        res.render('payment.njk', data);
+    }, (err) => displayError(err, res));
+}
+
+function postPaymentMethod(req, res) {
+    req.PAYMENT_SERVICE_API.post(`/payment-info/${getJwtUserId(req.cookies)}`, {
+            cardHolderName: req.body.cardHolderName,
+            cardNumber: req.body.cardNumber,
+            expiryDate: req.body.expiryDate,
+            cvv: req.body.cvv
+        },
+        {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        .then((_) => {
+            // redirect where the user came from
+            res.redirect('back');
+        }).catch(error => {
+        res.status(statusCodeForError(error)).render('error.njk', handleError(error));
+    });
+}
+
+function getCreditCardInfo(req) {
+    return new Promise((resolve, reject) => {
+        req.PAYMENT_SERVICE_API.get(`/payment-info/${getJwtUserId(req.cookies)}`)
+            .then((response) => {
+                resolve(response.data);
+            }).catch(reason => {
+
+            if (statusCodeForError(reason) === 404) {
+                resolve({});
+            } else {
+                reject(reason)
+            }
+        })
+    });
 }
 
 function getBioText(req, username) {

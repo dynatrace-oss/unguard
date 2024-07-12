@@ -27,7 +27,7 @@ exports.handleError = function (error) {
 	let outMessage = message || "No detailed message available.";
 
 	if (response) {
-		return { error: outMessage, message: data }
+		return { title: outMessage, error: outMessage, message: data }
 	} else if (request) {
 		const requestMetadata = {
 			message: error.message,
@@ -36,9 +36,9 @@ exports.handleError = function (error) {
 			path: url
 		}
 
-		return { error: errorTitle, message: requestMetadata };
+		return { title: errorTitle, error: errorTitle, message: requestMetadata };
 	} else {
-		return { error: errorTitle, message: { message: error.message } } // Lowest level error
+		return { title: errorTitle, error: errorTitle, message: { message: error.message } } // Lowest level error
 	}
 }
 

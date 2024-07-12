@@ -1,0 +1,28 @@
+<div class="d-flex align-items-center">
+    <div class="mr-2">
+        <img class="rounded-circle bg-white"
+             width="150" src="//robohash.org/{{ profileName }}.png?set=set1&size=150x150"
+             alt="{{ profileName }}">
+    </div>
+    <div class="ml-5">
+        <div class="h1 m-0">{{ profileName }}
+            <span class="align-text-top">
+                        {% if (membership !== 'PRO') %}
+                            <a href="{{ extendURL('/membership') }}"><span class="membership-tag badge badge-light">
+                            {{membership}}
+                            </span></a>
+                        {% else %}
+                            <a href="{{ extendURL('/membership') }}"><span class="membership-tag pro badge badge-primary">
+                            {{membership}}
+                            </span></a>
+                        {% endif %}
+                    </span>
+        </div>
+        {% if (username != profileName) %}
+            <form action="{{ extendURL('/user/'+ profileName + '/follow') }}" method="post">
+                <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" id="postSubmit">Follow
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>

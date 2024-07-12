@@ -32,6 +32,7 @@ const {extendURL} = require("./controller/utilities.js");
 const {loggerFactory} = require('./controller/loggerFactory');
 
 const site = require("./site");
+const {join} = require("path");
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
@@ -48,6 +49,7 @@ const membershipServiceApiLogger = microserviceLoggerFactory.create('MEMBERSHIP_
 const statusServiceApiLogger = microserviceLoggerFactory.create('STATUS_SERVICE_API');
 const profileServiceLogger = microserviceLoggerFactory.create('PROFILE_SERVICE_API');
 const likeServiceLogger = microserviceLoggerFactory.create('LIKE_SERVICE_API')
+const paymentServiceLogger = microserviceLoggerFactory.create('PAYMENT_SERVICE_API')
 
 // log all environment variables
 frontendLogger.info("JAEGER_SERVICE_NAME is set to " + process.env.JAEGER_SERVICE_NAME);
@@ -64,6 +66,7 @@ frontendLogger.info("AD_SERVICE_BASE_PATH is set to " + process.env.AD_SERVICE_B
 frontendLogger.info("STATUS_SERVICE_BASE_PATH is set to " + process.env.STATUS_SERVICE_BASE_PATH);
 frontendLogger.info("PROFILE_SERVICE_ADDRESS is set to " + process.env.PROFILE_SERVICE_ADDRESS);
 frontendLogger.info("LIKE_SERVICE_ADDRESS is set to " + process.env.LIKE_SERVICE_ADDRES);
+frontendLogger.info("PAYMENT_SERVICE_ADDRESS is set to " + process.env.PAYMENT_SERVICE_ADDRESS);
 
 let app = express();
 
@@ -85,8 +88,8 @@ app.use(process.env.FRONTEND_BASE_PATH + "/js/jquery", express.static(path.join(
 app.use(process.env.FRONTEND_BASE_PATH + "/js/bootstrap", express.static(path.join(__dirname, "node_modules/bootstrap/dist/js")));
 
 app.use(process.env.FRONTEND_BASE_PATH, express.static(path.join(__dirname, 'public')));
-// for non generated content, serve the static folder
-app.use(process.env.FRONTEND_BASE_PATH, express.static(path.join(__dirname, 'static')));
+// for non-generated content, serve the static folder
+app.use(process.env.FRONTEND_BASE_PATH, express.static(join(__dirname, 'static')));
 
 // Setup tracer
 const tracer = initTracerFromEnv({
@@ -98,7 +101,7 @@ const tracer = initTracerFromEnv({
 const applyTracingInterceptors = createAxiosTracing(tracer);
 
 // enable express server side tracing
-app.use(expressOpentracing({ tracer }));
+app.use(expressOpentracing({tracer}));
 
 // by trusting the proxy, express uses x-forwarded-for header to set the remote ip header
 app.set('trust proxy', true)
@@ -106,7 +109,7 @@ app.set('trust proxy', true)
 // enable cookie parsing
 app.use(cookieParser());
 // for parsing application/xwww-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 function createAxiosInstance(req, baseURL, logger, headers) {
     const axiosInstace = axios.create({baseURL, headers});
@@ -133,26 +136,29 @@ function createAxiosInstance(req, baseURL, logger, headers) {
 }
 
 // setup 7 custom axios instances configured to talk to each microservice respectively
-// (MICROBLOG_API, PROXY, USER_AUTH_API, AD_SERVICE_API, PROFILE_SERVICE_API, LIKE_SERVICE_API and STATUS_SERVICE_API). All with Jaeger tracing enabled
+// (MICROBLOG_API, PROXY, USER_AUTH_API, AD_SERVICE_API, PROFILE_SERVICE_API, LIKE_SERVICE_API, STATUS_SERVICE_API and PAYMENT_SERVICE_API).
+// All with Jaeger tracing enabled
 app.use((req, res, next) => {
     const cookieHeader = req.cookies.jwt ? {"Cookie": "jwt=" + req.cookies.jwt} : {};
 
     const MICROBLOG_API = createAxiosInstance(req, "http://" + process.env.MICROBLOG_SERVICE_ADDRESS, microblogLogger, cookieHeader);
     const PROXY = createAxiosInstance(req, "http://" + process.env.PROXY_SERVICE_ADDRESS, proxyLogger);
     const USER_AUTH_API = createAxiosInstance(req, "http://" + process.env.USER_AUTH_SERVICE_ADDRESS, userAuthApiLogger, cookieHeader);
-    const AD_SERVICE_API = createAxiosInstance(req,"http://" + process.env.AD_SERVICE_ADDRESS + process.env.AD_SERVICE_BASE_PATH, adServiceApiLogger, cookieHeader);
+    const AD_SERVICE_API = createAxiosInstance(req, "http://" + process.env.AD_SERVICE_ADDRESS + process.env.AD_SERVICE_BASE_PATH, adServiceApiLogger, cookieHeader);
     const MEMBERSHIP_SERVICE_API = createAxiosInstance(req, "http://" + process.env.MEMBERSHIP_SERVICE_ADDRESS + process.env.MEMBERSHIP_SERVICE_BASE_PATH, membershipServiceApiLogger, cookieHeader)
     const PROFILE_SERVICE_API = createAxiosInstance(req, "http://" + process.env.PROFILE_SERVICE_ADDRESS, profileServiceLogger);
-    const STATUS_SERVICE_API =createAxiosInstance(req, "http://" + process.env.STATUS_SERVICE_ADDRESS + process.env.STATUS_SERVICE_BASE_PATH, statusServiceApiLogger);
+    const STATUS_SERVICE_API = createAxiosInstance(req, "http://" + process.env.STATUS_SERVICE_ADDRESS + process.env.STATUS_SERVICE_BASE_PATH, statusServiceApiLogger);
     const LIKE_SERVICE_API = createAxiosInstance(req, "http://" + process.env.LIKE_SERVICE_ADDRES, likeServiceLogger, cookieHeader);
+    const PAYMENT_SERVICE_API = createAxiosInstance(req, "http://" + process.env.PAYMENT_SERVICE_ADDRESS, paymentServiceLogger, cookieHeader);
 
-	applyTracingInterceptors(MICROBLOG_API, {span: req.span});
-	applyTracingInterceptors(PROXY, {span: req.span});
-	applyTracingInterceptors(USER_AUTH_API, {span: req.span});
-	applyTracingInterceptors(AD_SERVICE_API, {span: req.span});
-	applyTracingInterceptors(STATUS_SERVICE_API, {span: req.span});
+    applyTracingInterceptors(MICROBLOG_API, {span: req.span});
+    applyTracingInterceptors(PROXY, {span: req.span});
+    applyTracingInterceptors(USER_AUTH_API, {span: req.span});
+    applyTracingInterceptors(AD_SERVICE_API, {span: req.span});
+    applyTracingInterceptors(STATUS_SERVICE_API, {span: req.span});
     applyTracingInterceptors(PROFILE_SERVICE_API, {span: req.span});
     applyTracingInterceptors(LIKE_SERVICE_API, {span: req.span});
+    applyTracingInterceptors(PAYMENT_SERVICE_API, {span: req.span});
 
     req.MICROBLOG_API = MICROBLOG_API;
     req.PROXY = PROXY;
@@ -162,6 +168,7 @@ app.use((req, res, next) => {
     req.STATUS_SERVICE_API = STATUS_SERVICE_API;
     req.PROFILE_SERVICE_API = PROFILE_SERVICE_API;
     req.LIKE_SERVICE_API = LIKE_SERVICE_API;
+    req.PAYMENT_SERVICE_API = PAYMENT_SERVICE_API;
 
     next();
 });
