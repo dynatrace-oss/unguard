@@ -55,7 +55,7 @@ See in the Unguard Chart [README](../chart/README.md#tracing-and-jaeger)
 1. Port-forward the Jaeger UI
 
     ```sh
-    kubectl port-forward -n unguard service/jaeger-query 16686:16686
+    kubectl port-forward -n unguard service/jaeger-query 16686:80
     ```
 
 2. Open [localhost:16686](http://localhost:16686)
