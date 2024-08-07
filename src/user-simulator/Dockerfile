@@ -20,4 +20,5 @@ RUN npm install
 RUN npm run build
 
 ENV NODE_ENV=production
+ENV NODE_CONFIG_STRICT_MODE=1
 CMD ["npm", "start"]
