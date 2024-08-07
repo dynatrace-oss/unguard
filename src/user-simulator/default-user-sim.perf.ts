@@ -1,5 +1,6 @@
+'use strict'
 import fs from 'fs'
-import {BioList, ImageUrlPosts, TextPosts, UrlPosts} from './types'
+import {Bio, BioList, Config, ImageUrlPost, TextPost, UrlPost, User} from './types'
 import puppeteer from 'puppeteer'
 
 const random_ips_pub = [
@@ -77,27 +78,27 @@ const ip = privateRanges
     ? random_ips_priv[getRandomInt(random_ips_priv.length)]
     : random_ips_pub[getRandomInt(random_ips_pub.length)]
 
-function checkEnvVariable(envVar) {
+function checkEnvVariable(envVar: string) {
     if (!process.env[envVar]) {
         console.error(`env variable ${envVar} is not set.`)
         throw Error(`env variable ${envVar} is not set.`)
     }
 }
 
-function getRandomInt(max) {
+function getRandomInt(max: number) {
     return Math.floor(Math.random() * max)
 }
 
-function delay(time) {
+function delay(time: number) {
     return new Promise(function (resolve) {
         setTimeout(resolve, time)
     })
 }
 
-const textPosts: TextPosts = JSON.parse(fs.readFileSync('./data/textposts.json', 'utf-8')).posts
-const imgPosts: ImageUrlPosts = JSON.parse(fs.readFileSync('./data/imgposts.json', 'utf-8')).posts
-const urlPosts: UrlPosts = JSON.parse(fs.readFileSync('./data/urlposts.json', 'utf-8')).posts
-const bioList: BioList = JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8')).bioList
+const textPosts: TextPost[] = JSON.parse(fs.readFileSync('./data/textposts.json', 'utf-8')).posts
+const imgPosts: ImageUrlPost[] = JSON.parse(fs.readFileSync('./data/imgposts.json', 'utf-8')).posts
+const urlPosts: UrlPost[] = JSON.parse(fs.readFileSync('./data/urlposts.json', 'utf-8')).posts
+const bioList: Bio[] = (JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8')) as BioList).bioList
 
 ;(async () => {
     checkEnvVariable('FRONTEND_ADDR')
@@ -107,28 +108,35 @@ const bioList: BioList = JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-
     await page.setUserAgent('simulated-browser-user')
     await page.setExtraHTTPHeaders({'X-Client-Ip': ip})
 
-    const config = {frontendUrl: 'http://' + process.env.FRONTEND_ADDR}
+    const config: Config = {frontendUrl: 'http://' + process.env.FRONTEND_ADDR}
     const username = 'ROBOT_' + getRandomInt(10000).toString(16)
 
-    const user = {username: username, password: username}
+    const user: User = {username: username, password: username}
 
-    await register(page, config, user)
-    await login(page, config, user)
-    await visitHomepage(page, config)
-    await likePost(page, config, user)
-    await visitTimeline(page, config)
-    await createTextPost(page, config, user, textPosts)
-    await createUrlPost(page, config, user, urlPosts)
-    await createImagePost(page, config, user, imgPosts)
-    await updateBioText(page, config, user, bioList)
-    await visitUsersPageAndSearch(page, config)
-    await upgradeToProMembership(page, config, user)
-    await addCreditCardInformation(page, config, user)
-    await logout(page)
+    try {
+        await register(page, config, user)
+        await login(page, config, user)
+        await visitHomepage(page, config)
+        await likePost(page, config, user)
+        await visitTimeline(page, config)
+        await createTextPost(page, config, user, textPosts)
+        await createUrlPost(page, config, user, urlPosts)
+        await createImagePost(page, config, user, imgPosts)
+        await updateBioText(page, config, user, bioList)
+        await visitUsersPageAndSearch(page, config)
+        await upgradeToProMembership(page, config, user)
+        await addCreditCardInformation(page, config, user)
+        await logout(page, config)
+    } catch (e: any) {
+        console.error(e);
+        await browser.close()
+        process.exit(1);
+    }
     await browser.close()
+    process.exit(0);
 })()
 
-async function register(page, config, user) {
+async function register(page: puppeteer.Page, config: Config, user: User) {
     await page.goto(config.frontendUrl + '/login')
     await page.type('input[name=username]', user.username)
     await page.type('input[name=password]', user.password)
@@ -136,7 +144,7 @@ async function register(page, config, user) {
     await delay(3000) // wait for 3 seconds
 }
 
-async function login(page, config, user) {
+async function login(page: puppeteer.Page, config: Config, user: User) {
     await page.goto(config.frontendUrl + '/login')
     await page.type('input[name=username]', user.username)
     await page.type('input[name=password]', user.password)
@@ -144,17 +152,17 @@ async function login(page, config, user) {
     await delay(3000) // wait for 3 seconds
 }
 
-async function visitHomepage(page, config) {
+async function visitHomepage(page: puppeteer.Page, config: Config) {
     await page.goto(config.frontendUrl + '/')
     await delay(5000)
 }
 
-async function likePost(page, config, user) {
+async function likePost(page: puppeteer.Page, config: Config, user: User) {
     await page.goto(config.frontendUrl + '/')
     const likeButton = await page.$('input[type=hidden][name=postId] ~ button[type=submit]')
     if (likeButton) {
         await likeButton.click()
-        console.log(`${user.username} liked a post: ${await page.url()}`)
+        console.log(`${user.username} liked a post.`)
     }
     await delay(3000) // wait for 3 seconds
 }
@@ -164,7 +172,7 @@ async function visitTimeline(page, config) {
     await delay(5000) // wait for 5 seconds
 }
 
-async function createTextPost(page, config, user, textPosts) {
+async function createTextPost(page: puppeteer.Page, config: Config, user: User, textPosts: TextPost[]) {
     const post = textPosts[getRandomInt(textPosts.length)]
     await page.goto(config.frontendUrl + '/')
     await page.type('textarea[id=message]', post.text)
@@ -173,7 +181,7 @@ async function createTextPost(page, config, user, textPosts) {
     await delay(3000) // wait for 3 seconds
 }
 
-async function createUrlPost(page, config, user, urlPosts) {
+async function createUrlPost(page: puppeteer.Page, config: Config, user: User, urlPosts: UrlPost[]) {
     const post = urlPosts[getRandomInt(urlPosts.length)]
     await page.goto(config.frontendUrl + '/')
     await page.click('a[id=url-tab]')
@@ -184,7 +192,7 @@ async function createUrlPost(page, config, user, urlPosts) {
     await delay(3000) // wait for 3 seconds
 }
 
-async function createImagePost(page, config, user, imgPosts) {
+async function createImagePost(page: puppeteer.Page, config: Config, user: User, imgPosts: ImageUrlPost[]){
     const post = imgPosts[getRandomInt(imgPosts.length)]
     await page.goto(config.frontendUrl + '/')
     await page.click('a[id=image-tab]')
@@ -195,11 +203,14 @@ async function createImagePost(page, config, user, imgPosts) {
     await delay(3000) // wait for 3 seconds
 }
 
-async function updateBioText(page, config, user, bioList) {
+async function updateBioText(page: puppeteer.Page, config: Config, user: User, bioList: Bio[]){
     const bio = bioList[getRandomInt(bioList.length)]
     await page.goto(`${config.frontendUrl}/user/${user.username}`)
     if (bio.isMarkdown) {
         const enableMarkdownCheckbox = await page.$('input[id=enableMarkdown]')
+        if (!enableMarkdownCheckbox) {
+            throw Error('Markdown checkbox not found');
+        }
         const isChecked = await (await enableMarkdownCheckbox.getProperty('checked')).jsonValue()
         if (!isChecked) {
             await enableMarkdownCheckbox.click()
@@ -211,7 +222,7 @@ async function updateBioText(page, config, user, bioList) {
     await delay(3000) // wait for 3 seconds
 }
 
-async function visitUsersPageAndSearch(page, config) {
+async function visitUsersPageAndSearch(page: puppeteer.Page, config: Config){
     await page.goto(config.frontendUrl + '/users')
     await page.type('input[name=name]', 'admanager')
     await page.click('input[name=name] ~ button[type=submit]')
@@ -219,7 +230,7 @@ async function visitUsersPageAndSearch(page, config) {
     await delay(3000) // wait for 3 seconds
 }
 
-async function upgradeToProMembership(page, config, user) {
+async function upgradeToProMembership(page: puppeteer.Page, config: Config, user: User){
     await page.goto(`${config.frontendUrl}/membership`)
     await page.type('input[id=membershipInputList]', 'PRO')
     await page.click('button[name=postMembership]')
@@ -227,7 +238,7 @@ async function upgradeToProMembership(page, config, user) {
     await delay(3000) // wait for 3 seconds
 }
 
-async function addCreditCardInformation(page, config, user) {
+async function addCreditCardInformation(page: puppeteer.Page, config: Config, user: User){
     await page.goto(`${config.frontendUrl}/user/${user.username}/payment`)
     await page.type('input[id=cardHolderName]', user.username)
     await page.type('input[id=cardNumber]', '4556737586899855')
@@ -238,7 +249,8 @@ async function addCreditCardInformation(page, config, user) {
     await delay(3000) // wait for 3 seconds
 }
 
-async function logout(page) {
+async function logout(page: puppeteer.Page, config: Config) {
+    await page.goto(`${config.frontendUrl}`)
     await page.click('#dropdownUser')
     await page.click('button[name=navLogoutButton]')
     console.log('Logged out')
