@@ -70,7 +70,10 @@ jobs:
           commitChange: false
           changes: |
             {
+              "userSimulator.cronJob.jobTemplate.container.image.tag": "${{ env.IMAGE_TAG }}",
               "maliciousLoadGenerator.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "likeService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
+              "paymentService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
               "profileService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
               "membershipService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
               "userAuthService.deployment.container.image.tag": "${{ env.IMAGE_TAG }}",
