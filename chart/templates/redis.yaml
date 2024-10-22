@@ -21,6 +21,7 @@ metadata:
   labels:
     app.kubernetes.io/name: redis
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: ClusterIP
   selector:
@@ -47,6 +48,7 @@ metadata:
   labels:
     app.kubernetes.io/name: redis
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
@@ -59,6 +61,7 @@ spec:
       labels:
         app.kubernetes.io/name: redis
         app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
         - name: redis

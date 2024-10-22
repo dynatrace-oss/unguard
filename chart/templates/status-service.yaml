@@ -21,6 +21,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.statusService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: {{.Values.statusService.service.type}}
   selector:
@@ -37,6 +38,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.statusService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -46,6 +48,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.statusService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 rules:
   {{- .Values.statusService.role.rules | toYaml | nindent 2}}
 
@@ -57,6 +60,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.statusService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 subjects:
   {{- .Values.statusService.roleBindings.subjects | toYaml | nindent 2}}
 roleRef:
@@ -72,6 +76,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.statusService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
@@ -84,6 +89,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{.Values.statusService.name}}
         app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       serviceAccountName: {{.Values.statusService.serviceAccount.name}}
       containers:

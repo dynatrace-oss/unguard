@@ -38,6 +38,10 @@ mariaDB:
   serviceName: unguard-mariadb
   password: mariadb-root-password
 
+labels:
+  # Add common labels to all resources here
+  common: {}
+
 # Malicious load generator
 maliciousLoadGenerator:
   enabled: false

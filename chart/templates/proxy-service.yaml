@@ -21,6 +21,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.proxyService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: {{.Values.proxyService.service.type}}
   selector:
@@ -36,6 +37,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.proxyService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -44,6 +46,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.proxyService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 rules:
   {{- .Values.proxyService.role.rules | toYaml | nindent 2}}
 
@@ -55,6 +58,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.proxyService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 subjects:
   {{- .Values.proxyService.roleBindings.subjects | toYaml | nindent 2}}
 roleRef:
@@ -69,6 +73,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.proxyService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
@@ -81,6 +86,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{.Values.proxyService.name}}
         app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       serviceAccountName: {{.Values.proxyService.serviceAccount.name}}
       containers:

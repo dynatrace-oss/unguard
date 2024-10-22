@@ -21,6 +21,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.ingress.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
   {{if .Values.aws.enabled}}
   annotations:
   {{- .Values.aws.ingress.annotations | toYaml | nindent 4 }}

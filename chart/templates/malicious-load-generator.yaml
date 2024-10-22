@@ -21,6 +21,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.maliciousLoadGenerator.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
@@ -33,6 +34,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{.Values.maliciousLoadGenerator.name}}
         app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       terminationGracePeriodSeconds: {{.Values.maliciousLoadGenerator.deployment.terminationGracePeriodSeconds}}
       restartPolicy: {{.Values.maliciousLoadGenerator.deployment.restartPolicy}}
