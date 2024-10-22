@@ -17,15 +17,15 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-{{.Values.userAuthService.name}}
+  name: unguard-{{ .Values.userAuthService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.userAuthService.name}}
+    app.kubernetes.io/name: {{ .Values.userAuthService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: {{ .Values.userAuthService.service.type }}
   selector:
-    app.kubernetes.io/name: {{.Values.userAuthService.name}}
+    app.kubernetes.io/name: {{ .Values.userAuthService.name }}
     app.kubernetes.io/part-of: unguard
   ports:
  {{- .Values.userAuthService.service.ports | toYaml | nindent 4 }}
@@ -34,31 +34,31 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-{{.Values.userAuthService.name}}
+  name: unguard-{{ .Values.userAuthService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.userAuthService.name}}
+    app.kubernetes.io/name: {{ .Values.userAuthService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{.Values.userAuthService.name}}
+      app.kubernetes.io/name: {{ .Values.userAuthService.name }}
       app.kubernetes.io/part-of: unguard
   strategy:
-    type: {{.Values.userAuthService.deployment.strategy.type}}
+    type: {{ .Values.userAuthService.deployment.strategy.type }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{.Values.userAuthService.name}}
+        app.kubernetes.io/name: {{ .Values.userAuthService.name }}
         app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
-        - name: {{.Values.userAuthService.name}}
-          image: {{.Values.userAuthService.deployment.container.image.repository}}:{{.Values.userAuthService.deployment.container.image.tag}}
-          imagePullPolicy: {{.Values.userAuthService.deployment.container.image.pullPolicy}}
+        - name: {{ .Values.userAuthService.name }}
+          image: {{ .Values.userAuthService.deployment.container.image.repository }}:{{ .Values.userAuthService.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.userAuthService.deployment.container.image.pullPolicy }}
           ports:
-            - containerPort: {{.Values.userAuthService.deployment.container.ports.containerPort}}
+            - containerPort: {{ .Values.userAuthService.deployment.container.ports.containerPort }}
           env:
             - name: SERVER_PORT
               value: {{ quote .Values.userAuthService.deployment.container.env.SERVER_PORT }}
@@ -70,9 +70,9 @@ spec:
                   name: {{ tpl .Values.userAuthService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name . }}
                   key: {{ tpl .Values.userAuthService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key .  }}
             - name: JAEGER_SERVICE_NAME
-              value: {{quote (printf "unguard-%s" .Values.userAuthService.name) }}
+              value: {{ quote (printf "unguard-%s" .Values.userAuthService.name) }}
             - name: JAEGER_AGENT_HOST
-              value: {{quote (printf "%s-%s" .Values.jaeger.name .Values.userAuthService.deployment.container.env.JAEGER_AGENT_HOST) }}
+              value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.userAuthService.deployment.container.env.JAEGER_AGENT_HOST) }}
             - name: JAEGER_SAMPLER_TYPE
               value: {{ quote .Values.userAuthService.deployment.container.env.JAEGER_SAMPLER_TYPE }}
             - name: JAEGER_SAMPLER_PARAM

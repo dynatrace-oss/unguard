@@ -17,19 +17,19 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-{{.Values.envoyProxy.name}}
+  name: unguard-{{ .Values.envoyProxy.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+    app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
-  {{if .Values.aws.enabled}}
+  {{ if .Values.aws.enabled }}
   type: NodePort
-  {{else}}
+  {{ else }}
   type: {{ .Values.envoyProxy.service.type }}
-  {{end}}
+  {{ end }}
   selector:
-    app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+    app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
     app.kubernetes.io/part-of: unguard
   ports:
  {{- .Values.envoyProxy.service.ports | toYaml | nindent 4 }}
@@ -38,28 +38,28 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-{{.Values.envoyProxy.name}}
+  name: unguard-{{ .Values.envoyProxy.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+    app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+      app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
       app.kubernetes.io/part-of: unguard
   strategy:
-    type: {{.Values.envoyProxy.deployment.strategy.type}}
+    type: {{ .Values.envoyProxy.deployment.strategy.type }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{.Values.envoyProxy.name}}
+        app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
         app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
-        - name: {{.Values.envoyProxy.name}}
-          image: {{.Values.envoyProxy.deployment.container.image.repository}}:{{.Values.envoyProxy.deployment.container.image.tag}}
-          imagePullPolicy: {{.Values.envoyProxy.deployment.container.image.pullPolicy}}
+        - name: {{ .Values.envoyProxy.name }}
+          image: {{ .Values.envoyProxy.deployment.container.image.repository }}:{{ .Values.envoyProxy.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.envoyProxy.deployment.container.image.pullPolicy }}
           ports:
             {{- .Values.envoyProxy.deployment.container.ports | toYaml | nindent 12 }}

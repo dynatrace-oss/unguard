@@ -17,15 +17,15 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-{{.Values.frontend.name}}
+  name: unguard-{{ .Values.frontend.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.frontend.name}}
+    app.kubernetes.io/name: {{ .Values.frontend.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: {{ .Values.frontend.service.type }}
   selector:
-    app.kubernetes.io/name: {{.Values.frontend.name}}
+    app.kubernetes.io/name: {{ .Values.frontend.name }}
     app.kubernetes.io/part-of: unguard
   ports:
  {{- .Values.frontend.service.ports | toYaml | nindent 4 }}
@@ -34,31 +34,31 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-{{.Values.frontend.name}}
+  name: unguard-{{ .Values.frontend.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.frontend.name}}
+    app.kubernetes.io/name: {{ .Values.frontend.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{.Values.frontend.name}}
+      app.kubernetes.io/name: {{ .Values.frontend.name }}
       app.kubernetes.io/part-of: unguard
   strategy:
-    type: {{.Values.frontend.deployment.strategy.type}}
+    type: {{ .Values.frontend.deployment.strategy.type }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{.Values.frontend.name}}
+        app.kubernetes.io/name: {{ .Values.frontend.name }}
         app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
-        - name: {{.Values.frontend.name}}
-          image: {{.Values.frontend.deployment.container.image.repository}}:{{.Values.frontend.deployment.container.image.tag}}
-          imagePullPolicy: {{.Values.frontend.deployment.container.image.pullPolicy}}
+        - name: {{ .Values.frontend.name }}
+          image: {{ .Values.frontend.deployment.container.image.repository }}:{{ .Values.frontend.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.frontend.deployment.container.image.pullPolicy }}
           ports:
-            - containerPort: {{.Values.frontend.deployment.container.ports.containerPort}}
+            - containerPort: {{ .Values.frontend.deployment.container.ports.containerPort }}
           env:
             - name: MICROBLOG_SERVICE_ADDRESS
               value: {{ quote .Values.frontend.deployment.container.env.MICROBLOG_SERVICE_ADDRESS }}
@@ -87,7 +87,7 @@ spec:
             - name: STATUS_SERVICE_BASE_PATH
               value: {{ quote .Values.frontend.deployment.container.env.STATUS_SERVICE_BASE_PATH }}
             - name: JAEGER_SERVICE_NAME
-              value: {{quote (printf "unguard-%s" .Values.frontend.name) }}
+              value: {{ quote (printf "unguard-%s" .Values.frontend.name) }}
             - name: JAEGER_AGENT_HOST
               value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.frontend.deployment.container.env.JAEGER_AGENT_HOST) }}
             - name: JAEGER_SAMPLER_TYPE

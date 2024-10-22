@@ -9,14 +9,14 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: unguard-{{.Values.userSimulator.name}}
-      image: {{.Values.userSimulator.cronJob.jobTemplate.container.image.repository}}:{{.Values.userSimulator.cronJob.jobTemplate.container.image.tag}}
-      imagePullPolicy: {{.Values.userSimulator.cronJob.jobTemplate.container.image.pullPolicy}}
+    - name: unguard-{{ .Values.userSimulator.name }}
+      image: {{ .Values.userSimulator.cronJob.jobTemplate.container.image.repository }}:{{ .Values.userSimulator.cronJob.jobTemplate.container.image.tag }}
+      imagePullPolicy: {{ .Values.userSimulator.cronJob.jobTemplate.container.image.pullPolicy }}
       env:
         - name: FRONTEND_ADDR
-          value: {{quote .Values.userSimulator.cronJob.jobTemplate.container.env.FRONTEND_ADDR}}
+          value: {{ quote .Values.userSimulator.cronJob.jobTemplate.container.env.FRONTEND_ADDR }}
         - name: SIMULATE_PRIVATE_RANGES
-          value: {{quote .Values.userSimulator.cronJob.jobTemplate.container.env.SIMULATE_PRIVATE_RANGES}}
+          value: {{ quote .Values.userSimulator.cronJob.jobTemplate.container.env.SIMULATE_PRIVATE_RANGES }}
       command: ["/bin/sh"]
       args: ["-c", "node_modules/.bin/element run default-user-sim.perf.ts --export 2>&1 && jq -e '.testScripts[].iterationResults[].stepResults[] | select(.status == \"failed\") | .name' reports/default-user-sim.perf/*/data.json >/dev/null && exit 1 || exit 0"]
   restartPolicy: Never
