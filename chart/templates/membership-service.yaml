@@ -17,15 +17,15 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-{{.Values.membershipService.name}}
+  name: unguard-{{ .Values.membershipService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.membershipService.name}}
+    app.kubernetes.io/name: {{ .Values.membershipService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: {{ .Values.membershipService.service.type }}
   selector:
-    app.kubernetes.io/name: {{.Values.membershipService.name}}
+    app.kubernetes.io/name: {{ .Values.membershipService.name }}
     app.kubernetes.io/part-of: unguard
   ports:
  {{- .Values.membershipService.service.ports | toYaml | nindent 4 }}
@@ -33,31 +33,31 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-{{.Values.membershipService.name}}
+  name: unguard-{{ .Values.membershipService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.membershipService.name}}
+    app.kubernetes.io/name: {{ .Values.membershipService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{.Values.membershipService.name}}
+      app.kubernetes.io/name: {{ .Values.membershipService.name }}
       app.kubernetes.io/part-of: unguard
   strategy:
-    type: {{.Values.membershipService.deployment.strategy.type}}
+    type: {{ .Values.membershipService.deployment.strategy.type }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{.Values.membershipService.name}}
+        app.kubernetes.io/name: {{ .Values.membershipService.name }}
         app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
-        - name: {{.Values.membershipService.name}}
-          image: {{.Values.membershipService.deployment.container.image.repository}}:{{.Values.membershipService.deployment.container.image.tag}}
-          imagePullPolicy: {{.Values.membershipService.deployment.container.image.pullPolicy}}
+        - name: {{ .Values.membershipService.name }}
+          image: {{ .Values.membershipService.deployment.container.image.repository }}:{{ .Values.membershipService.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.membershipService.deployment.container.image.pullPolicy }}
           ports:
-            - containerPort: {{.Values.membershipService.deployment.container.ports.containerPort}}
+            - containerPort: {{ .Values.membershipService.deployment.container.ports.containerPort }}
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: {{ quote .Values.membershipService.deployment.container.env.ASPNETCORE_ENVIRONMENT }}

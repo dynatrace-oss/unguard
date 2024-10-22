@@ -17,37 +17,37 @@ limitations under the License.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: unguard-{{.Values.userSimulator.name}}
+  name: unguard-{{ .Values.userSimulator.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.userSimulator.name}}
+    app.kubernetes.io/name: {{ .Values.userSimulator.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
-  schedule: {{quote .Values.userSimulator.cronJob.schedule}}
-  startingDeadlineSeconds: {{ .Values.userSimulator.cronJob.startingDeadlineSeconds}}
+  schedule: {{ quote .Values.userSimulator.cronJob.schedule }}
+  startingDeadlineSeconds: {{ .Values.userSimulator.cronJob.startingDeadlineSeconds }}
   jobTemplate:
     spec:
       template:
         metadata:
           labels:
-            app.kubernetes.io/name: {{.Values.userSimulator.name}}
+            app.kubernetes.io/name: {{ .Values.userSimulator.name }}
             app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 12 }}
         spec:
-          restartPolicy: {{.Values.userSimulator.cronJob.jobTemplate.restartPolicy}}
+          restartPolicy: {{ .Values.userSimulator.cronJob.jobTemplate.restartPolicy }}
           containers:
-            - name: unguard-{{.Values.userSimulator.name}}
-              image: {{.Values.userSimulator.cronJob.jobTemplate.container.image.repository}}:{{.Values.userSimulator.cronJob.jobTemplate.container.image.tag}}
-              imagePullPolicy: {{.Values.userSimulator.cronJob.jobTemplate.container.image.pullPolicy}}
+            - name: unguard-{{ .Values.userSimulator.name }}
+              image: {{ .Values.userSimulator.cronJob.jobTemplate.container.image.repository }}:{{ .Values.userSimulator.cronJob.jobTemplate.container.image.tag }}
+              imagePullPolicy: {{ .Values.userSimulator.cronJob.jobTemplate.container.image.pullPolicy }}
               env:
                 - name: FRONTEND_ADDR
-                  value: {{quote .Values.userSimulator.cronJob.jobTemplate.container.env.FRONTEND_ADDR}}
+                  value: {{ quote .Values.userSimulator.cronJob.jobTemplate.container.env.FRONTEND_ADDR }}
                 - name: SIMULATE_PRIVATE_RANGES
-                  value: {{quote .Values.userSimulator.cronJob.jobTemplate.container.env.SIMULATE_PRIVATE_RANGES}}
+                  value: {{ quote .Values.userSimulator.cronJob.jobTemplate.container.env.SIMULATE_PRIVATE_RANGES }}
               resources:
                 requests:
-                  cpu: {{quote .Values.userSimulator.cronJob.jobTemplate.container.resources.requests.cpu}}
-                  memory: {{quote .Values.userSimulator.cronJob.jobTemplate.container.resources.requests.memory}}
+                  cpu: {{ quote .Values.userSimulator.cronJob.jobTemplate.container.resources.requests.cpu }}
+                  memory: {{ quote .Values.userSimulator.cronJob.jobTemplate.container.resources.requests.memory }}
                 limits:
-                  cpu: {{quote .Values.userSimulator.cronJob.jobTemplate.container.resources.limits.cpu}}
-                  memory: {{quote .Values.userSimulator.cronJob.jobTemplate.container.resources.limits.memory}}
+                  cpu: {{ quote .Values.userSimulator.cronJob.jobTemplate.container.resources.limits.cpu }}
+                  memory: {{ quote .Values.userSimulator.cronJob.jobTemplate.container.resources.limits.memory }}

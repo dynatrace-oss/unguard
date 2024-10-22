@@ -16,15 +16,15 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-{{.Values.profileService.name}}
+  name: unguard-{{ .Values.profileService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.profileService.name}}
+    app.kubernetes.io/name: {{ .Values.profileService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: {{ .Values.profileService.service.type }}
   selector:
-    app.kubernetes.io/name: {{.Values.profileService.name}}
+    app.kubernetes.io/name: {{ .Values.profileService.name }}
     app.kubernetes.io/part-of: unguard
   ports:
  {{- .Values.profileService.service.ports | toYaml | nindent 4 }}
@@ -32,37 +32,37 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-{{.Values.profileService.name}}
+  name: unguard-{{ .Values.profileService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.profileService.name}}
+    app.kubernetes.io/name: {{ .Values.profileService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{.Values.profileService.name}}
+      app.kubernetes.io/name: {{ .Values.profileService.name }}
       app.kubernetes.io/part-of: unguard
   strategy:
-    type: {{.Values.profileService.deployment.strategy.type}}
+    type: {{ .Values.profileService.deployment.strategy.type }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{.Values.profileService.name}}
+        app.kubernetes.io/name: {{ .Values.profileService.name }}
         app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
-        - name: {{.Values.profileService.name}}
+        - name: {{ .Values.profileService.name }}
           image: {{ .Values.profileService.deployment.container.image.repository }}:{{ .Values.profileService.deployment.container.image.tag | default .Chart.AppVersion }}
-          imagePullPolicy: {{.Values.profileService.deployment.container.image.pullPolicy}}
+          imagePullPolicy: {{ .Values.profileService.deployment.container.image.pullPolicy }}
           ports:
-            - containerPort: {{.Values.profileService.deployment.container.ports.containerPort}}
+            - containerPort: {{ .Values.profileService.deployment.container.ports.containerPort }}
           livenessProbe:
             httpGet:
-              path: {{.Values.profileService.deployment.container.livenessProbe.httpGet.path}}
-              port: {{.Values.profileService.deployment.container.livenessProbe.httpGet.port}}
-            initialDelaySeconds: {{.Values.profileService.deployment.container.livenessProbe.initialDelaySeconds}}
-            periodSeconds: {{.Values.profileService.deployment.container.livenessProbe.periodSeconds}}
+              path: {{ .Values.profileService.deployment.container.livenessProbe.httpGet.path }}
+              port: {{ .Values.profileService.deployment.container.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.profileService.deployment.container.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.profileService.deployment.container.livenessProbe.periodSeconds }}
           env:
             - name: SPRING_DATASOURCE_URL
               value: {{ quote .Values.profileService.deployment.container.env.SPRING_DATASOURCE_URL }}
@@ -71,18 +71,18 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               value: {{ quote .Values.profileService.deployment.container.env.SPRING_DATASOURCE_PASSWORD }}
             - name: OTEL_LOGS_EXPORTER
-              value: {{ quote .Values.profileService.deployment.container.env.OTEL_LOGS_EXPORTER}}
+              value: {{ quote .Values.profileService.deployment.container.env.OTEL_LOGS_EXPORTER }}
             - name: OTEL_METRICS_EXPORTER
               value: {{ quote .Values.profileService.deployment.container.env.OTEL_METRICS_EXPORTER }}
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: {{ quote .Values.profileService.deployment.container.env.OTEL_RESOURCE_ATTRIBUTES }}
             - name: OTEL_TRACES_EXPORTER
               value: {{ quote .Values.profileService.deployment.container.env.OTEL_TRACES_EXPORTER }}
-            {{if .Values.tracing.enabled}}
+            {{ if .Values.tracing.enabled }}
             - name: OTEL_EXPERIMENTAL_SDK_ENABLED
               value: {{ quote .Values.profileService.deployment.container.env.OTEL_EXPERIMENTAL_SDK_ENABLED }}
             - name: OTEL_EXPORTER_JAEGER_ENDPOINT
               value: {{ quote .Values.profileService.deployment.container.env.OTEL_EXPORTER_JAEGER_ENDPOINT }}
             - name: OTEL_PROPAGATORS
               value: {{ quote .Values.profileService.deployment.container.env.OTEL_PROPAGATORS }}
-            {{end}}
+            {{ end }}

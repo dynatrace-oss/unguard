@@ -17,26 +17,26 @@ limitations under the License.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: unguard-{{.Values.ingress.name}}
+  name: unguard-{{ .Values.ingress.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.ingress.name}}
+    app.kubernetes.io/name: {{ .Values.ingress.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
-  {{if .Values.aws.enabled}}
+  {{ if .Values.aws.enabled }}
   annotations:
   {{- .Values.aws.ingress.annotations | toYaml | nindent 4 }}
-  {{end}}
+  {{ end }}
 spec:
   rules:
-    {{if .Values.localDev.enabled}}
+    {{ if .Values.localDev.enabled }}
     - host: unguard.kube
-    {{end}}
-    {{if .Values.localDev.enabled}}
+    {{ end }}
+    {{ if .Values.localDev.enabled }}
       http:
-    {{end}}
-    {{if .Values.aws.enabled}}
+    {{ end }}
+    {{ if .Values.aws.enabled }}
     - http:
-    {{end}}
+    {{ end }}
         paths:
           - path: /healthz
             pathType: Prefix
@@ -52,4 +52,4 @@ spec:
                 name: unguard-envoy-proxy
                 port:
                   number: 8080
-{{end}}
+{{ end }}

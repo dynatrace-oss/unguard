@@ -17,15 +17,15 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-{{.Values.proxyService.name}}
+  name: unguard-{{ .Values.proxyService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.proxyService.name}}
+    app.kubernetes.io/name: {{ .Values.proxyService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
-  type: {{.Values.proxyService.service.type}}
+  type: {{ .Values.proxyService.service.type }}
   selector:
-    app.kubernetes.io/name: {{.Values.proxyService.name}}
+    app.kubernetes.io/name: {{ .Values.proxyService.name }}
     app.kubernetes.io/part-of: unguard
   ports:
  {{- .Values.proxyService.service.ports | toYaml | nindent 4 }}
@@ -33,75 +33,75 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{.Values.proxyService.serviceAccount.name}}
+  name: {{ .Values.proxyService.serviceAccount.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.proxyService.name}}
+    app.kubernetes.io/name: {{ .Values.proxyService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{.Values.proxyService.role.name}}
+  name: {{ .Values.proxyService.role.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.proxyService.name}}
+    app.kubernetes.io/name: {{ .Values.proxyService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 rules:
-  {{- .Values.proxyService.role.rules | toYaml | nindent 2}}
+  {{- .Values.proxyService.role.rules | toYaml | nindent 2 }}
 
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{.Values.proxyService.roleBindings.name}}
+  name: {{ .Values.proxyService.roleBindings.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.proxyService.name}}
+    app.kubernetes.io/name: {{ .Values.proxyService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 subjects:
-  {{- .Values.proxyService.roleBindings.subjects | toYaml | nindent 2}}
+  {{- .Values.proxyService.roleBindings.subjects | toYaml | nindent 2 }}
 roleRef:
-  kind: {{.Values.proxyService.roleBindings.roleRef.kind}}
-  name: {{.Values.proxyService.roleBindings.roleRef.name}}
-  apiGroup: {{.Values.proxyService.roleBindings.roleRef.apiGroup}}
+  kind: {{ .Values.proxyService.roleBindings.roleRef.kind }}
+  name: {{ .Values.proxyService.roleBindings.roleRef.name }}
+  apiGroup: {{ .Values.proxyService.roleBindings.roleRef.apiGroup }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-{{.Values.proxyService.name}}
+  name: unguard-{{ .Values.proxyService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.proxyService.name}}
+    app.kubernetes.io/name: {{ .Values.proxyService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{.Values.proxyService.name}}
+      app.kubernetes.io/name: {{ .Values.proxyService.name }}
       app.kubernetes.io/part-of: unguard
   strategy:
-    type: {{.Values.proxyService.deployment.strategy.type}}
+    type: {{ .Values.proxyService.deployment.strategy.type }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{.Values.proxyService.name}}
+        app.kubernetes.io/name: {{ .Values.proxyService.name }}
         app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
-      serviceAccountName: {{.Values.proxyService.serviceAccount.name}}
+      serviceAccountName: {{ .Values.proxyService.serviceAccount.name }}
       containers:
-        - name: {{.Values.proxyService.name}}
-          image: {{.Values.proxyService.deployment.container.image.repository}}:{{.Values.proxyService.deployment.container.image.tag}}
-          imagePullPolicy: {{.Values.statusService.deployment.container.image.pullPolicy}}
+        - name: {{ .Values.proxyService.name }}
+          image: {{ .Values.proxyService.deployment.container.image.repository }}:{{ .Values.proxyService.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.statusService.deployment.container.image.pullPolicy }}
           ports:
-            - containerPort: {{.Values.proxyService.deployment.container.ports.containerPort}}
+            - containerPort: {{ .Values.proxyService.deployment.container.ports.containerPort }}
           env:
             - name: SERVER_PORT
               value: {{ quote .Values.proxyService.deployment.container.env.SERVER_PORT }}
             - name: OPENTRACING_JAEGER_ENABLED
               value: {{ quote .Values.proxyService.deployment.container.env.OPENTRACING_JAEGER_ENABLED }}
             - name: JAEGER_SERVICE_NAME
-              value: {{quote (printf "unguard-%s" .Values.proxyService.name) }}
+              value: {{ quote (printf "unguard-%s" .Values.proxyService.name) }}
             - name: JAEGER_AGENT_HOST
               value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.proxyService.deployment.container.env.JAEGER_AGENT_HOST) }}
             - name: JAEGER_SAMPLER_TYPE

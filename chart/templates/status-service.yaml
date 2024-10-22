@@ -17,15 +17,15 @@ limitations under the License.
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-{{.Values.statusService.name}}
+  name: unguard-{{ .Values.statusService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.statusService.name}}
+    app.kubernetes.io/name: {{ .Values.statusService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
-  type: {{.Values.statusService.service.type}}
+  type: {{ .Values.statusService.service.type }}
   selector:
-    app.kubernetes.io/name: {{.Values.statusService.name}}
+    app.kubernetes.io/name: {{ .Values.statusService.name }}
     app.kubernetes.io/part-of: unguard
   ports:
  {{- .Values.statusService.service.ports | toYaml | nindent 4 }}
@@ -34,9 +34,9 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{.Values.statusService.serviceAccount.name}}
+  name: {{ .Values.statusService.serviceAccount.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.statusService.name}}
+    app.kubernetes.io/name: {{ .Values.statusService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 
@@ -44,60 +44,60 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{.Values.statusService.role.name}}
+  name: {{ .Values.statusService.role.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.statusService.name}}
+    app.kubernetes.io/name: {{ .Values.statusService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 rules:
-  {{- .Values.statusService.role.rules | toYaml | nindent 2}}
+  {{- .Values.statusService.role.rules | toYaml | nindent 2 }}
 
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{.Values.statusService.roleBindings.name}}
+  name: {{ .Values.statusService.roleBindings.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.statusService.name}}
+    app.kubernetes.io/name: {{ .Values.statusService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 subjects:
-  {{- .Values.statusService.roleBindings.subjects | toYaml | nindent 2}}
+  {{- .Values.statusService.roleBindings.subjects | toYaml | nindent 2 }}
 roleRef:
-  kind: {{.Values.statusService.roleBindings.roleRef.kind}}
-  name: {{.Values.statusService.roleBindings.roleRef.name}}
-  apiGroup: {{.Values.statusService.roleBindings.roleRef.apiGroup}}
+  kind: {{ .Values.statusService.roleBindings.roleRef.kind }}
+  name: {{ .Values.statusService.roleBindings.roleRef.name }}
+  apiGroup: {{ .Values.statusService.roleBindings.roleRef.apiGroup }}
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-{{.Values.statusService.name}}
+  name: unguard-{{ .Values.statusService.name }}
   labels:
-    app.kubernetes.io/name: {{.Values.statusService.name}}
+    app.kubernetes.io/name: {{ .Values.statusService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{.Values.statusService.name}}
+      app.kubernetes.io/name: {{ .Values.statusService.name }}
       app.kubernetes.io/part-of: unguard
   strategy:
-    type: {{.Values.statusService.deployment.strategy.type}}
+    type: {{ .Values.statusService.deployment.strategy.type }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{.Values.statusService.name}}
+        app.kubernetes.io/name: {{ .Values.statusService.name }}
         app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
-      serviceAccountName: {{.Values.statusService.serviceAccount.name}}
+      serviceAccountName: {{ .Values.statusService.serviceAccount.name }}
       containers:
-        - name: {{.Values.statusService.name}}
-          image: {{.Values.statusService.deployment.container.image.repository}}:{{.Values.statusService.deployment.container.image.tag}}
-          imagePullPolicy: {{.Values.statusService.deployment.container.image.pullPolicy}}
+        - name: {{ .Values.statusService.name }}
+          image: {{ .Values.statusService.deployment.container.image.repository }}:{{ .Values.statusService.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.statusService.deployment.container.image.pullPolicy }}
           ports:
-            - containerPort: {{.Values.statusService.deployment.container.ports.containerPort}}
+            - containerPort: {{ .Values.statusService.deployment.container.ports.containerPort }}
           env:
             - name: SERVER_PORT
               value: {{ quote .Values.statusService.deployment.container.env.SERVER_PORT }}
