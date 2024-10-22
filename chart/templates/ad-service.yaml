@@ -20,6 +20,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.adService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: {{ .Values.adService.service.type }}
   selector:
@@ -36,6 +37,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.adService.name}}
     app.kubernetes.io/part-of: unguard
+    {{ include "renderLabels" .Values.labels.common }}
 spec:
   selector:
     matchLabels:
@@ -48,6 +50,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{.Values.adService.name}}
         app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
         - name: {{.Values.adService.name}}

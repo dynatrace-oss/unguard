@@ -20,6 +20,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.profileService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: {{ .Values.profileService.service.type }}
   selector:
@@ -35,6 +36,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.profileService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
@@ -47,6 +49,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{.Values.profileService.name}}
         app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
         - name: {{.Values.profileService.name}}

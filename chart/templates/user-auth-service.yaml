@@ -21,6 +21,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.userAuthService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   type: {{ .Values.userAuthService.service.type }}
   selector:
@@ -37,6 +38,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Values.userAuthService.name}}
     app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
@@ -49,6 +51,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{.Values.userAuthService.name}}
         app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
         - name: {{.Values.userAuthService.name}}
