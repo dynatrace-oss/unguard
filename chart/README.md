@@ -84,7 +84,7 @@ The command removes all the Kubernetes components associated with the chart and 
 To install Unguard in a specific version provide the `--version` flag with the version you want to install:
 
 ```sh
-helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version 0.9.3
+helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version 0.9.4
 ```
 
 ## Parameters
