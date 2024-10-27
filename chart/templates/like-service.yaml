@@ -68,7 +68,7 @@ spec:
             - name: DB_HOST
               value: {{ tpl .Values.likeService.deployment.container.env.DB_HOST . }}
             - name: DB_PORT
-              value: {{ tpl .Values.likeService.deployment.container.env.DB_PORT . }}
+              value: {{ tpl .Values.likeService.deployment.container.env.DB_PORT . | quote }}
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
