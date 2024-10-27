@@ -66,9 +66,9 @@ spec:
             - name: USER_AUTH_SERVICE_ADDRESS
               value: {{ quote .Values.likeService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
             - name: DB_HOST
-              value: {{ quote .Values.likeService.deployment.container.env.DB_HOST }}
+              value: {{ tpl .Values.likeService.deployment.container.env.DB_HOST . }}
             - name: DB_PORT
-              value: {{ quote .Values.likeService.deployment.container.env.DB_PORT }}
+              value: {{ tpl .Values.likeService.deployment.container.env.DB_PORT . }}
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
