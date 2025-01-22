@@ -27,6 +27,9 @@ metadata:
   {{- .Values.aws.ingress.annotations | toYaml | nindent 4 }}
   {{ end }}
 spec:
+  {{ if .Values.aws.enabled }}
+  ingressClassName: aws
+  {{ end }}
   rules:
     {{ if .Values.localDev.enabled }}
     - host: unguard.kube
