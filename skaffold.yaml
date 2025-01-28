@@ -58,6 +58,7 @@ deploy:
       - name: unguard-mariadb
         remoteChart: mariadb
         repo: https://charts.bitnami.com/bitnami
+        version: "11.5.7"
         namespace: unguard
         createNamespace: true
         wait: true # TODO: #22 Might be removed once we have readiness probes
