@@ -10,8 +10,7 @@ This document explains how to build and run Unguard locally inside Kubernetes us
 * [Docker](https://www.docker.com/products/docker-desktop)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/), [Helm](https://helm.sh/docs/intro/install/), [Skaffold](https://skaffold.dev/docs/install/)
   CLI v2, and [Kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/)
-* [Kind](https://kind.sigs.k8s.io/), or, alternatively [Minikube](https://minikube.sigs.k8s.io)
-    * For best performance and stability, we recommend Kind, especially on Windows
+* [Minikube](https://minikube.sigs.k8s.io), or, alternatively [Kind](https://kind.sigs.k8s.io/) on Windows
 
 ## ⛵ Local Cluster
 
@@ -19,7 +18,12 @@ This document explains how to build and run Unguard locally inside Kubernetes us
 
 1. Launch a local Kubernetes cluster
 
-    * Launch a `kind` cluster with [extraPortMappings](https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings) for
+    * Launch a `minikube` cluster with the ingress addon
+
+        ```sh
+        minikube start --addons=ingress --profile unguard
+        ```
+    * or, launch a `kind` cluster with [extraPortMappings](https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings) for
       the local ingress
 
         ```sh
@@ -31,11 +35,6 @@ This document explains how to build and run Unguard locally inside Kubernetes us
             kubectl apply -k ./k8s-manifests/localdev/kind/
              ```
 
-    * Or, launch a `minikube` cluster with the ingress addon
-
-        ```sh
-        minikube start --addons=ingress --profile unguard
-        ```
 
 2. Run `kubectl get nodes` to verify the connection to the respective control plane
 
@@ -51,18 +50,18 @@ This document explains how to build and run Unguard locally inside Kubernetes us
 
 2. Add an entry in your `/etc/hosts` file to access the ingress exposing the frontend on **[unguard.kube](http://unguard.kube/)**
 
-    * For **kind** clusters, append this to `/etc/hosts`:
-
-    ```sh
-    127.0.0.1 unguard.kube
-    ```
-
     * For **minikube** clusters, execute this in your shell or manually add the output of `minikube -p unguard ip` to
       your `/etc/hosts` file
 
     ```sh
     sudo -- sh -c "echo $(minikube -p unguard ip) unguard.kube >> /etc/hosts"
     ```
+    * For **kind** clusters, append this to `/etc/hosts`:
+
+    ```sh
+    127.0.0.1 unguard.kube
+    ```
+
 
 ### 🔥 Cleanup
 
@@ -85,10 +84,9 @@ skaffold run -p tracing
 
 ### How can I have fast, incremental Java builds during development?
 
-To benefit from incremental Java builds in the container, install [OpenJDK 11](https://openjdk.java.net/projects/jdk/11/)
-and [Jib](https://github.com/GoogleContainerTools/jib).
+To benefit from incremental Java builds in the container, install [OpenJDK 11](https://openjdk.java.net/projects/jdk/11/).
 
-You may then append the `jib` profile which adapts the build section so that it uses your locally installed Jib.
+Then deploy the application using [jib](https://github.com/GoogleContainerTools/jib):
 
 ```sh
 skaffold run -p jib
