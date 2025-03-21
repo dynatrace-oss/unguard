@@ -22,7 +22,7 @@ build:
     - image: unguard-envoy-proxy
       context: src/envoy-proxy
     - image: unguard-frontend
-      context: src/frontend
+      context: src/frontend-nextjs
     - image: unguard-microblog-service # adapt jib patch index below if you move this item
       context: src/microblog-service
     - image: unguard-proxy-service
