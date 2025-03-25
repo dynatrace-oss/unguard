@@ -36,5 +36,5 @@ Note that the API is dependent on the other microservices.
 For further development at the frontend it may be useful to start Unguard in
 Kubernetes (general README.md).
 
-For developing use ```skaffold dev``` instead of ```skaffold run```, this will rebuild and redeploy the application after every change to the source files.
+For developing use `skaffold dev` instead of `skaffold run`, this will rebuild and redeploy the application after every change to the source files.
 Note that this is significantly slower than when running only the frontend on a local development server.
