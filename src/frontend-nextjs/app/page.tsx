@@ -1,7 +1,11 @@
+import Timeline from '@/components/Timeline';
+import AdComponent from '@/components/AdComponent';
+
 export default function Home() {
-    return (
-        <div>
-            <p> Hello, World!</p>
-        </div>
-    );
+  return (
+    <div className='grid gap-16 grid-cols-[70%_30%] '>
+      <Timeline />
+      <AdComponent />
+    </div>
+  );
 }

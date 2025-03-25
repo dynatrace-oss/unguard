@@ -18,6 +18,7 @@
 .idea/jsLinters
 .idea/prettier.xml
 .idea/inspectionProfiles
+.idea/codeStyles
 
 # AWS User-specific
 .idea/**/aws.xml

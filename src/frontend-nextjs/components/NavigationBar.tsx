@@ -9,6 +9,7 @@ import {
     Button,
     Image,
 } from "@heroui/react";
+import { usePathname } from "next/navigation";
 
 export function UnguardLogo() {
     return (
@@ -22,37 +23,54 @@ export function UnguardLogo() {
 }
 
 export default function NavigationBar() {
+    const pathname = usePathname();
+
     return (
         <Navbar
+            maxWidth={"full"}
             style={{
                 backgroundColor: "#4ab973",
                 color: "#f1f1f1",
                 borderRadius: "15px",
             }}
         >
-            <NavbarBrand>
+            <NavbarBrand className="max-w-36">
                 <UnguardLogo />
-                <p className="font-bold text-inherit">Unguard</p>
+                <p className="font-bold text-inherit px-2 text-large">
+                    Unguard
+                </p>
             </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
                 <NavbarItem>
-                    <Link color="secondary" href="/">
+                    <Link
+                        className={`${pathname === "/" && "font-extrabold"}`}
+                        color="secondary"
+                        href="/"
+                    >
                         Home
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link color="secondary" href="/users">
+                    <Link
+                        className={`${pathname === "/users" && "font-extrabold"}`}
+                        color="secondary"
+                        href="/users"
+                    >
                         Users
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link color="secondary" href="/mytimeline">
+                    <Link
+                        className={`${pathname === "/mytimeline" && "font-extrabold"}`}
+                        color="secondary"
+                        href="/mytimeline"
+                    >
                         My Timeline
                     </Link>
                 </NavbarItem>
             </NavbarContent>
             <NavbarContent justify="end">
-                <NavbarItem>
+                <NavbarItem className="justify-items-end">
                     <Button
                         as={Link}
                         color="default"
