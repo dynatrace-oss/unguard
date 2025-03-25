@@ -13,7 +13,7 @@ import {
 export function UnguardLogo() {
     return (
         <Image
-            alt={"Unguard Logo"}
+            alt="Unguard Logo"
             height="32"
             src={`/ui/unguard_logo.svg`}
             width="32"
