@@ -1,0 +1,12 @@
+node_modules
+.dockerignore
+Dockerfile
+.gitignore
+.next
+.idea
+*.md
+*.log
+.vscode
+.eslintignore
+unguard.frontend-nextjs.iml
+package-lock.json
