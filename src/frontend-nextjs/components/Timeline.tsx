@@ -1,37 +1,38 @@
-import { Spacer } from "@heroui/react";
+import { Spacer } from '@heroui/react';
 
-import PostComponent from "@/components/PostComponent";
-import { PostProps } from "@/components/PostComponent";
+import PostComponent from '@/components/PostComponent';
+import { PostProps } from '@/components/PostComponent';
 
 export default function Timeline() {
     const list: PostProps[] = [
         {
-            name: "Name",
-            timestamp: "timestamp",
-            text: "text",
+            name: 'Name',
+            timestamp: 'timestamp',
+            text: 'text',
             likes: 0,
-            avatar_url: "https://heroui.com/avatars/avatar-1.png",
+            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
         },
         {
-            name: "Name2",
-            timestamp: "timestamp2",
-            text: "text2",
+            name: 'Name2',
+            timestamp: 'timestamp2',
+            text: 'text2',
             likes: 1,
-            avatar_url: "https://heroui.com/avatars/avatar-1.png",
+            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
         },
         {
-            name: "Name3",
-            timestamp: "timestamp3",
-            text: "text3",
+            name: 'Name3',
+            timestamp: 'timestamp3',
+            text: 'text3',
             likes: 2,
-            avatar_url: "https://heroui.com/avatars/avatar-1.png",
+            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
         },
         {
-            name: "Name4",
-            timestamp: "timestamp4",
-            text: "text4",
+            name: 'Name4',
+
+            timestamp: 'timestamp4',
+            text: 'text4',
             likes: 3,
-            avatar_url: "https://heroui.com/avatars/avatar-1.png",
+            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
         },
     ];
 
