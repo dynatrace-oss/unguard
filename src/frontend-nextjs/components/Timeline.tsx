@@ -1,53 +1,43 @@
-import { Spacer } from '@heroui/react';
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
 
 import PostComponent from '@/components/PostComponent';
 import { PostProps } from '@/components/PostComponent';
 
+async function fetchPosts() {
+    const res = await fetch('ui/api/posts');
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch posts');
+    }
+
+    return res.json();
+}
+
 export default function Timeline() {
-    const list: PostProps[] = [
-        {
-            name: 'Name',
-            timestamp: 'timestamp',
-            text: 'text',
-            likes: 0,
-            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
-        },
-        {
-            name: 'Name2',
-            timestamp: 'timestamp2',
-            text: 'text2',
-            likes: 1,
-            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
-        },
-        {
-            name: 'Name3',
-            timestamp: 'timestamp3',
-            text: 'text3',
-            likes: 2,
-            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
-        },
-        {
-            name: 'Name4',
+    const { data, isLoading, isError, error } = useQuery({
+        queryKey: ['posts'],
+        queryFn: fetchPosts,
+    });
 
-            timestamp: 'timestamp4',
-            text: 'text4',
-            likes: 3,
-            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
-        },
-    ];
+    if (isLoading) return <p>Loading timeline...</p>;
+    if (isError) {
+        return <p>Error loading timeline {error instanceof Error ? error.message : ''}</p>;
+    }
 
-    const listOfPosts = list.map((post, index) => (
-        <div key={index}>
-            <PostComponent
-                avatar_url={post.avatar_url}
-                likes={post.likes}
-                name={post.name}
-                text={post.text}
-                timestamp={post.timestamp}
-            />
-            <Spacer y={2} />
+    return (
+        <div>
+            {data?.map((post: PostProps, index: number) => (
+                <PostComponent
+                    key={index}
+                    avatar_url={post.avatar_url}
+                    likes={post.likes}
+                    name={post.name}
+                    text={post.text}
+                    timestamp={post.timestamp}
+                />
+            ))}
         </div>
-    ));
-
-    return <div>{listOfPosts}</div>;
+    );
 }
