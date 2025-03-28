@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json",
-    "precommit": "eslint --fix prettier"
+    "precommit": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix && prettier . --write"
   },
   "dependencies": {
     "@heroui/button": "2.2.16",
