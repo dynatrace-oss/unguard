@@ -15,6 +15,9 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/jsLinters
+.idea/prettier.xml
+.idea/inspectionProfiles
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -247,3 +250,5 @@ node_modules
 ### Helm ###
 # Chart dependencies
 **/charts/*.tgz
+
+
