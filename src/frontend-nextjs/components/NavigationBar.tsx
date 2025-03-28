@@ -9,6 +9,7 @@ import {
     Button,
     Image,
 } from "@heroui/react";
+import { ROUTES } from '@/app/enums/routes';
 
 export function UnguardLogo() {
     return (
@@ -36,17 +37,17 @@ export default function NavigationBar() {
             </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
                 <NavbarItem>
-                    <Link color="secondary" href="/">
+                    <Link color="secondary" href={ROUTES.home}>
                         Home
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link color="secondary" href="/users">
+                    <Link color="secondary" href={ROUTES.users}>
                         Users
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link color="secondary" href="/mytimeline">
+                    <Link color="secondary" href={ROUTES.mytimeline}>
                         My Timeline
                     </Link>
                 </NavbarItem>
@@ -56,7 +57,7 @@ export default function NavigationBar() {
                     <Button
                         as={Link}
                         color="default"
-                        href="/login"
+                        href={ROUTES.login}
                         variant="solid"
                     >
                         Login/Register
