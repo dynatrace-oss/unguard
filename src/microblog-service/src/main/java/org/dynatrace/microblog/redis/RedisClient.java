@@ -120,13 +120,13 @@ public class RedisClient {
     }
 
     @NotNull
-    public List<Post> getUserTimeline(String jwtToken, String userId) {
+    public List<Post> getUserTimeline(String userId) {
         List<String> postIds;
         try (Jedis jedis = jedisPool.getResource()) {
             // Get the timeline of the user
             postIds = jedis.lrange(getCombinedKey(TIMELINE_KEY, userId), 0, MAX_TIMELINE_ENTRIES);
 
-            return getPosts(jwtToken, postIds, jedis);
+            return getPosts(postIds, jedis);
         } catch (Exception e) {
             logger.error("Could not get user timeline", e);
             throw new RuntimeException("Could not get user timeline");
@@ -134,10 +134,10 @@ public class RedisClient {
     }
 
     @NotNull
-    private List<Post> getPosts(String jwtToken, List<String> postIds, Jedis jedis) throws UserNotFoundException, InvalidJwtException, IOException {
+    private List<Post> getPosts(List<String> postIds, Jedis jedis) throws UserNotFoundException, InvalidJwtException, IOException {
         List<Post> posts = new ArrayList<>();
         for (String postId : postIds) {
-            Post post = readAndTransformPost(jwtToken, postId, jedis);
+            Post post = readAndTransformPost(postId, jedis);
             if (post != null) {
                 posts.add(post);
             }
@@ -153,14 +153,14 @@ public class RedisClient {
      * @return list of posts of the user
      */
     public List<Post> getUserPosts(String jwt, String userName, int limit) throws UserNotFoundException, IOException, InvalidJwtException {
-        return getUserPostsById(jwt, this.userAuthServiceClient.getUserIdFromUsername(jwt, userName), 0, limit);
+        return getUserPostsById(this.userAuthServiceClient.getUserIdFromUsername(userName), 0, limit);
     }
 
-    private List<Post> getUserPostsById(String jwtToken, String userId, int start, int count) {
+    private List<Post> getUserPostsById(String userId, int start, int count) {
         List<Post> posts;
         try (Jedis jedis = jedisPool.getResource()) {
             List<String> postIds = jedis.lrange(getCombinedKey(POSTS_KEY_PREFIX, userId), start, start + count);
-            posts = getPosts(jwtToken, postIds, jedis);
+            posts = getPosts(postIds, jedis);
         } catch (Exception e) {
             logger.error("Could not get posts", e);
             throw new RuntimeException("Could not get posts");
@@ -170,40 +170,49 @@ public class RedisClient {
 
     /**
      * Gets a single post
-     * @param jwtToken the token of the logged in user
+     *
      * @param postId the post id of the post to be viewed
      * @return the post
      * @throws UserNotFoundException if the given user does not exists
-     * @throws IOException if the request to the user auth service fails
-     * @throws InvalidJwtException if the jwt is invalid
+     * @throws IOException           if the request to the user auth service fails
+     * @throws InvalidJwtException   if the jwt is invalid
      */
     @Nullable
-    public Post getPost(String jwtToken, String postId) throws UserNotFoundException, IOException, InvalidJwtException {
+    public Post getPost(String postId) throws UserNotFoundException, IOException, InvalidJwtException {
         try (Jedis jedis = jedisPool.getResource()) {
-            return readAndTransformPost(jwtToken, postId, jedis);
+            return readAndTransformPost(postId, jedis);
         }
     }
 
     @Nullable
-    private Post readAndTransformPost(String jwtToken, String postId, Jedis jedis) throws UserNotFoundException, InvalidJwtException, IOException {
+    private Post readAndTransformPost(String postId, Jedis jedis) throws UserNotFoundException, InvalidJwtException, IOException {
         Map<String, String> postMap = jedis.hgetAll(getCombinedKey(POST_KEY_PREFIX, postId));
         if (postMap.isEmpty()) {
             logger.warn("Could not get post with id {}", postId);
             return null;
         }
-        String userName = this.userAuthServiceClient.getUserNameForUserId(jwtToken, postMap.get("userId"));
+        String userName = this.userAuthServiceClient.getUserNameForUserId(postMap.get("userId"));
         String body = postMap.get("body");
         String imageUrl = postMap.get("imageUrl");
         Date timestamp = new Date(Long.parseLong(postMap.get("time")));
 
-        return new Post(postId, userName, body, imageUrl, timestamp);
+       return new Post(postId, userName, body, imageUrl, timestamp);
     }
 
-    public List<Post> getTimeline(String jwtToken) {
+    public List<Post> getTimeline() {
+        //TODO: remove this block when it is not longer needed (just for testing purposes)
+        try {
+            String userid = this.userAuthServiceClient.getUserIdFromUsername("user1");
+            newPost(userid, "Test Post 1", null);
+            newPost(userid, "Test Post 2", null);
+        } catch (InvalidJwtException | UserNotFoundException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
         List<Post> posts;
         try (Jedis jedis = jedisPool.getResource()) {
             List<String> postIds = jedis.lrange(TIMELINE_KEY, 0, 50);
-            posts = getPosts(jwtToken, postIds, jedis);
+            posts = getPosts(postIds, jedis);
         } catch (Exception e) {
             logger.error("Could not get timeline", e);
             throw new RuntimeException("Could not get timeline");
@@ -239,7 +248,7 @@ public class RedisClient {
         }
     }
 
-    public Collection<User> getFollowers(String jwtToken, String userId) {
+    public Collection<User> getFollowers(String userId) {
         Set<User> followers;
         try (Jedis jedis = jedisPool.getResource()) {
             Set<String> followerIds = jedis.zrange("followers:" + userId, 0, -1);
@@ -249,7 +258,7 @@ public class RedisClient {
             }
             followers = new HashSet<>();
             for (String followerId : followerIds) {
-                User user = new User(Integer.parseInt(followerId), this.userAuthServiceClient.getUserNameForUserId(jwtToken, followerId));
+                User user = new User(Integer.parseInt(followerId), this.userAuthServiceClient.getUserNameForUserId(followerId));
                 followers.add(user);
                 logger.info(String.format("follower of %s = %s", userId, user.getUserName()));
             }
@@ -273,7 +282,7 @@ public class RedisClient {
             }
             commonFollowers = new HashSet<>();
             for (String followerId : followers) {
-                User user = new User(Integer.parseInt(followerId), this.userAuthServiceClient.getUserNameForUserId(jwtToken, followerId));
+                User user = new User(Integer.parseInt(followerId), this.userAuthServiceClient.getUserNameForUserId(followerId));
                 commonFollowers.add(user);
                 logger.info(String.format("common followers of %s and %s = %s", userId, otherUserId, user.getUserName()));
             }
