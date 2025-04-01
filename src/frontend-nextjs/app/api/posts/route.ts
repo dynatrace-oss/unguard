@@ -1,42 +1,21 @@
 import { NextResponse } from 'next/server';
 
-import { PostProps } from '@/components/PostComponent';
+import { MICROBLOG_API } from '@/axios';
+
+async function fetchPosts() {
+    const res = await MICROBLOG_API.get('/timeline');
+
+    if (res.status !== 200) {
+        throw new Error('Failed to fetch Posts from Microblog-Service');
+    }
+
+    return res.data;
+}
 
 export async function GET(request: Request) {
-    //TODO: get post data from microblog-service
-    const testPostObjects: PostProps[] = [
-        {
-            name: 'Name',
-            timestamp: 'timestamp',
-            text: 'text',
-            likes: 0,
-            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
-        },
-        {
-            name: 'Name2',
-            timestamp: 'timestamp2',
-            text: 'text2',
-            likes: 1,
-            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
-        },
-        {
-            name: 'Name3',
-            timestamp: 'timestamp3',
-            text: 'text3',
-            likes: 2,
-            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
-        },
-        {
-            name: 'Name4',
+    const posts = await fetchPosts();
 
-            timestamp: 'timestamp4',
-            text: 'text4',
-            likes: 3,
-            avatar_url: 'https://heroui.com/avatars/avatar-1.png',
-        },
-    ];
-
-    return new NextResponse(JSON.stringify(testPostObjects), {
+    return new NextResponse(JSON.stringify(posts), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
     });
