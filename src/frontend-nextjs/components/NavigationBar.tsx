@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { ROUTES } from '@/app/enums/routes';
 
 export function UnguardLogo() {
-    return <Image alt='Unguard Logo' height='32' src='/ui/unguard_logo.svg' width='32' />;
+    return <Image alt='Unguard Logo' height='32' src='/ui/unguard_logo_white.svg' width='32' />;
 }
 
 export function NavigationBar() {
