@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 
 import { USER_AUTH_API } from '@/axios';
 
+/*
+This file is just for testing purposes and should be removed later.
+The actual functionality for registering a new user is implemented in the API route /auth/register.
+ */
 async function postUser(user: {}) {
-    //insert a user for testing, this should be removed later
     const res_user = await USER_AUTH_API.post('/user/register', {
         username: 'user1',
         password: 'password123',
