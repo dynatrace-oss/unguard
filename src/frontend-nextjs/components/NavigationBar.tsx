@@ -1,16 +1,33 @@
 'use client';
 
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image } from '@heroui/react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { ROUTES } from '@/app/enums/routes';
+import { useCheckLogin } from '@/hooks/useCheckLogin';
 
 export function UnguardLogo() {
     return <Image alt='Unguard Logo' height='32' src='/ui/unguard_logo.svg' width='32' />;
 }
 
+async function logout() {
+    return await fetch('ui/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
+export default function NavigationBar() {
 export function NavigationBar() {
     const pathname = usePathname();
+    const router = useRouter();
+    const { data: isLoggedIn } = useCheckLogin();
+
+    function handleLogout(res: Response) {
+        if (res.ok) {
+            router.push(ROUTES.login);
+        }
+    }
 
     return (
         <Navbar
@@ -31,22 +48,45 @@ export function NavigationBar() {
                         Home
                     </Link>
                 </NavbarItem>
-                <NavbarItem isActive={pathname === ROUTES.users}>
-                    <Link color='secondary' href={ROUTES.users}>
-                        Users
-                    </Link>
-                </NavbarItem>
-                <NavbarItem isActive={pathname === ROUTES.mytimeline}>
-                    <Link color='secondary' href={ROUTES.mytimeline}>
-                        My Timeline
-                    </Link>
-                </NavbarItem>
+                {isLoggedIn && (
+                    <NavbarItem>
+                        <Link
+                            isActive={pathname === ROUTES.users}
+                            color='secondary'
+                            href={ROUTES.users}
+                        >
+                            Users
+                        </Link>
+                    </NavbarItem>
+                )}
+                {isLoggedIn && (
+                    <NavbarItem>
+                        <Link
+                            isActive={pathname === ROUTES.mytimeline}
+                            color='secondary'
+                            href={ROUTES.mytimeline}
+                        >
+                            My Timeline
+                        </Link>
+                    </NavbarItem>
+                )}
             </NavbarContent>
             <NavbarContent justify='end'>
                 <NavbarItem className='justify-items-end'>
-                    <Button as={Link} color='default' href={ROUTES.login} variant='solid'>
-                        Login/Register
-                    </Button>
+                    {!isLoggedIn && (
+                        <Button as={Link} color='default' href={ROUTES.login} variant='solid'>
+                            Login/Register
+                        </Button>
+                    )}
+                    {isLoggedIn && (
+                        <Button
+                            color='default'
+                            variant='solid'
+                            onPress={() => logout().then((res) => handleLogout(res))}
+                        >
+                            Logout
+                        </Button>
+                    )}
                 </NavbarItem>
             </NavbarContent>
         </Navbar>
