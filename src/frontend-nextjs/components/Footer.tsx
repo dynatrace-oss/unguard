@@ -2,7 +2,7 @@
 
 import { Link } from '@heroui/react';
 
-export default function Footer() {
+export function Footer() {
     return (
         <div>
             <p>Powered by Unguard.</p>

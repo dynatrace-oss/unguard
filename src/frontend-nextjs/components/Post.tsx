@@ -1,6 +1,7 @@
 'use client';
 
-import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Spacer } from '@heroui/react';
+import { Card, CardHeader, CardBody, CardFooter, Avatar, Button } from '@heroui/react';
+import { BsHandThumbsUp } from 'react-icons/bs';
 
 export interface PostProps {
     username: string;
@@ -10,7 +11,7 @@ export interface PostProps {
     imageUrl: string;
 }
 
-export default function PostComponent(props: PostProps) {
+export function Post(props: PostProps) {
     function like() {
         //TODO
     }
@@ -38,12 +39,11 @@ export default function PostComponent(props: PostProps) {
                     <div className='flex gap-1'>
                         <Button className=' text-default-600 bg-transparent' onPress={like}>
                             <p>{props.likes}</p>
-                            <i className='bi bi-hand-thumbs-up' />
+                            <BsHandThumbsUp />
                         </Button>
                     </div>
                 </CardFooter>
             </Card>
-            <Spacer y={2} />
         </div>
     );
 }
