@@ -24,16 +24,16 @@
         "@heroui/theme": "2.4.12",
         "@react-aria/ssr": "3.9.7",
         "@react-aria/visually-hidden": "3.8.20",
-        "@tanstack/react-query": "4.36.1",
+        "@tanstack/react-query": "5.72.0",
         "axios": "1.8.4",
-        "bootstrap-icons": "1.11.3",
         "clsx": "2.1.1",
         "framer-motion": "11.13.1",
         "intl-messageformat": "10.7.15",
         "next": "15.0.4",
         "next-themes": "0.4.6",
         "react": "18.3.1",
-        "react-dom": "18.3.1"
+        "react-dom": "18.3.1",
+        "react-icons": "5.5.0"
     },
     "devDependencies": {
         "@next/eslint-plugin-next": "15.0.4",

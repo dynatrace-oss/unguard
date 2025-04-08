@@ -1,21 +1,11 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { Card, Spinner } from '@heroui/react';
+import { Card, Spacer, Spinner } from '@heroui/react';
 
-import PostComponent from '@/components/PostComponent';
-import { PostProps } from '@/components/PostComponent';
-import ErrorCard from '@/components/ErrorCard';
-
-async function fetchPosts() {
-    const res = await fetch('ui/api/posts');
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch posts');
-    }
-
-    return res.json();
-}
+import { Post } from '@/components/Post';
+import { PostProps } from '@/components/Post';
+import { ErrorCard } from '@/components/ErrorCard';
+import { usePosts } from '@/hooks/usePosts';
 
 //this is just for now for testing, should be removed later
 async function registerUser() {
@@ -28,15 +18,10 @@ async function registerUser() {
     return res.json();
 }
 
-export default function Timeline() {
-    const { data, isLoading, isError, error } = useQuery({
-        queryKey: ['posts'],
-        queryFn: fetchPosts,
-    });
+export function Timeline() {
+    const { data, isLoading, isError, error } = usePosts();
 
     registerUser(); //just for testing purposes, remove later
-
-    console.log(data);
 
     if (isLoading)
         return (
@@ -54,23 +39,23 @@ export default function Timeline() {
         return <ErrorCard message={errormessage} />;
     }
 
-    if (data.length === 0) {
+    if (data?.length === 0) {
         return <ErrorCard message='No data' />;
     }
-
-    console.log(new Date(data[0].timestamp).toString());
 
     return (
         <div>
             {data?.map((post: PostProps, index: number) => (
-                <PostComponent
-                    key={index}
-                    body={post.body}
-                    imageUrl={post.imageUrl}
-                    likes={post.likes}
-                    timestamp={post.timestamp}
-                    username={post.username}
-                />
+                <div key={index}>
+                    <Post
+                        body={post.body}
+                        imageUrl={post.imageUrl}
+                        likes={post.likes}
+                        timestamp={post.timestamp}
+                        username={post.username}
+                    />
+                    <Spacer y={4} />
+                </div>
             ))}
         </div>
     );

@@ -1,3 +1,5 @@
+import { ROUTES } from '@/app/enums/routes';
+
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
@@ -7,19 +9,19 @@ export const siteConfig = {
     navItems: [
         {
             label: 'Home',
-            href: '/',
+            href: ROUTES.home,
         },
         {
             label: 'Users',
-            href: '/users',
+            href: ROUTES.users,
         },
         {
             label: 'My Timeline',
-            href: '/mytimeline',
+            href: ROUTES.mytimeline,
         },
         {
             label: 'Login/Register',
-            href: '/login',
+            href: ROUTES.login,
         },
     ],
 };

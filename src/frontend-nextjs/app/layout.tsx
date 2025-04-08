@@ -4,8 +4,8 @@ import { Metadata, Viewport } from 'next';
 import { Providers } from './providers';
 
 import { siteConfig } from '@/config/site';
-import NavigationBar from '@/components/NavigationBar';
-import Footer from '@/components/Footer';
+import { NavigationBar } from '@/components/NavigationBar';
+import { Footer } from '@/components/Footer';
 
 export const metadata: Metadata = {
     title: {
@@ -30,10 +30,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html suppressHydrationWarning lang='en'>
             <head>
                 <title />
-                <link
-                    href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css'
-                    rel='stylesheet'
-                />
                 <link href='/ui/apple-touch-icon-57x57.png' rel='apple-touch-icon' sizes='57x57' type='image/png' />
                 <link href='/ui/apple-touch-icon-60x60.png' rel='apple-touch-icon' sizes='60x60' type='image/png' />
                 <link href='/ui/apple-touch-icon-72x72.png' rel='apple-touch-icon' sizes='72x72' type='image/png' />
