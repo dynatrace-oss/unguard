@@ -1,25 +1,27 @@
+import { ROUTES } from '@/app/enums/routes';
+
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-    name: "Unguard",
+    name: 'Unguard',
     description:
-        "An insecure cloud-native microservices demo application. It consists of eight app services, a load generator, and two databases.",
+        'An insecure cloud-native microservices demo application. It consists of eight app services, a load generator, and two databases.',
     navItems: [
         {
-            label: "Home",
-            href: "/",
+            label: 'Home',
+            href: ROUTES.home,
         },
         {
-            label: "Users",
-            href: "/users",
+            label: 'Users',
+            href: ROUTES.users,
         },
         {
-            label: "My Timeline",
-            href: "/mytimeline",
+            label: 'My Timeline',
+            href: ROUTES.mytimeline,
         },
         {
-            label: "Login/Register",
-            href: "/login",
+            label: 'Login/Register',
+            href: ROUTES.login,
         },
     ],
 };

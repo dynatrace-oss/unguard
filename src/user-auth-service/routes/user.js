@@ -19,7 +19,6 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const database = require('../utils/database');
 const jwtUtil = require('../utils/jwt');
-const jwt = require('jwt-simple');
 
 const ALPHANUMERIC_REGEX = /^\w+$/;
 
@@ -100,14 +99,9 @@ router.post('/username', async function (req, res) {
     if (!req.body)
         return res.sendStatus(400)
 
-    const jwtToken = req.body.jwt;
     const userId = req.body.userid;
 
     try {
-        // Vulnerable, because no algorithm is enforced for decoding
-        // https://security.snyk.io/vuln/SNYK-JS-JWTSIMPLE-174523
-        jwt.decode(jwtToken, jwtUtil.JwtPublic);
-
         // get userId for username
         const result = await database.dbConnection.query(database.selectUserNameQuery, [ userId ])
 
@@ -127,14 +121,9 @@ router.post('/useridForName', async function (req, res) {
     if (!req.body)
         return res.sendStatus(400)
 
-    const jwtToken = req.body.jwt;
     const username = req.body.username;
 
     try {
-        // Vulnerable, because no algorithm is enforced for decoding
-        // https://security.snyk.io/vuln/SNYK-JS-JWTSIMPLE-174523
-        jwt.decode(jwtToken, jwtUtil.JwtPublic);
-
         // get userId for username
         const result = await database.dbConnection.query(database.selectIdForName, [ username ])
 
