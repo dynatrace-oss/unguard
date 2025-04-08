@@ -4,7 +4,7 @@ interface ErrorCardProps {
     message?: string;
 }
 
-export default function ErrorCard({ message }: ErrorCardProps) {
+export function ErrorCard({ message }: ErrorCardProps) {
     return (
         <Card className='w-full flex items-center justify-center'>
             <p className='text-red-600 font-bold'>

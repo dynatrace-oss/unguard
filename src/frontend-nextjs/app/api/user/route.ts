@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
+import { AxiosResponse } from 'axios';
 
 import { USER_AUTH_API } from '@/axios';
 
-async function postUser(user: {}) {
+async function postUser(user: {}): Promise<AxiosResponse> {
     //insert a user for testing, this should be removed later
     const res_user = await USER_AUTH_API.post('/user/register', {
         username: 'user1',
@@ -16,11 +17,8 @@ async function postUser(user: {}) {
     return res_user.data;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
     const response = await postUser(JSON.stringify(request.body));
 
-    return new NextResponse(JSON.stringify(response), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(response, { status: 200 });
 }
