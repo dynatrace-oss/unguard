@@ -19,7 +19,6 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 const database = require("../utils/database");
 const jwtUtil = require("../utils/jwt");
-const jwt = require("jwt-simple");
 
 const ALPHANUMERIC_REGEX = /^\w+$/;
 

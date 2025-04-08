@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
+import { AxiosResponse } from 'axios';
 
 import { MICROBLOG_API } from '@/axios';
 
-async function fetchPosts() {
+async function fetchPosts(): Promise<AxiosResponse> {
     const res = await MICROBLOG_API.get('/timeline');
 
     if (res.status !== 200) {
@@ -12,11 +13,8 @@ async function fetchPosts() {
     return res.data;
 }
 
-export async function GET(request: Request) {
+export async function GET(): Promise<NextResponse> {
     const posts = await fetchPosts();
 
-    return new NextResponse(JSON.stringify(posts), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(posts, { status: 200 });
 }

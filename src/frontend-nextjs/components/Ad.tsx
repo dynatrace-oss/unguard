@@ -1,26 +1,13 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
 import { Card, Spinner } from '@heroui/react';
 import { useState } from 'react';
 
-import ErrorCard from '@/components/ErrorCard';
+import { ErrorCard } from '@/components/ErrorCard';
+import { useAd } from '@/hooks/useAd';
 
-async function fetchAd() {
-    const res = await fetch('ui/api/ad');
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch ad');
-    }
-
-    return res.json();
-}
-
-export default function AdComponent() {
+export function Ad() {
     const [hasError, setHasError] = useState(false);
-    const { data, isLoading, isError, error } = useQuery({
-        queryKey: ['ad'],
-        queryFn: fetchAd,
-    });
+    const { data, isLoading, isError, error } = useAd();
 
     if (isLoading)
         return (
