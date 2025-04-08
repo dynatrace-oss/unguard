@@ -9,7 +9,7 @@ export function UnguardLogo() {
     return <Image alt='Unguard Logo' height='32' src='/ui/unguard_logo.svg' width='32' />;
 }
 
-export default function NavigationBar() {
+export function NavigationBar() {
     const pathname = usePathname();
 
     return (
@@ -26,30 +26,18 @@ export default function NavigationBar() {
                 <p className='font-bold text-inherit px-2 text-large'>Unguard</p>
             </NavbarBrand>
             <NavbarContent className='hidden sm:flex gap-4' justify='center'>
-                <NavbarItem>
-                    <Link
-                        className={`${pathname === ROUTES.home && 'font-extrabold'}`}
-                        color='secondary'
-                        href={ROUTES.home}
-                    >
+                <NavbarItem isActive={pathname === ROUTES.home}>
+                    <Link color='secondary' href={ROUTES.home}>
                         Home
                     </Link>
                 </NavbarItem>
-                <NavbarItem>
-                    <Link
-                        className={`${pathname === ROUTES.users && 'font-extrabold'}`}
-                        color='secondary'
-                        href={ROUTES.users}
-                    >
+                <NavbarItem isActive={pathname === ROUTES.users}>
+                    <Link color='secondary' href={ROUTES.users}>
                         Users
                     </Link>
                 </NavbarItem>
-                <NavbarItem>
-                    <Link
-                        className={`${pathname === ROUTES.mytimeline && 'font-extrabold'}`}
-                        color='secondary'
-                        href={ROUTES.mytimeline}
-                    >
+                <NavbarItem isActive={pathname === ROUTES.mytimeline}>
+                    <Link color='secondary' href={ROUTES.mytimeline}>
                         My Timeline
                     </Link>
                 </NavbarItem>
