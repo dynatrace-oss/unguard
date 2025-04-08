@@ -6,26 +6,20 @@ import { useRouter } from 'next/navigation';
 
 import { ROUTES } from '@/app/enums/routes';
 
-async function register(data: {}) {
-    const res = await fetch('api/auth/register', {
+async function register(data: {}): Promise<Response> {
+    return await fetch('api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
     });
-
-    return res;
 }
 
-async function login(data: {}) {
-    const res = await fetch('api/auth/login', {
+async function login(data: {}): Promise<Response> {
+    return await fetch('api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
     });
-
-    //TODO: store JWT
-
-    return res;
 }
 
 function getErrorMsg(code: number): string {
@@ -50,6 +44,25 @@ export default function LoginRegister() {
     const [errorMsg, setErrorMsg] = useState('');
     const router = useRouter();
 
+    function handleLogin(res: Response) {
+        if (!res.ok) {
+            setErrorMsg(getErrorMsg(res.status));
+        } else {
+            setErrorMsg('');
+            router.push(ROUTES.home);
+        }
+    }
+
+    function handleRegister(res: Response, data: {}) {
+        if (!res.ok) {
+            setErrorMsg(getErrorMsg(res.status));
+            throw new Error('Error creating new user');
+        } else {
+            setErrorMsg('');
+            login(data).then((res) => handleLogin(res));
+        }
+    }
+
     return (
         <div className='flex flex-col items-center align-items-center justify-center'>
             <Spacer y={6} />
@@ -68,31 +81,9 @@ export default function LoginRegister() {
                     let data = Object.fromEntries(new FormData(e.currentTarget));
 
                     if (isLogin) {
-                        login(data).then((res) => {
-                            if (!res.ok) {
-                                setErrorMsg(getErrorMsg(res.status));
-                            } else {
-                                setErrorMsg('');
-                                router.push(ROUTES.home);
-                            }
-                        });
+                        login(data).then((res) => handleLogin(res));
                     } else {
-                        register(data).then((res) => {
-                            if (!res.ok) {
-                                setErrorMsg(getErrorMsg(res.status));
-                                throw new Error('Error creating new user');
-                            } else {
-                                setErrorMsg('');
-                                login(data).then((res) => {
-                                    if (!res.ok) {
-                                        setErrorMsg(getErrorMsg(res.status));
-                                        throw new Error('Error logging in new user');
-                                    } else {
-                                        router.push(ROUTES.home);
-                                    }
-                                });
-                            }
-                        });
+                        register(data).then((res) => handleRegister(res, data));
                     }
                 }}
             >
