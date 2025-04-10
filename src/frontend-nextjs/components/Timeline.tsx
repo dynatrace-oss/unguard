@@ -8,7 +8,7 @@ import { PostProps } from '@/components/PostComponent';
 import ErrorCard from '@/components/ErrorCard';
 
 async function fetchPosts() {
-    const res = await fetch('ui/api/posts');
+    const res = await fetch('/ui/api/posts');
 
     if (!res.ok) {
         throw new Error('Failed to fetch posts');
@@ -19,7 +19,7 @@ async function fetchPosts() {
 
 //this is just for now for testing, should be removed later
 async function registerUser() {
-    const res = await fetch('ui/api/user', { method: 'POST' });
+    const res = await fetch('/ui/api/user', { method: 'POST' });
 
     if (!res.ok) {
         throw new Error('Failed to create new user');

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import ErrorCard from '@/components/ErrorCard';
 
 async function fetchAd() {
-    const res = await fetch('ui/api/ad');
+    const res = await fetch('/ui/api/ad');
 
     if (!res.ok) {
         throw new Error('Failed to fetch ad');
