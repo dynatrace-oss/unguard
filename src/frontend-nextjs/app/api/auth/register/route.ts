@@ -16,8 +16,5 @@ export async function POST(request: Request) {
     const body = await request.json();
     const response = await registerUser(body);
 
-    return new NextResponse(JSON.stringify(response), {
-        status: response.status,
-        headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(response, { status: response.status });
 }
