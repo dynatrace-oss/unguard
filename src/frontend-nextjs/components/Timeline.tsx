@@ -9,7 +9,7 @@ import { usePosts } from '@/hooks/usePosts';
 
 //this is just for now for testing, should be removed later
 async function registerUser() {
-    const res = await fetch('ui/api/user', { method: 'POST' });
+    const res = await fetch('/ui/api/user', { method: 'POST' });
 
     if (!res.ok) {
         throw new Error('Failed to create new user');

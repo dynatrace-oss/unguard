@@ -1,4 +1,5 @@
 'use client';
+import { useQuery } from '@tanstack/react-query';
 import { Card, Spinner } from '@heroui/react';
 import { useState } from 'react';
 
