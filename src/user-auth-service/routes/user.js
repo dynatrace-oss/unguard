@@ -60,7 +60,9 @@ router.post('/login', async function (req, res) {
     const password = req.body.password;
 
     // check if user exists
-    const result = await database.dbConnection.query(database.checkUserExistsQuery, [ username ]);
+    // RSA-18968 node js sql injection vulnerability - user impersonation
+    const vulnerableQuery  = database.checkUserExistsQuery.replace('?', `"${username}"`);
+    const result = await database.dbConnection.query(vulnerableQuery);
     if (result[0].length < 1) {
         res.status(404).json({ message: "Given user does not exists!" })
         return

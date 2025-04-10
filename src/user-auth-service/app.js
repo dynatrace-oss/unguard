@@ -20,6 +20,11 @@ const bodyParser = require("body-parser");
 const logger = require('morgan');
 const bcrypt = require('bcrypt');
 
+if (process.env.NODE_ENV !== 'production') {
+	// load environment variable from .env; needed for ./utils/database
+	require('dotenv').config()
+}
+
 const database = require('./utils/database')
 const indexRouter = require('./routes');
 const usersRouter = require('./routes/user');
@@ -46,10 +51,8 @@ logger.token('body', function (req) {
 
 if (process.env.NODE_ENV !== 'production') {
 	app.use(logger('[:date[iso]] :remote-addr :userid :req[header] ":method :url HTTP/:http-version" - :body ":user-agent" ":referrer" :status :response-time ms'));
-	// load environment variable from .env; needed for ./utils/database
-	require('dotenv').config()
 } else {
-	app.use(logger('[:date[iso]] :remote-addr :userid :req[header] ":method :url HTTP/:http-version" - - ":user-agent" ":referrer" :status :response-time ms'));
+    app.use(logger('[:date[iso]] :remote-addr :userid :req[header] ":method :url HTTP/:http-version" - - ":user-agent" ":referrer" :status :response-time ms'));
 }
 
 const tracer = initTracer(process.env.JAEGER_SERVICE_NAME);
@@ -102,6 +105,41 @@ function initTracer(serviceName) {
   return initJaegerTracer(config)
 }
 
+async function createUserWithRole(userName, userPassword, userRole) {
+    const userAlreadyExists = await database.dbConnection.query(database.selectUserForRole, [userRole])
+    .then((response) => {
+        return response.length !== undefined && response.length > 0 && response[0].length > 0;
+    }).catch((err) => {
+        console.log(err)
+    });
+
+    if (!userAlreadyExists) {
+        const pwHash = await bcrypt.hash(userPassword, 10);
+        const userId = await database.dbConnection.query(database.insertUserQuery, [userName, pwHash])
+        .then((response) => {
+            return response[0].insertId
+        })
+        .catch((err) => {
+            console.error("Cannot insert user", err.sqlMessage)
+        });
+
+        const userRoleId = await database.dbConnection.query(database.insertRoleQuery, [userRole])
+        .then((response) => {
+            return response[0].insertId
+        })
+        .catch((err) => {
+            console.error("Cannot insert user role", err.sqlMessage)
+        });
+
+        if (userRoleId == null || userId == null) {
+            console.error(`The '${userRole}' user/role could not be inserted. userId: ${userId} userRoleId: ${userRoleId}`);
+            return;
+        } else {
+            await database.dbConnection.query(database.insertUserToRoleQuery, [userId, userRoleId]);
+        }
+    }
+}
+
 /**
  * Initializes database.
  * @param param
@@ -114,41 +152,10 @@ async function initDb() {
   await database.dbConnection.query(database.createRoleUserTableQuery);
 
   const adManagerRole = "AD_MANAGER";
+  const basicRole = "BASIC";
 
-  const adManagerAlreadyExists = await database.dbConnection.query(database.selectUserForRole, [adManagerRole])
-      .then((response) => {
-        return response.length !== undefined && response.length > 0 && response[0].length > 0;
-      }).catch((err) => {
-        console.log(err)
-      });
-
-  if (!adManagerAlreadyExists) {
-    const userName = "admanager";
-    const userPw = "admanager";
-    const pwHash = await bcrypt.hash(userPw, 10);
-    const adManagerUserId = await database.dbConnection.query(database.insertUserQuery, [userName, pwHash])
-        .then((response) => {
-          return response[0].insertId
-        })
-        .catch((err) => {
-          console.error("Cannot insert ad manager user", err.sqlMessage)
-        });
-
-    const adManagerRoleId = await database.dbConnection.query(database.insertRoleQuery, [adManagerRole])
-        .then((response) => {
-          return response[0].insertId
-        })
-        .catch((err) => {
-          console.error("Cannot insert ad manager role", err.sqlMessage)
-        });
-
-    if (adManagerRoleId == null || adManagerUserId == null) {
-      console.error("The 'admanager' user/role could not be inserted.");
-      return;
-    } else {
-      await database.dbConnection.query(database.insertUserToRoleQuery, [adManagerUserId, adManagerRoleId]);
-    }
-  }
+  await createUserWithRole('admanager', 'admanager', adManagerRole);
+  await createUserWithRole('user', 'user', basicRole);
 
   console.log("Finished initializing database.")
 }
