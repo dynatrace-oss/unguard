@@ -24,6 +24,7 @@ const connection = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
+    // vulnerable configuration - SQL injection attacks could use data manipulation statements
     multipleStatements: true,
 });
 
