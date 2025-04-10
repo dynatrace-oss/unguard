@@ -141,8 +141,7 @@ async function createUserWithRole(userName, userPassword, userRole) {
 }
 
 /**
- * Initializes database.
- * @param param
+ * Initializes database with required tables and creates users
  */
 async function initDb() {
   console.log("Start initializing database.")
