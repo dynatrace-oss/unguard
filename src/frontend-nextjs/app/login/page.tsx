@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Image, Button, Form, Input, Spacer } from '@heroui/react';
+import { Image, Button, Form, Input, Spacer, addToast } from '@heroui/react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { ROUTES } from '@/app/enums/routes';
 
 async function register(data: {}): Promise<Response> {
-    return await fetch('api/auth/register', {
+    return await fetch('/ui/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -15,7 +16,7 @@ async function register(data: {}): Promise<Response> {
 }
 
 async function login(data: {}): Promise<Response> {
-    return await fetch('api/auth/login', {
+    return await fetch('/ui/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -43,13 +44,15 @@ export default function LoginRegister() {
     const [isLogin, setIsLogin] = useState(true); //if false, is register
     const [errorMsg, setErrorMsg] = useState('');
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     function handleLogin(res: Response) {
         if (!res.ok) {
             setErrorMsg(getErrorMsg(res.status));
+            throw new Error('Error logging in');
         } else {
             setErrorMsg('');
-            router.push(ROUTES.home);
+            queryClient.invalidateQueries({ queryKey: ['isLoggedIn'] }).then(() => router.push(ROUTES.home));
         }
     }
 
@@ -81,9 +84,13 @@ export default function LoginRegister() {
                     let data = Object.fromEntries(new FormData(e.currentTarget));
 
                     if (isLogin) {
-                        login(data).then((res) => handleLogin(res));
+                        login(data)
+                            .then((res) => handleLogin(res))
+                            .then(() => addToast({ title: 'Login successful', description: 'Welcome back!' }));
                     } else {
-                        register(data).then((res) => handleRegister(res, data));
+                        register(data)
+                            .then((res) => handleRegister(res, data))
+                            .then(() => addToast({ title: 'Register successful', description: 'Welcome to Unguard!' }));
                     }
                 }}
             >
