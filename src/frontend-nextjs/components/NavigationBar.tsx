@@ -1,37 +1,19 @@
 'use client';
 
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image, addToast } from '@heroui/react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image } from '@heroui/react';
+import { usePathname } from 'next/navigation';
 
 import { ROUTES } from '@/app/enums/routes';
 import { useCheckLogin } from '@/hooks/useCheckLogin';
+import ProfileMenu from '@/components/ProfileMenu';
 
 export function UnguardLogo() {
     return <Image alt='Unguard Logo' height='32' src='/ui/unguard_logo.svg' width='32' />;
 }
 
-async function logout() {
-    return await fetch('/ui/api/auth/logout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-    });
-}
-
 export default function NavigationBar() {
     const pathname = usePathname();
-    const router = useRouter();
     const { data: isLoggedIn } = useCheckLogin();
-    const queryClient = useQueryClient();
-
-    function handleLogout(res: Response) {
-        if (res.ok) {
-            queryClient
-                .invalidateQueries({ queryKey: ['isLoggedIn'] })
-                .then(() => router.push(ROUTES.login))
-                .then(() => addToast({ title: 'Logout successful', description: 'Goodbye!' }));
-        }
-    }
 
     return (
         <Navbar
@@ -86,15 +68,7 @@ export default function NavigationBar() {
                             Login/Register
                         </Button>
                     )}
-                    {isLoggedIn && (
-                        <Button
-                            color='default'
-                            variant='solid'
-                            onPress={() => logout().then((res) => handleLogout(res))}
-                        >
-                            Logout
-                        </Button>
-                    )}
+                    {isLoggedIn && <ProfileMenu />}
                 </NavbarItem>
             </NavbarContent>
         </Navbar>
