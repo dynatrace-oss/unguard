@@ -23,7 +23,9 @@ const connection = mysql.createPool({
     password: process.env.MARIADB_PASSWORD,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    // vulnerable configuration - SQL injection attacks could use data manipulation statements
+    multipleStatements: true,
 });
 
 const CREATE_USER_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS users(" +

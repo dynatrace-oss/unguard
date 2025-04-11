@@ -11,7 +11,7 @@ To run it locally using docker, you can run:
 
 ```bash
 docker run --detach --name user-auth-db \
-  --env MARIADB_PASSWORD=mariadb-root-password \
+  --env MARIADB_ROOT_PASSWORD=mariadb-root-password \
   --env MARIADB_DATABASE=my_database \
    -p 3306:3306 \
    mariadb:latest
@@ -49,3 +49,7 @@ When developing, to have the server auto-restart on change of a file and use loc
 ```
 yarn run dev
 ```
+
+### Exploiting the sql injection vulnerability
+
+See [Documentation in the Exploit Toolkit](../../exploit-toolkit/exploits/sql-injection/SQLI-USER-AUTH-SERVICE-MARIADB.md)
