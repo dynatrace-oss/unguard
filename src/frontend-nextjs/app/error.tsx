@@ -1,8 +1,12 @@
 'use client';
-
 import { useEffect } from 'react';
 
-export default function Error({ error, reset }: { error: Error; reset: () => void }) {
+interface ErrorProps {
+    error: Error;
+    reset: () => void;
+}
+
+export default function Error({ error, reset }: ErrorProps) {
     useEffect(() => {
         // Log the error to an error reporting service
         /* eslint-disable no-console */
