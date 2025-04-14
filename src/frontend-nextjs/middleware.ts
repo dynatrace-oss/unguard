@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtDecode } from 'jwt-decode';
 
-import { ROUTES } from '@/app/enums/routes';
+import { ROUTES } from '@/enums/routes';
 
 const protectedRoutes = [ROUTES.users, ROUTES.mytimeline];
 

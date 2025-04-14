@@ -1,5 +1,4 @@
 'use client';
-
 import { Card, CardHeader, CardBody, CardFooter, Avatar, Button } from '@heroui/react';
 import { BsHandThumbsUp } from 'react-icons/bs';
 

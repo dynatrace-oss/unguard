@@ -1,10 +1,9 @@
 'use client';
-
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, User, addToast } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { ROUTES } from '@/app/enums/routes';
+import { ROUTES } from '@/enums/routes';
 import { useJwtPayload } from '@/hooks/useJwtPayload';
 
 async function logout() {
@@ -16,7 +15,6 @@ async function logout() {
 
 export default function ProfileMenu() {
     const { data: jwt_payload } = useJwtPayload();
-    const username = 'test';
     const router = useRouter();
     const queryClient = useQueryClient();
 
