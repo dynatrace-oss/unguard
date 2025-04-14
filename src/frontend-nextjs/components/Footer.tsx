@@ -1,5 +1,4 @@
 'use client';
-
 import { Link } from '@heroui/react';
 
 export function Footer() {

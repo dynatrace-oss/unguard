@@ -1,9 +1,10 @@
 'use client';
-
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image } from '@heroui/react';
 import { usePathname } from 'next/navigation';
 
-import { ROUTES } from '@/app/enums/routes';
+import { ROUTES } from '@/enums/routes';
+import { useCheckLogin } from '@/hooks/useCheckLogin';
+import ProfileMenu from '@/components/ProfileMenu';
 
 export function UnguardLogo() {
     return <Image alt='Unguard Logo' height='32' src='/ui/unguard_logo.svg' width='32' />;
@@ -11,6 +12,7 @@ export function UnguardLogo() {
 
 export function NavigationBar() {
     const pathname = usePathname();
+    const { data: isLoggedIn } = useCheckLogin();
 
     return (
         <Navbar
@@ -31,22 +33,29 @@ export function NavigationBar() {
                         Home
                     </Link>
                 </NavbarItem>
-                <NavbarItem isActive={pathname === ROUTES.users}>
-                    <Link color='secondary' href={ROUTES.users}>
-                        Users
-                    </Link>
-                </NavbarItem>
-                <NavbarItem isActive={pathname === ROUTES.mytimeline}>
-                    <Link color='secondary' href={ROUTES.mytimeline}>
-                        My Timeline
-                    </Link>
-                </NavbarItem>
+                {isLoggedIn && (
+                    <NavbarItem isActive={pathname === ROUTES.users}>
+                        <Link color='secondary' href={ROUTES.users}>
+                            Users
+                        </Link>
+                    </NavbarItem>
+                )}
+                {isLoggedIn && (
+                    <NavbarItem isActive={pathname === ROUTES.mytimeline}>
+                        <Link color='secondary' href={ROUTES.mytimeline}>
+                            My Timeline
+                        </Link>
+                    </NavbarItem>
+                )}
             </NavbarContent>
             <NavbarContent justify='end'>
                 <NavbarItem className='justify-items-end'>
-                    <Button as={Link} color='default' href={ROUTES.login} variant='solid'>
-                        Login/Register
-                    </Button>
+                    {!isLoggedIn && (
+                        <Button as={Link} color='default' href={ROUTES.login} variant='solid'>
+                            Login/Register
+                        </Button>
+                    )}
+                    {isLoggedIn && <ProfileMenu />}
                 </NavbarItem>
             </NavbarContent>
         </Navbar>

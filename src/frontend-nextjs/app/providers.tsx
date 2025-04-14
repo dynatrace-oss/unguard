@@ -1,5 +1,4 @@
 'use client';
-
 import type { ThemeProviderProps } from 'next-themes';
 
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
@@ -13,15 +12,10 @@ export interface ProvidersProps {
     themeProps?: ThemeProviderProps;
 }
 
-declare module '@react-types/shared' {
-    interface RouterConfig {
-        routerOptions: NonNullable<Parameters<ReturnType<typeof useRouter>['push']>[1]>;
-    }
-}
+const queryClient = new QueryClient();
 
 export function Providers({ children, themeProps }: ProvidersProps) {
     const router = useRouter();
-    const queryClient = new QueryClient();
 
     return (
         <QueryClientProvider client={queryClient}>
