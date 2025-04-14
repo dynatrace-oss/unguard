@@ -1,11 +1,10 @@
 'use client';
-
 import React, { useState } from 'react';
 import { Image, Button, Form, Input, Spacer, addToast } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { ROUTES } from '@/app/enums/routes';
+import { ROUTES } from '@/enums/routes';
 
 async function register(data: {}): Promise<Response> {
     return await fetch('/ui/api/auth/register', {

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 async function fetchPosts() {
-    const res = await fetch('ui/api/posts');
+    const res = await fetch('/ui/api/posts');
 
     if (!res.ok) {
         throw new Error('Failed to fetch posts');
