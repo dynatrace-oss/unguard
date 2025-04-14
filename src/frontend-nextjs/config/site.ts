@@ -1,4 +1,4 @@
-import { ROUTES } from '@/app/enums/routes';
+import { ROUTES } from '@/enums/routes';
 
 export type SiteConfig = typeof siteConfig;
 
