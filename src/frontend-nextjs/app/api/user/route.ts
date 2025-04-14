@@ -7,7 +7,7 @@ import { USER_AUTH_API } from '@/axios';
 This file is just for testing purposes and should be removed later.
 The actual functionality for registering a new user is implemented in the API route /auth/register.
  */
-async function postUser(user: {}) {
+
 async function postUser(user: {}): Promise<AxiosResponse> {
     //insert a user for testing, this should be removed later
     const res_user = await USER_AUTH_API.get('/user/register', {
