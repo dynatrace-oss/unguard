@@ -176,7 +176,7 @@ class UnguardUser(HttpUser):
         time.sleep(1)
 
     @task()
-    def get_sql_nodejs(self):
+    def post_sql_login_injection_nodejs(self):
         parameters = {'name': random.choice(SQL_CMDS_LOGIN_USERNAME), 'password': 'user'}
 
         # post with the malicious SQL command
