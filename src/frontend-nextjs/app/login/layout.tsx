@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
+import { PropsWithChildren } from 'react';
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: PropsWithChildren) {
     return <section>{children}</section>;
 }

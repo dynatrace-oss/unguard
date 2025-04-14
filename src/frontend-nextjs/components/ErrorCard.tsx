@@ -1,7 +1,7 @@
 import { Card } from '@heroui/react';
 
 interface ErrorCardProps {
-    message?: string;
+    message: string;
 }
 
 export function ErrorCard({ message }: ErrorCardProps) {
