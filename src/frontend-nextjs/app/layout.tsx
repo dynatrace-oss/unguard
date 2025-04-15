@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
 import { Metadata, Viewport } from 'next';
+import { PropsWithChildren } from 'react';
 
 import { Providers } from './providers';
 
@@ -25,7 +26,7 @@ export const viewport: Viewport = {
     ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: PropsWithChildren) {
     return (
         <html suppressHydrationWarning lang='en'>
             <head>
