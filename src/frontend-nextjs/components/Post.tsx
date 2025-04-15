@@ -20,7 +20,12 @@ export function Post(props: PostProps) {
             <Card>
                 <CardHeader className='justify-between'>
                     <div className='flex gap-5'>
-                        <Avatar isBordered radius='full' size='md' src={props.imageUrl} />
+                        <Avatar
+                            isBordered
+                            radius='full'
+                            size='md'
+                            src={`https://robohash.org/${props.username}.png?set=set1&size=35x35`}
+                        />
                         <div className='flex flex-col gap-1 items-start justify-center'>
                             <h4 className='text-medium font-semibold leading-none text-default-600'>
                                 {props.username}
