@@ -43,7 +43,9 @@ export default function ProfileMenu() {
                     />
                 </DropdownTrigger>
                 <DropdownMenu aria-label='User Actions' variant='flat'>
-                    <DropdownItem key='profile'>Profile</DropdownItem>
+                    <DropdownItem key='profile' href={`/user/${jwt_payload?.username}`}>
+                        Profile
+                    </DropdownItem>
                     <DropdownItem key='settings'>Payment Information</DropdownItem>
                     <DropdownItem
                         key='logout'
