@@ -67,20 +67,20 @@ function showGlobalTimeline(req, res) {
             req.MICROBLOG_API.get('/timeline'),
             getMembershipOfLoggedInUser(req)
         ])).
-        then(([timeline, membership]) => {
-            insertLikeCountIntoPostArray(req, timeline.data).then(postArray => {
-                let data = extendRenderData({
-                    data: postArray,
-                    title: 'Timeline',
-                    username: getJwtUser(req.cookies),
-                    isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
-                    baseData: baseRequestFactory.baseData,
-                    membership: membership.data
+    then(([timeline, membership]) => {
+        insertLikeCountIntoPostArray(req, timeline.data).then(postArray => {
+            let data = extendRenderData({
+                data: postArray,
+                title: 'Timeline',
+                username: getJwtUser(req.cookies),
+                isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
+                baseData: baseRequestFactory.baseData,
+                membership: membership.data
 
-                }, req);
-                res.render('index.njk', data)
-            }, (err) => displayError(err, res))
+            }, req);
+            res.render('index.njk', data)
         }, (err) => displayError(err, res))
+    }, (err) => displayError(err, res))
 }
 
 function showUsers(req, res) {
@@ -108,7 +108,7 @@ function showUsers(req, res) {
                 searchRoles: req.query.roles,
                 shouldRoleBeChecked: (role) => {
                     return (typeof req.query.roles == "string" && req.query.roles == role.name) // only one checkbox checked
-                    || (typeof req.query.roles == "object" && req.query.roles.includes(role.name)) // multiple checkboxes checked
+                        || (typeof req.query.roles == "object" && req.query.roles.includes(role.name)) // multiple checkboxes checked
                 },
                 username: getJwtUser(req.cookies),
                 isAdManager: hasJwtRole(req.cookies, roles.AD_MANAGER),
@@ -302,9 +302,11 @@ function doLogin(req, res) {
     }
 
     fetchUsingDeploymentBase(req, () => req.USER_AUTH_API
-        .post("/user/login", {
-            "username": usernameToLogin,
-            "password": passwordToLogin
+        .get("/user/login", {
+            params: {
+                "username": usernameToLogin,
+                "password": passwordToLogin
+            }
         }))
         .then(response => {
             if (response.data.jwt) {
@@ -325,9 +327,11 @@ function registerUser(req, res) {
     }
 
     fetchUsingDeploymentBase(req, () => req.USER_AUTH_API
-        .post("/user/register", {
-            "username": usernameToLogin,
-            "password": passwordToLogin
+        .get("/user/register", {
+            params: {
+                "username": usernameToLogin,
+                "password": passwordToLogin
+            }
         }))
         .then(_ => res.redirect(extendURL('/login')), (err) => displayError(err, res));
 }
@@ -469,8 +473,8 @@ function postBio(req, res) {
         .then((_) => {
             res.redirect(extendURL(`/user/${getJwtUser(req.cookies)}`));
         }).catch(error => {
-            res.status(statusCodeForError(error)).render('error.njk', handleError(error));
-        });
+        res.status(statusCodeForError(error)).render('error.njk', handleError(error));
+    });
 }
 
 function insertLikeCountIntoPostArray(req, posts) {
@@ -480,7 +484,7 @@ function insertLikeCountIntoPostArray(req, posts) {
             let likeCount = likeData.likeCounts.find(likeCount => likeCount.postId == post.postId)?.likeCount ?? 0;
             let userLiked = likeData.likedPosts.some(like => like.postId == post.postId);
             return {...post, likeCount: likeCount, userLiked: userLiked};
-    }));
+        }));
 }
 
 
