@@ -180,7 +180,7 @@ class UnguardUser(HttpUser):
         parameters = {'name': random.choice(SQL_CMDS_LOGIN_USERNAME), 'password': 'user'}
 
         # post with the malicious SQL command
-        self.client.post("/login", params=parameters, headers=self.get_random_x_forwarded_for_header())
+        self.client.post("/login", data=parameters, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
     @task()

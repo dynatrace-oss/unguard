@@ -23,9 +23,9 @@ const jwt = require('jwt-simple');
 
 const ALPHANUMERIC_REGEX = /^\w+$/;
 
-router.post('/register', async function (req, res) {
-    const username = req.body.username;
-    const password = req.body.password;
+router.get('/register', async function (req, res) {
+    const username = req.query.username;
+    const password = req.query.password;
 
     if (!ALPHANUMERIC_REGEX.test(username)) {
         res.status(400).json({ message: "Only numbers, underscores, upper- and lowercase letters are allowed in the username." })
@@ -55,9 +55,9 @@ router.post('/register', async function (req, res) {
     });
 });
 
-router.post('/login', async function (req, res) {
-    const username = req.body.username;
-    const password = req.body.password;
+router.get('/login', async function (req, res) {
+    const username = req.query.username;
+    const password = req.query.password;
 
     // check if user exists
     // vulnerable to sql injection because prepared statements are not used
