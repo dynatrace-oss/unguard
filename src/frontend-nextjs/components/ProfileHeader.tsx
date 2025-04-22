@@ -4,6 +4,7 @@ import { Avatar, Button } from '@heroui/react';
 import { useBio } from '@/hooks/useBio';
 import { useMembership } from '@/hooks/useMembership';
 import { useJwtPayload } from '@/hooks/useJwtPayload';
+import { FollowButton } from '@/components/FollowButton';
 
 interface ProfileHeaderProps {
     username: string;
@@ -30,8 +31,15 @@ export function ProfileHeader({ username }: ProfileHeaderProps) {
                 >
                     {membership}
                 </Button>
+                {username === jwt_payload?.username ? (
+                    ''
+                ) : (
+                    <div className='pl-2'>
+                        <FollowButton />
+                    </div>
+                )}
             </div>
-            <p className='border-l-4 border-l-gray-500 text-gray-500 pl-2'> {bio}</p>
+            <div dangerouslySetInnerHTML={{ __html: bio }} className='' />
         </div>
     );
 }
