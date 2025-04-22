@@ -5,9 +5,10 @@ import { USER_AUTH_API } from '@/axios';
 
 async function postUser(user: {}): Promise<AxiosResponse> {
     //insert a user for testing, this should be removed later
-    const res_user = await USER_AUTH_API.post('/user/register', {
+    const res_user = await USER_AUTH_API.get('/user/register', {
+        params: {
         username: 'user1',
-        password: 'password123',
+        password: 'password123'}
     }).catch();
 
     if (res_user.status !== 200) {
