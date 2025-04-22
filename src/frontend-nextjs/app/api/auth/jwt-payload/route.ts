@@ -16,11 +16,11 @@ export async function GET(): Promise<NextResponse> {
         const jwt = cookieStore.get('jwt')?.value;
 
         if (jwt) {
-            const username = jwtDecode(jwt) as CustomPayLoad['username'];
+            const decodedPayload = jwtDecode<CustomPayLoad>(jwt);
 
-            return NextResponse.json(username);
+            return NextResponse.json(decodedPayload);
         }
     }
 
-    return NextResponse.json({ error: 'Could not get username from JWT' }, { status: 500 });
+    return NextResponse.json({ error: 'Could not get JWT Payload' });
 }
