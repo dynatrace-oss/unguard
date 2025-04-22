@@ -6,16 +6,8 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { ROUTES } from '@/enums/routes';
 
-async function register(data: {}): Promise<Response> {
-    return await fetch('/ui/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-    });
-}
-
-async function login(data: {}): Promise<Response> {
-    return await fetch('/ui/api/auth/login', {
+async function authenticateUser(path: string, data: {}): Promise<Response> {
+    return await fetch(path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -58,10 +50,9 @@ export default function LoginRegister() {
     function handleRegister(res: Response, data: {}) {
         if (!res.ok) {
             setErrorMsg(getErrorMsg(res.status));
-            throw new Error('Error creating new user');
         } else {
             setErrorMsg('');
-            login(data).then((res) => handleLogin(res));
+            authenticateUser('/ui/api/auth/login', data).then((res) => handleLogin(res));
         }
     }
 
@@ -83,11 +74,11 @@ export default function LoginRegister() {
                     let data = Object.fromEntries(new FormData(e.currentTarget));
 
                     if (isLogin) {
-                        login(data)
+                        authenticateUser('/ui/api/auth/login', data)
                             .then((res) => handleLogin(res))
                             .then(() => addToast({ title: 'Login successful', description: 'Welcome back!' }));
                     } else {
-                        register(data)
+                        authenticateUser('/ui/api/auth/register', data)
                             .then((res) => handleRegister(res, data))
                             .then(() => addToast({ title: 'Register successful', description: 'Welcome to Unguard!' }));
                     }

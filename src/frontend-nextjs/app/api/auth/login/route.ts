@@ -4,8 +4,12 @@ import { jwtDecode } from 'jwt-decode';
 
 import { USER_AUTH_API } from '@/axios';
 
-async function loginUser(user: {}): Promise<any> {
-    const res_user = await USER_AUTH_API.post('/user/login', user).catch();
+async function loginUser(user: { username: string; password: string }): Promise<any> {
+    const res_user = await USER_AUTH_API.get('/user/login', {
+        params: {
+            username: user.username,
+            password: user.password}
+    }).catch();
 
     if (res_user.status !== 200) {
         throw new Error('Failed to login user');
