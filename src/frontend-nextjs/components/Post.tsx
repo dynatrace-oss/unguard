@@ -1,6 +1,9 @@
 'use client';
-import { Card, CardHeader, CardBody, CardFooter, Avatar, Button } from '@heroui/react';
+import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link } from '@heroui/react';
 import { BsHandThumbsUp } from 'react-icons/bs';
+import { useRouter } from 'next/navigation';
+
+import { ROUTES } from '@/enums/routes';
 
 export interface PostProps {
     username: string;
@@ -11,6 +14,8 @@ export interface PostProps {
 }
 
 export function Post(props: PostProps) {
+    const router = useRouter();
+
     function like() {
         //TODO
     }
@@ -25,10 +30,13 @@ export function Post(props: PostProps) {
                             radius='full'
                             size='md'
                             src={`https://robohash.org/${props.username}.png?set=set1&size=35x35`}
+                            onClick={() => router.push(ROUTES.user + props.username)}
                         />
                         <div className='flex flex-col gap-1 items-start justify-center'>
                             <h4 className='text-medium font-semibold leading-none text-default-600'>
-                                {props.username}
+                                <Link underline='hover' onPress={() => router.push(ROUTES.user + props.username)}>
+                                    {props.username}
+                                </Link>
                             </h4>
                             <h5 className='text-small tracking-tight text-default-400'>
                                 {new Date(props.timestamp).toString()}

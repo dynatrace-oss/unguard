@@ -1,10 +1,11 @@
 'use client';
-import { Avatar, Button } from '@heroui/react';
+import { Avatar, Button, Spinner } from '@heroui/react';
 
 import { useBio } from '@/hooks/useBio';
 import { useMembership } from '@/hooks/useMembership';
 import { useJwtPayload } from '@/hooks/useJwtPayload';
 import { FollowButton } from '@/components/FollowButton';
+import { ErrorCard } from '@/components/ErrorCard';
 
 interface ProfileHeaderProps {
     username: string;
@@ -12,8 +13,18 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ username }: ProfileHeaderProps) {
     const { data: bio } = useBio(username);
-    const { data: membership } = useMembership(username);
     const { data: jwt_payload } = useJwtPayload();
+    const { data: membership, isLoading, isError } = useMembership(username);
+
+    if (isLoading)
+        return (
+            <div className='flex items-center justify-center'>
+                <Spinner />
+            </div>
+        );
+    if (isError) {
+        return <ErrorCard message='User does not exist' />;
+    }
 
     return (
         <div>
@@ -39,7 +50,10 @@ export function ProfileHeader({ username }: ProfileHeaderProps) {
                     </div>
                 )}
             </div>
-            <div dangerouslySetInnerHTML={{ __html: bio }} className='' />
+            <div
+                dangerouslySetInnerHTML={{ __html: bio }}
+                className='border-l-4 border-l-gray-500 text-gray-500 pl-2'
+            />
         </div>
     );
 }
