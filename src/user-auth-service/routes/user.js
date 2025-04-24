@@ -26,9 +26,6 @@ router.get('/register', async function (req, res) {
     const username = req.query.username;
     const password = req.query.password;
 
-    console.log("REGISTER");
-    console.log(username);
-
     if (!ALPHANUMERIC_REGEX.test(username)) {
         res.status(400).json({ message: "Only numbers, underscores, upper- and lowercase letters are allowed in the username." })
         return
