@@ -50,6 +50,7 @@ export default function LoginRegister() {
     function handleRegister(res: Response, data: {}) {
         if (!res.ok) {
             setErrorMsg(getErrorMsg(res.status));
+            throw new Error('Error registering user');
         } else {
             setErrorMsg('');
             authenticateUser('/ui/api/auth/login', data).then((res) => handleLogin(res));
@@ -76,11 +77,17 @@ export default function LoginRegister() {
                     if (isLogin) {
                         authenticateUser('/ui/api/auth/login', data)
                             .then((res) => handleLogin(res))
-                            .then(() => addToast({ title: 'Login successful', description: 'Welcome back!' }));
+                            .then(() => addToast({ title: 'Login successful', description: 'Welcome back!' }))
+                            .catch(() => {
+                                addToast({ title: 'Login failed', description: 'Please try again!' });
+                            });
                     } else {
                         authenticateUser('/ui/api/auth/register', data)
                             .then((res) => handleRegister(res, data))
-                            .then(() => addToast({ title: 'Register successful', description: 'Welcome to Unguard!' }));
+                            .then(() => addToast({ title: 'Register successful', description: 'Welcome to Unguard!' }))
+                            .catch(() => {
+                                addToast({ title: 'Sign-in failed', description: 'Please try again!' });
+                            });
                     }
                 }}
             >
