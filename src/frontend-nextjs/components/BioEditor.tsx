@@ -1,10 +1,11 @@
 'use client';
-import { Button, Switch, Textarea } from '@heroui/react';
+import { Accordion, AccordionItem, Button, Switch, Textarea } from '@heroui/react';
 import { useState } from 'react';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
 import MDEditor, { commands } from '@uiw/react-md-editor';
 import { useQueryClient } from '@tanstack/react-query';
+import { BsPencil } from 'react-icons/bs';
 
 import { useBio } from '@/hooks/useBio';
 
@@ -38,35 +39,52 @@ export function BioEditor({ username }: BioEditorProps) {
     const queryClient = useQueryClient();
 
     return (
-        <div className='pt-10 p-2 align-items-stretch'>
-            <h2 className='mb-6 text-2xl font-extrabold leading-none tracking-tight text-gray-800'>Edit Bio</h2>
-            <Switch className='mb-2' color='primary' isSelected={isMarkdownEditor} onValueChange={setIsMarkdownEditor}>
-                Use Markdown Editor
-            </Switch>
-            {!isMarkdownEditor && (
-                <Textarea label='Bio' minRows={8} placeholder='Enter your bio' value={value} onValueChange={setValue} />
-            )}
-            {isMarkdownEditor && (
-                <MDEditor
-                    commands={markdownCommands}
-                    extraCommands={[]}
-                    minHeight={120}
-                    preview='live'
-                    value={value}
-                    onChange={(val) => setValue(val || '')}
-                />
-            )}
-            <Button
-                className='mt-2'
-                color='primary'
-                onPress={() =>
-                    updateBio(username, { bioText: value, enableMarkdown: isMarkdownEditor }).then(() =>
-                        queryClient.invalidateQueries({ queryKey: [`bio-${username}`] }),
-                    )
-                }
+        <Accordion className='mt-6 align-items-stretch' defaultExpandedKeys={['theme']} variant='shadow'>
+            <AccordionItem
+                key='editBio'
+                aria-label='Edit Bio'
+                indicator={<BsPencil />}
+                title={<p className='text-xl font-extrabold tracking-tight text-gray-800'>Edit Bio</p>}
             >
-                Edit Bio
-            </Button>
-        </div>
+                <Switch
+                    className='mb-2'
+                    color='primary'
+                    isSelected={isMarkdownEditor}
+                    onValueChange={setIsMarkdownEditor}
+                >
+                    Use Markdown Editor
+                </Switch>
+                {!isMarkdownEditor && (
+                    <Textarea
+                        label='Bio'
+                        minRows={8}
+                        placeholder='Enter your bio'
+                        value={value}
+                        onValueChange={setValue}
+                    />
+                )}
+                {isMarkdownEditor && (
+                    <MDEditor
+                        commands={markdownCommands}
+                        extraCommands={[]}
+                        minHeight={120}
+                        preview='live'
+                        value={value}
+                        onChange={(val) => setValue(val || '')}
+                    />
+                )}
+                <Button
+                    className='mt-2'
+                    color='primary'
+                    onPress={() =>
+                        updateBio(username, { bioText: value, enableMarkdown: isMarkdownEditor }).then(() =>
+                            queryClient.invalidateQueries({ queryKey: [`bio-${username}`] }),
+                        )
+                    }
+                >
+                    Edit Bio
+                </Button>
+            </AccordionItem>
+        </Accordion>
     );
 }
