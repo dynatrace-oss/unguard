@@ -179,9 +179,11 @@ class UnguardUser(HttpUser):
     def post_sql_login_injection_nodejs(self):
         parameters = {'name': random.choice(SQL_CMDS_LOGIN_USERNAME), 'password': 'user'}
 
-        # post with the malicious SQL command
-        self.client.post("/login", data=parameters, headers=self.get_random_x_forwarded_for_header())
+        # get with the malicious SQL command
+        self.client.get("/login", params=parameters, headers=self.get_random_x_forwarded_for_header())
+
         time.sleep(1)
+        self.on_start()
 
     @task()
     def post_sql_php(self):
