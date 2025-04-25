@@ -5,6 +5,8 @@ import { Post } from '@/components/Post';
 import { PostProps } from '@/components/Post';
 import { ErrorCard } from '@/components/ErrorCard';
 import { usePosts } from '@/hooks/usePosts';
+import { CreatePost } from '@/components/CreatePost';
+import { useCheckLogin } from '@/hooks/useCheckLogin';
 
 //this is just for now for testing, should be removed later
 async function registerUser() {
@@ -23,6 +25,7 @@ interface TimelineProps {
 
 export function Timeline({ username }: TimelineProps) {
     const { data, isLoading, isError, error } = usePosts(username || undefined);
+    const { data: isLoggedIn } = useCheckLogin();
 
     registerUser(); //just for testing purposes, remove later
 
@@ -48,6 +51,7 @@ export function Timeline({ username }: TimelineProps) {
 
     return (
         <div>
+            {!username && isLoggedIn && <CreatePost />}
             {data?.map((post: PostProps, index: number) => (
                 <div key={index}>
                     <Post
