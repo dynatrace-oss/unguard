@@ -8,7 +8,8 @@ async function loginUser(user: { username: string; password: string }): Promise<
     const res_user = await USER_AUTH_API.get('/user/login', {
         params: {
             username: user.username,
-            password: user.password}
+            password: user.password,
+        },
     }).catch();
 
     if (res_user.status !== 200) {
@@ -24,7 +25,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const res = NextResponse.json(response, { status: response.status });
 
-    res.cookies.set('jwt', response.jwt);
+    res.cookies.set('jwt', response.jwt, { path: '/' });
 
     return res;
 }
