@@ -4,7 +4,7 @@ async function fetchJwtPayload() {
     const res = await fetch('/ui/api/auth/jwt-payload', { method: 'GET' });
 
     if (!res.ok) {
-        throw new Error('Failed to fetch login status');
+        throw new Error('Failed to fetch JWT');
     }
 
     return res.json();
@@ -12,7 +12,7 @@ async function fetchJwtPayload() {
 
 export function useJwtPayload() {
     return useQuery({
-        queryKey: ['jwtUsername'],
+        queryKey: ['jwtPayload'],
         queryFn: fetchJwtPayload,
     });
 }

@@ -17,8 +17,12 @@ async function registerUser() {
     return res.json();
 }
 
-export function Timeline() {
-    const { data, isLoading, isError, error } = usePosts();
+interface TimelineProps {
+    username?: string;
+}
+
+export function Timeline({ username }: TimelineProps) {
+    const { data, isLoading, isError, error } = usePosts(username || undefined);
 
     registerUser(); //just for testing purposes, remove later
 
@@ -39,7 +43,7 @@ export function Timeline() {
     }
 
     if (data?.length === 0) {
-        return <ErrorCard message='No data' />;
+        return <Card className='flex items-center justify-center font-bold'>Nothing to see here...</Card>;
     }
 
     return (

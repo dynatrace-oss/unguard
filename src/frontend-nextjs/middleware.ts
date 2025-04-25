@@ -8,7 +8,10 @@ const protectedRoutes = [ROUTES.users, ROUTES.mytimeline];
 export function middleware(req: NextRequest) {
     const jwt = req.cookies.get('jwt')?.value;
 
-    if (!jwt && protectedRoutes.includes(<ROUTES>req.nextUrl.pathname)) {
+    const isProtected =
+        protectedRoutes.includes(<ROUTES>req.nextUrl.pathname) || req.nextUrl.pathname.startsWith('/user/');
+
+    if (!jwt && isProtected) {
         return NextResponse.redirect(new URL('/ui/login', req.url));
     }
 

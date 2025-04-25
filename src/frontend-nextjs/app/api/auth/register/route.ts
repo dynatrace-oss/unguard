@@ -6,7 +6,8 @@ async function registerUser(user: { username: string; password: string }) {
     const res_user = await USER_AUTH_API.get('/user/register', {
         params: {
             username: user.username,
-            password: user.password}
+            password: user.password,
+        },
     }).catch();
 
     if (res_user.status !== 200) {
