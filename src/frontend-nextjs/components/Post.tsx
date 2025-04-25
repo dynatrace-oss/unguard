@@ -27,6 +27,7 @@ export function Post(props: PostProps) {
                     <div className='flex gap-5'>
                         <Avatar
                             isBordered
+                            className='cursor-pointer'
                             radius='full'
                             size='md'
                             src={`https://robohash.org/${props.username}.png?set=set1&size=35x35`}
@@ -34,7 +35,21 @@ export function Post(props: PostProps) {
                         />
                         <div className='flex flex-col gap-1 items-start justify-center'>
                             <h4 className='text-medium font-semibold leading-none text-default-600'>
-                                <Link underline='hover' onPress={() => router.push(ROUTES.user + props.username)}>
+                                <Link
+                                    className='cursor-pointer'
+                                    underline='hover'
+                                    onPress={() => {
+                                        {
+                                            /*
+                                            Due to a currently unsolved bug in Next.js window.location.href has to be used instead of router.push() to ensure that the middleware is executed.
+                                            Otherwise, inconsistencies in the route restriction are possible.
+
+                                            https://github.com/vercel/next.js/issues/58025
+                                            */
+                                        }
+                                        window.location.href = `/ui${ROUTES.user}${props.username}`;
+                                    }}
+                                >
                                     {props.username}
                                 </Link>
                             </h4>
