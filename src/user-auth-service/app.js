@@ -38,7 +38,7 @@ logger.token('userid', function (req) {
         const userid = req.body.userid ? `User ID: ${req.body.userid}`: '-';
         return userid;
     } catch (e) {
-        return "UserId logger error"
+        return "{ }"
     }
 
 });
@@ -54,7 +54,7 @@ logger.token('body', function (req) {
 
         return JSON.stringify(req.body);
     } catch {
-        return "Body logger error"
+        return "{ }"
     }
 
 });
