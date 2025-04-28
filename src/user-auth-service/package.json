@@ -10,7 +10,7 @@
     "colors": "^1.4.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "express": "~4.16.1",
+    "express": "~5.1.0",
     "http-errors": "~1.6.3",
     "jaeger-client": "^3.15.0",
     "jsonwebtoken": "^8.5.1",
