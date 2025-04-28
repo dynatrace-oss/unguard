@@ -34,19 +34,29 @@ const jwtRouter = require('./routes/jwt');
 const app = express();
 
 logger.token('userid', function (req) {
-	const userid = req.body.userid ? `User ID: ${req.body.userid}`: '-';
-	return userid;
+    try {
+        const userid = req.body.userid ? `User ID: ${req.body.userid}`: '-';
+        return userid;
+    } catch (e) {
+        return "UserId logger error"
+    }
+
 });
 
 logger.token('body', function (req) {
-	const maxLoggingLength = 30;
-	Object.keys(req.body).forEach((key) => {
-		if (req.body[key] && req.body[key].length > maxLoggingLength) {
-			req.body[key] = req.body[key].substr(0, maxLoggingLength) + '...'
-		}
-	})
+    try {
+        const maxLoggingLength = 30;
+        Object.keys(req.body).forEach((key) => {
+            if (req.body[key] && req.body[key].length > maxLoggingLength) {
+                req.body[key] = req.body[key].substr(0, maxLoggingLength) + '...'
+            }
+        })
 
-	return JSON.stringify(req.body);
+        return JSON.stringify(req.body);
+    } catch {
+        return "Body logger error"
+    }
+
 });
 
 if (process.env.NODE_ENV !== 'production') {
