@@ -55,48 +55,54 @@ router.get('/register', async function (req, res) {
     });
 });
 
-router.get('/login', async function (req, res) {
-    const username = req.query.username;
-    const password = req.query.password;
+router.get('/login', async function (req, res, next) {
+    try {
+        const username = req.query.username;
+        const password = req.query.password;
 
-    // check if user exists
-    // vulnerable to sql injection because prepared statements are not used
-    // https://snyk.io/de/blog/preventing-sql-injection-attacks-node-js/
-    const vulnerableQuery  = database.checkUserExistsQuery.replace('?', `"${username}"`);
-    const result = await database.dbConnection.query(vulnerableQuery);
-    if (result[0].length < 1) {
-        res.status(404).json({ message: "Given user does not exists!" })
-        return
-    }
-
-    const user = result[0][0];
-    const roles = await database.dbConnection.query(database.selectUserWithRole, [ user.id ]).then((response) => {
-        const userWithRoles = response[0];
-        if (userWithRoles.length === 0) {
-            return [];
+        // check if user exists
+        // vulnerable to sql injection because prepared statements are not used
+        // https://snyk.io/de/blog/preventing-sql-injection-attacks-node-js/
+        const vulnerableQuery = database.checkUserExistsQuery.replace('?', `"${username}"`);
+        const result = await database.dbConnection.query(vulnerableQuery);
+        if (result[0].length < 1) {
+            res.status(404).json({message: "Given user does not exists!"})
+            return
         }
 
-        const userRoles = [];
-        userWithRoles.forEach(user => {
-            if (user.role_name !== null) {
-                userRoles.push("" + user.role_name);
+        const user = result[0][0];
+        const roles = await database.dbConnection.query(database.selectUserWithRole, [user.id]).then((response) => {
+            const userWithRoles = response[0];
+            if (userWithRoles.length === 0) {
+                return [];
+            }
+
+            const userRoles = [];
+            userWithRoles.forEach(user => {
+                if (user.role_name !== null) {
+                    userRoles.push("" + user.role_name);
+                }
+            });
+
+            return userRoles;
+        });
+
+
+        bcrypt.compare(password, user.password_hash, function (err, compareResult) {
+            if (compareResult) {
+                res.json({
+                    result: "successfully logged in!",
+                    jwt: jwtUtil.generateJwtAccessToken(username, user.id, roles)
+                })
+            } else {
+                res.status(401).json({message: 'Wrong password!'})
             }
         });
 
-        return userRoles;
-    });
-
-
-    bcrypt.compare(password, user.password_hash, function (err, compareResult) {
-        if (compareResult) {
-            res.json({
-                result: "successfully logged in!",
-                jwt: jwtUtil.generateJwtAccessToken(username, user.id, roles)
-            })
-        } else {
-            res.status(401).json({ message: 'Wrong password!' })
-        }
-    });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
 });
 
 router.post('/username', async function (req, res) {
