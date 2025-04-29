@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { QUERY_KEYS } from '@/enums/queryKeys';
-
 async function fetchPostsOfUser(username: string) {
     const res = await fetch(`/ui/api/posts/${username}`);
 
@@ -32,7 +30,7 @@ async function fetchPosts(username?: string) {
 
 export function usePosts(username?: string) {
     return useQuery({
-        queryKey: [QUERY_KEYS.posts, username],
+        queryKey: ['posts'],
         queryFn: () => fetchPosts(username),
     });
 }

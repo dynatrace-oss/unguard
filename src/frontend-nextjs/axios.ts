@@ -27,3 +27,7 @@ export const MEMBERSHIP_SERVICE_API = createAxiosInstance(
         'Content-Type': 'application/json',
     },
 );
+
+export const PROXY = createAxiosInstance('http://' + process.env.PROXY_SERVICE_ADDRESS, {
+    'Content-Type': 'application/json',
+});
