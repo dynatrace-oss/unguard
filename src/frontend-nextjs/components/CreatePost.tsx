@@ -15,12 +15,9 @@ import {
     Textarea,
 } from '@heroui/react';
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { languages } from '@/data/languages';
-
-function post() {
-    //TODO
-}
 
 interface Post {
     content?: string;
@@ -29,20 +26,28 @@ interface Post {
     language?: string;
 }
 
+async function post(data: Post) {
+    return await fetch('/ui/api/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    });
+}
 export function CreatePost() {
     const [selectedPostType, setSelectedPostType] = useState('text');
+    const queryClient = useQueryClient();
 
     return (
         <div className='mb-4'>
-            <Card className='w-full border-primary border-1'>
+            <Card className='w-full border-primary border-1 p-2'>
                 <Form
                     onSubmit={(e) => {
                         e.preventDefault();
                         const data: Post = Object.fromEntries(new FormData(e.currentTarget));
 
-                        console.log(data);
+                        post(data).then(() => queryClient.invalidateQueries({ queryKey: ['posts'] }));
 
-                        post();
+                        e.currentTarget?.reset();
                     }}
                 >
                     <CardHeader className='justify-between px-3'>
@@ -103,7 +108,7 @@ export function CreatePost() {
                     </CardBody>
                     <CardFooter className='gap-3 justify-start px-3'>
                         <div className='flex gap-1'>
-                            <Button color='primary' type='submit' onPress={post}>
+                            <Button color='primary' type='submit'>
                                 <p>Post</p>
                             </Button>
                         </div>

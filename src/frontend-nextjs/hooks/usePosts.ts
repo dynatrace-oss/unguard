@@ -30,7 +30,7 @@ async function fetchPosts(username?: string) {
 
 export function usePosts(username?: string) {
     return useQuery({
-        queryKey: ['posts' + username],
+        queryKey: ['posts'],
         queryFn: () => fetchPosts(username),
     });
 }
