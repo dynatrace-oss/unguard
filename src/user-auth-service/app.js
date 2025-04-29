@@ -32,6 +32,9 @@ const authRouter = require('./routes/auth');
 const jwtRouter = require('./routes/jwt');
 
 const app = express();
+process.on('uncaughtException', (err, origin) => {
+    console.error(err);
+});
 
 logger.token('userid', function (req) {
     const userid = req.body.userid ? `User ID: ${req.body.userid}`: '-';
