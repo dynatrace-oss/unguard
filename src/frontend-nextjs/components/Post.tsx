@@ -11,7 +11,7 @@ export interface PostProps {
     timestamp: string;
     body: string;
     likes: number;
-    imageUrl: string;
+    imageUrl?: string;
 }
 
 export function Post(props: PostProps) {
@@ -21,7 +21,7 @@ export function Post(props: PostProps) {
 
     return (
         <div>
-            <Card>
+            <Card className='p-2'>
                 <CardHeader className='justify-between'>
                     <div className='flex gap-5'>
                         <Avatar
@@ -59,6 +59,11 @@ export function Post(props: PostProps) {
                     </div>
                 </CardHeader>
                 <CardBody className='px-3 text-small text-default-600'>
+                    {props.imageUrl && (
+                        <div className='pb-8'>
+                            <img alt='' className='mw-100 h-100 max-h-[150px]' src={props.imageUrl} />
+                        </div>
+                    )}
                     <p>{props.body}</p>
                 </CardBody>
                 <CardFooter className='gap-3 justify-end px-3'>
