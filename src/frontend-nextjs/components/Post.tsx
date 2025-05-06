@@ -1,4 +1,5 @@
 'use client';
+import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link, Image } from '@heroui/react';
 import path from 'path';
 
 import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link } from '@heroui/react';
@@ -60,8 +61,8 @@ export function Post(props: PostProps) {
                 </CardHeader>
                 <CardBody className='px-3 text-small text-default-600'>
                     {props.imageUrl && (
-                        <div className='pb-8'>
-                            <img alt='' className='mw-100 h-100 max-h-[150px]' src={props.imageUrl} />
+                        <div className='pb-4'>
+                            <Image alt='' className='mw-100 h-100 max-h-[200px]' src={props.imageUrl} />
                         </div>
                     )}
                     <p>{props.body}</p>
