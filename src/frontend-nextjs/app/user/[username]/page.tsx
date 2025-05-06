@@ -1,29 +1,9 @@
-import { cookies } from 'next/headers';
-import { jwtDecode } from 'jwt-decode';
 import { Spacer } from '@heroui/react';
 
 import { BioEditor } from '@/components/BioEditor';
 import { ProfileHeader } from '@/components/ProfileHeader';
-import { CustomPayLoad } from '@/app/api/auth/jwt-payload/route';
 import { Timeline } from '@/components/Timeline';
-
-async function checkIsOwnProfile(username: string) {
-    const cookieStore = await cookies();
-
-    if (cookieStore.has('jwt')) {
-        const jwt = cookieStore.get('jwt')?.value;
-
-        if (jwt) {
-            const decodedPayload = jwtDecode<CustomPayLoad>(jwt);
-
-            if (decodedPayload.username == username) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
+import { checkIsOwnProfile } from '@/services/isOwnProfile';
 
 interface UserProfileRouteParams {
     username: string;
