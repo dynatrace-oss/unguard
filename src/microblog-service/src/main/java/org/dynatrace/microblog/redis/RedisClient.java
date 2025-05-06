@@ -200,15 +200,6 @@ public class RedisClient {
     }
 
     public List<Post> getTimeline() {
-        //TODO: remove this block when it is not longer needed (just for testing purposes)
-        try {
-            String userid = this.userAuthServiceClient.getUserIdFromUsername("user1");
-            newPost(userid, "Test Post 1", null);
-            newPost(userid, "Test Post 2", null);
-        } catch (InvalidJwtException | UserNotFoundException | IOException e) {
-            throw new RuntimeException(e);
-        }
-
         List<Post> posts;
         try (Jedis jedis = jedisPool.getResource()) {
             List<String> postIds = jedis.lrange(TIMELINE_KEY, 0, 50);

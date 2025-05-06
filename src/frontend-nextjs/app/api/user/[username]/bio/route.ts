@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { PROFILE_SERVICE } from '@/axios';
-import { fetchUserId } from '@/services/userIdforUsername';
+import { fetchUserIdForUsername } from '@/services/userIdforUsername';
 
 async function fetchBio(userid: string): Promise<any> {
     const res = await PROFILE_SERVICE.get(`/user/${userid}/bio`);
@@ -12,7 +12,7 @@ async function fetchBio(userid: string): Promise<any> {
 export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
     const { username } = await params;
 
-    const res_userid = await fetchUserId(username);
+    const res_userid = await fetchUserIdForUsername(username);
 
     try {
         const res_bio = await fetchBio(res_userid.userId);
@@ -49,7 +49,7 @@ async function editBio(userid: string, body: { bioText: string; enableMarkdown: 
 
 export async function POST(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
     const { username } = await params;
-    const res_userid = await fetchUserId(username);
+    const res_userid = await fetchUserIdForUsername(username);
 
     const body = await req.json();
     const res_bio = await editBio(res_userid.userId, body);
