@@ -5,19 +5,6 @@ import { Post } from '@/components/Post';
 import { PostProps } from '@/components/Post';
 import { ErrorCard } from '@/components/ErrorCard';
 import { usePosts } from '@/hooks/usePosts';
-import { CreatePost } from '@/components/CreatePost';
-import { useCheckLogin } from '@/hooks/useCheckLogin';
-
-//this is just for now for testing, should be removed later
-async function registerUser() {
-    const res = await fetch('/ui/api/user', { method: 'POST' });
-
-    if (!res.ok) {
-        throw new Error('Failed to create new user');
-    }
-
-    return res.json();
-}
 
 interface TimelineProps {
     username?: string;
@@ -25,13 +12,10 @@ interface TimelineProps {
 
 export function Timeline({ username }: TimelineProps) {
     const { data, isLoading, isError, error } = usePosts(username || undefined);
-    const { data: isLoggedIn } = useCheckLogin();
-
-    registerUser(); //just for testing purposes, remove later
 
     if (isLoading)
         return (
-            <Card className='flex items-center justify-center'>
+            <Card className='flex items-center justify-center min-h-20'>
                 <Spinner />
             </Card>
         );
@@ -51,7 +35,6 @@ export function Timeline({ username }: TimelineProps) {
 
     return (
         <div>
-            {!username && isLoggedIn && <CreatePost />}
             {data?.map((post: PostProps, index: number) => (
                 <div key={index}>
                     <Post

@@ -7,11 +7,9 @@ interface ErrorCardProps {
 
 export function ErrorCard({ message }: ErrorCardProps) {
     return (
-        <Card className='w-full flex items-center justify-center'>
-            <p className='text-red-600 font-bold'>
-                <BsExclamationTriangle />
-                {message}
-            </p>
+        <Card className='w-full flex items-center justify-center min-h-20 text-red-600 font-bold'>
+            <BsExclamationTriangle />
+            {message}
         </Card>
     );
 }

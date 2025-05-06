@@ -16,8 +16,10 @@ import {
 } from '@heroui/react';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 import { languages } from '@/data/languages';
+import { ROUTES } from '@/enums/routes';
 
 interface Post {
     content?: string;
@@ -27,15 +29,18 @@ interface Post {
 }
 
 async function post(data: Post) {
-    return await fetch('/ui/api/post', {
+    const res = await fetch('ui/api/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
     });
+
+    return res.json();
 }
 export function CreatePost() {
     const [selectedPostType, setSelectedPostType] = useState('text');
     const queryClient = useQueryClient();
+    const router = useRouter();
 
     return (
         <div className='mb-4'>
@@ -45,7 +50,10 @@ export function CreatePost() {
                         e.preventDefault();
                         const data: Post = Object.fromEntries(new FormData(e.currentTarget));
 
-                        post(data).then(() => queryClient.invalidateQueries({ queryKey: ['posts'] }));
+                        post(data).then((postId) => {
+                            queryClient.invalidateQueries({ queryKey: ['posts'] });
+                            router.push(ROUTES.post + '?id=' + postId);
+                        });
 
                         e.currentTarget?.reset();
                     }}
