@@ -1,6 +1,6 @@
-import { Timeline } from '@/components/Timeline';
 import { Ad } from '@/components/Ad';
 import { CreatePost } from '@/components/CreatePost';
+import { GlobalTimeline } from '@/components/GlobalTimeline';
 import { isLoggedIn } from '@/services/isLoggedIn';
 
 export default async function Home() {
@@ -10,7 +10,7 @@ export default async function Home() {
             <div className='grid gap-8 grid-cols-[70%_30%] min-h-screen'>
                 <div>
                     {(await isLoggedIn()) && <CreatePost />}
-                    <Timeline />
+                    <GlobalTimeline />
                 </div>
                 <Ad />
             </div>
