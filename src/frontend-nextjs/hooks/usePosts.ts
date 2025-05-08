@@ -45,3 +45,20 @@ export function usePostsOfUser(username: string) {
         queryFn: () => fetchPostsOfUser(username),
     });
 }
+
+async function fetchPersonalTimeline() {
+    const res = await fetch('/ui/api/posts/mytimeline');
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch personal timeline');
+    }
+
+    return res.json();
+}
+
+export function usePersonalTimeline() {
+    return useQuery({
+        queryKey: ['mytimeline'],
+        queryFn: () => fetchPersonalTimeline(),
+    });
+}
