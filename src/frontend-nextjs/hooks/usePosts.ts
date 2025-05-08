@@ -22,17 +22,26 @@ async function fetchAllPosts() {
     return res.json();
 }
 
-async function fetchPosts(username?: string) {
-    if (username) {
-        return fetchPostsOfUser(username);
-    }
-
-    return fetchAllPosts();
-}
-
-export function usePosts(username?: string) {
+export function useAllPosts() {
     return useQuery({
         queryKey: [QUERY_KEYS.posts],
-        queryFn: () => fetchPosts(username),
+        queryFn: () => fetchAllPosts(),
+    });
+}
+
+async function fetchPostsOfUser(username: string) {
+    const res = await fetch(`/ui/api/posts/${username}`);
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch posts for user ' + username);
+    }
+
+    return res.json();
+}
+
+export function usePostsOfUser(username: string) {
+    return useQuery({
+        queryKey: [QUERY_KEYS.posts, username],
+        queryFn: () => fetchPostsOfUser(username),
     });
 }
