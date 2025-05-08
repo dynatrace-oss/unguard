@@ -4,15 +4,15 @@ import { Card, Spacer, Spinner } from '@heroui/react';
 import { Post } from '@/components/Post';
 import { PostProps } from '@/components/Post';
 import { ErrorCard } from '@/components/ErrorCard';
-import { usePosts } from '@/hooks/usePosts';
 
 interface TimelineProps {
-    username?: string;
+    posts: [];
+    isLoading: boolean;
+    isError: boolean;
+    error: Error | null;
 }
 
-export function Timeline({ username }: TimelineProps) {
-    const { data, isLoading, isError, error } = usePosts(username || undefined);
-
+export function Timeline({ posts, isLoading, isError, error }: TimelineProps) {
     if (isLoading)
         return (
             <Card className='flex items-center justify-center min-h-20'>
@@ -29,13 +29,13 @@ export function Timeline({ username }: TimelineProps) {
         return <ErrorCard message={errormessage} />;
     }
 
-    if (data?.length === 0) {
+    if (posts?.length === 0) {
         return <Card className='flex items-center justify-center font-bold'>Nothing to see here...</Card>;
     }
 
     return (
         <div>
-            {data?.map((post: PostProps, index: number) => (
+            {posts?.map((post: PostProps, index: number) => (
                 <div key={index}>
                     <Post
                         body={post.body}
