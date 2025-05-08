@@ -1,15 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 
-async function fetchPostsOfUser(username: string) {
-    const res = await fetch(`/ui/api/posts/${username}`);
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch posts for user ' + username);
-    }
-
-    return res.json();
-}
-
 async function fetchAllPosts() {
     const res = await fetch('/ui/api/posts');
 
@@ -20,17 +10,43 @@ async function fetchAllPosts() {
     return res.json();
 }
 
-async function fetchPosts(username?: string) {
-    if (username) {
-        return fetchPostsOfUser(username);
-    }
-
-    return fetchAllPosts();
-}
-
-export function usePosts(username?: string) {
+export function useAllPosts() {
     return useQuery({
         queryKey: ['posts'],
-        queryFn: () => fetchPosts(username),
+        queryFn: () => fetchAllPosts(),
+    });
+}
+
+async function fetchPostsOfUser(username: string) {
+    const res = await fetch(`/ui/api/posts/${username}`);
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch posts for user ' + username);
+    }
+
+    return res.json();
+}
+
+export function usePostsOfUser(username: string) {
+    return useQuery({
+        queryKey: [`posts-${username}`],
+        queryFn: () => fetchPostsOfUser(username),
+    });
+}
+
+async function fetchPersonalTimeline() {
+    const res = await fetch('/ui/api/posts/mytimeline');
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch personal timeline');
+    }
+
+    return res.json();
+}
+
+export function usePersonalTimeline() {
+    return useQuery({
+        queryKey: ['mytimeline'],
+        queryFn: () => fetchPersonalTimeline(),
     });
 }
