@@ -29,7 +29,7 @@ interface Post {
 }
 
 async function post(data: Post) {
-    const res = await fetch('ui/api/post', {
+    const res = await fetch('/ui/api/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
