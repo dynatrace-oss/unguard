@@ -37,7 +37,6 @@ export default function NavbarProfileDropdown() {
                     <User
                         as='button'
                         avatarProps={{
-                            isBordered: true,
                             src: `https://robohash.org/${jwt_payload?.username}.png?set=set1&size=35x35`,
                             alt: jwt_payload?.username,
                         }}
