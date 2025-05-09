@@ -50,6 +50,13 @@ export function CreatePost() {
                         e.preventDefault();
                         const data: Post = Object.fromEntries(new FormData(e.currentTarget));
 
+                        //for some reason, the autocomplete component from HeroUI returns the label instead of the key, therefore need to set it manually
+                        if (data.language) {
+                            const selectedLanguage = languages.find((language) => language.label === data.language);
+
+                            data.language = selectedLanguage ? selectedLanguage.key : data.language;
+                        }
+
                         post(data).then((postId) => {
                             queryClient.invalidateQueries({ queryKey: ['posts'] });
                             router.push(ROUTES.post + '?id=' + postId);
