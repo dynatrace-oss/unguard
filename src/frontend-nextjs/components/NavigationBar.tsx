@@ -23,10 +23,12 @@ export function NavigationBar() {
                 borderRadius: '15px',
             }}
         >
-            <NavbarBrand className='max-w-36'>
-                <UnguardLogo />
-                <p className='font-bold text-inherit px-2 text-large'>Unguard</p>
-            </NavbarBrand>
+            <Link href={ROUTES.home}>
+                <NavbarBrand className='max-w-36'>
+                    <UnguardLogo />
+                    <p className='font-bold text-inherit px-2 text-large text-secondary'>Unguard</p>
+                </NavbarBrand>
+            </Link>
             <NavbarContent className='hidden sm:flex gap-4' justify='center'>
                 <NavbarItem isActive={pathname === ROUTES.home}>
                     <Link color='secondary' href={ROUTES.home}>
