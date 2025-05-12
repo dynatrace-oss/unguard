@@ -41,453 +41,460 @@ labels:
   # Add common labels to all resources here
   common: {}
 
-# Malicious load generator
-maliciousLoadGenerator:
-  enabled: false
-  name: malicious-load-generator
+unguard:
+  enabled: true
 
-  deployment:
-    strategy:
-      type: Recreate
-    terminationGracePeriodSeconds: 5
-    restartPolicy: Always
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-malicious-load-generator
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
-      ports:
-        containerPort: 8083
-      env:
-        FRONTEND_ADDR: unguard-envoy-proxy:8080/ui
-        USERS: 1
-        WAIT_TIME: 1800
+  # Malicious load generator
+  maliciousLoadGenerator:
+    enabled: false
+    name: malicious-load-generator
 
-# Profile Service
-profileService:
-  name: profile-service
-
-  service:
-    type: ClusterIP
-    ports:
-      - targetPort: 8080
-        port: 80
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-profile-service
-        tag: 0.8.1
-        pullPolicy: IfNotPresent
-      ports:
-        containerPort: 8080
-      env:
-        OTEL_LOGS_EXPORTER: none
-        OTEL_METRICS_EXPORTER: none
-        OTEL_RESOURCE_ATTRIBUTES: service.name=unguard-profile-service
-        OTEL_TRACES_EXPORTER: none
-        OTEL_EXPERIMENTAL_SDK_ENABLED: false
-        OTEL_EXPORTER_JAEGER_ENDPOINT: "http://jaeger-collector:14250"
-        OTEL_PROPAGATORS: "jaeger"
-        SPRING_DATASOURCE_PASSWORD: password
-        SPRING_DATASOURCE_URL: jdbc:h2:file:./database/bio
-        SPRING_DATASOURCE_USERNAME: sa
-      livenessProbe:
-        httpGet:
-          path: /healthz
-          port: 8080
-        initialDelaySeconds: 5
-        periodSeconds: 15
-
-# User Simulator
-userSimulator:
-  name: user-simulator
-
-  cronJob:
-    schedule: "*/3 * * * *"
-    startingDeadlineSeconds: 180
-    jobTemplate:
-      restartPolicy: OnFailure
-
+    deployment:
+      strategy:
+        type: Recreate
+      terminationGracePeriodSeconds: 5
+      restartPolicy: Always
       container:
         image:
-          repository: ghcr.io/dynatrace-oss/unguard/unguard-user-simulator
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-malicious-load-generator
           tag: 0.11.2
           pullPolicy: IfNotPresent
-
+        ports:
+          containerPort: 8083
         env:
           FRONTEND_ADDR: unguard-envoy-proxy:8080/ui
-          SIMULATE_PRIVATE_RANGES: false
+          USERS: 1
+          WAIT_TIME: 1800
 
-        resources:
-          requests:
-            cpu: 10m
-            memory: 256Mi
-          limits:
-            cpu: 500m
-            memory: 512Mi
+  # Profile Service
+  profileService:
+    name: profile-service
 
-# Membership Service
-membershipService:
-  name: membership-service
-
-  service:
-    type: ClusterIP
-    ports:
-      - targetPort: 8083
-        port: 80
-
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-membership-service
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
       ports:
-        containerPort: 8083
-      env:
-        ASPNETCORE_ENVIRONMENT: Development
-        SERVER_PORT: 8083
-        API_PATH: /membership-service
-        MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
-        MARIADB_PASSWORD:
-          secretKeyRef:
-            name: "{{ .Values.mariaDB.serviceName }}"
-            key: "{{ .Values.mariaDB.password }}"
+        - targetPort: 8080
+          port: 80
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-profile-service
+          tag: 0.8.1
+          pullPolicy: IfNotPresent
+        ports:
+          containerPort: 8080
+        env:
+          OTEL_LOGS_EXPORTER: none
+          OTEL_METRICS_EXPORTER: none
+          OTEL_RESOURCE_ATTRIBUTES: service.name=unguard-profile-service
+          OTEL_TRACES_EXPORTER: none
+          OTEL_EXPERIMENTAL_SDK_ENABLED: false
+          OTEL_EXPORTER_JAEGER_ENDPOINT: "http://jaeger-collector:14250"
+          OTEL_PROPAGATORS: "jaeger"
+          SPRING_DATASOURCE_PASSWORD: password
+          SPRING_DATASOURCE_URL: jdbc:h2:file:./database/bio
+          SPRING_DATASOURCE_USERNAME: sa
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 15
 
-# User Auth Service
-userAuthService:
-  name: user-auth-service
+  # User Simulator
+  userSimulator:
+    name: user-simulator
 
-  service:
-    type: ClusterIP
-    ports:
-      - targetPort: 9091
-        port: 80
+    cronJob:
+      schedule: "*/3 * * * *"
+      startingDeadlineSeconds: 180
+      jobTemplate:
+        restartPolicy: OnFailure
 
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-user-auth-service
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
+        container:
+          image:
+            repository: ghcr.io/dynatrace-oss/unguard/unguard-user-simulator
+            tag: 0.11.2
+            pullPolicy: IfNotPresent
+
+          env:
+            FRONTEND_ADDR: unguard-envoy-proxy:8080/ui
+            SIMULATE_PRIVATE_RANGES: false
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+  # Membership Service
+  membershipService:
+    name: membership-service
+
+    service:
+      type: ClusterIP
       ports:
-        containerPort: 9091
-      env:
-        SERVER_PORT: 9091
-        MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
-        MARIADB_PASSWORD:
-          secretKeyRef:
-            name: "{{ .Values.mariaDB.serviceName }}"
-            key: "{{ .Values.mariaDB.password }}"
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
-        JAEGER_SAMPLER_TYPE: const
-        JAEGER_SAMPLER_PARAM: 0
-        JAEGER_DISABLED: true
-        ASPNETCORE_ENVIRONMENT: Production
-        API_PATH: /ad-service
-        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+        - targetPort: 8083
+          port: 80
 
-# Add Service
-adService:
-  name: ad-service
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-membership-service
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        ports:
+          containerPort: 8083
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          SERVER_PORT: 8083
+          API_PATH: /membership-service
+          MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
+          MARIADB_PASSWORD:
+            secretKeyRef:
+              name: "{{ .Values.mariaDB.serviceName }}"
+              key: "{{ .Values.mariaDB.password }}"
 
-  service:
-    type: ClusterIP
-    ports:
-      - targetPort: 8082
-        port: 80
+  # User Auth Service
+  userAuthService:
+    name: user-auth-service
 
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-ad-service
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
       ports:
-        containerPort: 8082
-      env:
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
-        JAEGER_SAMPLER_TYPE: const
-        JAEGER_SAMPLER_PARAM: 0
-        JAEGER_DISABLED: true
-        ASPNETCORE_ENVIRONMENT: Production
-        SERVER_PORT: 8082
-        API_PATH: /ad-service
-        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+        - targetPort: 9091
+          port: 80
 
-# Envoy Proxy
-envoyProxy:
-  name: envoy-proxy
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-user-auth-service
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        ports:
+          containerPort: 9091
+        env:
+          SERVER_PORT: 9091
+          MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
+          MARIADB_PASSWORD:
+            secretKeyRef:
+              name: "{{ .Values.mariaDB.serviceName }}"
+              key: "{{ .Values.mariaDB.password }}"
+          JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+          JAEGER_SAMPLER_TYPE: const
+          JAEGER_SAMPLER_PARAM: 0
+          JAEGER_DISABLED: true
+          ASPNETCORE_ENVIRONMENT: Production
+          API_PATH: /ad-service
+          USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
 
-  service:
-    type: ClusterIP
-    ports:
-      - name: http
-        targetPort: 8080
-        port: 8080
-      - name: health
-        targetPort: 8081
-        port: 8081
+  # Add Service
+  adService:
+    name: ad-service
 
-  deployment:
-    strategy:
-      type: RollingUpdate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-envoy-proxy
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      ports:
+        - targetPort: 8082
+          port: 80
+
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-ad-service
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        ports:
+          containerPort: 8082
+        env:
+          JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+          JAEGER_SAMPLER_TYPE: const
+          JAEGER_SAMPLER_PARAM: 0
+          JAEGER_DISABLED: true
+          ASPNETCORE_ENVIRONMENT: Production
+          SERVER_PORT: 8082
+          API_PATH: /ad-service
+          USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+
+  # Envoy Proxy
+  envoyProxy:
+    name: envoy-proxy
+
+    service:
+      type: ClusterIP
       ports:
         - name: http
-          containerPort: 8080
+          targetPort: 8080
+          port: 8080
         - name: health
-          containerPort: 8081
+          targetPort: 8081
+          port: 8081
 
-# Microblog Service
-microblogService:
-  name: microblog-service
+    deployment:
+      strategy:
+        type: RollingUpdate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-envoy-proxy
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        ports:
+          - name: http
+            containerPort: 8080
+          - name: health
+            containerPort: 8081
 
-  service:
-    type: ClusterIP
-    ports:
-      - targetPort: 8080
-        port: 80
+  # Microblog Service
+  microblogService:
+    name: microblog-service
 
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-microblog-service
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
       ports:
-        containerPort: 8080
-      env:
-        SERVER_PORT: 8080
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
-        JAEGER_SAMPLER_TYPE: const
-        JAEGER_SAMPLER_PARAM: 0
-        OPENTRACING_JAEGER_ENABLED: false
-        REDIS_SERVICE_ADDRESS: unguard-redis
-        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+        - targetPort: 8080
+          port: 80
 
-# Status Service
-statusService:
-  name: status-service
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-microblog-service
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        ports:
+          containerPort: 8080
+        env:
+          SERVER_PORT: 8080
+          JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+          JAEGER_SAMPLER_TYPE: const
+          JAEGER_SAMPLER_PARAM: 0
+          OPENTRACING_JAEGER_ENABLED: false
+          REDIS_SERVICE_ADDRESS: unguard-redis
+          USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
 
-  service:
-    type: ClusterIP
-    ports:
-      - targetPort: 8083
-        port: 80
+  # Status Service
+  statusService:
+    name: status-service
 
-  serviceAccount:
-    name: unguard-status
+    service:
+      type: ClusterIP
+      ports:
+        - targetPort: 8083
+          port: 80
 
-  role:
-    name: status-role
-    rules:
-      - apiGroups: ["apps"]
-        resources: ["deployments"]
-        verbs: ["get", "list"]
-      - apiGroups: [""]
-        resources: ["pods"]
-        verbs: ["get", "list"]
+    serviceAccount:
+      name: unguard-status
 
-  roleBindings:
-    name: status-rolebinding
-    subjects:
-      - kind: ServiceAccount
-        name: unguard-status
-        apiGroup: ""
-    roleRef:
-      kind: Role
+    role:
       name: status-role
-      apiGroup: rbac.authorization.k8s.io
+      rules:
+        - apiGroups: ["apps"]
+          resources: ["deployments"]
+          verbs: ["get", "list"]
+        - apiGroups: [""]
+          resources: ["pods"]
+          verbs: ["get", "list"]
 
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-status-service
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
+    roleBindings:
+      name: status-rolebinding
+      subjects:
+        - kind: ServiceAccount
+          name: unguard-status
+          apiGroup: ""
+      roleRef:
+        kind: Role
+        name: status-role
+        apiGroup: rbac.authorization.k8s.io
+
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-status-service
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        ports:
+          containerPort: 8083
+        env:
+          SERVER_PORT: 8083
+          API_PATH: /status-service
+          KUBERNETES_NAMESPACE: unguard
+          IGNORED_DEPLOYMENTS: unguard-user-simulator  # add deployments to ignore separated by spaces
+          MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
+          MARIADB_PASSWORD:
+            secretKeyRef:
+              name: "{{ .Values.mariaDB.serviceName }}"
+              key: "{{ .Values.mariaDB.password }}"
+
+  # Proxy Service
+  proxyService:
+    name: proxy-service
+
+    service:
+      type: ClusterIP
       ports:
-        containerPort: 8083
-      env:
-        SERVER_PORT: 8083
-        API_PATH: /status-service
-        KUBERNETES_NAMESPACE: unguard
-        IGNORED_DEPLOYMENTS: unguard-user-simulator  # add deployments to ignore separated by spaces
-        MARIADB_SERVICE: "{{ .Values.mariaDB.serviceName }}"
-        MARIADB_PASSWORD:
-          secretKeyRef:
-            name: "{{ .Values.mariaDB.serviceName }}"
-            key: "{{ .Values.mariaDB.password }}"
+        - targetPort: 8081
+          port: 80
 
-# Proxy Service
-proxyService:
-  name: proxy-service
+    serviceAccount:
+      name: unguard-proxy
 
-  service:
-    type: ClusterIP
-    ports:
-      - targetPort: 8081
-        port: 80
-
-  serviceAccount:
-    name: unguard-proxy
-
-  role:
-    name: proxy-role
-    rules:
-      - apiGroups: [""]  # "" indicates the core API group
-        resources: ["pods"]
-        verbs: ["create", "list", "get"]
-      - apiGroups: [""]
-        resources: ["pods/exec"]
-        verbs: ["create"]
-
-  roleBindings:
-    name: proxy-rolebinding
-    subjects:
-      - kind: ServiceAccount
-        name: unguard-proxy
-        apiGroup: ""
-    roleRef:
-      kind: Role
+    role:
       name: proxy-role
-      apiGroup: rbac.authorization.k8s.io
+      rules:
+        - apiGroups: [""]  # "" indicates the core API group
+          resources: ["pods"]
+          verbs: ["create", "list", "get"]
+        - apiGroups: [""]
+          resources: ["pods/exec"]
+          verbs: ["create"]
 
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-proxy-service
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
+    roleBindings:
+      name: proxy-rolebinding
+      subjects:
+        - kind: ServiceAccount
+          name: unguard-proxy
+          apiGroup: ""
+      roleRef:
+        kind: Role
+        name: proxy-role
+        apiGroup: rbac.authorization.k8s.io
+
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-proxy-service
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        ports:
+          containerPort: 8081
+        env:
+          SERVER_PORT: 8081
+          JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+          JAEGER_SAMPLER_TYPE: const
+          JAEGER_SAMPLER_PARAM: 0
+          OPENTRACING_JAEGER_ENABLED: false
+
+  # Like Service
+  likeService:
+    name: like-service
+
+    service:
+      type: ClusterIP
       ports:
-        containerPort: 8081
-      env:
-        SERVER_PORT: 8081
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
-        JAEGER_SAMPLER_TYPE: const
-        JAEGER_SAMPLER_PARAM: 0
-        OPENTRACING_JAEGER_ENABLED: false
+        - targetPort: 8000
+          port: 80
 
-# Like Service
-likeService:
-  name: like-service
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-like-service
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        ports:
+          containerPort: 8000
+        env:
+          JAEGER_COLLECTOR_HOST: collector  # PHP OpenTelemetry sends data to jaeger-collector instead of jaeger-agent
+          JAEGER_DISABLED: true
+          JAEGER_PORT: 4318
+          SERVICE_NAME: unguard-like-service
+          SERVER_PORT: 8000
+          API_PATH: /like-service
+          USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+          DB_HOST: "{{ .Values.mariaDB.serviceName }}"
+          DB_PORT: "3306"
+          MARIADB_PASSWORD:
+            secretKeyRef:
+              name: "{{ .Values.mariaDB.serviceName }}"
+              key: "{{ .Values.mariaDB.password }}"
 
-  service:
-    type: ClusterIP
-    ports:
-      - targetPort: 8000
+  # Payment Service
+  paymentService:
+    name: payment-service
+
+    containerPort: 8084
+
+    service:
+      type: ClusterIP
+      ports:
         port: 80
 
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-like-service
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-payment-service
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        env:
+          API_PATH: /payment-service
+          OTEL_LOGS_EXPORTER: none
+          OTEL_METRICS_EXPORTER: none
+          OTEL_RESOURCE_ATTRIBUTES: service.name=unguard-payment-service
+          OTEL_TRACES_EXPORTER: none
+          OTEL_EXPERIMENTAL_SDK_ENABLED: false
+          OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger-collector:4318"
+          OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf"
+          OTEL_PROPAGATORS: "jaeger"
+          OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: false
+
+  # Frontend
+  frontend:
+    name: frontend
+
+    service:
+      type: ClusterIP
       ports:
-        containerPort: 8000
-      env:
-        JAEGER_COLLECTOR_HOST: collector  # PHP OpenTelemetry sends data to jaeger-collector instead of jaeger-agent
-        JAEGER_DISABLED: true
-        JAEGER_PORT: 4318
-        SERVICE_NAME: unguard-like-service
-        SERVER_PORT: 8000
-        API_PATH: /like-service
-        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
-        DB_HOST: "{{ .Values.mariaDB.serviceName }}"
-        DB_PORT: "3306"
-        MARIADB_PASSWORD:
-          secretKeyRef:
-            name: "{{ .Values.mariaDB.serviceName }}"
-            key: "{{ .Values.mariaDB.password }}"
+        - targetPort: 3000
+          port: 80
 
-# Payment Service
-paymentService:
-  name: payment-service
+    deployment:
+      strategy:
+        type: Recreate
+      container:
+        image:
+          repository: ghcr.io/dynatrace-oss/unguard/unguard-frontend
+          tag: 0.11.2
+          pullPolicy: IfNotPresent
+        ports:
+          containerPort: 3000
+        env:
+          JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
+          JAEGER_SAMPLER_TYPE: const
+          JAEGER_SAMPLER_PARAM: 0
+          JAEGER_DISABLED: true
+          MICROBLOG_SERVICE_ADDRESS: unguard-microblog-service
+          PROXY_SERVICE_ADDRESS: unguard-proxy-service
+          USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+          AD_SERVICE_ADDRESS: unguard-ad-service
+          STATUS_SERVICE_ADDRESS: unguard-status-service
+          MEMBERSHIP_SERVICE_ADDRESS: unguard-membership-service
+          PROFILE_SERVICE_ADDRESS: unguard-profile-service
+          LIKE_SERVICE_ADDRES: unguard-like-service
+          PAYMENT_SERVICE_ADDRESS: unguard-payment-service
+          FRONTEND_BASE_PATH: /ui
+          AD_SERVICE_BASE_PATH: /ad-service
+          LIKE_SERVICE_BASE_PATH: /like-service
+          MEMBERSHIP_SERVICE_BASE_PATH: /membership-service
+          STATUS_SERVICE_BASE_PATH: /status-service
 
-  containerPort: 8084
+exploit-toolkit:
+  enabled: false
 
-  service:
-    type: ClusterIP
-    ports:
-      port: 80
-
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-payment-service
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
-      env:
-        API_PATH: /payment-service
-        OTEL_LOGS_EXPORTER: none
-        OTEL_METRICS_EXPORTER: none
-        OTEL_RESOURCE_ATTRIBUTES: service.name=unguard-payment-service
-        OTEL_TRACES_EXPORTER: none
-        OTEL_EXPERIMENTAL_SDK_ENABLED: false
-        OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger-collector:4318"
-        OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf"
-        OTEL_PROPAGATORS: "jaeger"
-        OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: false
-
-# Frontend
-frontend:
-  name: frontend
-
-  service:
-    type: ClusterIP
-    ports:
-      - targetPort: 3000
-        port: 80
-
-  deployment:
-    strategy:
-      type: Recreate
-    container:
-      image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-frontend
-        tag: 0.11.2
-        pullPolicy: IfNotPresent
-      ports:
-        containerPort: 3000
-      env:
-        JAEGER_AGENT_HOST: agent  # change depending on your jaeger deployment
-        JAEGER_SAMPLER_TYPE: const
-        JAEGER_SAMPLER_PARAM: 0
-        JAEGER_DISABLED: true
-        MICROBLOG_SERVICE_ADDRESS: unguard-microblog-service
-        PROXY_SERVICE_ADDRESS: unguard-proxy-service
-        USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
-        AD_SERVICE_ADDRESS: unguard-ad-service
-        STATUS_SERVICE_ADDRESS: unguard-status-service
-        MEMBERSHIP_SERVICE_ADDRESS: unguard-membership-service
-        PROFILE_SERVICE_ADDRESS: unguard-profile-service
-        LIKE_SERVICE_ADDRES: unguard-like-service
-        PAYMENT_SERVICE_ADDRESS: unguard-payment-service
-        FRONTEND_BASE_PATH: /ui
-        AD_SERVICE_BASE_PATH: /ad-service
-        LIKE_SERVICE_BASE_PATH: /like-service
-        MEMBERSHIP_SERVICE_BASE_PATH: /membership-service
-        STATUS_SERVICE_BASE_PATH: /status-service
