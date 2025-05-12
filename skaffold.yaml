@@ -45,6 +45,8 @@ build:
       context: src/like-service
     - image: unguard-payment-service
       context: src/payment-service
+    - image: unguard-exploit-toolkit
+      context: exploit-toolkit
 
   local:
     # only the docker CLI respects a manually logged-in daemon
