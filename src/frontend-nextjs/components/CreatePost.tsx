@@ -14,7 +14,7 @@ import {
     Tabs,
     Textarea,
 } from '@heroui/react';
-import { useState } from 'react';
+import { FormEvent, useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
@@ -28,7 +28,7 @@ interface Post {
     language?: string;
 }
 
-async function post(data: Post) {
+async function createNewPost(data: Post) {
     const res = await fetch('ui/api/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -42,29 +42,37 @@ export function CreatePost() {
     const queryClient = useQueryClient();
     const router = useRouter();
 
+    const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const data: Post = Object.fromEntries(new FormData(e.currentTarget));
+
+        //for some reason, the autocomplete component from HeroUI returns the label instead of the key, therefore need to set it manually
+        data.language = getLanguageKey(data.language);
+
+        createNewPost(data).then((postId) => {
+            queryClient
+                .invalidateQueries({ queryKey: ['posts'] })
+                .then(() => router.push(ROUTES.post + '?id=' + postId));
+        });
+
+        e.currentTarget?.reset();
+    }, []);
+
+    const getLanguageKey = useCallback(
+        (label?: string) => {
+            if (label) {
+                const selectedLanguage = languages.find((language) => language.label === label);
+
+                return selectedLanguage ? selectedLanguage.key : label;
+            }
+        },
+        [languages],
+    );
+
     return (
         <div className='mb-4'>
             <Card className='w-full border-primary border-1 p-2'>
-                <Form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        const data: Post = Object.fromEntries(new FormData(e.currentTarget));
-
-                        //for some reason, the autocomplete component from HeroUI returns the label instead of the key, therefore need to set it manually
-                        if (data.language) {
-                            const selectedLanguage = languages.find((language) => language.label === data.language);
-
-                            data.language = selectedLanguage ? selectedLanguage.key : data.language;
-                        }
-
-                        post(data).then((postId) => {
-                            queryClient.invalidateQueries({ queryKey: ['posts'] });
-                            router.push(ROUTES.post + '?id=' + postId);
-                        });
-
-                        e.currentTarget?.reset();
-                    }}
-                >
+                <Form onSubmit={(e) => handleSubmit(e)}>
                     <CardHeader className='justify-between px-3'>
                         <div className='text-2xl font-extrabold leading-none tracking-tight text-gray-800'>
                             Share New Post

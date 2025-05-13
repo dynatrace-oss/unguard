@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import * as cheerio from 'cheerio';
 
 import { MICROBLOG_API, PROXY } from '@/axios';
-
-const cheerio = require('cheerio');
 
 async function fetchMetadataFromProxy(body: any) {
     const res_proxy = await PROXY.get('/', {
