@@ -3,5 +3,5 @@ export enum ROUTES {
     users = '/users',
     login = '/login',
     mytimeline = '/mytimeline',
-    user = '/user/',
+    user = '/user',
 }

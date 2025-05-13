@@ -7,7 +7,7 @@ import MDEditor, { commands } from '@uiw/react-md-editor';
 import { useQueryClient } from '@tanstack/react-query';
 import { BsPencil } from 'react-icons/bs';
 
-import { updateBio } from '@/services/updateBio';
+import { updateBio } from '@/services/BioService';
 import { useBio } from '@/hooks/useBio';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 
