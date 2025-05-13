@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { QUERY_KEYS } from '@/enums/queryKeys';
+
 async function fetchRoles() {
     const res = await fetch('/ui/api/roles');
 
@@ -12,7 +14,7 @@ async function fetchRoles() {
 
 export function useRoles() {
     return useQuery({
-        queryKey: ['roles'],
+        queryKey: [QUERY_KEYS.roles],
         queryFn: () => fetchRoles(),
     });
 }
