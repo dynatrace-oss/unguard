@@ -1,4 +1,6 @@
 'use client';
+import path from 'path';
+
 import { Card, CardBody, Avatar, Link } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 
@@ -23,14 +25,14 @@ export function User(props: UserProps) {
                             radius='full'
                             size='md'
                             src={`https://robohash.org/${props.username}.png?set=set1&size=35x35`}
-                            onClick={() => router.push(ROUTES.user + props.username)}
+                            onClick={() => router.push(path.join(ROUTES.user, props.username))}
                         />
                         <div className='flex flex-col gap-1 items-start justify-center'>
                             <h4 className='text-medium font-semibold leading-none text-default-600'>
                                 <Link
                                     className='cursor-pointer'
                                     underline='hover'
-                                    onPress={() => router.push(ROUTES.user + props.username)}
+                                    onPress={() => router.push(path.join(ROUTES.user, props.username))}
                                 >
                                     {props.username}
                                 </Link>
