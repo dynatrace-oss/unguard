@@ -19,16 +19,17 @@ import { ErrorCard } from '@/components/ErrorCard';
 import { useUserList } from '@/hooks/useUserList';
 import { User, UserProps } from '@/components/User';
 import { useRoles } from '@/hooks/useRoles';
+import { QUERY_KEYS } from '@/enums/queryKeys';
 
 export function UserSearch() {
-    const { data: userList, isLoading: userListIsLoading } = useUserList({}, 'users-all');
+    const { data: userList, isLoading: userListIsLoading } = useUserList({}, QUERY_KEYS.all_users);
     const params: any = {};
     const {
         data: filteredUserList,
         isLoading: filteredUserListIsLoading,
         isError: filteredUserListIsError,
         error: filteredUserListError,
-    } = useUserList(params, 'users-filtered');
+    } = useUserList(params, QUERY_KEYS.filtered_users);
     const { data: roles } = useRoles();
     const queryClient = useQueryClient();
     const [filteredRoles, setFilteredRoles] = useState(new Set<string>([]));
@@ -68,7 +69,7 @@ export function UserSearch() {
                                 params.roles = Array.from(filteredRoles);
                             }
 
-                            queryClient.invalidateQueries({ queryKey: ['users-filtered'] });
+                            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.filtered_users] });
                         }}
                     >
                         <Autocomplete
