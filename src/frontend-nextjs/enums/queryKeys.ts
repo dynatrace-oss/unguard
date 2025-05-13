@@ -5,4 +5,5 @@ export enum QUERY_KEYS {
     ad = 'ad',
     posts = 'posts',
     bio = 'bio',
+    post = 'post',
 }
