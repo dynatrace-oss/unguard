@@ -2,7 +2,6 @@ import { Spacer } from '@heroui/react';
 
 import { BioEditor } from '@/components/BioEditor';
 import { ProfileHeader } from '@/components/ProfileHeader';
-import { isOwnProfile } from '@/helpers/isOwnProfile';
 import { UserTimeline } from '@/components/UserTimeline';
 import { isOwnProfile as checkIsOwnProfile } from '@/services/isOwnProfile';
 
