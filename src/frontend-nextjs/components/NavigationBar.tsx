@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 
 import { ROUTES } from '@/enums/routes';
 import { useCheckLogin } from '@/hooks/useCheckLogin';
-import ProfileMenu from '@/components/ProfileMenu';
+import NavbarProfileDropdown from '@/components/NavbarProfileDropdown';
 
 export function UnguardLogo() {
     return <Image alt='Unguard Logo' height='32' src='/ui/unguard_logo.svg' width='32' />;
@@ -55,7 +55,7 @@ export function NavigationBar() {
                             Login/Register
                         </Button>
                     )}
-                    {isLoggedIn && <ProfileMenu />}
+                    {isLoggedIn && <NavbarProfileDropdown />}
                 </NavbarItem>
             </NavbarContent>
         </Navbar>
