@@ -7,7 +7,7 @@ import { ProfileHeader } from '@/components/ProfileHeader';
 import { CustomPayLoad } from '@/app/api/auth/jwt-payload/route';
 import { Timeline } from '@/components/Timeline';
 
-async function isOwnProfile(username: string) {
+async function checkIsOwnProfile(username: string) {
     const cookieStore = await cookies();
 
     if (cookieStore.has('jwt')) {
@@ -25,18 +25,23 @@ async function isOwnProfile(username: string) {
     return false;
 }
 
-export default async function UserProfile({ params }: { params: Promise<{ username: string }> }) {
+interface UserProfileRouteParams {
+    username: string;
+}
+
+export default async function UserProfile({ params }: { params: Promise<UserProfileRouteParams> }) {
     const { username } = await params;
+    const isOwnProfile = await checkIsOwnProfile(username);
 
     return (
         <div>
             <div className='flex flex-row gap-16 items-center'>
-                <ProfileHeader username={username} />
+                <ProfileHeader isOwnProfile={isOwnProfile} username={username} />
             </div>
-            {(await isOwnProfile(username)) && <BioEditor username={username} />}
+            {isOwnProfile && <BioEditor username={username} />}
             <Spacer y={16} />
             <h2 className='mb-6 text-2xl font-extrabold leading-none tracking-tight text-gray-800'>
-                {(await isOwnProfile(username)) ? 'Your Posts' : 'Posts of ' + username}
+                {isOwnProfile ? 'Your Posts' : 'Posts of ' + username}
             </h2>
             <Timeline username={username} />
         </div>

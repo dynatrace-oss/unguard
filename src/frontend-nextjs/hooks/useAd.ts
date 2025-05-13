@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { QUERY_KEYS } from '@/enums/queryKeys';
+
 async function fetchAd() {
     const res = await fetch('/ui/api/ad');
 
@@ -12,7 +14,7 @@ async function fetchAd() {
 
 export function useAd() {
     return useQuery({
-        queryKey: ['ad'],
+        queryKey: [QUERY_KEYS.ad],
         queryFn: fetchAd,
     });
 }

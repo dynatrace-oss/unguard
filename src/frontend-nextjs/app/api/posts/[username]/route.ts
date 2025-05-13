@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { AxiosResponse } from 'axios';
 import { cookies } from 'next/headers';
 
 import { MICROBLOG_API } from '@/axios';
 
-async function fetchPostsForUser(username: string): Promise<AxiosResponse> {
+async function fetchPostsForUser(username: string): Promise<any> {
     const cookieStore = await cookies();
     const jwt = cookieStore.get('jwt')?.value;
 

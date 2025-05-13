@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { PROFILE_SERVICE } from '@/axios';
-import { fetchUserId } from '@/helpers/userIdforUsername';
+import { fetchUserId } from '@/services/userIdforUsername';
 
 async function fetchBio(userid: string): Promise<any> {
     const res = await PROFILE_SERVICE.get(`/user/${userid}/bio`);
