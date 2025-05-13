@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { QUERY_KEYS } from '@/enums/queryKeys';
+
 async function fetchSinglePost(postId: string) {
     const res = await fetch(`/ui/api/post/${postId}`);
 
@@ -12,7 +14,7 @@ async function fetchSinglePost(postId: string) {
 
 export function usePost(postId: string) {
     return useQuery({
-        queryKey: [`post-${postId}`],
+        queryKey: [QUERY_KEYS.post, postId],
         queryFn: () => fetchSinglePost(postId),
     });
 }
