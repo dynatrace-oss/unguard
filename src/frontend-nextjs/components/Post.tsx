@@ -1,8 +1,7 @@
 'use client';
-import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link, Image } from '@heroui/react';
 import path from 'path';
 
-import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link } from '@heroui/react';
+import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link, Image } from '@heroui/react';
 import { BsHandThumbsUp } from 'react-icons/bs';
 
 import { ROUTES } from '@/enums/routes';
