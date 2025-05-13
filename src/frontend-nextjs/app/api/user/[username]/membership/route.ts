@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { MEMBERSHIP_SERVICE_API } from '@/axios';
-import { fetchUserId } from '@/helpers/userIdforUsername';
+import { fetchUserId } from '@/services/userIdforUsername';
 
 async function fetchMembership(userid: string): Promise<any> {
     const res = await MEMBERSHIP_SERVICE_API.get(`/${userid}`);

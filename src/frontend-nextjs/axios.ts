@@ -1,3 +1,5 @@
+import path from 'path';
+
 import axios from 'axios';
 
 function createAxiosInstance(baseURL: string, headers: Object) {
@@ -7,20 +9,20 @@ function createAxiosInstance(baseURL: string, headers: Object) {
     });
 }
 
-export const MICROBLOG_API = createAxiosInstance('http://' + process.env.MICROBLOG_SERVICE_ADDRESS, {
+export const MICROBLOG_API = createAxiosInstance(path.join('http://', process.env.MICROBLOG_SERVICE_ADDRESS || ''), {
     'Content-Type': 'application/json',
 });
 
-export const USER_AUTH_API = createAxiosInstance('http://' + process.env.USER_AUTH_SERVICE_ADDRESS, {
+export const USER_AUTH_API = createAxiosInstance(path.join('http://', process.env.USER_AUTH_SERVICE_ADDRESS || ''), {
     'Content-Type': 'application/json',
 });
 
-export const PROFILE_SERVICE = createAxiosInstance('http://' + process.env.PROFILE_SERVICE_ADDRESS, {
+export const PROFILE_SERVICE = createAxiosInstance(path.join('http://', process.env.PROFILE_SERVICE_ADDRESS || ''), {
     'Content-Type': 'application/json',
 });
 
 export const MEMBERSHIP_SERVICE_API = createAxiosInstance(
-    'http://' + process.env.MEMBERSHIP_SERVICE_ADDRESS + process.env.MEMBERSHIP_SERVICE_BASE_PATH,
+    path.join('http://', process.env.MEMBERSHIP_SERVICE_ADDRESS || '', process.env.MEMBERSHIP_SERVICE_BASE_PATH || ''),
     {
         'Content-Type': 'application/json',
     },

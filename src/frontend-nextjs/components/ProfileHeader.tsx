@@ -3,17 +3,16 @@ import { Avatar, Button, Spinner } from '@heroui/react';
 
 import { useBio } from '@/hooks/useBio';
 import { useMembership } from '@/hooks/useMembership';
-import { useJwtPayload } from '@/hooks/useJwtPayload';
 import { FollowButton } from '@/components/FollowButton';
 import { ErrorCard } from '@/components/ErrorCard';
 
 interface ProfileHeaderProps {
     username: string;
+    isOwnProfile: boolean;
 }
 
-export function ProfileHeader({ username }: ProfileHeaderProps) {
+export function ProfileHeader({ username, isOwnProfile }: ProfileHeaderProps) {
     const { data: bio } = useBio(username);
-    const { data: jwt_payload } = useJwtPayload();
     const { data: membership, isLoading, isError } = useMembership(username);
 
     if (isLoading)
@@ -36,15 +35,10 @@ export function ProfileHeader({ username }: ProfileHeaderProps) {
                     src={`https://robohash.org/${username}.png?set=set1&size=150x150`}
                 />
                 <p className='text-2xl'>{username}</p>
-                <Button
-                    color={membership === 'PRO' ? 'primary' : 'default'}
-                    isDisabled={jwt_payload?.username !== username}
-                >
+                <Button color={membership === 'PRO' ? 'primary' : 'default'} isDisabled={!isOwnProfile}>
                     {membership}
                 </Button>
-                {username === jwt_payload?.username ? (
-                    ''
-                ) : (
+                {!isOwnProfile && (
                     <div className='pl-2'>
                         <FollowButton />
                     </div>

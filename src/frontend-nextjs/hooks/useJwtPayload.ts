@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { QUERY_KEYS } from '@/enums/queryKeys';
+
 async function fetchJwtPayload() {
     const res = await fetch('/ui/api/auth/jwt-payload', { method: 'GET' });
 
@@ -12,7 +14,7 @@ async function fetchJwtPayload() {
 
 export function useJwtPayload() {
     return useQuery({
-        queryKey: ['jwtPayload'],
+        queryKey: [QUERY_KEYS.jwtPayload],
         queryFn: fetchJwtPayload,
     });
 }
