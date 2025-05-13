@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { QUERY_KEYS } from '@/enums/queryKeys';
+
 async function fetchMembership(username: string) {
     const res = await fetch(`/ui/api/user/${username}/membership`);
 
@@ -12,7 +14,7 @@ async function fetchMembership(username: string) {
 
 export function useMembership(username: string) {
     return useQuery({
-        queryKey: [`membership-${username}`],
+        queryKey: [QUERY_KEYS.membership, username],
         queryFn: () => fetchMembership(username),
     });
 }

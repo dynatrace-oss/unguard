@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { ROUTES } from '@/enums/routes';
+import { QUERY_KEYS } from '@/enums/queryKeys';
 
 async function authenticateUser(path: string, data: {}): Promise<Response> {
     return await fetch(path, {
@@ -43,7 +44,7 @@ export default function LoginRegister() {
             throw new Error('Error logging in');
         } else {
             setErrorMsg('');
-            queryClient.invalidateQueries({ queryKey: ['isLoggedIn'] }).then(() => router.push(ROUTES.home));
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.isLoggedIn] }).then(() => router.push(ROUTES.home));
         }
     }
 

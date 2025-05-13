@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { AxiosResponse } from 'axios';
 
 import { MICROBLOG_API } from '@/axios';
 
-async function fetchPosts(): Promise<AxiosResponse> {
+async function fetchPosts(): Promise<any> {
     const res = await MICROBLOG_API.get('/timeline');
 
     if (res.status !== 200) {

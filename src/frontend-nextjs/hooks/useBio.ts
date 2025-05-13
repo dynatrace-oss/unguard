@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { QUERY_KEYS } from '@/enums/queryKeys';
+
 async function fetchBio(username: string) {
     const res = await fetch(`/ui/api/user/${username}/bio`);
 
@@ -12,7 +14,7 @@ async function fetchBio(username: string) {
 
 export function useBio(username: string) {
     return useQuery({
-        queryKey: [`bio-${username}`],
+        queryKey: [QUERY_KEYS.bio, username],
         queryFn: () => fetchBio(username),
     });
 }

@@ -2,32 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-h1{
+h1 {
     font-size: 2em;
     font-weight: 900;
 }
 
-h2{
+h2 {
     font-size: 1.5em;
     font-weight: 800;
 }
 
-h3{
+h3 {
     font-size: 1.17em;
     font-weight: 700;
 }
 
-h4{
+h4 {
     font-size: 1em;
     font-weight: 600;
 }
 
-h5{
+h5 {
     font-size: 0.83em;
     font-weight: 500;
 }
 
-h6{
+h6 {
     font-size: 0.67em;
     font-weight: 400;
 }
