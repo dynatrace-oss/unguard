@@ -1,4 +1,6 @@
 'use client';
+import path from 'path';
+
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, User, addToast } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,7 +15,7 @@ async function logout() {
     });
 }
 
-export default function ProfileMenu() {
+export default function NavbarProfileDropdown() {
     const { data: jwt_payload } = useJwtPayload();
     const router = useRouter();
     const queryClient = useQueryClient();
@@ -43,7 +45,7 @@ export default function ProfileMenu() {
                     />
                 </DropdownTrigger>
                 <DropdownMenu aria-label='User Actions' variant='flat'>
-                    <DropdownItem key='profile' href={ROUTES.user + jwt_payload?.username}>
+                    <DropdownItem key='profile' href={path.join(ROUTES.user, jwt_payload?.username || '')}>
                         Profile
                     </DropdownItem>
                     <DropdownItem key='settings'>Payment Information</DropdownItem>

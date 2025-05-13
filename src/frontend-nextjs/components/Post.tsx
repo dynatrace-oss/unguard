@@ -1,7 +1,8 @@
 'use client';
+import path from 'path';
+
 import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link } from '@heroui/react';
 import { BsHandThumbsUp } from 'react-icons/bs';
-import { useRouter } from 'next/navigation';
 
 import { ROUTES } from '@/enums/routes';
 
@@ -14,8 +15,6 @@ export interface PostProps {
 }
 
 export function Post(props: PostProps) {
-    const router = useRouter();
-
     function like() {
         //TODO
     }
@@ -31,7 +30,7 @@ export function Post(props: PostProps) {
                             radius='full'
                             size='md'
                             src={`https://robohash.org/${props.username}.png?set=set1&size=35x35`}
-                            onClick={() => router.push(ROUTES.user + props.username)}
+                            onClick={() => (window.location.href = path.join('/ui', ROUTES.user, props.username))}
                         />
                         <div className='flex flex-col gap-1 items-start justify-center'>
                             <h4 className='text-medium font-semibold leading-none text-default-600'>
@@ -47,7 +46,7 @@ export function Post(props: PostProps) {
                                             https://github.com/vercel/next.js/issues/58025
                                             */
                                         }
-                                        window.location.href = `/ui${ROUTES.user}${props.username}`;
+                                        window.location.href = path.join('/ui', ROUTES.user, props.username);
                                     }}
                                 >
                                     {props.username}
