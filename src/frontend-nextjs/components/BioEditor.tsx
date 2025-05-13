@@ -7,7 +7,9 @@ import MDEditor, { commands } from '@uiw/react-md-editor';
 import { useQueryClient } from '@tanstack/react-query';
 import { BsPencil } from 'react-icons/bs';
 
+import { updateBio } from '@/services/updateBio';
 import { useBio } from '@/hooks/useBio';
+import { QUERY_KEYS } from '@/enums/queryKeys';
 
 interface BioEditorProps {
     username: string;
@@ -23,14 +25,6 @@ const markdownCommands = [
     commands.title5,
     commands.title6,
 ];
-
-async function updateBio(username: string, data: { bioText: string; enableMarkdown: boolean }): Promise<Response> {
-    return await fetch(`/ui/api/user/${username}/bio`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-    });
-}
 
 export function BioEditor({ username }: BioEditorProps) {
     const [isMarkdownEditor, setIsMarkdownEditor] = useState(false);
@@ -54,16 +48,7 @@ export function BioEditor({ username }: BioEditorProps) {
                 >
                     Use Markdown Editor
                 </Switch>
-                {!isMarkdownEditor && (
-                    <Textarea
-                        label='Bio'
-                        minRows={8}
-                        placeholder='Enter your bio'
-                        value={value}
-                        onValueChange={setValue}
-                    />
-                )}
-                {isMarkdownEditor && (
+                {isMarkdownEditor ? (
                     <MDEditor
                         commands={markdownCommands}
                         extraCommands={[]}
@@ -72,13 +57,21 @@ export function BioEditor({ username }: BioEditorProps) {
                         value={value}
                         onChange={(val) => setValue(val || '')}
                     />
+                ) : (
+                    <Textarea
+                        label='Bio'
+                        minRows={8}
+                        placeholder='Enter your bio'
+                        value={value}
+                        onValueChange={setValue}
+                    />
                 )}
                 <Button
                     className='mt-2'
                     color='primary'
                     onPress={() =>
                         updateBio(username, { bioText: value, enableMarkdown: isMarkdownEditor }).then(() =>
-                            queryClient.invalidateQueries({ queryKey: [`bio-${username}`] }),
+                            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.bio, username] }),
                         )
                     }
                 >
