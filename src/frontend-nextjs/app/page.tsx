@@ -1,7 +1,7 @@
 import { Timeline } from '@/components/Timeline';
 import { Ad } from '@/components/Ad';
 import { CreatePost } from '@/components/CreatePost';
-import { isLoggedIn } from '@/helpers/isLoggedIn';
+import { isLoggedIn } from '@/services/isLoggedIn';
 
 export default async function Home() {
     return (
