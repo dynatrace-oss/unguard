@@ -495,6 +495,14 @@ unguard:
           MEMBERSHIP_SERVICE_BASE_PATH: /membership-service
           STATUS_SERVICE_BASE_PATH: /status-service
 
-exploit-toolkit:
+exploit_toolkit:
   enabled: false
-
+  cronjob:
+    schedule: "*/15 * * * * "
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/exploit-toolkit
+        tag: 0.11.2
+        pullPolicy: IfNotPresent
+  script: |
+    /usr/local/bin/ug-exploit login exploit-demo --target totally-secure-unguard.dynatrace.com && /usr/local/bin/ug-exploit cmd-inject-proxy --target totally-secure-unguard.dynatrace.com "whoami"
