@@ -6,7 +6,7 @@ import { PostProps } from '@/components/Post';
 import { ErrorCard } from '@/components/ErrorCard';
 
 interface TimelineProps {
-    posts: [];
+    posts: [] | undefined;
     isLoading: boolean;
     isError: boolean;
     error: Error | null;

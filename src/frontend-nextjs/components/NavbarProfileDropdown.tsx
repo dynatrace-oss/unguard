@@ -7,6 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { ROUTES } from '@/enums/routes';
 import { useJwtPayload } from '@/hooks/useJwtPayload';
+import { QUERY_KEYS } from '@/enums/queryKeys';
 
 async function logout() {
     return await fetch('/ui/api/auth/logout', {
@@ -23,7 +24,7 @@ export default function NavbarProfileDropdown() {
     function handleLogout(res: Response) {
         if (res.ok) {
             queryClient
-                .invalidateQueries({ queryKey: ['isLoggedIn'] })
+                .invalidateQueries({ queryKey: [QUERY_KEYS.isLoggedIn] })
                 .then(() => router.push(ROUTES.login))
                 .then(() => addToast({ title: 'Logout successful', description: 'Goodbye!' }));
         }
