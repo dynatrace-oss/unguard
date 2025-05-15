@@ -53,7 +53,7 @@ export function CreatePost() {
         createNewPost(data).then((postId) => {
             queryClient
                 .invalidateQueries({ queryKey: [QUERY_KEYS.posts] })
-                .then(() => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.mytimeline] }))
+                .then(() => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.my_timeline] }))
                 .then(() => router.push(ROUTES.post + '?id=' + postId));
         });
 
