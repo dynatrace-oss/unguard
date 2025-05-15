@@ -9,5 +9,5 @@ export enum QUERY_KEYS {
     all_users = 'users-all',
     filtered_users = 'users-filtered',
     roles = 'roles',
-    mytimeline = 'mytimeline',
+    my_timeline = 'my-timeline',
 }

@@ -48,7 +48,7 @@ async function fetchPersonalTimeline() {
 
 export function usePersonalTimeline() {
     return useQuery({
-        queryKey: [QUERY_KEYS.mytimeline],
+        queryKey: [QUERY_KEYS.my_timeline],
         queryFn: () => fetchPersonalTimeline(),
     });
 }
