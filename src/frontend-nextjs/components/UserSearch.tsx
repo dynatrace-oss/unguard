@@ -32,7 +32,7 @@ export function UserSearch() {
     } = useUserList(params, QUERY_KEYS.filtered_users);
     const { data: roles } = useRoles();
     const queryClient = useQueryClient();
-    const [filteredRoles, setFilteredRoles] = useState(new Set<string>([]));
+    const [filteredRoles, setFilteredRoles] = useState<string[]>([]);
 
     if (userListIsLoading || filteredUserListIsLoading)
         return (
@@ -65,8 +65,8 @@ export function UserSearch() {
                             );
 
                             params.name = filters.filteredName;
-                            if (filteredRoles.size > 0) {
-                                params.roles = Array.from(filteredRoles);
+                            if (filteredRoles.length > 0) {
+                                params.roles = filteredRoles;
                             }
 
                             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.filtered_users] });
@@ -89,9 +89,7 @@ export function UserSearch() {
                             selectionMode='multiple'
                             onChange={(e) => {
                                 setFilteredRoles(
-                                    e.target.value.length > 0
-                                        ? new Set(e.target.value.split(','))
-                                        : new Set<string>([]),
+                                    e.target.value.length > 0 ? Array.from(e.target.value.split(',')) : [],
                                 );
                             }}
                         >
