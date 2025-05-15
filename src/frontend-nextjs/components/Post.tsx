@@ -3,6 +3,8 @@ import path from 'path';
 
 import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link, Image } from '@heroui/react';
 import { BsHandThumbsUp } from 'react-icons/bs';
+import { addBasePath } from 'next/dist/client/add-base-path';
+import { useCallback } from 'react';
 
 import { ROUTES } from '@/enums/routes';
 
@@ -19,6 +21,16 @@ export function Post(props: PostProps) {
         //TODO
     }
 
+    const navigateToUserProfile = useCallback(() => {
+        /*
+        Due to a currently unsolved bug in Next.js window.location.href has to be used instead of router.push() to ensure that the middleware is executed.
+        Otherwise, inconsistencies in the route restriction are possible.
+
+        https://github.com/vercel/next.js/issues/58025
+        */
+        window.location.href = addBasePath(path.join(ROUTES.user, props.username));
+    }, []);
+
     return (
         <div>
             <Card className='p-2'>
@@ -30,24 +42,14 @@ export function Post(props: PostProps) {
                             radius='full'
                             size='md'
                             src={`https://robohash.org/${props.username}.png?set=set1&size=35x35`}
-                            onClick={() => (window.location.href = path.join('/ui', ROUTES.user, props.username))}
+                            onClick={() => navigateToUserProfile()}
                         />
                         <div className='flex flex-col gap-1 items-start justify-center'>
                             <h4 className='text-medium font-semibold leading-none text-default-600'>
                                 <Link
                                     className='cursor-pointer'
                                     underline='hover'
-                                    onPress={() => {
-                                        {
-                                            /*
-                                            Due to a currently unsolved bug in Next.js window.location.href has to be used instead of router.push() to ensure that the middleware is executed.
-                                            Otherwise, inconsistencies in the route restriction are possible.
-
-                                            https://github.com/vercel/next.js/issues/58025
-                                            */
-                                        }
-                                        window.location.href = path.join('/ui', ROUTES.user, props.username);
-                                    }}
+                                    onPress={() => navigateToUserProfile()}
                                 >
                                     {props.username}
                                 </Link>
