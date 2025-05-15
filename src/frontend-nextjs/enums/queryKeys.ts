@@ -6,4 +6,5 @@ export enum QUERY_KEYS {
     posts = 'posts',
     bio = 'bio',
     post = 'post',
+    mytimeline = 'mytimeline',
 }
