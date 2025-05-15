@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { PROFILE_SERVICE } from '@/axios';
 import { fetchUserIdForUsername } from '@/services/userIdforUsername';
-
-async function fetchBio(userid: string): Promise<any> {
-    const res = await PROFILE_SERVICE.get(`/user/${userid}/bio`);
-
-    return res.data;
-}
+import { editBio, fetchBio } from '@/services/API/UserService';
 
 export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
     const { username } = await params;
@@ -28,25 +22,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
     }
 }
 
-async function editBio(userid: string, body: { bioText: string; enableMarkdown: boolean }) {
-    const res_user = await PROFILE_SERVICE.post(
-        `/user/${userid}/bio`,
-        {},
-        {
-            params: {
-                bioText: body.bioText,
-                enableMarkdown: Boolean(body.enableMarkdown),
-            },
-        },
-    );
-
-    if (res_user.status !== 200) {
-        throw new Error('Failed to edit bio of user ');
-    }
-
-    return res_user.data;
-}
-
 export async function POST(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
     const { username } = await params;
     const res_userid = await fetchUserIdForUsername(username);
@@ -54,5 +29,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ usernam
     const body = await req.json();
     const res_bio = await editBio(res_userid.userId, body);
 
-    return NextResponse.json(res_bio, { status: res_bio.status });
+    return NextResponse.json(res_bio);
 }
