@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
+import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
 
 async function fetchAllPosts() {
-    const res = await fetch('/ui/api/posts');
+    const res = await fetch(addBasePath('/api/posts'));
 
     if (!res.ok) {
         throw new Error('Failed to fetch posts');
@@ -20,7 +21,7 @@ export function useAllPosts() {
 }
 
 async function fetchPostsOfUser(username: string) {
-    const res = await fetch(`/ui/api/posts/${username}`);
+    const res = await fetch(addBasePath(`/api/posts/${username}`));
 
     if (!res.ok) {
         throw new Error('Failed to fetch posts for user ' + username);
@@ -37,7 +38,7 @@ export function usePostsOfUser(username: string) {
 }
 
 async function fetchPersonalTimeline() {
-    const res = await fetch('/ui/api/posts/mytimeline');
+    const res = await fetch(addBasePath('/api/posts/mytimeline'));
 
     if (!res.ok) {
         throw new Error('Failed to fetch personal timeline');

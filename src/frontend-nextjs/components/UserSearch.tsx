@@ -5,7 +5,6 @@ import {
     Button,
     Card,
     CardBody,
-    Form,
     Select,
     SelectItem,
     Spacer,
@@ -13,7 +12,7 @@ import {
 } from '@heroui/react';
 import { BsSearch } from 'react-icons/bs';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { ErrorCard } from '@/components/ErrorCard';
 import { useUserList } from '@/hooks/useUserList';
@@ -33,6 +32,16 @@ export function UserSearch() {
     const { data: roles } = useRoles();
     const queryClient = useQueryClient();
     const [filteredRoles, setFilteredRoles] = useState<string[]>([]);
+    const [filteredName, setFilteredName] = useState('');
+
+    const filterList = useCallback(() => {
+        params.name = filteredName;
+        if (filteredRoles.length > 0) {
+            params.roles = filteredRoles;
+        }
+
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.filtered_users] });
+    }, [filteredRoles, filteredName]);
 
     if (userListIsLoading || filteredUserListIsLoading)
         return (
@@ -54,51 +63,32 @@ export function UserSearch() {
     return (
         <div>
             <Card>
-                <CardBody>
-                    <Form
-                        className='flex flex-row gap-1'
-                        onSubmit={(e) => {
-                            e.preventDefault();
-
-                            const filters: { filteredName?: string; filteredRoles?: {} } = Object.fromEntries(
-                                new FormData(e.currentTarget),
-                            );
-
-                            params.name = filters.filteredName;
-                            if (filteredRoles.length > 0) {
-                                params.roles = filteredRoles;
-                            }
-
-                            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.filtered_users] });
+                <CardBody className='flex flex-row gap-1'>
+                    <Autocomplete
+                        allowsCustomValue
+                        defaultItems={userList}
+                        label='Search Users'
+                        name='filteredName'
+                        variant='bordered'
+                        onInputChange={(value) => setFilteredName(value)}
+                    >
+                        {(user: any) => <AutocompleteItem key={user.username}>{user.username}</AutocompleteItem>}
+                    </Autocomplete>
+                    <Select
+                        className='max-w-60'
+                        label='Roles'
+                        name='filteredRoles'
+                        placeholder='Filter roles'
+                        selectionMode='multiple'
+                        onChange={(e) => {
+                            setFilteredRoles(e.target.value.length > 0 ? e.target.value.split(',') : []);
                         }}
                     >
-                        <Autocomplete
-                            allowsCustomValue
-                            defaultItems={userList}
-                            label='Search Users'
-                            name='filteredName'
-                            variant='bordered'
-                        >
-                            {(user: any) => <AutocompleteItem key={user.username}>{user.username}</AutocompleteItem>}
-                        </Autocomplete>
-                        <Select
-                            className='max-w-60'
-                            label='Roles'
-                            name='filteredRoles'
-                            placeholder='Filter roles'
-                            selectionMode='multiple'
-                            onChange={(e) => {
-                                setFilteredRoles(
-                                    e.target.value.length > 0 ? Array.from(e.target.value.split(',')) : [],
-                                );
-                            }}
-                        >
-                            {roles?.map((role: any) => <SelectItem key={role.name}>{role.name}</SelectItem>)}
-                        </Select>
-                        <Button isIconOnly className='self-center' color='primary' type='submit'>
-                            <BsSearch />
-                        </Button>
-                    </Form>
+                        {roles?.map((role: any) => <SelectItem key={role.name}>{role.name}</SelectItem>)}
+                    </Select>
+                    <Button isIconOnly className='self-center' color='primary' onPress={() => filterList()}>
+                        <BsSearch />
+                    </Button>
                 </CardBody>
             </Card>
             <Spacer y={2} />
@@ -107,7 +97,7 @@ export function UserSearch() {
             ) : (
                 filteredUserList?.map((user: UserProps, index: number) => (
                     <div key={index}>
-                        <User roles={user.roles} username={user.username} />
+                        <User roles={user.roles} userid={user.userid} username={user.username} />
                         <Spacer y={2} />
                     </div>
                 ))
