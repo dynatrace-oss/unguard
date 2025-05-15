@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 
 import { languages } from '@/data/languages';
 import { ROUTES } from '@/enums/routes';
+import { QUERY_KEYS } from '@/enums/queryKeys';
 
 interface Post {
     content?: string;
@@ -51,7 +52,8 @@ export function CreatePost() {
 
         createNewPost(data).then((postId) => {
             queryClient
-                .invalidateQueries({ queryKey: ['posts'] })
+                .invalidateQueries({ queryKey: [QUERY_KEYS.posts] })
+                .then(() => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.mytimeline] }))
                 .then(() => router.push(ROUTES.post + '?id=' + postId));
         });
 
