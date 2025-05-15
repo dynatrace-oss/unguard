@@ -2,15 +2,16 @@
 import path from 'path';
 
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, User, addToast } from '@heroui/react';
-import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
+import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { ROUTES } from '@/enums/routes';
 import { useJwtPayload } from '@/hooks/useJwtPayload';
 import { QUERY_KEYS } from '@/enums/queryKeys';
+import { useNavigation } from '@/hooks/useNavigation';
 
 async function logout() {
-    return await fetch('/ui/api/auth/logout', {
+    return await fetch(addBasePath('/api/auth/logout'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
     });
@@ -18,14 +19,14 @@ async function logout() {
 
 export default function NavbarProfileDropdown() {
     const { data: jwt_payload } = useJwtPayload();
-    const router = useRouter();
+    const navigation = useNavigation();
     const queryClient = useQueryClient();
 
     function handleLogout(res: Response) {
         if (res.ok) {
             queryClient
                 .invalidateQueries({ queryKey: [QUERY_KEYS.isLoggedIn] })
-                .then(() => router.push(ROUTES.login))
+                .then(() => navigation.useNavigateToLoginRegister())
                 .then(() => addToast({ title: 'Logout successful', description: 'Goodbye!' }));
         }
     }
