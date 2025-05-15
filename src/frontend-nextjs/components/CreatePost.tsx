@@ -16,11 +16,11 @@ import {
 } from '@heroui/react';
 import { FormEvent, useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { languages } from '@/data/languages';
-import { ROUTES } from '@/enums/routes';
 import { QUERY_KEYS } from '@/enums/queryKeys';
+import { useNavigation } from '@/hooks/useNavigation';
 
 interface Post {
     content?: string;
@@ -30,7 +30,7 @@ interface Post {
 }
 
 async function createNewPost(data: Post) {
-    const res = await fetch('/ui/api/post', {
+    const res = await fetch(addBasePath('/api/post'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -41,7 +41,7 @@ async function createNewPost(data: Post) {
 export function CreatePost() {
     const [selectedPostType, setSelectedPostType] = useState('text');
     const queryClient = useQueryClient();
-    const router = useRouter();
+    const navigation = useNavigation();
 
     const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -54,7 +54,7 @@ export function CreatePost() {
             queryClient
                 .invalidateQueries({ queryKey: [QUERY_KEYS.posts] })
                 .then(() => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.my_timeline] }))
-                .then(() => router.push(ROUTES.post + '?id=' + postId));
+                .then(() => navigation.useNavigateToPost(postId));
         });
 
         e.currentTarget?.reset();

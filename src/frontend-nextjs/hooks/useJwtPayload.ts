@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
+import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
 
 async function fetchJwtPayload() {
-    const res = await fetch('/ui/api/auth/jwt-payload', { method: 'GET' });
+    const res = await fetch(addBasePath('/api/auth/jwt-payload'), { method: 'GET' });
 
     if (!res.ok) {
         throw new Error('Failed to fetch JWT');
