@@ -1,19 +1,9 @@
 import { NextResponse } from 'next/server';
 
-import { MICROBLOG_API } from '@/axios';
-
-async function fetchPosts(): Promise<any> {
-    const res = await MICROBLOG_API.get('/timeline');
-
-    if (res.status !== 200) {
-        throw new Error('Failed to fetch Posts from Microblog-Service');
-    }
-
-    return res.data;
-}
+import { fetchAllPosts } from '@/services/API/PostService';
 
 export async function GET(): Promise<NextResponse> {
-    const posts = await fetchPosts();
+    const posts = await fetchAllPosts();
 
-    return NextResponse.json(posts, { status: 200 });
+    return NextResponse.json(posts);
 }

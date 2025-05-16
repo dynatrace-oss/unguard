@@ -1,13 +1,14 @@
 'use client';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image } from '@heroui/react';
 import { usePathname } from 'next/navigation';
+import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { ROUTES } from '@/enums/routes';
 import { useCheckLogin } from '@/hooks/useCheckLogin';
 import NavbarProfileDropdown from '@/components/NavbarProfileDropdown';
 
 export function UnguardLogo() {
-    return <Image alt='Unguard Logo' height='32' src='/ui/unguard_logo.svg' width='32' />;
+    return <Image alt='Unguard Logo' height='32' src={addBasePath('/unguard_logo.svg')} width='32' />;
 }
 
 export function NavigationBar() {

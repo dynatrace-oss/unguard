@@ -31,3 +31,10 @@ export const MEMBERSHIP_SERVICE_API = createAxiosInstance(
 export const PROXY = createAxiosInstance('http://' + process.env.PROXY_SERVICE_ADDRESS, {
     'Content-Type': 'application/json',
 });
+
+export const STATUS_SERVICE_API = createAxiosInstance(
+    'http://' + process.env.STATUS_SERVICE_ADDRESS + process.env.STATUS_SERVICE_BASE_PATH,
+    {
+        'Content-Type': 'application/json',
+    },
+);

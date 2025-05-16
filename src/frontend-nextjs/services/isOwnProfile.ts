@@ -1,9 +1,13 @@
 import { cookies } from 'next/headers';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
-import { CustomPayLoad } from '@/app/api/auth/jwt-payload/route';
+export interface CustomPayLoad extends JwtPayload {
+    username: string;
+    userid: string;
+    roles: string[];
+}
 
-export async function isOwnProfile(username: string) {
+export async function isOwnProfile(username: string): Promise<boolean> {
     const cookieStore = await cookies();
 
     if (cookieStore.has('jwt')) {

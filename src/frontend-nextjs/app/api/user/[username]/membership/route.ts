@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { MEMBERSHIP_SERVICE_API } from '@/axios';
 import { fetchUserIdForUsername } from '@/services/userIdforUsername';
-
-async function fetchMembership(userid: string): Promise<any> {
-    const res = await MEMBERSHIP_SERVICE_API.get(`/${userid}`);
-
-    return res.data;
-}
+import { fetchMembership } from '@/services/API/UserService';
 
 export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
     const { username } = await params;

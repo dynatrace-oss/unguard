@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
 import { NextResponse } from 'next/server';
 
-export async function isLoggedIn() {
+export async function isLoggedIn(): Promise<NextResponse<boolean>> {
     const cookieStore = await cookies();
 
     if (cookieStore.has('jwt')) {
@@ -13,9 +13,11 @@ export async function isLoggedIn() {
                 jwtDecode(jwt);
 
                 return NextResponse.json(true);
-            } catch (e) {
+            } catch {
                 return NextResponse.json(false);
             }
         }
     }
+
+    return NextResponse.json(false);
 }

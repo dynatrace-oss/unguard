@@ -1,13 +1,8 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
-import { JwtPayload } from 'jwt-decode';
 
-export interface CustomPayLoad extends JwtPayload {
-    username: string;
-    userid: string;
-    roles: string[];
-}
+import { CustomPayLoad } from '@/services/isOwnProfile';
 
 export async function GET(): Promise<NextResponse> {
     const cookieStore = await cookies();
