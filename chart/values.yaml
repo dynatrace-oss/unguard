@@ -505,4 +505,4 @@ exploit_toolkit:
         tag: 0.11.2
         pullPolicy: IfNotPresent
   script: |
-    /usr/local/bin/ug-exploit login exploit-demo --target totally-secure-unguard.dynatrace.com && /usr/local/bin/ug-exploit cmd-inject-proxy --target totally-secure-unguard.dynatrace.com "whoami"
+    /usr/local/bin/ug-exploit login exploit --target totally-secure-unguard.dynatrace.com && /usr/local/bin/ug-exploit cmd-inject-proxy --target totally-secure-unguard.dynatrace.com "whoami"
