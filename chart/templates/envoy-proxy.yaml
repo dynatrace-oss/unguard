@@ -14,52 +14,54 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */}}
 
+{{- if eq .Values.unguard.enabled true }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-{{ .Values.envoyProxy.name }}
+  name: unguard-{{ .Values.unguard.envoyProxy.name }}
   labels:
-    app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
+    app.kubernetes.io/name: {{ .Values.unguard.envoyProxy.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   {{ if .Values.aws.enabled }}
   type: NodePort
   {{ else }}
-  type: {{ .Values.envoyProxy.service.type }}
+  type: {{ .Values.unguard.envoyProxy.service.type }}
   {{ end }}
   selector:
-    app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
+    app.kubernetes.io/name: {{ .Values.unguard.envoyProxy.name }}
     app.kubernetes.io/part-of: unguard
   ports:
- {{- .Values.envoyProxy.service.ports | toYaml | nindent 4 }}
+ {{- .Values.unguard.envoyProxy.service.ports | toYaml | nindent 4 }}
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-{{ .Values.envoyProxy.name }}
+  name: unguard-{{ .Values.unguard.envoyProxy.name }}
   labels:
-    app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
+    app.kubernetes.io/name: {{ .Values.unguard.envoyProxy.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
+      app.kubernetes.io/name: {{ .Values.unguard.envoyProxy.name }}
       app.kubernetes.io/part-of: unguard
   strategy:
-    type: {{ .Values.envoyProxy.deployment.strategy.type }}
+    type: {{ .Values.unguard.envoyProxy.deployment.strategy.type }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ .Values.envoyProxy.name }}
+        app.kubernetes.io/name: {{ .Values.unguard.envoyProxy.name }}
         app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
-        - name: {{ .Values.envoyProxy.name }}
-          image: {{ .Values.envoyProxy.deployment.container.image.repository }}:{{ .Values.envoyProxy.deployment.container.image.tag }}
-          imagePullPolicy: {{ .Values.envoyProxy.deployment.container.image.pullPolicy }}
+        - name: {{ .Values.unguard.envoyProxy.name }}
+          image: {{ .Values.unguard.envoyProxy.deployment.container.image.repository }}:{{ .Values.unguard.envoyProxy.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.unguard.envoyProxy.deployment.container.image.pullPolicy }}
           ports:
-            {{- .Values.envoyProxy.deployment.container.ports | toYaml | nindent 12 }}
+            {{- .Values.unguard.envoyProxy.deployment.container.ports | toYaml | nindent 12 }}
+{{- end }}

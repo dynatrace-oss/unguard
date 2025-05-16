@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */}}
+
+{{- if eq .Values.unguard.enabled true }}
 {{- if or .Values.localDev.enabled .Values.aws.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -55,4 +57,5 @@ spec:
                 name: unguard-envoy-proxy
                 port:
                   number: 8080
+{{ end }}
 {{ end }}
