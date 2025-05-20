@@ -1,5 +1,7 @@
 'use client';
 
+import path from 'path';
+
 import {
     Autocomplete,
     AutocompleteItem,
@@ -16,11 +18,11 @@ import {
 } from '@heroui/react';
 import { FormEvent, useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { languages } from '@/data/languages';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { useNavigation } from '@/hooks/useNavigation';
+import { BASE_PATH } from '@/constants';
 
 interface Post {
     content?: string;
@@ -30,7 +32,7 @@ interface Post {
 }
 
 async function createNewPost(data: Post) {
-    const res = await fetch(addBasePath('/api/post'), {
+    const res = await fetch(path.join(BASE_PATH, '/api/post'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -41,7 +43,7 @@ async function createNewPost(data: Post) {
 export function CreatePost() {
     const [selectedPostType, setSelectedPostType] = useState('text');
     const queryClient = useQueryClient();
-    const navigation = useNavigation();
+    const { navigateToPost } = useNavigation();
 
     const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -54,7 +56,7 @@ export function CreatePost() {
             queryClient
                 .invalidateQueries({ queryKey: [QUERY_KEYS.posts] })
                 .then(() => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.my_timeline] }))
-                .then(() => navigation.useNavigateToPost(postId));
+                .then(() => navigateToPost(postId));
         });
 
         e.currentTarget?.reset();

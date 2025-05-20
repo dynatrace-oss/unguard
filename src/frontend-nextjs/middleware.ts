@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtDecode } from 'jwt-decode';
-import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { ROUTES } from '@/enums/routes';
+import { BASE_PATH } from '@/constants';
 
 const protectedRoutes = [ROUTES.users, ROUTES.mytimeline, ROUTES.post];
 
@@ -13,7 +13,7 @@ export function middleware(req: NextRequest) {
         protectedRoutes.includes(<ROUTES>req.nextUrl.pathname) || req.nextUrl.pathname.startsWith('/user/');
 
     if (!jwt && isProtected) {
-        return NextResponse.redirect(new URL(addBasePath('/login'), req.url));
+        return NextResponse.redirect(new URL(BASE_PATH + '/login', req.url));
     }
 
     if (jwt) {
@@ -22,7 +22,7 @@ export function middleware(req: NextRequest) {
         } catch {
             req.cookies.delete('jwt');
 
-            return NextResponse.redirect(new URL(addBasePath('/login'), req.url));
+            return NextResponse.redirect(new URL(BASE_PATH + '/login', req.url));
         }
     }
 

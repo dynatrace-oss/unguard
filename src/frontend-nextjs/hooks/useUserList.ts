@@ -1,8 +1,11 @@
+import path from 'path';
+
 import { useQuery } from '@tanstack/react-query';
-import { addBasePath } from 'next/dist/client/add-base-path';
+
+import { BASE_PATH } from '@/constants';
 
 async function fetchUsers(params: {}) {
-    const res = await fetch(addBasePath('/api/users'), {
+    const res = await fetch(path.join(BASE_PATH, '/api/users'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params),

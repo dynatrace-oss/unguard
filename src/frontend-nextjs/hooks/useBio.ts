@@ -1,10 +1,12 @@
+import path from 'path';
+
 import { useQuery } from '@tanstack/react-query';
-import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
+import { BASE_PATH } from '@/constants';
 
 async function fetchBio(username: string) {
-    const res = await fetch(addBasePath(`/api/user/${username}/bio`));
+    const res = await fetch(path.join(BASE_PATH, `/api/user/${username}/bio`));
 
     if (!res.ok) {
         throw new Error('Failed to fetch user bio');
