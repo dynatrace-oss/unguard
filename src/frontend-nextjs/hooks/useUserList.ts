@@ -19,5 +19,6 @@ export function useUserList(params: any, queryKey: string) {
     return useQuery({
         queryKey: [queryKey],
         queryFn: () => fetchUsers(params),
+        throwOnError: true,
     });
 }

@@ -17,5 +17,6 @@ export function useCheckLogin() {
     return useQuery({
         queryKey: [QUERY_KEYS.isLoggedIn],
         queryFn: fetchIsLoggedIn,
+        throwOnError: true,
     });
 }

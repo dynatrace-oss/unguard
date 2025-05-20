@@ -17,6 +17,7 @@ export function useAllPosts() {
     return useQuery({
         queryKey: [QUERY_KEYS.posts],
         queryFn: () => fetchAllPosts(),
+        throwOnError: true,
     });
 }
 
@@ -34,6 +35,7 @@ export function usePostsOfUser(username: string) {
     return useQuery({
         queryKey: [QUERY_KEYS.posts, username],
         queryFn: () => fetchPostsOfUser(username),
+        throwOnError: true,
     });
 }
 
@@ -51,5 +53,6 @@ export function usePersonalTimeline() {
     return useQuery({
         queryKey: [QUERY_KEYS.my_timeline],
         queryFn: () => fetchPersonalTimeline(),
+        throwOnError: true,
     });
 }

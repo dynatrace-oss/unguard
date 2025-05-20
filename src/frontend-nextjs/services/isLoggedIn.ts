@@ -1,8 +1,7 @@
 import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
-import { NextResponse } from 'next/server';
 
-export async function isLoggedIn(): Promise<NextResponse<boolean>> {
+export async function isLoggedIn(): Promise<boolean> {
     const cookieStore = await cookies();
 
     if (cookieStore.has('jwt')) {
@@ -12,12 +11,12 @@ export async function isLoggedIn(): Promise<NextResponse<boolean>> {
             try {
                 jwtDecode(jwt);
 
-                return NextResponse.json(true);
+                return true;
             } catch {
-                return NextResponse.json(false);
+                return false;
             }
         }
     }
 
-    return NextResponse.json(false);
+    return false;
 }
