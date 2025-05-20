@@ -3,10 +3,10 @@ import path from 'path';
 
 import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link, Image } from '@heroui/react';
 import { BsHandThumbsUp } from 'react-icons/bs';
-import { addBasePath } from 'next/dist/client/add-base-path';
 import { useCallback } from 'react';
 
 import { ROUTES } from '@/enums/routes';
+import { BASE_PATH } from '@/constants';
 
 export interface PostProps {
     username: string;
@@ -28,7 +28,7 @@ export function Post(props: PostProps) {
 
         https://github.com/vercel/next.js/issues/58025
         */
-        window.location.href = addBasePath(path.join(ROUTES.user, props.username));
+        window.location.href = path.join(BASE_PATH, ROUTES.user, props.username);
     }, []);
 
     return (

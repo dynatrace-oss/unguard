@@ -1,10 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { addBasePath } from 'next/dist/client/add-base-path';
+import path from 'path';
 
+import { useQuery } from '@tanstack/react-query';
+
+import { BASE_PATH } from '@/constants';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 
 async function fetchAd() {
-    const res = await fetch(addBasePath('/api/ad'));
+    const res = await fetch(path.join(BASE_PATH, '/api/ad'));
 
     if (!res.ok) {
         throw new Error('Failed to fetch ad');

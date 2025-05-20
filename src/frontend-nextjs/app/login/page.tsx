@@ -1,11 +1,13 @@
 'use client';
+import path from 'path';
+
 import React, { useState } from 'react';
 import { Image, Button, Form, Input, Spacer, addToast } from '@heroui/react';
 import { useQueryClient } from '@tanstack/react-query';
-import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { useNavigation } from '@/hooks/useNavigation';
+import { BASE_PATH } from '@/constants';
 
 async function authenticateUser(path: string, data: {}): Promise<Response> {
     return await fetch(path, {
@@ -35,7 +37,7 @@ function getErrorMsg(code: number): string {
 export default function LoginRegister() {
     const [isLogin, setIsLogin] = useState(true); //if false, is register
     const [errorMsg, setErrorMsg] = useState('');
-    const navigation = useNavigation();
+    const { navigateToHomePage } = useNavigation();
     const queryClient = useQueryClient();
 
     function handleLogin(res: Response) {
@@ -44,9 +46,7 @@ export default function LoginRegister() {
             throw new Error('Error logging in');
         } else {
             setErrorMsg('');
-            queryClient
-                .invalidateQueries({ queryKey: [QUERY_KEYS.isLoggedIn] })
-                .then(() => navigation.useNavigateToHomePage());
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.isLoggedIn] }).then(() => navigateToHomePage());
         }
     }
 
@@ -56,7 +56,7 @@ export default function LoginRegister() {
             throw new Error('Error registering user');
         } else {
             setErrorMsg('');
-            authenticateUser(addBasePath('/api/auth/login'), data).then((res) => handleLogin(res));
+            authenticateUser(path.join(BASE_PATH, '/api/auth/login'), data).then((res) => handleLogin(res));
         }
     }
 
@@ -67,7 +67,7 @@ export default function LoginRegister() {
                 alt='Unguard Logo'
                 className='justify-content-center'
                 height='55'
-                src={addBasePath('/unguard_logo_black.svg')}
+                src={path.join(BASE_PATH, '/unguard_logo_black.svg')}
                 width='55'
             />
             <Spacer y={6} />
@@ -78,14 +78,14 @@ export default function LoginRegister() {
                     let data = Object.fromEntries(new FormData(e.currentTarget));
 
                     if (isLogin) {
-                        authenticateUser(addBasePath('/api/auth/login'), data)
+                        authenticateUser(path.join(BASE_PATH, '/api/auth/login'), data)
                             .then((res) => handleLogin(res))
                             .then(() => addToast({ title: 'Login successful', description: 'Welcome back!' }))
                             .catch(() => {
                                 addToast({ title: 'Login failed', description: 'Please try again!' });
                             });
                     } else {
-                        authenticateUser(addBasePath('/api/auth/register'), data)
+                        authenticateUser(path.join(BASE_PATH, '/api/auth/register'), data)
                             .then((res) => handleRegister(res, data))
                             .then(() => addToast({ title: 'Register successful', description: 'Welcome to Unguard!' }))
                             .catch(() => {
