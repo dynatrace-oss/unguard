@@ -34,15 +34,15 @@ export function ProfileHeader({ username, isOwnProfile }: ProfileHeaderProps) {
                     name={username}
                     src={`https://robohash.org/${username}.png?set=set1&size=150x150`}
                 />
-                <p className='text-2xl'>{username}</p>
-                <Button color={membership === 'PRO' ? 'primary' : 'default'} isDisabled={!isOwnProfile}>
-                    {membership}
-                </Button>
-                {!isOwnProfile && (
-                    <div className='pl-2'>
-                        <FollowButton />
+                <div className='flex-column gap-2 items-center pb-1'>
+                    <div className='flex flex-row gap-2 items-center pb-1'>
+                        <p className='text-3xl font-bold'>{username}</p>
+                        <Button color={membership === 'PRO' ? 'primary' : 'default'} isDisabled={!isOwnProfile}>
+                            {membership}
+                        </Button>
                     </div>
-                )}
+                    {!isOwnProfile && <FollowButton />}
+                </div>
             </div>
             <div
                 dangerouslySetInnerHTML={{ __html: bio }}

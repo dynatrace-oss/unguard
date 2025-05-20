@@ -17,5 +17,6 @@ export function useRoles() {
     return useQuery({
         queryKey: [QUERY_KEYS.roles],
         queryFn: () => fetchRoles(),
+        throwOnError: true,
     });
 }

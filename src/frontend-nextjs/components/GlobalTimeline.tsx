@@ -1,9 +1,20 @@
 'use client';
+import { ErrorBoundary } from 'react-error-boundary';
+
 import { useAllPosts } from '@/hooks/usePosts';
 import { Timeline } from '@/components/Timeline';
+import { ErrorCard } from '@/components/ErrorCard';
+
+export function GlobalTimelineComponent() {
+    const { data, isLoading } = useAllPosts();
+
+    return <Timeline isLoading={isLoading} posts={data} />;
+}
 
 export function GlobalTimeline() {
-    const { data, isLoading, isError, error } = useAllPosts();
-
-    return <Timeline error={error} isError={isError} isLoading={isLoading} posts={data} />;
+    return (
+        <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>
+            <GlobalTimelineComponent />
+        </ErrorBoundary>
+    );
 }

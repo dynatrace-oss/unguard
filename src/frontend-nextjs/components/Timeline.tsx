@@ -3,31 +3,19 @@ import { Card, Spacer, Spinner } from '@heroui/react';
 
 import { Post } from '@/components/Post';
 import { PostProps } from '@/components/Post';
-import { ErrorCard } from '@/components/ErrorCard';
 
 interface TimelineProps {
     posts: [] | undefined;
     isLoading: boolean;
-    isError: boolean;
-    error: Error | null;
 }
 
-export function Timeline({ posts, isLoading, isError, error }: TimelineProps) {
+export function Timeline({ posts, isLoading }: TimelineProps) {
     if (isLoading)
         return (
             <Card className='flex items-center justify-center min-h-20'>
                 <Spinner />
             </Card>
         );
-    if (isError) {
-        let errormessage = 'Error loading timeline';
-
-        if (error instanceof Error) {
-            errormessage = errormessage + ': ' + error.message;
-        }
-
-        return <ErrorCard message={errormessage} />;
-    }
 
     if (posts?.length === 0) {
         return <Card className='flex items-center justify-center font-bold'>Nothing to see here...</Card>;
