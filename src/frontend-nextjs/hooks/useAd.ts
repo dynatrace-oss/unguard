@@ -17,5 +17,6 @@ export function useAd() {
     return useQuery({
         queryKey: [QUERY_KEYS.ad],
         queryFn: fetchAd,
+        throwOnError: true,
     });
 }
