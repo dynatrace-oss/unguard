@@ -17,5 +17,6 @@ export function usePost(postId: string) {
     return useQuery({
         queryKey: [QUERY_KEYS.post, postId],
         queryFn: () => fetchSinglePost(postId),
+        throwOnError: true,
     });
 }

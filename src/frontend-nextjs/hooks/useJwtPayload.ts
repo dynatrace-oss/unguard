@@ -17,5 +17,6 @@ export function useJwtPayload() {
     return useQuery({
         queryKey: [QUERY_KEYS.jwtPayload],
         queryFn: fetchJwtPayload,
+        throwOnError: true,
     });
 }

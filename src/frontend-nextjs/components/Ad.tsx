@@ -1,13 +1,14 @@
 'use client';
 import { Card, Spinner } from '@heroui/react';
 import { useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { ErrorCard } from '@/components/ErrorCard';
 import { useAd } from '@/hooks/useAd';
 
-export function Ad() {
+function AdComponent() {
     const [hasError, setHasError] = useState(false);
-    const { data, isLoading, isError, error } = useAd();
+    const { data, isLoading } = useAd();
 
     if (isLoading)
         return (
@@ -17,15 +18,6 @@ export function Ad() {
                 </Card>
             </div>
         );
-    if (isError) {
-        let errormessage = 'Error loading ad';
-
-        if (error instanceof Error) {
-            errormessage = errormessage + ': ' + error.message + '!';
-        }
-
-        return <ErrorCard message={errormessage} />;
-    }
 
     return (
         <div className='sticky-top'>
@@ -41,5 +33,13 @@ export function Ad() {
                 />
             )}
         </div>
+    );
+}
+
+export function Ad() {
+    return (
+        <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>
+            <AdComponent />
+        </ErrorBoundary>
     );
 }

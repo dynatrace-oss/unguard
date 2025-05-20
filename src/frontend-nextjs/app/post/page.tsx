@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { BsArrowLeft } from 'react-icons/bs';
 import { Button, Card, Spinner } from '@heroui/react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { usePost } from '@/hooks/usePost';
 import { Post as PostComponent } from '@/components/Post';
@@ -13,7 +14,7 @@ function SinglePost() {
     const searchParams = useSearchParams();
 
     const postId = searchParams.get('id');
-    const { data: postData, isLoading, isError } = usePost(postId || '');
+    const { data: postData, isLoading } = usePost(postId || '');
 
     if (isLoading) {
         return (
@@ -21,10 +22,6 @@ function SinglePost() {
                 <Spinner />
             </Card>
         );
-    }
-
-    if (isError) {
-        return <ErrorCard message='Post does not exist!' />;
     }
 
     return (
@@ -51,7 +48,9 @@ export default function Post() {
                     <BsArrowLeft className='stroke-1' />
                 </Button>
                 <Suspense>
-                    <SinglePost />
+                    <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>
+                        <SinglePost />
+                    </ErrorBoundary>
                 </Suspense>
             </div>
         </div>
