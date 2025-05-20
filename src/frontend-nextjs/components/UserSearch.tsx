@@ -13,6 +13,7 @@ import {
 import { BsSearch } from 'react-icons/bs';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { ErrorCard } from '@/components/ErrorCard';
 import { useUserList } from '@/hooks/useUserList';
@@ -20,15 +21,13 @@ import { User, UserProps } from '@/components/User';
 import { useRoles } from '@/hooks/useRoles';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 
-export function UserSearch() {
+function UserSearchComponent() {
     const { data: userList, isLoading: userListIsLoading } = useUserList({}, QUERY_KEYS.all_users);
     const params: any = {};
-    const {
-        data: filteredUserList,
-        isLoading: filteredUserListIsLoading,
-        isError: filteredUserListIsError,
-        error: filteredUserListError,
-    } = useUserList(params, QUERY_KEYS.filtered_users);
+    const { data: filteredUserList, isLoading: filteredUserListIsLoading } = useUserList(
+        params,
+        QUERY_KEYS.filtered_users,
+    );
     const { data: roles } = useRoles();
     const queryClient = useQueryClient();
     const [filteredRoles, setFilteredRoles] = useState<string[]>([]);
@@ -49,16 +48,6 @@ export function UserSearch() {
                 <Spinner />
             </Card>
         );
-
-    if (filteredUserListIsError) {
-        let errormessage = 'Error loading users';
-
-        if (filteredUserListError instanceof Error) {
-            errormessage = errormessage + ': ' + filteredUserListError.message;
-        }
-
-        return <ErrorCard message={errormessage} />;
-    }
 
     return (
         <div>
@@ -103,5 +92,13 @@ export function UserSearch() {
                 ))
             )}
         </div>
+    );
+}
+
+export function UserSearch() {
+    return (
+        <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>
+            <UserSearchComponent />
+        </ErrorBoundary>
     );
 }

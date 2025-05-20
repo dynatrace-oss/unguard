@@ -15,5 +15,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 }
 
 export async function GET(): Promise<NextResponse<boolean>> {
-    return isLoggedIn();
+    const loginStatus = await isLoggedIn();
+
+    return NextResponse.json(loginStatus);
 }

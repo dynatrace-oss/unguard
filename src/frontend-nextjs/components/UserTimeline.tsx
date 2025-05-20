@@ -1,13 +1,24 @@
 'use client';
+import { ErrorBoundary } from 'react-error-boundary';
+
 import { usePostsOfUser } from '@/hooks/usePosts';
 import { Timeline } from '@/components/Timeline';
+import { ErrorCard } from '@/components/ErrorCard';
 
 interface UserTimelineProps {
     username: string;
 }
 
-export function UserTimeline({ username }: UserTimelineProps) {
-    const { data, isLoading, isError, error } = usePostsOfUser(username);
+function UserTimelineComponent({ username }: UserTimelineProps) {
+    const { data, isLoading } = usePostsOfUser(username);
 
-    return <Timeline error={error} isError={isError} isLoading={isLoading} posts={data} />;
+    return <Timeline isLoading={isLoading} posts={data} />;
+}
+
+export function UserTimeline({ username }: UserTimelineProps) {
+    return (
+        <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>
+            <UserTimelineComponent username={username} />
+        </ErrorBoundary>
+    );
 }
