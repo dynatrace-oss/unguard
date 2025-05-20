@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
 
-import { CustomPayLoad } from '@/services/isOwnProfile';
+import { type CustomPayLoad } from '@/services/LocalUserService';
 
 export async function GET(): Promise<NextResponse> {
     const cookieStore = await cookies();

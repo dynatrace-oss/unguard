@@ -1,10 +1,12 @@
+import path from 'path';
+
 import { useQuery } from '@tanstack/react-query';
-import { addBasePath } from 'next/dist/client/add-base-path';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
+import { BASE_PATH } from '@/constants';
 
 async function fetchSinglePost(postId: string) {
-    const res = await fetch(addBasePath(`/api/post/${postId}`));
+    const res = await fetch(path.join(BASE_PATH, `/api/post/${postId}`));
 
     if (!res.ok) {
         throw new Error('Failed to fetch post with id ' + postId);
