@@ -3,7 +3,7 @@ import { Spacer } from '@heroui/react';
 import { BioEditor } from '@/components/BioEditor';
 import { ProfileHeader } from '@/components/ProfileHeader';
 import { UserTimeline } from '@/components/UserTimeline';
-import { isOwnProfile as checkIsOwnProfile } from '@/services/isOwnProfile';
+import { isOwnProfile as checkIsOwnProfile } from '@/services/LocalUserService';
 
 interface UserProfileRouteParams {
     username: string;

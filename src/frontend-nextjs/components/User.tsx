@@ -11,7 +11,7 @@ export interface UserProps {
 }
 
 export function User(props: UserProps) {
-    const navigation = useNavigation();
+    const { navigateToUserProfile } = useNavigation();
 
     return (
         <div>
@@ -24,14 +24,14 @@ export function User(props: UserProps) {
                             radius='full'
                             size='md'
                             src={`https://robohash.org/${props.username}.png?set=set1&size=35x35`}
-                            onClick={() => navigation.useNavigateToUserProfile(props.username)}
+                            onClick={() => navigateToUserProfile(props.username)}
                         />
                         <div className='flex flex-col gap-1 items-start justify-center'>
                             <h4 className='text-medium font-semibold leading-none text-default-600'>
                                 <Link
                                     className='cursor-pointer'
                                     underline='hover'
-                                    onPress={() => navigation.useNavigateToUserProfile(props.username)}
+                                    onPress={() => navigateToUserProfile(props.username)}
                                 >
                                     {props.username}
                                 </Link>
