@@ -98,6 +98,7 @@ helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --versio
 | `tracing.enabled`                | Activates tracing in services                                             | `false`           |
 | `maliciousLoadGenerator.enabled` | Deploys the malicious load generator                                      | `false`           |
 | `mariaDB.serviceName`            | Expected release-name of the MariaDB installation by Unguard              | `unguard-mariadb` |
+| `exploit_toolkit.enabled`        | Deploys the exploit-toolkit                                               | `false`           |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
@@ -162,9 +163,13 @@ To also install Jaeger tracing follow the [TRACING](../docs/TRACING.md#jaeger-in
 helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard -f ./chart/tracing.yaml
 ```
 
+## Exploit Toolkit
+
+The ug-exploit binary also known as Exploit Toolkit can be deployed as a container as well. If `exploit_toolkit.enabled` is set to `true` a Kubernetes CronJob will be created that executes a set of exploit attempts according to its configuration. The `exploit_toolkit.script` parameter allows to control the contents of a shell script that is executed after the container has started. See the `values.yaml` file for available configuration parameters.
+
 ## License
 
-Copyright 2023 Dynatrace LLC
+Copyright 2025 Dynatrace LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
