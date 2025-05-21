@@ -13,76 +13,79 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */}}
+
+{{- if eq .Values.unguard.enabled true }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: unguard-{{ .Values.likeService.name }}
+  name: unguard-{{ .Values.unguard.likeService.name }}
   labels:
-    app.kubernetes.io/name: {{ .Values.likeService.name }}
+    app.kubernetes.io/name: {{ .Values.unguard.likeService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
-  type: {{ .Values.likeService.service.type }}
+  type: {{ .Values.unguard.likeService.service.type }}
   selector:
-    app.kubernetes.io/name: {{ .Values.likeService.name }}
+    app.kubernetes.io/name: {{ .Values.unguard.likeService.name }}
     app.kubernetes.io/part-of: unguard
   ports:
- {{- .Values.likeService.service.ports | toYaml | nindent 4 }}
+ {{- .Values.unguard.likeService.service.ports | toYaml | nindent 4 }}
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unguard-{{ .Values.likeService.name }}
+  name: unguard-{{ .Values.unguard.likeService.name }}
   labels:
-    app.kubernetes.io/name: {{ .Values.likeService.name }}
+    app.kubernetes.io/name: {{ .Values.unguard.likeService.name }}
     app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ .Values.likeService.name }}
+      app.kubernetes.io/name: {{ .Values.unguard.likeService.name }}
       app.kubernetes.io/part-of: unguard
   strategy:
-    type: {{ .Values.likeService.deployment.strategy.type }}
+    type: {{ .Values.unguard.likeService.deployment.strategy.type }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ .Values.likeService.name }}
+        app.kubernetes.io/name: {{ .Values.unguard.likeService.name }}
         app.kubernetes.io/part-of: unguard
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       containers:
-        - name: {{ .Values.likeService.name }}
-          image: {{ .Values.likeService.deployment.container.image.repository }}:{{ .Values.likeService.deployment.container.image.tag }}
-          imagePullPolicy: {{ .Values.likeService.deployment.container.image.pullPolicy }}
+        - name: {{ .Values.unguard.likeService.name }}
+          image: {{ .Values.unguard.likeService.deployment.container.image.repository }}:{{ .Values.unguard.likeService.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.unguard.likeService.deployment.container.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.likeService.deployment.container.ports.containerPort }}
+            - containerPort: {{ .Values.unguard.likeService.deployment.container.ports.containerPort }}
           env:
             - name: SERVER_PORT
-              value: {{ quote .Values.likeService.deployment.container.env.SERVER_PORT }}
+              value: {{ quote .Values.unguard.likeService.deployment.container.env.SERVER_PORT }}
             - name: API_PATH
-              value: {{ quote .Values.likeService.deployment.container.env.API_PATH }}
+              value: {{ quote .Values.unguard.likeService.deployment.container.env.API_PATH }}
             - name: USER_AUTH_SERVICE_ADDRESS
-              value: {{ quote .Values.likeService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
+              value: {{ quote .Values.unguard.likeService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
             - name: DB_HOST
-              value: {{ tpl .Values.likeService.deployment.container.env.DB_HOST . }}
+              value: {{ tpl .Values.unguard.likeService.deployment.container.env.DB_HOST . }}
             - name: DB_PORT
-              value: {{ tpl .Values.likeService.deployment.container.env.DB_PORT . | quote }}
+              value: {{ tpl .Values.unguard.likeService.deployment.container.env.DB_PORT . | quote }}
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ tpl .Values.likeService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name . }}
-                  key: {{ tpl .Values.likeService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key . }}
+                  name: {{ tpl .Values.unguard.likeService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.name . }}
+                  key: {{ tpl .Values.unguard.likeService.deployment.container.env.MARIADB_PASSWORD.secretKeyRef.key . }}
             - name: JAEGER_SERVICE_NAME
-              value: {{ quote (printf "unguard-%s" .Values.likeService.name) }}
+              value: {{ quote (printf "unguard-%s" .Values.unguard.likeService.name) }}
             {{ if .Values.tracing.enabled }}
             - name: JAEGER_COLLECTOR_HOST
-              value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.likeService.deployment.container.env.JAEGER_COLLECTOR_HOST) }}
+              value: {{ quote (printf "%s-%s" .Values.jaeger.name .Values.unguard.likeService.deployment.container.env.JAEGER_COLLECTOR_HOST) }}
             - name: JAEGER_PORT
-              value: {{ quote .Values.likeService.deployment.container.env.JAEGER_PORT }}
+              value: {{ quote .Values.unguard.likeService.deployment.container.env.JAEGER_PORT }}
             - name: SERVICE_NAME
-              value: {{ quote .Values.likeService.deployment.container.env.SERVICE_NAME }}
+              value: {{ quote .Values.unguard.likeService.deployment.container.env.SERVICE_NAME }}
             - name: JAEGER_DISABLED
-              value: {{ quote .Values.likeService.deployment.container.env.JAEGER_DISABLED }}
+              value: {{ quote .Values.unguard.likeService.deployment.container.env.JAEGER_DISABLED }}
             {{ end }}
+{{ end }}
