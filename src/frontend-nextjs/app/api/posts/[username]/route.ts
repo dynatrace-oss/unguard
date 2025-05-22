@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { fetchPostsForUser } from '@/services/API/PostService';
+import { fetchPostsForUser } from '@/services/api/PostService';
 
 export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
     const { username } = await params;

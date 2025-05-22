@@ -1,25 +1,26 @@
 'use client';
 import path from 'path';
 
-import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Link, Image } from '@heroui/react';
-import { BsHandThumbsUp } from 'react-icons/bs';
+import { Card, CardHeader, CardBody, CardFooter, Avatar, Link, Image } from '@heroui/react';
 import { useCallback } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { ROUTES } from '@/enums/routes';
 import { BASE_PATH } from '@/constants';
+import { useCheckLogin } from '@/hooks/useCheckLogin';
+import { LikeButton } from '@/components/LikeButton';
+import { ErrorCard } from '@/components/ErrorCard';
 
 export interface PostProps {
     username: string;
     timestamp: string;
     body: string;
-    likes: number;
     imageUrl?: string;
+    postId: string;
 }
 
 export function Post(props: PostProps) {
-    function like() {
-        //TODO
-    }
+    const { data: isLoggedIn } = useCheckLogin();
 
     const navigateToUserProfile = useCallback(() => {
         /*
@@ -69,12 +70,13 @@ export function Post(props: PostProps) {
                     <p>{props.body}</p>
                 </CardBody>
                 <CardFooter className='gap-3 justify-end px-3'>
-                    <div className='flex gap-1'>
-                        <Button className=' text-default-600 bg-transparent' onPress={like}>
-                            <p>{props.likes}</p>
-                            <BsHandThumbsUp />
-                        </Button>
-                    </div>
+                    {isLoggedIn && (
+                        <div className='flex gap-1'>
+                            <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>
+                                <LikeButton postId={props.postId} />
+                            </ErrorBoundary>
+                        </div>
+                    )}
                 </CardFooter>
             </Card>
         </div>
