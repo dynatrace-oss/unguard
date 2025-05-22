@@ -33,8 +33,12 @@ export const PROXY = createAxiosInstance('http://' + process.env.PROXY_SERVICE_A
 });
 
 export const STATUS_SERVICE_API = createAxiosInstance(
-    'http://' + process.env.STATUS_SERVICE_ADDRESS + process.env.STATUS_SERVICE_BASE_PATH,
+    path.join('http://', process.env.STATUS_SERVICE_ADDRESS || '', process.env.STATUS_SERVICE_BASE_PATH || ''),
     {
         'Content-Type': 'application/json',
     },
 );
+
+export const LIKE_SERVICE_API = createAxiosInstance(path.join('http://', process.env.LIKE_SERVICE_ADDRES || ''), {
+    'Content-Type': 'application/json',
+});
