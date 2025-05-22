@@ -29,7 +29,7 @@ function SinglePost() {
             <PostComponent
                 body={postData?.body}
                 imageUrl={postData?.imageUrl}
-                likes={postData?.likes}
+                postId={postData?.postId}
                 timestamp={postData?.timestamp}
                 username={postData?.username}
             />

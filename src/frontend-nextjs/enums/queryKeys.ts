@@ -10,4 +10,5 @@ export enum QUERY_KEYS {
     filtered_users = 'users-filtered',
     roles = 'roles',
     my_timeline = 'my-timeline',
+    likes = 'likes',
 }
