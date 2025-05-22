@@ -28,7 +28,7 @@ export function Timeline({ posts, isLoading }: TimelineProps) {
                     <Post
                         body={post.body}
                         imageUrl={post.imageUrl}
-                        likes={post.likes}
+                        postId={post.postId}
                         timestamp={post.timestamp}
                         username={post.username}
                     />

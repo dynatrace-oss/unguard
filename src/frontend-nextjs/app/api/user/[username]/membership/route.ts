@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { fetchUserIdForUsername } from '@/services/userIdforUsername';
-import { fetchMembership } from '@/services/API/UserService';
+import { fetchUserIdForUsername } from '@/services/api/AuthService';
+import { fetchMembership } from '@/services/api/UserService';
 
 export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
     const { username } = await params;

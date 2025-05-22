@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { loginUser } from '@/services/API/AuthService';
+import { loginUser } from '@/services/api/AuthService';
 import { isLoggedIn } from '@/services/LocalUserService';
 
 export async function POST(request: Request): Promise<NextResponse> {
