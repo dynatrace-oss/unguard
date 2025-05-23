@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardBody, Avatar, Link } from '@heroui/react';
+import { Card, CardBody, Avatar } from '@heroui/react';
 
 import { useNavigation } from '@/hooks/useNavigation';
 
@@ -15,7 +15,11 @@ export function User(props: UserProps) {
 
     return (
         <div>
-            <Card className='p-2'>
+            <Card
+                isPressable
+                className='p-1 cursor-pointer hover:bg-gray-100 w-full'
+                onPress={() => navigateToUserProfile(props.username)}
+            >
                 <CardBody className='className=justify-between'>
                     <div className='flex gap-5'>
                         <Avatar
@@ -24,18 +28,9 @@ export function User(props: UserProps) {
                             radius='full'
                             size='md'
                             src={`https://robohash.org/${props.username}.png?set=set1&size=35x35`}
-                            onClick={() => navigateToUserProfile(props.username)}
                         />
                         <div className='flex flex-col gap-1 items-start justify-center'>
-                            <h4 className='text-medium font-semibold leading-none text-default-600'>
-                                <Link
-                                    className='cursor-pointer'
-                                    underline='hover'
-                                    onPress={() => navigateToUserProfile(props.username)}
-                                >
-                                    {props.username}
-                                </Link>
-                            </h4>
+                            <h4 className='text-medium font-semibold leading-none text-primary'>{props.username}</h4>
                             <h5 className='text-small tracking-tight text-default-400'>{props.roles.toString()}</h5>
                         </div>
                     </div>

@@ -239,6 +239,30 @@ public class RedisClient {
         }
     }
 
+    public void unfollow(String currentUserId, String userId) {
+        Long followedRemovedSuccess;
+        Long followerRemovedSuccess;
+        try (Jedis jedis = jedisPool.getResource()) {
+            followedRemovedSuccess = jedis.zrem(
+                    getCombinedKey(FOLLOWED_KEY_PREFIX, currentUserId),
+                    userId);
+            followerRemovedSuccess = jedis.zrem(
+                    getCombinedKey(FOLLOWERS_KEY_PREFIX, userId),
+                    currentUserId);
+        } catch (Exception e) {
+            logger.error("Could not get User id for username", e);
+            throw new RuntimeException("Could not get User id for username");
+        }
+
+        if (followedRemovedSuccess == 1 && followerRemovedSuccess == 1) {
+            logger.info("User with id {} unfollowed user with id {}", currentUserId, userId);
+        } else if (followedRemovedSuccess == 0 && followerRemovedSuccess == 0) {
+            logger.info("User with id {} was not following user with id {}", currentUserId, userId);
+        } else {
+            logger.error("Inconsistent database state for followed/following.");
+        }
+    }
+
     public Collection<User> getFollowers(String userId) {
         Set<User> followers;
         try (Jedis jedis = jedisPool.getResource()) {
@@ -258,6 +282,15 @@ public class RedisClient {
             throw new RuntimeException("Could not get followers from redis");
         }
         return followers;
+    }
+
+    public boolean isFollowing(String userId, String otherUserId) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.zscore(getCombinedKey(FOLLOWED_KEY_PREFIX, userId), otherUserId) != null;
+        } catch (Exception e) {
+            logger.error("Could not check if user is following", e);
+            throw new RuntimeException("Could not check if user is following");
+        }
     }
 
     // UNUSED CURRENTLY

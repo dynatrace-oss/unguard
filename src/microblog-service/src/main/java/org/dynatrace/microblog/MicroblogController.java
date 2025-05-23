@@ -118,6 +118,22 @@ public class MicroblogController {
         redisClient.follow(currentUserId, userIdToFollow);
     }
 
+    @PostMapping("/users/{user}/unfollow")
+    public void unfollow(@CookieValue(value = "jwt", required = false) String currentUserJwt,
+                         @PathVariable("user") String userToUnfollow) throws InvalidJwtException, InvalidUserException, UserNotFoundException, IOException, NotLoggedInException {
+
+        checkJwt(currentUserJwt);
+
+        Claims claims = JwtTokensUtils.decodeTokenClaims(currentUserJwt);
+
+        String currentUserId = claims.get("userid").toString();
+        String userIdToUnfollow = userAuthServiceClient.getUserIdFromUsername(userToUnfollow);
+        if (userIdToUnfollow == null) {
+            throw new InvalidUserException();
+        }
+        redisClient.unfollow(currentUserId, userIdToUnfollow);
+    }
+
     @GetMapping("/users/{user}/posts")
     public List<Post> getUserPosts(@PathVariable("user") String user,
                                    @RequestParam(defaultValue = "10") String limit, @CookieValue(value = "jwt", required = false) String jwt) throws UserNotFoundException, InvalidJwtException, IOException {
@@ -133,6 +149,19 @@ public class MicroblogController {
 
         String userId = userAuthServiceClient.getUserIdFromUsername(user);
         return redisClient.getFollowers(userId);
+    }
+
+    @GetMapping("/users/{user}/isFollowing")
+    public boolean isFollowing(@PathVariable("user") String user, @CookieValue(value = "jwt", required = false) String jwt) throws UserNotFoundException, InvalidJwtException, IOException, NotLoggedInException {
+        checkJwt(jwt);
+
+        Claims claims = JwtTokensUtils.decodeTokenClaims(jwt);
+        String currentUserId = claims.get("userid").toString();
+        String userIdToFollow = userAuthServiceClient.getUserIdFromUsername(user);
+        if (userIdToFollow == null) {
+            throw new UserNotFoundException();
+        }
+        return redisClient.isFollowing(currentUserId, userIdToFollow);
     }
 
     @PostMapping("/post")
