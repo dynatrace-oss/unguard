@@ -29,3 +29,13 @@ export async function loginUser(user: { username: string; password: string }): P
             return error.response;
         });
 }
+
+export async function fetchUserIdForUsername(username: string): Promise<{ userId: string }> {
+    const res = await USER_AUTH_API.post('/user/useridForName', { username: username });
+
+    if (res.status !== 200) {
+        throw new Error('Failed to resolve UserID from Username');
+    }
+
+    return res.data;
+}

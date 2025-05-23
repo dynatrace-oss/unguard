@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { fetchPostById } from '@/services/api/PostService';
+import { fetchLikes } from '@/services/api/LikeService';
 
 export async function GET(req: Request, { params }: { params: Promise<{ postId: string }> }): Promise<NextResponse> {
     const { postId } = await params;
-    const posts = await fetchPostById(postId);
+    const res = await fetchLikes(postId);
 
-    return NextResponse.json(posts);
+    return NextResponse.json(res.data);
 }

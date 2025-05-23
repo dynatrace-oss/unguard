@@ -1,7 +1,5 @@
 'use client';
 
-import path from 'path';
-
 import {
     Autocomplete,
     AutocompleteItem,
@@ -22,24 +20,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { languages } from '@/data/languages';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { useNavigation } from '@/hooks/useNavigation';
-import { BASE_PATH } from '@/constants';
+import { createNewPost, Post } from '@/services/PostService';
 
-interface Post {
-    content?: string;
-    url?: string;
-    imageUrl?: string;
-    language?: string;
-}
-
-async function createNewPost(data: Post) {
-    const res = await fetch(path.join(BASE_PATH, '/api/post'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-    });
-
-    return res.json();
-}
 export function CreatePost() {
     const [selectedPostType, setSelectedPostType] = useState('text');
     const queryClient = useQueryClient();

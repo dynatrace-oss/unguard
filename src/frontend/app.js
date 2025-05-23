@@ -65,7 +65,7 @@ frontendLogger.info("FRONTEND_BASE_PATH is set to " + process.env.FRONTEND_BASE_
 frontendLogger.info("AD_SERVICE_BASE_PATH is set to " + process.env.AD_SERVICE_BASE_PATH);
 frontendLogger.info("STATUS_SERVICE_BASE_PATH is set to " + process.env.STATUS_SERVICE_BASE_PATH);
 frontendLogger.info("PROFILE_SERVICE_ADDRESS is set to " + process.env.PROFILE_SERVICE_ADDRESS);
-frontendLogger.info("LIKE_SERVICE_ADDRESS is set to " + process.env.LIKE_SERVICE_ADDRES);
+frontendLogger.info("LIKE_SERVICE_ADDRESS is set to " + process.env.LIKE_SERVICE_ADDRESS);
 frontendLogger.info("PAYMENT_SERVICE_ADDRESS is set to " + process.env.PAYMENT_SERVICE_ADDRESS);
 
 let app = express();
@@ -148,7 +148,7 @@ app.use((req, res, next) => {
     const MEMBERSHIP_SERVICE_API = createAxiosInstance(req, "http://" + process.env.MEMBERSHIP_SERVICE_ADDRESS + process.env.MEMBERSHIP_SERVICE_BASE_PATH, membershipServiceApiLogger, cookieHeader)
     const PROFILE_SERVICE_API = createAxiosInstance(req, "http://" + process.env.PROFILE_SERVICE_ADDRESS, profileServiceLogger);
     const STATUS_SERVICE_API = createAxiosInstance(req, "http://" + process.env.STATUS_SERVICE_ADDRESS + process.env.STATUS_SERVICE_BASE_PATH, statusServiceApiLogger);
-    const LIKE_SERVICE_API = createAxiosInstance(req, "http://" + process.env.LIKE_SERVICE_ADDRES, likeServiceLogger, cookieHeader);
+    const LIKE_SERVICE_API = createAxiosInstance(req, "http://" + process.env.LIKE_SERVICE_ADDRESS, likeServiceLogger, cookieHeader);
     const PAYMENT_SERVICE_API = createAxiosInstance(req, "http://" + process.env.PAYMENT_SERVICE_ADDRESS, paymentServiceLogger, cookieHeader);
 
     applyTracingInterceptors(MICROBLOG_API, {span: req.span});

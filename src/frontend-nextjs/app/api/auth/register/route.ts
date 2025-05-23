@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { registerUser } from '@/services/API/AuthService';
+import { registerUser } from '@/services/api/AuthService';
 
 export async function POST(request: Request): Promise<NextResponse> {
     const body = await request.json();
