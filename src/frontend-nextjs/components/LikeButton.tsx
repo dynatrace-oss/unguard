@@ -4,7 +4,6 @@ import { BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
 import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { useCheckLogin } from '@/hooks/useCheckLogin';
 import { useLikes } from '@/hooks/useLikes';
 import { likePost, unlikePost } from '@/services/LikeService';
 import { QUERY_KEYS } from '@/enums/queryKeys';
@@ -14,13 +13,11 @@ export interface LikeButtonProps {
 }
 
 export function LikeButton(props: LikeButtonProps) {
-    const isLoggedIn = useCheckLogin();
     const queryClient = useQueryClient();
-    const { data: likes, isLoading } = useLikes(props.postId);
-    const isLiked = likes?.likedPosts.some((like: any) => like.postId === props.postId);
+    const { data: postLikesData, isLoading } = useLikes(props.postId);
 
     const handleLikeButtonClick = useCallback(() => {
-        if (isLiked) {
+        if (postLikesData?.isLikedByUser) {
             unlikePost(props.postId).then(() => {
                 queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.likes, props.postId] });
             });
@@ -29,28 +26,16 @@ export function LikeButton(props: LikeButtonProps) {
                 queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.likes, props.postId] }),
             );
         }
-    }, [isLiked]);
+    }, [postLikesData?.isLikedByUser]);
 
     if (isLoading) {
         return <Spinner />;
     }
 
-    let numOfLikes;
-
-    if (likes?.likeCounts.length > 0) {
-        numOfLikes = likes?.likeCounts[0].likeCount;
-    } else {
-        numOfLikes = 0;
-    }
-
     return (
-        <Button
-            className=' text-default-600 bg-transparent'
-            isDisabled={!isLoggedIn}
-            onPress={() => handleLikeButtonClick()}
-        >
-            <p>{numOfLikes}</p>
-            {isLiked ? <BsHandThumbsUpFill /> : <BsHandThumbsUp />}
+        <Button className=' text-default-600 bg-transparent' onPress={() => handleLikeButtonClick()}>
+            <p>{postLikesData?.likesCount}</p>
+            {postLikesData?.isLikedByUser ? <BsHandThumbsUpFill /> : <BsHandThumbsUp />}
         </Button>
     );
 }

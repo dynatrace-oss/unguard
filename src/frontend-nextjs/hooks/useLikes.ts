@@ -12,7 +12,12 @@ async function fetchLikes(postId: string) {
         throw new Error('Failed to fetch likes');
     }
 
-    return res.json();
+    const data = await res.json();
+
+    const likesCount = data?.likeCounts?.[0]?.likeCount ?? 0;
+    const isLikedByUser = data?.likedPosts?.some((likedPost: any) => likedPost.postId === postId) ?? false;
+
+    return { likesCount, isLikedByUser };
 }
 
 export function useLikes(postId: string) {
