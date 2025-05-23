@@ -11,4 +11,6 @@ export enum QUERY_KEYS {
     roles = 'roles',
     my_timeline = 'my-timeline',
     likes = 'likes',
+    follow_status = 'follow-status',
+    followers = 'followers',
 }
