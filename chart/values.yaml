@@ -484,7 +484,7 @@ frontend:
         STATUS_SERVICE_ADDRESS: unguard-status-service
         MEMBERSHIP_SERVICE_ADDRESS: unguard-membership-service
         PROFILE_SERVICE_ADDRESS: unguard-profile-service
-        LIKE_SERVICE_ADDRES: unguard-like-service
+        LIKE_SERVICE_ADDRESS: unguard-like-service
         PAYMENT_SERVICE_ADDRESS: unguard-payment-service
         FRONTEND_BASE_PATH: /ui
         AD_SERVICE_BASE_PATH: /ad-service

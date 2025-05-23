@@ -39,6 +39,6 @@ export const STATUS_SERVICE_API = createAxiosInstance(
     },
 );
 
-export const LIKE_SERVICE_API = createAxiosInstance(path.join('http://', process.env.LIKE_SERVICE_ADDRES || ''), {
+export const LIKE_SERVICE_API = createAxiosInstance(path.join('http://', process.env.LIKE_SERVICE_ADDRESS || ''), {
     'Content-Type': 'application/json',
 });
