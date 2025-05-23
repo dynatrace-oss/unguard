@@ -74,8 +74,8 @@ spec:
               value: {{ quote .Values.frontend.deployment.container.env.MEMBERSHIP_SERVICE_ADDRESS }}
             - name: PROFILE_SERVICE_ADDRESS
               value: {{ quote .Values.frontend.deployment.container.env.PROFILE_SERVICE_ADDRESS }}
-            - name: LIKE_SERVICE_ADDRES
-              value: {{ quote .Values.frontend.deployment.container.env.LIKE_SERVICE_ADDRES }}
+            - name: LIKE_SERVICE_ADDRESS
+              value: {{ quote .Values.frontend.deployment.container.env.LIKE_SERVICE_ADDRESS }}
             - name: PAYMENT_SERVICE_ADDRESS
               value: {{ quote .Values.frontend.deployment.container.env.PAYMENT_SERVICE_ADDRESS }}
             - name: FRONTEND_BASE_PATH
