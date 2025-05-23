@@ -47,6 +47,8 @@ export function CreatePost() {
                 const selectedLanguage = languages.find((language) => language.label === label);
 
                 return selectedLanguage ? selectedLanguage.key : label;
+            } else {
+                return '';
             }
         },
         [languages],
@@ -86,7 +88,6 @@ export function CreatePost() {
                                     label='URL'
                                     name='url'
                                     placeholder='Enter URL...'
-                                    type='url'
                                 />
                                 <Autocomplete
                                     allowsCustomValue
