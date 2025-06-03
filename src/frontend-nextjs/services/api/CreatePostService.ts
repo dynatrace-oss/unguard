@@ -1,10 +1,10 @@
 import { cookies } from 'next/headers';
 import * as cheerio from 'cheerio';
 
-import { MICROBLOG_API, PROXY } from '@/axios';
+import { getMicroblogApi, getProxy } from '@/axios';
 
 async function fetchMetadataFromProxy(body: any): Promise<[metaTitle: string, metaImgSrc: string | undefined]> {
-    const res_proxy = await PROXY.get('/', {
+    const res_proxy = await getProxy().get('/', {
         params: {
             header: body.language,
             url: body.url,
@@ -36,7 +36,7 @@ async function fetchMetadataFromProxy(body: any): Promise<[metaTitle: string, me
 
 async function handleUrlPost(body: any, jwt?: string): Promise<{ postId: string }> {
     const [metaTitle, metaImgSrc] = await fetchMetadataFromProxy(body);
-    const res = await MICROBLOG_API.post(
+    const res = await getMicroblogApi().post(
         '/post',
         {
             content: `${metaTitle} ${body.url}`,
@@ -53,12 +53,12 @@ async function handleUrlPost(body: any, jwt?: string): Promise<{ postId: string 
 }
 
 async function handleImagePost(body: any, jwt?: string): Promise<{ postId: string }> {
-    const res_proxy = await PROXY.get('/image', {
+    const res_proxy = await getProxy().get('/image', {
         params: {
             url: body.imageUrl,
         },
     });
-    const res = await MICROBLOG_API.post(
+    const res = await getMicroblogApi().post(
         '/post',
         {
             content: body.content,
@@ -71,7 +71,7 @@ async function handleImagePost(body: any, jwt?: string): Promise<{ postId: strin
 }
 
 async function handleContentPost(body: any, jwt?: string): Promise<{ postId: string }> {
-    const res = await MICROBLOG_API.post(
+    const res = await getMicroblogApi().post(
         '/post',
         {
             content: body.content,

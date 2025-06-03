@@ -1,12 +1,18 @@
-import { USER_AUTH_API } from '@/axios';
+import { getUserAuthApi } from '@/axios';
 
-export async function registerUser(user: { username: string; password: string }): Promise<any> {
-    return await USER_AUTH_API.get('/user/register', {
-        params: {
-            username: user.username,
-            password: user.password,
-        },
-    })
+type UserCredentials = {
+    username: string;
+    password: string;
+};
+
+export async function registerUser(user: UserCredentials): Promise<any> {
+    return await getUserAuthApi()
+        .get('/user/register', {
+            params: {
+                username: user.username,
+                password: user.password,
+            },
+        })
         .then((response) => {
             return response;
         })
@@ -15,13 +21,14 @@ export async function registerUser(user: { username: string; password: string })
         });
 }
 
-export async function loginUser(user: { username: string; password: string }): Promise<any> {
-    return await USER_AUTH_API.get('/user/login', {
-        params: {
-            username: user.username,
-            password: user.password,
-        },
-    })
+export async function loginUser(user: UserCredentials): Promise<any> {
+    return await getUserAuthApi()
+        .get('/user/login', {
+            params: {
+                username: user.username,
+                password: user.password,
+            },
+        })
         .then((response) => {
             return response;
         })
@@ -30,12 +37,12 @@ export async function loginUser(user: { username: string; password: string }): P
         });
 }
 
-export async function fetchUserIdForUsername(username: string): Promise<{ userId: string }> {
-    const res = await USER_AUTH_API.post('/user/useridForName', { username: username });
+export async function fetchUserIdForUsername(username: string): Promise<string> {
+    const res = await getUserAuthApi().post('/user/useridForName', { username: username });
 
     if (res.status !== 200) {
         throw new Error('Failed to resolve UserID from Username');
     }
 
-    return res.data;
+    return res.data.userId;
 }
