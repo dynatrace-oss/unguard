@@ -26,13 +26,15 @@ function SinglePost() {
 
     return (
         <div className='w-full'>
-            <PostComponent
-                body={postData?.body}
-                imageUrl={postData?.imageUrl}
-                postId={postData?.postId}
-                timestamp={postData?.timestamp}
-                username={postData?.username}
-            />
+            {postData && (
+                <PostComponent
+                    body={postData?.body}
+                    imageUrl={postData?.imageUrl}
+                    postId={postData?.postId}
+                    timestamp={postData?.timestamp}
+                    username={postData?.username}
+                />
+            )}
         </div>
     );
 }

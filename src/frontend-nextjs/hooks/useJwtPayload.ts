@@ -4,8 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { BASE_PATH } from '@/constants';
+import { CustomPayLoad } from '@/services/LocalUserService';
 
-async function fetchJwtPayload() {
+async function fetchJwtPayload(): Promise<CustomPayLoad> {
     const res = await fetch(path.join(BASE_PATH, '/api/auth/jwt-payload'), { method: 'GET' });
 
     if (!res.ok) {

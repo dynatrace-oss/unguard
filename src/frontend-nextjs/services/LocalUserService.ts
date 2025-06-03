@@ -44,3 +44,23 @@ export async function isLoggedIn(): Promise<boolean> {
 
     return false;
 }
+
+export async function getUsernameFromJwt(): Promise<string | undefined> {
+    const cookieStore = await cookies();
+
+    if (cookieStore.has('jwt')) {
+        const jwt = cookieStore.get('jwt')?.value;
+
+        if (jwt) {
+            try {
+                const decodedPayload = jwtDecode<CustomPayLoad>(jwt);
+
+                return decodedPayload.username;
+            } catch {
+                return undefined;
+            }
+        }
+    }
+
+    return undefined;
+}

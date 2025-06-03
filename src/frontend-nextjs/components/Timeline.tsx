@@ -5,7 +5,7 @@ import { Post } from '@/components/Post';
 import { PostProps } from '@/components/Post';
 
 interface TimelineProps {
-    posts: [] | undefined;
+    posts: PostProps[] | undefined;
     isLoading: boolean;
 }
 

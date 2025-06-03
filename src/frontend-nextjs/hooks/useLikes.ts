@@ -5,7 +5,12 @@ import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { BASE_PATH } from '@/constants';
 
-async function fetchLikes(postId: string) {
+type LikeData = {
+    likesCount: number;
+    isLikedByUser: boolean;
+};
+
+async function fetchLikes(postId: string): Promise<LikeData> {
     const res = await fetch(path.join(BASE_PATH, '/api/likes/', postId));
 
     if (!res.ok) {

@@ -63,18 +63,20 @@ function UserSearchComponent() {
                     >
                         {(user: any) => <AutocompleteItem key={user.username}>{user.username}</AutocompleteItem>}
                     </Autocomplete>
-                    <Select
-                        className='max-w-60'
-                        label='Roles'
-                        name='filteredRoles'
-                        placeholder='Filter roles'
-                        selectionMode='multiple'
-                        onChange={(e) => {
-                            setFilteredRoles(e.target.value.length > 0 ? e.target.value.split(',') : []);
-                        }}
-                    >
-                        {roles?.map((role: any) => <SelectItem key={role.name}>{role.name}</SelectItem>)}
-                    </Select>
+                    {roles && (
+                        <Select
+                            className='max-w-60'
+                            label='Roles'
+                            name='filteredRoles'
+                            placeholder='Filter roles'
+                            selectionMode='multiple'
+                            onChange={(e) => {
+                                setFilteredRoles(e.target.value.length > 0 ? e.target.value.split(',') : []);
+                            }}
+                        >
+                            {roles?.map((role: any) => <SelectItem key={role.name}>{role.name}</SelectItem>)}
+                        </Select>
+                    )}
                     <Button isIconOnly className='self-center' color='primary' onPress={() => filterList()}>
                         <BsSearch />
                     </Button>
@@ -86,7 +88,7 @@ function UserSearchComponent() {
             ) : (
                 filteredUserList?.map((user: UserProps, index: number) => (
                     <div key={index}>
-                        <User roles={user.roles} userid={user.userid} username={user.username} />
+                        <User roles={user.roles} userId={user.userId} username={user.username} />
                         <Spacer y={2} />
                     </div>
                 ))
