@@ -9,36 +9,92 @@ function createAxiosInstance(baseURL: string, headers: Object) {
     });
 }
 
-export const MICROBLOG_API = createAxiosInstance(path.join('http://', process.env.MICROBLOG_SERVICE_ADDRESS || ''), {
-    'Content-Type': 'application/json',
-});
+function requireEnv(name: string): string {
+    const value = process.env[name];
 
-export const USER_AUTH_API = createAxiosInstance(path.join('http://', process.env.USER_AUTH_SERVICE_ADDRESS || ''), {
-    'Content-Type': 'application/json',
-});
+    if (!value) {
+        throw new Error(`Environment variable ${name} is required but not defined`);
+    }
 
-export const PROFILE_SERVICE = createAxiosInstance(path.join('http://', process.env.PROFILE_SERVICE_ADDRESS || ''), {
-    'Content-Type': 'application/json',
-});
+    return value;
+}
 
-export const MEMBERSHIP_SERVICE_API = createAxiosInstance(
-    path.join('http://', process.env.MEMBERSHIP_SERVICE_ADDRESS || '', process.env.MEMBERSHIP_SERVICE_BASE_PATH || ''),
-    {
-        'Content-Type': 'application/json',
-    },
-);
+let microblogApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
+let userAuthApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
+let profileServiceInstance: ReturnType<typeof createAxiosInstance> | undefined;
+let membershipServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
+let proxyInstance: ReturnType<typeof createAxiosInstance> | undefined;
+let statusServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
+let likeServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
 
-export const PROXY = createAxiosInstance('http://' + process.env.PROXY_SERVICE_ADDRESS, {
-    'Content-Type': 'application/json',
-});
+export function getMicroblogApi() {
+    if (!microblogApiInstance) {
+        microblogApiInstance = createAxiosInstance(path.join('http://', requireEnv('MICROBLOG_SERVICE_ADDRESS')), {
+            'Content-Type': 'application/json',
+        });
+    }
 
-export const STATUS_SERVICE_API = createAxiosInstance(
-    path.join('http://', process.env.STATUS_SERVICE_ADDRESS || '', process.env.STATUS_SERVICE_BASE_PATH || ''),
-    {
-        'Content-Type': 'application/json',
-    },
-);
+    return microblogApiInstance;
+}
 
-export const LIKE_SERVICE_API = createAxiosInstance(path.join('http://', process.env.LIKE_SERVICE_ADDRESS || ''), {
-    'Content-Type': 'application/json',
-});
+export function getUserAuthApi() {
+    if (!userAuthApiInstance) {
+        userAuthApiInstance = createAxiosInstance(path.join('http://', requireEnv('USER_AUTH_SERVICE_ADDRESS')), {
+            'Content-Type': 'application/json',
+        });
+    }
+
+    return userAuthApiInstance;
+}
+
+export function getProfileService() {
+    if (!profileServiceInstance) {
+        profileServiceInstance = createAxiosInstance(path.join('http://', requireEnv('PROFILE_SERVICE_ADDRESS')), {
+            'Content-Type': 'application/json',
+        });
+    }
+
+    return profileServiceInstance;
+}
+
+export function getMembershipServiceApi() {
+    if (!membershipServiceApiInstance) {
+        membershipServiceApiInstance = createAxiosInstance(
+            path.join('http://', requireEnv('MEMBERSHIP_SERVICE_ADDRESS'), requireEnv('MEMBERSHIP_SERVICE_BASE_PATH')),
+            { 'Content-Type': 'application/json' },
+        );
+    }
+
+    return membershipServiceApiInstance;
+}
+
+export function getProxy() {
+    if (!proxyInstance) {
+        proxyInstance = createAxiosInstance('http://' + requireEnv('PROXY_SERVICE_ADDRESS'), {
+            'Content-Type': 'application/json',
+        });
+    }
+
+    return proxyInstance;
+}
+
+export function getStatusServiceApi() {
+    if (!statusServiceApiInstance) {
+        statusServiceApiInstance = createAxiosInstance(
+            path.join('http://', requireEnv('STATUS_SERVICE_ADDRESS'), requireEnv('STATUS_SERVICE_BASE_PATH')),
+            { 'Content-Type': 'application/json' },
+        );
+    }
+
+    return statusServiceApiInstance;
+}
+
+export function getLikeServiceApi() {
+    if (!likeServiceApiInstance) {
+        likeServiceApiInstance = createAxiosInstance(path.join('http://', requireEnv('LIKE_SERVICE_ADDRESS')), {
+            'Content-Type': 'application/json',
+        });
+    }
+
+    return likeServiceApiInstance;
+}

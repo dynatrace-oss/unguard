@@ -2,29 +2,23 @@
 import { Button, Spinner } from '@heroui/react';
 import { BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
 import { useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 
 import { useLikes } from '@/hooks/useLikes';
-import { likePost, unlikePost } from '@/services/LikeService';
-import { QUERY_KEYS } from '@/enums/queryKeys';
+import { useLikeChange } from '@/hooks/useLikeChange';
 
 export interface LikeButtonProps {
     postId: string;
 }
 
 export function LikeButton(props: LikeButtonProps) {
-    const queryClient = useQueryClient();
     const { data: postLikesData, isLoading } = useLikes(props.postId);
+    const { likePost, unlikePost } = useLikeChange(props.postId);
 
     const handleLikeButtonClick = useCallback(() => {
         if (postLikesData?.isLikedByUser) {
-            unlikePost(props.postId).then(() => {
-                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.likes, props.postId] });
-            });
+            unlikePost();
         } else {
-            likePost(props.postId).then(() =>
-                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.likes, props.postId] }),
-            );
+            likePost();
         }
     }, [postLikesData?.isLikedByUser]);
 

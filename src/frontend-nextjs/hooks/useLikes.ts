@@ -14,8 +14,8 @@ async function fetchLikes(postId: string) {
 
     const data = await res.json();
 
-    const likesCount = data?.likeCounts?.[0]?.likeCount ?? 0;
-    const isLikedByUser = data?.likedPosts?.some((likedPost: any) => likedPost.postId === postId) ?? false;
+    const likesCount = data?.likeCounts[0]?.likeCount ?? 0;
+    const isLikedByUser = data?.likedPosts.some((likedPost: any) => likedPost.postId === postId) ?? false;
 
     return { likesCount, isLikedByUser };
 }
