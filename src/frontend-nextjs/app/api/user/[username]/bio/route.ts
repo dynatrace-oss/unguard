@@ -3,13 +3,17 @@ import { NextResponse } from 'next/server';
 import { fetchUserIdForUsername } from '@/services/api/AuthService';
 import { editBio, fetchBio } from '@/services/api/UserService';
 
-export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
+export type UserParams = {
+    username: string;
+};
+
+export async function GET(req: Request, { params }: { params: Promise<UserParams> }): Promise<NextResponse> {
     const { username } = await params;
 
-    const res_userid = await fetchUserIdForUsername(username);
+    const userId = await fetchUserIdForUsername(username);
 
     try {
-        const res_bio = await fetchBio(res_userid.userId);
+        const res_bio = await fetchBio(userId);
 
         return NextResponse.json(res_bio.bioText, { status: 200 });
     } catch (error: any) {
@@ -22,12 +26,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
     }
 }
 
-export async function POST(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
+export async function POST(req: Request, { params }: { params: Promise<UserParams> }): Promise<NextResponse> {
     const { username } = await params;
-    const res_userid = await fetchUserIdForUsername(username);
+    const userId = await fetchUserIdForUsername(username);
 
     const body = await req.json();
-    const res_bio = await editBio(res_userid.userId, body);
+    const res_bio = await editBio(userId, body);
 
     return NextResponse.json(res_bio);
 }
