@@ -4,8 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { BASE_PATH } from '@/constants';
+import { PostProps } from '@/components/Post';
 
-async function fetchSinglePost(postId: string) {
+async function fetchSinglePost(postId: string): Promise<PostProps> {
     const res = await fetch(path.join(BASE_PATH, `/api/post/${postId}`));
 
     if (!res.ok) {

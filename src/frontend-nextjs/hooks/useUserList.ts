@@ -4,7 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 
 import { BASE_PATH } from '@/constants';
 
-async function fetchUsers(params: {}) {
+type User = {
+    userId: string;
+    username: string;
+    roles: string[];
+};
+
+async function fetchUsers(params: {}): Promise<User[]> {
     const res = await fetch(path.join(BASE_PATH, '/api/users'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
