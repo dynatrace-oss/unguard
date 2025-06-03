@@ -35,10 +35,7 @@ export function CreatePost() {
         data.language = getLanguageKey(data.language);
 
         createNewPost(data).then((postId) => {
-            queryClient
-                .invalidateQueries({ queryKey: [QUERY_KEYS.posts] })
-                .then(() => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.my_timeline] }))
-                .then(() => navigateToPost(postId));
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.posts] }).then(() => navigateToPost(postId));
         });
 
         e.currentTarget?.reset();
