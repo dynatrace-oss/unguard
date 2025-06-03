@@ -13,4 +13,5 @@ export enum QUERY_KEYS {
     likes = 'likes',
     follow_status = 'follow-status',
     followers = 'followers',
+    payment_data = 'payment-data',
 }

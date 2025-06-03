@@ -11,7 +11,7 @@ export function FollowerList(props: FollowerListProps) {
                 ? 'No users found...'
                 : props.followers?.map((user: { userId: string; userName: string }, index: number) => (
                       <div key={index}>
-                          <User roles={[]} userid={user.userId} username={user.userName} />
+                          <User roles={[]} userId={user.userId} username={user.userName} />
                       </div>
                   ))}
         </div>

@@ -10,9 +10,10 @@ import { FollowersView } from '@/components/FollowersView';
 interface ProfileHeaderProps {
     username: string;
     isOwnProfile: boolean;
+    hideFollowers?: boolean;
 }
 
-export function ProfileHeader({ username, isOwnProfile }: ProfileHeaderProps) {
+export function ProfileHeader({ username, isOwnProfile, hideFollowers }: ProfileHeaderProps) {
     const { data: bio } = useBio(username);
     const { data: membership, isLoading, isError } = useMembership(username);
 
@@ -42,12 +43,12 @@ export function ProfileHeader({ username, isOwnProfile }: ProfileHeaderProps) {
                             {membership}
                         </Button>
                     </div>
-                    <FollowersView username={username} />
+                    {!hideFollowers && <FollowersView username={username} />}
                     {!isOwnProfile && <FollowButton username={username} />}
                 </div>
             </div>
             <div
-                dangerouslySetInnerHTML={{ __html: bio }}
+                dangerouslySetInnerHTML={{ __html: bio ? bio : '' }}
                 className='border-l-4 border-l-gray-500 text-gray-500 pl-2'
             />
         </div>

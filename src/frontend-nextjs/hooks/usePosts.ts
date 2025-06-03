@@ -4,8 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { BASE_PATH } from '@/constants';
+import { PostProps } from '@/components/Post';
 
-async function fetchAllPosts() {
+async function fetchAllPosts(): Promise<PostProps[]> {
     const res = await fetch(path.join(BASE_PATH, '/api/posts'));
 
     if (!res.ok) {
@@ -23,7 +24,7 @@ export function useAllPosts() {
     });
 }
 
-async function fetchPostsOfUser(username: string) {
+async function fetchPostsOfUser(username: string): Promise<PostProps[]> {
     const res = await fetch(path.join(BASE_PATH, `/api/posts/${username}`));
 
     if (!res.ok) {
@@ -41,7 +42,7 @@ export function usePostsOfUser(username: string) {
     });
 }
 
-async function fetchPersonalTimeline() {
+async function fetchPersonalTimeline(): Promise<PostProps[]> {
     const res = await fetch(path.join(BASE_PATH, '/api/posts/mytimeline'));
 
     if (!res.ok) {

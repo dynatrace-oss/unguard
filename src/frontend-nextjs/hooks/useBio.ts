@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { BASE_PATH } from '@/constants';
 
-async function fetchBio(username: string) {
+async function fetchBio(username: string): Promise<string> {
     const res = await fetch(path.join(BASE_PATH, `/api/user/${username}/bio`));
 
     if (!res.ok) {

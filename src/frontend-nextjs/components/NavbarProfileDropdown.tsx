@@ -49,7 +49,9 @@ export default function NavbarProfileDropdown() {
                     <DropdownItem key='profile' href={path.join(ROUTES.user, jwt_payload?.username || '')}>
                         Profile
                     </DropdownItem>
-                    <DropdownItem key='settings'>Payment Information</DropdownItem>
+                    <DropdownItem key='settings' href={ROUTES.payment}>
+                        Payment Information
+                    </DropdownItem>
                     <DropdownItem
                         key='logout'
                         color='primary'

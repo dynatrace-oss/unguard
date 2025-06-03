@@ -26,6 +26,7 @@ let membershipServiceApiInstance: ReturnType<typeof createAxiosInstance> | undef
 let proxyInstance: ReturnType<typeof createAxiosInstance> | undefined;
 let statusServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
 let likeServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
+let paymentServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
 
 export function getMicroblogApi() {
     if (!microblogApiInstance) {
@@ -97,4 +98,14 @@ export function getLikeServiceApi() {
     }
 
     return likeServiceApiInstance;
+}
+
+export function getPaymentServiceApi() {
+    if (!paymentServiceApiInstance) {
+        paymentServiceApiInstance = createAxiosInstance(path.join('http://', requireEnv('PAYMENT_SERVICE_ADDRESS')), {
+            'Content-Type': 'application/json',
+        });
+    }
+
+    return paymentServiceApiInstance;
 }

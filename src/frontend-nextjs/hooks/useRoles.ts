@@ -5,7 +5,11 @@ import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { BASE_PATH } from '@/constants';
 
-async function fetchRoles() {
+type Role = {
+    name: string;
+};
+
+async function fetchRoles(): Promise<Role[]> {
     const res = await fetch(path.join(BASE_PATH, '/api/roles'));
 
     if (!res.ok) {

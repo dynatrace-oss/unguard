@@ -7,7 +7,7 @@ import { useNavigation } from '@/hooks/useNavigation';
 export interface UserProps {
     username: string;
     roles: string[];
-    userid: string;
+    userId: string;
 }
 
 export function User(props: UserProps) {
