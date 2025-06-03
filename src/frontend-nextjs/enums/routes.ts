@@ -5,4 +5,5 @@ export enum ROUTES {
     mytimeline = '/mytimeline',
     post = '/post',
     user = '/user',
+    payment = '/payment',
 }
