@@ -1,18 +1,71 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Button, Card, CardBody, CardHeader } from '@heroui/react';
+import React, { FormEvent, useCallback, useEffect, useState } from 'react';
+import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Form, Spinner } from '@heroui/react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { MEMBERSHIP } from '@/enums/memberships';
 import { BlueCheckmarkIcon } from '@/components/BlueCheckmarkIcon';
+import { useMembership } from '@/hooks/useMembership';
+import { updateMembership } from '@/services/MembershipService';
 
-export function MembershipSelector() {
-    const currentMembership = 'FREE'; //TODO: get from API
+interface MembershipSelectorProps {
+    username: string;
+}
+
+export function MembershipSelector(props: MembershipSelectorProps) {
+    const { data: currentMembership, isLoading } = useMembership(props.username);
     const [isSelected, setIsSelected] = useState(currentMembership);
+    const queryClient = useQueryClient();
+    const [errorMsg, setErrorMsg] = useState('');
+
+    useEffect(() => {
+        setIsSelected(currentMembership);
+    }, [currentMembership]);
+
+    const handleSubmit = useCallback(
+        (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            if (isSelected && isSelected !== currentMembership) {
+                updateMembership({ membership: isSelected }, props.username).then((res) => {
+                    if (!res.ok) {
+                        res.json().then((data: any) => {
+                            const errorMessage = data.message?.toString() || 'Error updating membership plan';
+
+                            setErrorMsg(errorMessage);
+                            addToast({
+                                color: 'danger',
+                                title: 'Failed to update membership plan',
+                                description: errorMessage,
+                            });
+                        });
+                    } else {
+                        setErrorMsg('');
+                        queryClient.invalidateQueries({ queryKey: ['membership', props.username] }).then(() =>
+                            addToast({
+                                title: 'Updated Membership Successfully',
+                                description: `You're ${isSelected == MEMBERSHIP.FREE ? 'on free plan now!' : 'a Pro now!'}`,
+                                color: 'success',
+                            }),
+                        );
+                    }
+                });
+            }
+        },
+        [isSelected, currentMembership],
+    );
+
+    if (isLoading) {
+        return (
+            <Card className='flex items-center justify-center min-h-20 w-full'>
+                <Spinner />
+            </Card>
+        );
+    }
 
     return (
-        <div>
-            <Card className='p-8 items-center gap-2'>
+        <Form onSubmit={(e) => handleSubmit(e)}>
+            <Card className='p-8 items-center gap-2 w-full'>
                 <h1 className='text-3xl font-bold mb-8'>Membership Plans</h1>
                 <p className='mb-4'>Pick your desired new membership:</p>
                 <div className='flex flex-row gap-8 w-2/3'>
@@ -55,10 +108,18 @@ export function MembershipSelector() {
                 <p className='mt-4 mb-8'>
                     Your current membership state is <i>{currentMembership}</i>.
                 </p>
-                <Button className='font-semibold' color='primary'>
-                    Update Membership Plan
-                </Button>
+                <CardFooter className='flex flex-col gap-1'>
+                    {errorMsg.length > 0 && <p className='text-red-700 font-bold'>{errorMsg}</p>}
+                    <Button
+                        className='font-semibold'
+                        color='primary'
+                        isDisabled={currentMembership === isSelected}
+                        type='submit'
+                    >
+                        Update Membership Plan
+                    </Button>
+                </CardFooter>
             </Card>
-        </div>
+        </Form>
     );
 }

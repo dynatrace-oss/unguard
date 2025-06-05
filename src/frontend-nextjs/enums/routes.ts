@@ -6,4 +6,5 @@ export enum ROUTES {
     post = '/post',
     user = '/user',
     payment = '/payment',
+    membership_plans = '/membership-plans',
 }
