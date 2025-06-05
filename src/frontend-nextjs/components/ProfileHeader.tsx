@@ -5,6 +5,9 @@ import { useBio } from '@/hooks/useBio';
 import { useMembership } from '@/hooks/useMembership';
 import { FollowButton } from '@/components/FollowButton';
 import { ErrorCard } from '@/components/ErrorCard';
+import { BlueCheckmarkIcon } from '@/components/BlueCheckmarkIcon';
+import { MEMBERSHIP } from '@/enums/memberships';
+import { useNavigation } from '@/hooks/useNavigation';
 import { FollowersView } from '@/components/FollowersView';
 
 interface ProfileHeaderProps {
@@ -16,6 +19,7 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ username, isOwnProfile, hideFollowers }: ProfileHeaderProps) {
     const { data: bio } = useBio(username);
     const { data: membership, isLoading, isError } = useMembership(username);
+    const { navigateToMembershipPage } = useNavigation();
 
     if (isLoading)
         return (
@@ -39,8 +43,13 @@ export function ProfileHeader({ username, isOwnProfile, hideFollowers }: Profile
                 <div className='flex-column gap-2 items-center pb-1'>
                     <div className='flex flex-row gap-2 items-center pb-1'>
                         <p className='text-3xl font-bold'>{username}</p>
-                        <Button color={membership === 'PRO' ? 'primary' : 'default'} isDisabled={!isOwnProfile}>
-                            {membership}
+                        <Button
+                            className={`${membership === MEMBERSHIP.PRO ? 'bg-blue-500 text-white' : 'bg-default'}`}
+                            style={!isOwnProfile ? { pointerEvents: 'none' } : undefined}
+                            onPress={() => navigateToMembershipPage()}
+                        >
+                            <span>{membership}</span>
+                            {membership === MEMBERSHIP.PRO && <BlueCheckmarkIcon />}
                         </Button>
                     </div>
                     {!hideFollowers && <FollowersView username={username} />}

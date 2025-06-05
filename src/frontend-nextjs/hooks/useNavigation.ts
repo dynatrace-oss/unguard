@@ -31,6 +31,10 @@ export function useNavigation() {
         router.push(ROUTES.users);
     };
 
+    const navigateToMembershipPage = () => {
+        router.push(ROUTES.membership_plans);
+    };
+
     return {
         navigateToLoginRegister,
         navigateToUserProfile,
@@ -38,5 +42,6 @@ export function useNavigation() {
         navigateToHomePage,
         navigateToPersonalTimeline,
         navigateToUsersList,
+        navigateToMembershipPage,
     };
 }
