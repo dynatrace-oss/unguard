@@ -1,13 +1,9 @@
-import { cookies } from 'next/headers';
-
 import { getLikeServiceApi } from '@/axios';
+import { getJwtFromCookie } from '@/services/api/AuthService';
 
 export async function fetchLikes(postId: string): Promise<any> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
     return await getLikeServiceApi()
-        .get(`/like`, { params: { postId: postId }, headers: { Cookie: 'jwt=' + jwt } })
+        .get(`/like`, { params: { postId: postId }, headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) } })
         .then((response) => {
             return response;
         })
@@ -17,15 +13,12 @@ export async function fetchLikes(postId: string): Promise<any> {
 }
 
 export async function likePost(postId: string): Promise<any> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
     return await getLikeServiceApi()
         .post(
             `/like/${postId}`,
             {},
             {
-                headers: { Cookie: 'jwt=' + jwt },
+                headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) },
             },
         )
         .then((response) => {
@@ -37,13 +30,10 @@ export async function likePost(postId: string): Promise<any> {
 }
 
 export async function unlikePost(postId: string): Promise<any> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
     return await getLikeServiceApi()
         .delete(`/like`, {
             params: { postId: postId },
-            headers: { Cookie: 'jwt=' + jwt },
+            headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) },
         })
 
         .then((response) => {

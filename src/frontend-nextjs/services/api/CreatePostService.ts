@@ -1,7 +1,7 @@
-import { cookies } from 'next/headers';
 import * as cheerio from 'cheerio';
 
 import { getMicroblogApi, getProxy } from '@/axios';
+import { getJwtFromCookie } from '@/services/api/AuthService';
 
 async function fetchMetadataFromProxy(body: any): Promise<[metaTitle: string, metaImgSrc: string | undefined]> {
     const res_proxy = await getProxy().get('/', {
@@ -83,8 +83,7 @@ async function handleContentPost(body: any, jwt?: string): Promise<{ postId: str
 }
 
 export async function createNewPost(body: any): Promise<{ postId: string }> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
+    const jwt = await getJwtFromCookie();
 
     if (body.url) {
         return handleUrlPost(body, jwt);

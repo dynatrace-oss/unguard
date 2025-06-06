@@ -5,7 +5,7 @@ import { useBio } from '@/hooks/useBio';
 import { useMembership } from '@/hooks/useMembership';
 import { FollowButton } from '@/components/FollowButton';
 import { ErrorCard } from '@/components/ErrorCard';
-import { FollowerList } from '@/components/FollowerList';
+import { FollowersView } from '@/components/FollowersView';
 
 interface ProfileHeaderProps {
     username: string;
@@ -42,7 +42,7 @@ export function ProfileHeader({ username, isOwnProfile }: ProfileHeaderProps) {
                             {membership}
                         </Button>
                     </div>
-                    <FollowerList username={username} />
+                    <FollowersView username={username} />
                     {!isOwnProfile && <FollowButton username={username} />}
                 </div>
             </div>
