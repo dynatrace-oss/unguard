@@ -47,7 +47,7 @@ export function FollowButton(props: FollowButtonProps) {
             variant={isFollowed ? 'solid' : 'bordered'}
             onPress={() => handleFollowButtonClick()}
         >
-            {isFollowed ? 'Followed' : 'Follow'}
+            {isFollowed ? 'Unfollow' : 'Follow'}
         </Button>
     );
 }
