@@ -1,3 +1,5 @@
+import { cookies } from 'next/headers';
+
 import { getUserAuthApi } from '@/axios';
 
 type UserCredentials = {
@@ -45,4 +47,11 @@ export async function fetchUserIdForUsername(username: string): Promise<string> 
     }
 
     return res.data.userId;
+}
+
+export async function getJwtFromCookie(): Promise<string | undefined> {
+    const cookieStore = await cookies();
+    const jwt = cookieStore.get('jwt')?.value;
+
+    return jwt || undefined;
 }
