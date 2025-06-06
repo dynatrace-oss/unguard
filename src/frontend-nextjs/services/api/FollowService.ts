@@ -1,55 +1,50 @@
-import { cookies } from 'next/headers';
-
 import { getMicroblogApi } from '@/axios';
+import { getJwtFromCookie } from '@/services/api/AuthService';
 
 export async function followUser(username: string): Promise<any> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
-    const res = await getMicroblogApi().post(`/users/${username}/follow`, {}, { headers: { Cookie: 'jwt=' + jwt } });
-
-    if (res.status !== 200) {
-        throw new Error('Failed to follow user');
-    }
-
-    return res;
+    return await getMicroblogApi()
+        .post(`/users/${username}/follow`, {}, { headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) } })
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            return error.response;
+        });
 }
 
 export async function unfollowUser(username: string): Promise<any> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
-    const res = await getMicroblogApi().post(`/users/${username}/unfollow`, {}, { headers: { Cookie: 'jwt=' + jwt } });
-
-    if (res.status !== 200) {
-        throw new Error('Failed to unfollow user');
-    }
-
-    return res;
+    return await getMicroblogApi()
+        .post(`/users/${username}/unfollow`, {}, { headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) } })
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            return error.response;
+        });
 }
 
 export async function isFollowing(username: string): Promise<any> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
-    const res = await getMicroblogApi().get(`/users/${username}/isFollowing`, { headers: { Cookie: 'jwt=' + jwt } });
-
-    if (res.status !== 200) {
-        throw new Error('Failed to check if user is following');
-    }
-
-    return res;
+    return await getMicroblogApi()
+        .get(`/users/${username}/isFollowing`, {
+            headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) },
+        })
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            return error.response;
+        });
 }
 
 export async function getFollowers(username: string): Promise<any> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
-    const res = await getMicroblogApi().get(`/users/${username}/followers`, { headers: { Cookie: 'jwt=' + jwt } });
-
-    if (res.status !== 200) {
-        throw new Error('Failed to fetch followers');
-    }
-
-    return res;
+    return await getMicroblogApi()
+        .get(`/users/${username}/followers`, {
+            headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) },
+        })
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            return error.response;
+        });
 }

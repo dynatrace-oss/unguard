@@ -1,7 +1,6 @@
-import { cookies } from 'next/headers';
-
 import { getMicroblogApi } from '@/axios';
 import { PostProps } from '@/components/Post';
+import { getJwtFromCookie } from '@/services/api/AuthService';
 
 export async function fetchAllPosts(): Promise<PostProps[]> {
     const res = await getMicroblogApi().get('/timeline');
@@ -14,10 +13,9 @@ export async function fetchAllPosts(): Promise<PostProps[]> {
 }
 
 export async function fetchPersonalTimeline(): Promise<PostProps[]> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
-    const res = await getMicroblogApi().get(`/mytimeline`, { headers: { Cookie: 'jwt=' + jwt } });
+    const res = await getMicroblogApi().get(`/mytimeline`, {
+        headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) },
+    });
 
     if (res.status !== 200) {
         throw new Error('Failed to fetch personal timeline from Microblog-Service');
@@ -27,10 +25,9 @@ export async function fetchPersonalTimeline(): Promise<PostProps[]> {
 }
 
 export async function fetchPostsForUser(username: string): Promise<PostProps[]> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
-    const res = await getMicroblogApi().get(`/users/${username}/posts`, { headers: { Cookie: 'jwt=' + jwt } });
+    const res = await getMicroblogApi().get(`/users/${username}/posts`, {
+        headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) },
+    });
 
     if (res.status !== 200) {
         throw new Error('Failed to fetch Posts from Microblog-Service');
@@ -40,10 +37,9 @@ export async function fetchPostsForUser(username: string): Promise<PostProps[]> 
 }
 
 export async function fetchPostById(postId: string): Promise<PostProps> {
-    const cookieStore = await cookies();
-    const jwt = cookieStore.get('jwt')?.value;
-
-    const res = await getMicroblogApi().get(`/post/${postId}`, { headers: { Cookie: 'jwt=' + jwt } });
+    const res = await getMicroblogApi().get(`/post/${postId}`, {
+        headers: { Cookie: 'jwt=' + (await getJwtFromCookie()) },
+    });
 
     if (res.status !== 200) {
         throw new Error(`Failed to fetch Post with ID ${postId} from Microblog-Service`);

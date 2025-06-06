@@ -1,15 +1,31 @@
 'use client';
-import { Button } from '@heroui/react';
+import { addToast, Button } from '@heroui/react';
 import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
-import { unfollowUser } from '@/services/FollowService';
-import { followUser } from '@/services/FollowService';
 import { useFollowingStatus } from '@/hooks/useFollowingStatus';
+import { followUser, unfollowUser } from '@/services/FollowService';
 
 interface FollowButtonProps {
     username: string;
+}
+
+function handleFollowAction(
+    followActionFn: (username: string) => Promise<Response>,
+    errorToastMsg: string,
+    username: string,
+    queryClient: any,
+) {
+    followActionFn(username).then((res) => {
+        if (!res.ok) {
+            addToast({ title: errorToastMsg, description: res.statusText });
+        } else {
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.follow_status, username] }).then(() => {
+                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.followers, username] });
+            });
+        }
+    });
 }
 
 export function FollowButton(props: FollowButtonProps) {
@@ -18,17 +34,9 @@ export function FollowButton(props: FollowButtonProps) {
 
     const handleFollowButtonClick = useCallback(() => {
         if (isFollowed) {
-            unfollowUser(props.username).then(() =>
-                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.follow_status, props.username] }).then(() => {
-                    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.followers, props.username] });
-                }),
-            );
+            handleFollowAction(unfollowUser, `Error unfollowing user ${props.username}`, props.username, queryClient);
         } else {
-            followUser(props.username).then(() =>
-                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.follow_status, props.username] }).then(() => {
-                    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.followers, props.username] });
-                }),
-            );
+            handleFollowAction(followUser, `Error following user ${props.username}`, props.username, queryClient);
         }
     }, [isFollowed]);
 
