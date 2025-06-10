@@ -26,6 +26,7 @@ export default function NavbarProfileDropdown() {
         if (res.ok) {
             queryClient
                 .invalidateQueries({ queryKey: [QUERY_KEYS.isLoggedIn] })
+                .then(() => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ad_manager] }))
                 .then(() => navigateToLoginRegister())
                 .then(() => addToast({ title: 'Logout successful', description: 'Goodbye!' }));
         }
