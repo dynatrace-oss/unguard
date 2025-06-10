@@ -4,7 +4,14 @@ import { jwtDecode } from 'jwt-decode';
 import { ROUTES } from '@/enums/routes';
 import { BASE_PATH } from '@/constants';
 
-const protectedRoutes = [ROUTES.users, ROUTES.mytimeline, ROUTES.post, ROUTES.payment, ROUTES.membership_plans];
+const protectedRoutes = [
+    ROUTES.users,
+    ROUTES.mytimeline,
+    ROUTES.post,
+    ROUTES.payment,
+    ROUTES.membership_plans,
+    ROUTES.ad_manager,
+];
 
 export function middleware(req: NextRequest) {
     const jwt = req.cookies.get('jwt')?.value;

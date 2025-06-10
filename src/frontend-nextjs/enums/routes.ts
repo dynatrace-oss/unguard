@@ -7,4 +7,5 @@ export enum ROUTES {
     user = '/user',
     payment = '/payment',
     membership_plans = '/membership-plans',
+    ad_manager = '/ad-manager',
 }
