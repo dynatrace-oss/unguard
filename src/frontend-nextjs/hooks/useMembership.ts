@@ -19,5 +19,6 @@ export function useMembership(username: string) {
     return useQuery({
         queryKey: [QUERY_KEYS.membership, username],
         queryFn: () => fetchMembership(username),
+        enabled: !!username,
     });
 }

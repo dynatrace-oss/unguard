@@ -5,6 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { ErrorCard } from '@/components/ErrorCard';
 import { useAd } from '@/hooks/useAd';
+import { useAdVisibility } from '@/hooks/useAdVisibility';
 
 function AdComponent() {
     const [hasError, setHasError] = useState(false);
@@ -37,6 +38,10 @@ function AdComponent() {
 }
 
 export function Ad() {
+    const { isLoading, isPro } = useAdVisibility();
+
+    if (isLoading || isPro) return <div />;
+
     return (
         <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>
             <AdComponent />
