@@ -27,6 +27,7 @@ let proxyInstance: ReturnType<typeof createAxiosInstance> | undefined;
 let statusServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
 let likeServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
 let paymentServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
+let adServiceApiInstance: ReturnType<typeof createAxiosInstance> | undefined;
 
 export function getMicroblogApi() {
     if (!microblogApiInstance) {
@@ -108,4 +109,15 @@ export function getPaymentServiceApi() {
     }
 
     return paymentServiceApiInstance;
+}
+
+export function getAdServiceApi() {
+    if (!adServiceApiInstance) {
+        adServiceApiInstance = createAxiosInstance(
+            path.join('http://', requireEnv('AD_SERVICE_ADDRESS'), requireEnv('AD_SERVICE_BASE_PATH')),
+            {},
+        );
+    }
+
+    return adServiceApiInstance;
 }

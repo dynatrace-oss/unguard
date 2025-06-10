@@ -8,6 +8,7 @@ import { ROUTES } from '@/enums/routes';
 import { useCheckLogin } from '@/hooks/useCheckLogin';
 import NavbarProfileDropdown from '@/components/NavbarProfileDropdown';
 import { BASE_PATH } from '@/constants';
+import { useCheckAdmanager } from '@/hooks/useCheckAdmanager';
 
 export function UnguardLogo() {
     return <Image alt='Unguard Logo' height='32' src={path.join(BASE_PATH, '/unguard_logo.svg')} width='32' />;
@@ -16,6 +17,7 @@ export function UnguardLogo() {
 export function NavigationBar() {
     const pathname = usePathname();
     const { data: isLoggedIn } = useCheckLogin();
+    const { data: isAdManager } = useCheckAdmanager();
 
     return (
         <Navbar
@@ -49,6 +51,13 @@ export function NavigationBar() {
                     <NavbarItem isActive={pathname === ROUTES.mytimeline}>
                         <Link color='secondary' href={ROUTES.mytimeline}>
                             My Timeline
+                        </Link>
+                    </NavbarItem>
+                )}
+                {isAdManager && (
+                    <NavbarItem isActive={pathname === ROUTES.ad_manager}>
+                        <Link color='secondary' href={ROUTES.ad_manager}>
+                            Ad Manager
                         </Link>
                     </NavbarItem>
                 )}

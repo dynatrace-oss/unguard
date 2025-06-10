@@ -50,3 +50,23 @@ export async function getUsernameFromJwt(): Promise<string | undefined> {
 
     return undefined;
 }
+
+export async function isAdManager(): Promise<boolean> {
+    const cookieStore = await cookies();
+
+    if (cookieStore.has('jwt')) {
+        const jwt = cookieStore.get('jwt')?.value;
+
+        if (jwt) {
+            try {
+                const decodedPayload = jwtDecode<CustomPayLoad>(jwt);
+
+                return decodedPayload.roles.includes('AD_MANAGER');
+            } catch {
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
