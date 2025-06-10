@@ -23,5 +23,13 @@ export const siteConfig = {
             label: 'Login/Register',
             href: ROUTES.login,
         },
+        {
+            label: 'Membership Plans',
+            href: ROUTES.membership_plans,
+        },
+        {
+            label: 'Payment Information',
+            href: ROUTES.payment,
+        },
     ],
 };

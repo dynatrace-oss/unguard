@@ -46,18 +46,26 @@ export default function NavbarProfileDropdown() {
                     />
                 </DropdownTrigger>
                 <DropdownMenu aria-label='User Actions' variant='flat'>
-                    <DropdownItem key='profile' href={path.join(ROUTES.user, jwt_payload?.username || '')}>
+                    <DropdownItem
+                        key='profile'
+                        href={path.join(ROUTES.user, jwt_payload?.username || '')}
+                        textValue='Profile'
+                    >
                         Profile
                     </DropdownItem>
-                    <DropdownItem key='settings' href={ROUTES.payment}>
+                    <DropdownItem key='membership' href={ROUTES.membership_plans} textValue='Membership Plans'>
+                        Membership
+                    </DropdownItem>
+                    <DropdownItem key='payment' href={ROUTES.payment} textValue='Payment Information'>
                         Payment Information
                     </DropdownItem>
                     <DropdownItem
                         key='logout'
                         color='primary'
+                        textValue='Logout'
                         onPress={() => logout().then((res) => handleLogout(res))}
                     >
-                        Logout
+                        <b>Logout</b>
                     </DropdownItem>
                 </DropdownMenu>
             </Dropdown>
