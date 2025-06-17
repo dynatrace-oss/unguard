@@ -28,7 +28,7 @@ export async function isOwnProfile(username: string): Promise<boolean> {
 export async function isLoggedIn(): Promise<boolean> {
     const username = await getUsernameFromJwt();
 
-    return !!username;
+    return username !== undefined;
 }
 
 export async function getUsernameFromJwt(): Promise<string | undefined> {
