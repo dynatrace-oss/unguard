@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Spinner } from '@heroui/react';
+import { Spacer, Spinner } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 
 import { useCheckAdmanager } from '@/hooks/useCheckAdmanager';
@@ -27,7 +27,11 @@ export default function AdManager() {
         return (
             <div>
                 <h1 className='mb-6 text-4xl font-extrabold leading-none tracking-tight text-gray-800'>Ad Manager</h1>
-                <AdUploader />
+                <div className='flex flex-row items-center justify-between mb-4 gap-16'>
+                    <h2 className='p-1 font-semibold text-default-900 whitespace-nowrap'>Current Ad List:</h2>
+                    <AdUploader />
+                </div>
+                <Spacer y={4} />
                 <AdList />
             </div>
         );

@@ -20,7 +20,7 @@ export function User(props: UserProps) {
                 className='p-1 cursor-pointer hover:bg-gray-100 w-full'
                 onPress={() => navigateToUserProfile(props.username)}
             >
-                <CardBody className='className=justify-between'>
+                <CardBody className='justify-between'>
                     <div className='flex gap-5'>
                         <Avatar
                             isBordered
