@@ -26,23 +26,9 @@ export async function isOwnProfile(username: string): Promise<boolean> {
 }
 
 export async function isLoggedIn(): Promise<boolean> {
-    const cookieStore = await cookies();
+    const username = await getUsernameFromJwt();
 
-    if (cookieStore.has('jwt')) {
-        const jwt = cookieStore.get('jwt')?.value;
-
-        if (jwt) {
-            try {
-                jwtDecode(jwt);
-
-                return true;
-            } catch {
-                return false;
-            }
-        }
-    }
-
-    return false;
+    return !!username;
 }
 
 export async function getUsernameFromJwt(): Promise<string | undefined> {

@@ -1,7 +1,9 @@
+import { AxiosResponse } from 'axios';
+
 import { getPaymentServiceApi } from '@/axios';
 import { PaymentData } from '@/services/PaymentService';
 
-export async function fetchPaymentDataOfUser(userId: string): Promise<any> {
+export async function fetchPaymentDataOfUser(userId: string): Promise<AxiosResponse<PaymentData>> {
     return await getPaymentServiceApi()
         .get(`/payment-info/${userId}`)
         .then((response) => {
@@ -12,7 +14,10 @@ export async function fetchPaymentDataOfUser(userId: string): Promise<any> {
         });
 }
 
-export async function updatePaymentDataForUser(paymentData: PaymentData, userId: string): Promise<any> {
+export async function updatePaymentDataForUser(
+    paymentData: PaymentData,
+    userId: string,
+): Promise<AxiosResponse<PaymentData>> {
     return await getPaymentServiceApi()
         .post(
             `/payment-info/${userId}`,
