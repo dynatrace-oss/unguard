@@ -1,58 +1,36 @@
 'use client';
 
-import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Form, Input, Spinner } from '@heroui/react';
+import { Button, Card, CardBody, CardFooter, CardHeader, Form, Input, Spinner } from '@heroui/react';
 import React, { FormEvent, useCallback, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 
-import { ExpirationDateInput } from '@/components/ExpirationDateInput';
-import { PaymentData, updatePaymentData } from '@/services/PaymentService';
-import { QUERY_KEYS } from '@/enums/queryKeys';
-import { usePaymentInfo } from '@/hooks/usePaymentInformation';
+import { PaymentData } from '@/services/PaymentService';
+import { usePaymentInfo } from '@/hooks/usePaymentInfo';
+import { useUpdatePaymentInfo } from '@/hooks/useUpdatePaymentInfo';
 
 export interface PaymentFormProps {
     username: string;
 }
 
 export function PaymentForm(props: PaymentFormProps) {
-    const queryClient = useQueryClient();
     const [errorMsg, setErrorMsg] = useState('');
     const { data: paymentInfo, isLoading } = usePaymentInfo(props.username);
+    const updatePaymentInfo = useUpdatePaymentInfo(props.username, setErrorMsg);
 
-    const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = Object.fromEntries(new FormData(e.currentTarget));
+    const handleSubmit = useCallback(
+        (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            const formData = Object.fromEntries(new FormData(e.currentTarget));
+            const paymentData: PaymentData = {
+                cardHolderName: formData.cardHolderName.toString(),
+                cardNumber: formData.cardNumber.toString(),
+                expiryDate: formData.expiryDate.toString(),
+                cvv: formData.cvv.toString(),
+            };
 
-        const paymentData: PaymentData = {
-            cardHolderName: formData.cardHolderName.toString(),
-            cardNumber: formData.cardNumber.toString(),
-            expiryDate: formData.expiryDate.toString(),
-            cvv: formData.cvv.toString(),
-        };
-
-        updatePaymentData(paymentData, props.username).then((res: any) => {
-            if (!res.ok) {
-                res.json().then((data: any) => {
-                    const errorMessage = data.message?.toString() || 'Error updating payment data';
-
-                    setErrorMsg(errorMessage);
-                    addToast({
-                        color: 'danger',
-                        title: 'Failed to update payment information',
-                        description: errorMessage,
-                    });
-                });
-            } else {
-                setErrorMsg('');
-                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.payment_data, props.username] }).then(() =>
-                    addToast({
-                        color: 'success',
-                        title: 'Success',
-                        description: 'Your Payment Info is now up to date!',
-                    }),
-                );
-            }
-        });
-    }, []);
+            updatePaymentInfo.mutate(paymentData);
+        },
+        [updatePaymentInfo],
+    );
 
     if (isLoading) {
         return (
@@ -97,22 +75,25 @@ export function PaymentForm(props: PaymentFormProps) {
                                 placeholder='1234567890123456'
                                 type='text'
                                 variant='flat'
-                                onInput={(e) => {
-                                    const input = e.target as HTMLInputElement;
-
-                                    input.value = input.value.replace(/\D/g, '');
+                                onBeforeInput={(e: React.FormEvent<HTMLInputElement> & { data?: string }) => {
+                                    if (!/^[0-9]$/.test(e.data || '')) {
+                                        e.preventDefault();
+                                    }
                                 }}
                             />
                         </div>
                     </div>
                     <div className='flex flex-row w-full gap-2'>
                         <div className='mb-4 w-full'>
-                            <ExpirationDateInput
+                            <Input
                                 isRequired
                                 defaultValue={paymentInfo?.expiryDate || ''}
                                 errorMessage='Please enter a valid expiration date'
                                 label='Expiration Date (MM/YY)'
                                 name='expiryDate'
+                                pattern='^(0[1-9]|1[0-2])/[0-9]{2}$'
+                                placeholder='MM/YY'
+                                type='text'
                                 variant='flat'
                             />
                         </div>
@@ -129,10 +110,10 @@ export function PaymentForm(props: PaymentFormProps) {
                                 placeholder='123'
                                 type='text'
                                 variant='flat'
-                                onInput={(e) => {
-                                    const input = e.target as HTMLInputElement;
-
-                                    input.value = input.value.replace(/\D/g, '');
+                                onBeforeInput={(e: React.FormEvent<HTMLInputElement> & { data?: string }) => {
+                                    if (!/^[0-9]$/.test(e.data || '')) {
+                                        e.preventDefault();
+                                    }
                                 }}
                             />
                         </div>
