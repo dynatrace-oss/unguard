@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, CardBody, CardFooter, CardHeader, Form, Input, Spinner } from '@heroui/react';
+import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Form, Input, Spinner } from '@heroui/react';
 import React, { FormEvent, useCallback, useState } from 'react';
 
 import { PaymentData } from '@/services/PaymentService';
@@ -14,7 +14,28 @@ export interface PaymentFormProps {
 export function PaymentForm(props: PaymentFormProps) {
     const [errorMsg, setErrorMsg] = useState('');
     const { data: paymentInfo, isLoading } = usePaymentInfo(props.username);
-    const updatePaymentInfo = useUpdatePaymentInfo(props.username, setErrorMsg);
+
+    const handleSuccess = useCallback(() => {
+        setErrorMsg('');
+        addToast({
+            color: 'success',
+            title: 'Success',
+            description: 'Your Payment Info is now up to date!',
+        });
+    }, []);
+
+    const handleError = useCallback((error: any) => {
+        const errorMessage = error.message || 'Error updating payment data';
+
+        setErrorMsg(errorMessage);
+        addToast({
+            color: 'danger',
+            title: 'Failed to update payment information',
+            description: errorMessage,
+        });
+    }, []);
+
+    const updatePaymentInfo = useUpdatePaymentInfo(props.username, handleSuccess, handleError);
 
     const handleSubmit = useCallback(
         (e: FormEvent<HTMLFormElement>) => {
@@ -68,18 +89,15 @@ export function PaymentForm(props: PaymentFormProps) {
                                 defaultValue={paymentInfo?.cardNumber || ''}
                                 errorMessage='Please enter a valid card number'
                                 label='Credit Card Number (16 digits)'
-                                maxLength={16}
-                                minLength={16}
                                 name='cardNumber'
-                                pattern='^[0-9]{16}$'
                                 placeholder='1234567890123456'
-                                type='text'
-                                variant='flat'
-                                onBeforeInput={(e: React.FormEvent<HTMLInputElement> & { data?: string }) => {
-                                    if (!/^[0-9]$/.test(e.data || '')) {
-                                        e.preventDefault();
+                                type='number'
+                                validate={(value) => {
+                                    if (value.length !== 16) {
+                                        return 'Credit Card Number must be 16 digits long';
                                     }
                                 }}
+                                variant='flat'
                             />
                         </div>
                     </div>
@@ -102,19 +120,16 @@ export function PaymentForm(props: PaymentFormProps) {
                                 isRequired
                                 defaultValue={paymentInfo?.cvv || ''}
                                 errorMessage='Please enter a valid CVV'
-                                label='CVV'
-                                maxLength={3}
-                                minLength={3}
+                                label='CVV (3 digits)'
                                 name='cvv'
-                                pattern='^[0-9]{3}$'
                                 placeholder='123'
-                                type='text'
-                                variant='flat'
-                                onBeforeInput={(e: React.FormEvent<HTMLInputElement> & { data?: string }) => {
-                                    if (!/^[0-9]$/.test(e.data || '')) {
-                                        e.preventDefault();
+                                type='number'
+                                validate={(value) => {
+                                    if (value.length !== 3) {
+                                        return 'CVV must be 3 digits long';
                                     }
                                 }}
+                                variant='flat'
                             />
                         </div>
                     </div>
