@@ -10,7 +10,7 @@ export default async function PaymentPage() {
     const username = await getUsernameFromJwt();
 
     if (!username) {
-        return <ErrorCard message='Error getting username: You must be logged in to access this page.' />;
+        return <ErrorCard message='You must be logged in to access this page.' />;
     }
 
     return (
