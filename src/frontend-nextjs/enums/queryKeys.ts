@@ -15,4 +15,5 @@ export enum QUERY_KEYS {
     followers = 'followers',
     payment_data = 'payment-data',
     ad_manager = 'ad-manager',
+    ads_list = 'ads-list',
 }
