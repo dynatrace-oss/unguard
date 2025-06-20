@@ -7,9 +7,9 @@ import { UserParams } from '@/app/api/user/[username]/bio/route';
 export async function GET(req: Request, { params }: { params: Promise<UserParams> }): Promise<NextResponse> {
     const { username } = await params;
     const userId = await fetchUserIdForUsername(username);
-    const res_payment = await fetchPaymentDataOfUser(userId);
+    const paymentResponse = await fetchPaymentDataOfUser(userId);
 
-    return NextResponse.json(res_payment.data, { status: res_payment.status });
+    return NextResponse.json(paymentResponse.data, { status: paymentResponse.status });
 }
 
 export async function POST(req: Request, { params }: { params: Promise<UserParams> }): Promise<NextResponse> {
@@ -17,7 +17,7 @@ export async function POST(req: Request, { params }: { params: Promise<UserParam
     const body = await req.json();
 
     const userId = await fetchUserIdForUsername(username);
-    const res_payment = await updatePaymentDataForUser(body, userId);
+    const paymentResponse = await updatePaymentDataForUser(body, userId);
 
-    return NextResponse.json(res_payment.data, { status: res_payment.status });
+    return NextResponse.json(paymentResponse.data, { status: paymentResponse.status });
 }

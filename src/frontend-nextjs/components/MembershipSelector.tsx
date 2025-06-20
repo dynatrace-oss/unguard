@@ -2,12 +2,11 @@
 
 import React, { FormEvent, useCallback, useEffect, useState } from 'react';
 import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Form, Spinner } from '@heroui/react';
-import { useQueryClient } from '@tanstack/react-query';
 
 import { MEMBERSHIP } from '@/enums/memberships';
 import { BlueCheckmarkIcon } from '@/components/BlueCheckmarkIcon';
 import { useMembership } from '@/hooks/useMembership';
-import { updateMembership } from '@/services/MembershipService';
+import { useUpdateMembership } from '@/hooks/useUpdateMembership';
 
 interface MembershipSelectorProps {
     username: string;
@@ -16,40 +15,39 @@ interface MembershipSelectorProps {
 export function MembershipSelector(props: MembershipSelectorProps) {
     const { data: currentMembership, isLoading } = useMembership(props.username);
     const [isSelected, setIsSelected] = useState(currentMembership);
-    const queryClient = useQueryClient();
     const [errorMsg, setErrorMsg] = useState('');
 
     useEffect(() => {
         setIsSelected(currentMembership);
     }, [currentMembership]);
 
+    const handleSuccess = useCallback(() => {
+        setErrorMsg('');
+        addToast({
+            title: 'Updated Membership Successfully',
+            description: `You're ${isSelected == MEMBERSHIP.FREE ? 'on free plan now!' : 'a Pro now!'}`,
+            color: 'success',
+        });
+    }, []);
+
+    const handleError = useCallback((error: any) => {
+        const errorMessage = error.message || 'Error updating membership plan';
+
+        setErrorMsg(errorMessage);
+        addToast({
+            color: 'danger',
+            title: 'Failed to update membership plan',
+            description: errorMessage,
+        });
+    }, []);
+
+    const updateMembership = useUpdateMembership(props.username, handleSuccess, handleError);
+
     const handleSubmit = useCallback(
         (e: FormEvent<HTMLFormElement>) => {
             e.preventDefault();
             if (isSelected && isSelected !== currentMembership) {
-                updateMembership({ membership: isSelected }, props.username).then((res) => {
-                    if (!res.ok) {
-                        res.json().then((data: any) => {
-                            const errorMessage = data.message?.toString() || 'Error updating membership plan';
-
-                            setErrorMsg(errorMessage);
-                            addToast({
-                                color: 'danger',
-                                title: 'Failed to update membership plan',
-                                description: errorMessage,
-                            });
-                        });
-                    } else {
-                        setErrorMsg('');
-                        queryClient.invalidateQueries({ queryKey: ['membership', props.username] }).then(() =>
-                            addToast({
-                                title: 'Updated Membership Successfully',
-                                description: `You're ${isSelected == MEMBERSHIP.FREE ? 'on free plan now!' : 'a Pro now!'}`,
-                                color: 'success',
-                            }),
-                        );
-                    }
-                });
+                updateMembership.mutate(isSelected);
             }
         },
         [isSelected, currentMembership],
@@ -71,8 +69,8 @@ export function MembershipSelector(props: MembershipSelectorProps) {
                 <div className='flex flex-row gap-8 w-2/3'>
                     <Card
                         isPressable
-                        className={`cursor-pointer w-full hover:bg-gray-100 ${isSelected === MEMBERSHIP.FREE ? 'border-2 border-default-800' : ''}`}
-                        onPress={() => setIsSelected('FREE')}
+                        className={`cursor-pointer w-full hover:bg-gray-100 ${isSelected == MEMBERSHIP.FREE ? 'border-2 border-default-800' : ''}`}
+                        onPress={() => setIsSelected(MEMBERSHIP.FREE)}
                     >
                         <CardHeader className='p-4 text-2xl font-bold text-center bg-gray-300'>
                             <p className='text-center w-full'>{MEMBERSHIP.FREE}</p>
@@ -87,8 +85,8 @@ export function MembershipSelector(props: MembershipSelectorProps) {
                     </Card>
                     <Card
                         isPressable
-                        className={`cursor-pointer w-full hover:bg-gray-100 ${isSelected === MEMBERSHIP.PRO ? 'border-2 border-default-800' : ''}`}
-                        onPress={() => setIsSelected('PRO')}
+                        className={`cursor-pointer w-full hover:bg-gray-100 ${isSelected == MEMBERSHIP.PRO ? 'border-2 border-default-800' : ''}`}
+                        onPress={() => setIsSelected(MEMBERSHIP.PRO)}
                     >
                         <CardHeader className='p-4 text-2xl font-bold text-center bg-blue-500 text-white'>
                             <div className='flex items-center justify-center gap-2 w-full'>
