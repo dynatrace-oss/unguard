@@ -2,9 +2,9 @@
 
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { usePersonalTimeline } from '@/hooks/usePosts';
+import { usePersonalTimeline } from '@/hooks/queries/usePosts';
 import { CreatePost } from '@/components/CreatePost';
-import { Timeline } from '@/components/Timeline';
+import { Timeline } from '@/components/Timeline/Timeline';
 import { Ad } from '@/components/Ad';
 import { ErrorCard } from '@/components/ErrorCard';
 

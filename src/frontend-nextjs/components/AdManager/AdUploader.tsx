@@ -1,15 +1,30 @@
-import path from 'path';
-
-import { Button, Card, CardBody, Form, Input } from '@heroui/react';
+import { addToast, Button, Card, CardBody, Form, Input } from '@heroui/react';
 import { FormEvent, useCallback, useRef } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 
-import { BASE_PATH } from '@/constants';
-import { QUERY_KEYS } from '@/enums/queryKeys';
+import { useUploadAd } from '@/hooks/mutations/useUploadAd';
 
 export function AdUploader() {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const queryClient = useQueryClient();
+
+    const handleSuccess = useCallback(() => {
+        addToast({
+            color: 'success',
+            title: 'Success',
+            description: 'New ad uploaded successfully!',
+        });
+    }, []);
+
+    const handleError = useCallback((error: any) => {
+        const errorMessage = error.message || 'Error uploading new ad';
+
+        addToast({
+            color: 'danger',
+            title: 'Failed to upload ad',
+            description: errorMessage,
+        });
+    }, []);
+
+    const uploadAd = useUploadAd(handleSuccess, handleError);
 
     const uploadFile = useCallback(
         async (e: FormEvent<HTMLFormElement>) => {
@@ -20,13 +35,7 @@ export function AdUploader() {
             const formData = new FormData();
 
             formData.append('file', file);
-
-            await fetch(path.join(BASE_PATH, '/api/ad'), {
-                method: 'POST',
-                body: formData,
-            }).then(() => {
-                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ads_list] });
-            });
+            uploadAd.mutate(formData);
         },
         [fileInputRef],
     );

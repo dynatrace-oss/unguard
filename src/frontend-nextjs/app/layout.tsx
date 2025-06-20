@@ -5,7 +5,7 @@ import { PropsWithChildren } from 'react';
 import { Providers } from './providers';
 
 import { siteConfig } from '@/config/site';
-import { NavigationBar } from '@/components/NavigationBar';
+import { NavigationBar } from '@/components/Navbar/NavigationBar';
 import { Footer } from '@/components/Footer';
 import { BASE_PATH } from '@/constants';
 

@@ -1,4 +1,4 @@
-import { User } from '@/components/User';
+import { User } from '@/components/UsersView/User';
 
 interface FollowerListProps {
     followers: { userId: string; userName: string }[] | undefined;

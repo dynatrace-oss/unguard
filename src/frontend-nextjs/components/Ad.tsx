@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { ErrorCard } from '@/components/ErrorCard';
-import { useAd } from '@/hooks/useAd';
-import { useAdVisibility } from '@/hooks/useAdVisibility';
+import { useAd } from '@/hooks/queries/useAd';
+import { useAdVisibility } from '@/hooks/queries/useAdVisibility';
 
 function AdComponent() {
     const [hasError, setHasError] = useState(false);

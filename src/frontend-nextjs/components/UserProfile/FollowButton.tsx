@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '@/enums/queryKeys';
-import { useFollowingStatus } from '@/hooks/useFollowingStatus';
+import { useFollowingStatus } from '@/hooks/queries/useFollowingStatus';
 import { followUser, unfollowUser } from '@/services/FollowService';
 
 interface FollowButtonProps {

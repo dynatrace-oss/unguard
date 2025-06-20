@@ -1,7 +1,7 @@
 import { Card, Spacer, Spinner } from '@heroui/react';
 
-import { AdListItem } from '@/components/AdListItem';
-import { useAdsList } from '@/hooks/useAdList';
+import { AdListItem } from '@/components/AdManager/AdListItem';
+import { useAdsList } from '@/hooks/queries/useAdList';
 
 export function AdList() {
     const { data: adList, isLoading } = useAdsList();

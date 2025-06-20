@@ -8,7 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { BsPencil } from 'react-icons/bs';
 
 import { updateBio } from '@/services/BioService';
-import { useBio } from '@/hooks/useBio';
+import { useBio } from '@/hooks/queries/useBio';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 
 interface BioEditorProps {
