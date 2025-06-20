@@ -1,5 +1,5 @@
 import { getMembershipServiceApi, getProfileService, getStatusServiceApi } from '@/axios';
-import { UserProps } from '@/components/User';
+import { UserProps } from '@/components/UsersView/User';
 
 export async function fetchAllUsers(params: any): Promise<UserProps[]> {
     const res = await getStatusServiceApi().get('/users', {

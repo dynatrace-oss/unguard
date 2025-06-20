@@ -4,10 +4,10 @@ import React from 'react';
 import { Spacer, Spinner } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 
-import { useCheckAdmanager } from '@/hooks/useCheckAdmanager';
+import { useCheckAdmanager } from '@/hooks/queries/useCheckAdmanager';
 import { ROUTES } from '@/enums/routes';
-import { AdUploader } from '@/components/AdUploader';
-import { AdList } from '@/components/AdList';
+import { AdUploader } from '@/components/AdManager/AdUploader';
+import { AdList } from '@/components/AdManager/AdList';
 
 export default function AdManager() {
     const { data: isAdManager, isLoading } = useCheckAdmanager();

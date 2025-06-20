@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { MembershipSelector } from '@/components/MembershipSelector';
+import { MembershipSelector } from '@/components/Membership/MembershipSelector';
 import { getUsernameFromJwt } from '@/services/LocalUserService';
 import { ErrorCard } from '@/components/ErrorCard';
 

@@ -16,9 +16,9 @@ import { useCallback, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { ErrorCard } from '@/components/ErrorCard';
-import { useUserList } from '@/hooks/useUserList';
-import { User, UserProps } from '@/components/User';
-import { useRoles } from '@/hooks/useRoles';
+import { useUserList } from '@/hooks/queries/useUserList';
+import { User, UserProps } from '@/components/UsersView/User';
+import { useRoles } from '@/hooks/queries/useRoles';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 
 function UserSearchComponent() {

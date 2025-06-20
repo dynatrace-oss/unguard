@@ -1,8 +1,8 @@
 'use client';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { useAllPosts } from '@/hooks/usePosts';
-import { Timeline } from '@/components/Timeline';
+import { useAllPosts } from '@/hooks/queries/usePosts';
+import { Timeline } from '@/components/Timeline/Timeline';
 import { ErrorCard } from '@/components/ErrorCard';
 
 export function GlobalTimelineComponent() {

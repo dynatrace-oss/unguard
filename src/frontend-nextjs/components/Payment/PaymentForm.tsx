@@ -4,8 +4,8 @@ import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Form, Input, 
 import React, { FormEvent, useCallback, useState } from 'react';
 
 import { PaymentData } from '@/services/PaymentService';
-import { usePaymentInfo } from '@/hooks/usePaymentInfo';
-import { useUpdatePaymentInfo } from '@/hooks/useUpdatePaymentInfo';
+import { usePaymentInfo } from '@/hooks/queries/usePaymentInfo';
+import { useUpdatePaymentInfo } from '@/hooks/mutations/useUpdatePaymentInfo';
 
 export interface PaymentFormProps {
     username: string;

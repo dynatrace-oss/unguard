@@ -1,8 +1,8 @@
 'use client';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { usePostsOfUser } from '@/hooks/usePosts';
-import { Timeline } from '@/components/Timeline';
+import { usePostsOfUser } from '@/hooks/queries/usePosts';
+import { Timeline } from '@/components/Timeline/Timeline';
 import { ErrorCard } from '@/components/ErrorCard';
 
 interface UserTimelineProps {

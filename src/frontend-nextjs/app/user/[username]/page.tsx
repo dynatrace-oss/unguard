@@ -1,8 +1,8 @@
 import { Spacer } from '@heroui/react';
 
-import { BioEditor } from '@/components/BioEditor';
-import { ProfileHeader } from '@/components/ProfileHeader';
-import { UserTimeline } from '@/components/UserTimeline';
+import { BioEditor } from '@/components/UserProfile/BioEditor';
+import { ProfileHeader } from '@/components/UserProfile/ProfileHeader';
+import { UserTimeline } from '@/components/UserProfile/UserTimeline';
 import { isOwnProfile as checkIsOwnProfile } from '@/services/LocalUserService';
 
 interface UserProfileRouteParams {

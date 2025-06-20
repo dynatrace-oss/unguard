@@ -5,7 +5,7 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, User, addToast }
 import { useQueryClient } from '@tanstack/react-query';
 
 import { ROUTES } from '@/enums/routes';
-import { useJwtPayload } from '@/hooks/useJwtPayload';
+import { useJwtPayload } from '@/hooks/queries/useJwtPayload';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 import { useNavigation } from '@/hooks/useNavigation';
 import { BASE_PATH } from '@/constants';

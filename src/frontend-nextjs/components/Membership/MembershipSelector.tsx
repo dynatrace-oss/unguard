@@ -4,9 +4,9 @@ import React, { FormEvent, useCallback, useEffect, useState } from 'react';
 import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Form, Spinner } from '@heroui/react';
 
 import { MEMBERSHIP } from '@/enums/memberships';
-import { BlueCheckmarkIcon } from '@/components/BlueCheckmarkIcon';
-import { useMembership } from '@/hooks/useMembership';
-import { useUpdateMembership } from '@/hooks/useUpdateMembership';
+import { BlueCheckmarkIcon } from '@/components/UserProfile/BlueCheckmarkIcon';
+import { useMembership } from '@/hooks/queries/useMembership';
+import { useUpdateMembership } from '@/hooks/mutations/useUpdateMembership';
 
 interface MembershipSelectorProps {
     username: string;

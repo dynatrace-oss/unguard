@@ -1,8 +1,8 @@
 import { Spacer } from '@heroui/react';
 import React from 'react';
 
-import { ProfileHeader } from '@/components/ProfileHeader';
-import { PaymentForm } from '@/components/PaymentForm';
+import { ProfileHeader } from '@/components/UserProfile/ProfileHeader';
+import { PaymentForm } from '@/components/Payment/PaymentForm';
 import { getUsernameFromJwt } from '@/services/LocalUserService';
 import { ErrorCard } from '@/components/ErrorCard';
 

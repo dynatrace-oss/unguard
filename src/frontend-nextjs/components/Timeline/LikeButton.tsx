@@ -3,8 +3,8 @@ import { Button, Spinner } from '@heroui/react';
 import { BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
 import { useCallback } from 'react';
 
-import { useLikes } from '@/hooks/useLikes';
-import { useLikeChange } from '@/hooks/useLikeChange';
+import { useLikes } from '@/hooks/queries/useLikes';
+import { useLikeChange } from '@/hooks/mutations/useLikeChange';
 
 export interface LikeButtonProps {
     postId: string;

@@ -1,14 +1,14 @@
 'use client';
 import { Avatar, Button, Spinner } from '@heroui/react';
 
-import { useBio } from '@/hooks/useBio';
-import { useMembership } from '@/hooks/useMembership';
-import { FollowButton } from '@/components/FollowButton';
+import { useBio } from '@/hooks/queries/useBio';
+import { useMembership } from '@/hooks/queries/useMembership';
+import { FollowButton } from '@/components/UserProfile/FollowButton';
 import { ErrorCard } from '@/components/ErrorCard';
-import { BlueCheckmarkIcon } from '@/components/BlueCheckmarkIcon';
+import { BlueCheckmarkIcon } from '@/components/UserProfile/BlueCheckmarkIcon';
 import { MEMBERSHIP } from '@/enums/memberships';
 import { useNavigation } from '@/hooks/useNavigation';
-import { FollowersView } from '@/components/FollowersView';
+import { FollowersView } from '@/components/UserProfile/FollowersView';
 
 interface ProfileHeaderProps {
     username: string;
