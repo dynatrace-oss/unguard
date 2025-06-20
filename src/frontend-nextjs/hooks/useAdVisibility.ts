@@ -1,5 +1,6 @@
 import { useJwtPayload } from '@/hooks/useJwtPayload';
 import { useMembership } from '@/hooks/useMembership';
+import { MEMBERSHIP } from '@/enums/memberships';
 
 export function useAdVisibility() {
     const { data: jwt_payload, isLoading: isJwtLoading } = useJwtPayload();
@@ -9,6 +10,6 @@ export function useAdVisibility() {
 
     return {
         isLoading: isJwtLoading || membershipResult.isLoading,
-        isPro: membershipResult.data === 'PRO',
+        isPro: membershipResult.data == MEMBERSHIP.PRO,
     };
 }
