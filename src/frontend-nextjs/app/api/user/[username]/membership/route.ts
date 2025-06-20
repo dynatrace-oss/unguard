@@ -10,9 +10,9 @@ export async function GET(req: Request, { params }: { params: Promise<UserParams
 
     const userId = await fetchUserIdForUsername(username);
 
-    const res_membership = await fetchMembership(userId);
+    const membershipResponse = await fetchMembership(userId);
 
-    return NextResponse.json(res_membership);
+    return NextResponse.json(membershipResponse);
 }
 
 export async function POST(req: Request, { params }: { params: Promise<UserParams> }): Promise<NextResponse> {
@@ -20,7 +20,7 @@ export async function POST(req: Request, { params }: { params: Promise<UserParam
     const body = await req.json();
 
     const userId = await fetchUserIdForUsername(username);
-    const res_membership = await updateMembershipForUser(body, userId);
+    const membershipResponse = await updateMembershipForUser(body, userId);
 
-    return NextResponse.json(res_membership.data, { status: res_membership.status });
+    return NextResponse.json(membershipResponse.data, { status: membershipResponse.status });
 }

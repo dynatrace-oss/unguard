@@ -4,7 +4,7 @@ import { getMicroblogApi, getProxy } from '@/axios';
 import { getJwtFromCookie } from '@/services/api/AuthService';
 
 async function fetchMetadataFromProxy(body: any): Promise<[metaTitle: string, metaImgSrc: string | undefined]> {
-    const res_proxy = await getProxy().get('/', {
+    const proxyResponse = await getProxy().get('/', {
         params: {
             header: body.language,
             url: body.url,
@@ -12,7 +12,7 @@ async function fetchMetadataFromProxy(body: any): Promise<[metaTitle: string, me
     });
 
     // fetch some metadata out of the proxy response so it was not for nothing
-    const $ = cheerio.load(res_proxy.data);
+    const $ = cheerio.load(proxyResponse.data);
 
     let metaImgSrc = $('meta[property="og:image"]').attr('content');
 
@@ -53,7 +53,7 @@ async function handleUrlPost(body: any, jwt?: string): Promise<{ postId: string 
 }
 
 async function handleImagePost(body: any, jwt?: string): Promise<{ postId: string }> {
-    const res_proxy = await getProxy().get('/image', {
+    const proxyResponse = await getProxy().get('/image', {
         params: {
             url: body.imageUrl,
         },
@@ -62,7 +62,7 @@ async function handleImagePost(body: any, jwt?: string): Promise<{ postId: strin
         '/post',
         {
             content: body.content,
-            imageUrl: res_proxy.data,
+            imageUrl: proxyResponse.data,
         },
         { headers: { Cookie: 'jwt=' + jwt } },
     );

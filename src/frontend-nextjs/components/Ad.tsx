@@ -40,7 +40,7 @@ function AdComponent() {
 export function Ad() {
     const { isLoading, isPro } = useAdVisibility();
 
-    if (isLoading || isPro) return <div />;
+    if (isLoading || isPro) return null;
 
     return (
         <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>

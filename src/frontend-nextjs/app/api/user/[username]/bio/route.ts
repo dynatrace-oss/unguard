@@ -13,9 +13,9 @@ export async function GET(req: Request, { params }: { params: Promise<UserParams
     const userId = await fetchUserIdForUsername(username);
 
     try {
-        const res_bio = await fetchBio(userId);
+        const bioResponse = await fetchBio(userId);
 
-        return NextResponse.json(res_bio.bioText, { status: 200 });
+        return NextResponse.json(bioResponse.bioText, { status: 200 });
     } catch (error: any) {
         if (error.response && error.response.status == 404) {
             //bio can be empty
@@ -31,7 +31,7 @@ export async function POST(req: Request, { params }: { params: Promise<UserParam
     const userId = await fetchUserIdForUsername(username);
 
     const body = await req.json();
-    const res_bio = await editBio(userId, body);
+    const bioResponse = await editBio(userId, body);
 
-    return NextResponse.json(res_bio);
+    return NextResponse.json(bioResponse);
 }
