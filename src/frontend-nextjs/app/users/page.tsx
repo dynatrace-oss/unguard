@@ -1,5 +1,5 @@
 import { Ad } from '@/components/Ad';
-import { UserSearch } from '@/components/UserSearch';
+import { UserSearch } from '@/components/UsersView/UserSearch';
 
 export default function Users() {
     return (

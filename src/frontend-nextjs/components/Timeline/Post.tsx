@@ -7,8 +7,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { ROUTES } from '@/enums/routes';
 import { BASE_PATH } from '@/constants';
-import { useCheckLogin } from '@/hooks/useCheckLogin';
-import { LikeButton } from '@/components/LikeButton';
+import { useCheckLogin } from '@/hooks/queries/useCheckLogin';
+import { LikeButton } from '@/components/Timeline/LikeButton';
 import { ErrorCard } from '@/components/ErrorCard';
 
 export interface PostProps {

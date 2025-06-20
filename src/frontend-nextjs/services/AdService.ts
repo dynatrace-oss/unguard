@@ -8,3 +8,10 @@ export async function deleteAd(adName: string): Promise<Response> {
         headers: { 'Content-Type': 'application/json' },
     });
 }
+
+export async function uploadAd(ad: FormData): Promise<Response> {
+    return await fetch(path.join(BASE_PATH, `/api/ad`), {
+        method: 'POST',
+        body: ad,
+    });
+}

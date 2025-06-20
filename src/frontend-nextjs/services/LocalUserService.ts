@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 
+import { ROLE } from '@/enums/roles';
+
 export interface CustomPayLoad extends JwtPayload {
     username: string;
     userid: string;
@@ -61,7 +63,7 @@ export async function isAdManager(): Promise<boolean> {
             try {
                 const decodedPayload = jwtDecode<CustomPayLoad>(jwt);
 
-                return decodedPayload.roles.includes('AD_MANAGER');
+                return decodedPayload.roles.includes(ROLE.AD_MANAGER);
             } catch {
                 return false;
             }

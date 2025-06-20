@@ -6,8 +6,8 @@ import { BsArrowLeft } from 'react-icons/bs';
 import { Button, Card, Spinner } from '@heroui/react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { usePost } from '@/hooks/usePost';
-import { Post as PostComponent } from '@/components/Post';
+import { usePost } from '@/hooks/queries/usePost';
+import { Post as PostComponent } from '@/components/Timeline/Post';
 import { ErrorCard } from '@/components/ErrorCard';
 
 function SinglePost() {

@@ -1,5 +1,5 @@
 import { getMicroblogApi } from '@/axios';
-import { PostProps } from '@/components/Post';
+import { PostProps } from '@/components/Timeline/Post';
 import { getJwtFromCookie } from '@/services/api/AuthService';
 
 export async function fetchAllPosts(): Promise<PostProps[]> {

@@ -4,7 +4,7 @@ import { Button, Card, CardBody, Spinner } from '@heroui/react';
 import { BsTrash } from 'react-icons/bs';
 import { useCallback } from 'react';
 
-import { useDeleteAd } from '@/hooks/useDeleteAd';
+import { useDeleteAd } from '@/hooks/mutations/useDeleteAd';
 
 export interface AdListItemProps {
     name: string;

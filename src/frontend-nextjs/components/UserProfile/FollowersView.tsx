@@ -10,8 +10,8 @@ import {
     useDisclosure,
 } from '@heroui/react';
 
-import { useFollowersList } from '@/hooks/useFollowersList';
-import { FollowerList } from '@/components/FollowerList';
+import { useFollowersList } from '@/hooks/queries/useFollowersList';
+import { FollowerList } from '@/components/UserProfile/FollowerList';
 
 interface FollowerListProps {
     username: string;

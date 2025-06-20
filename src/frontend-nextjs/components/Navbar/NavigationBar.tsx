@@ -5,10 +5,10 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image } f
 import { usePathname } from 'next/navigation';
 
 import { ROUTES } from '@/enums/routes';
-import { useCheckLogin } from '@/hooks/useCheckLogin';
-import NavbarProfileDropdown from '@/components/NavbarProfileDropdown';
+import { useCheckLogin } from '@/hooks/queries/useCheckLogin';
+import NavbarProfileDropdown from '@/components/Navbar/NavbarProfileDropdown';
 import { BASE_PATH } from '@/constants';
-import { useCheckAdmanager } from '@/hooks/useCheckAdmanager';
+import { useCheckAdmanager } from '@/hooks/queries/useCheckAdmanager';
 
 export function UnguardLogo() {
     return <Image alt='Unguard Logo' height='32' src={path.join(BASE_PATH, '/unguard_logo.svg')} width='32' />;

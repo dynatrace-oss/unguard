@@ -1,5 +1,5 @@
-import { useJwtPayload } from '@/hooks/useJwtPayload';
-import { useMembership } from '@/hooks/useMembership';
+import { useJwtPayload } from '@/hooks/queries/useJwtPayload';
+import { useMembership } from '@/hooks/queries/useMembership';
 import { MEMBERSHIP } from '@/enums/memberships';
 
 export function useAdVisibility() {

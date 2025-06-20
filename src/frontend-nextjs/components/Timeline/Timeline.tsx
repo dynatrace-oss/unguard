@@ -1,8 +1,8 @@
 'use client';
 import { Card, Spacer, Spinner } from '@heroui/react';
 
-import { Post } from '@/components/Post';
-import { PostProps } from '@/components/Post';
+import { Post } from '@/components/Timeline/Post';
+import { PostProps } from '@/components/Timeline/Post';
 
 interface TimelineProps {
     posts: PostProps[] | undefined;
