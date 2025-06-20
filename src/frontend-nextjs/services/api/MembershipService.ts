@@ -1,4 +1,4 @@
-import * as querystring from 'node:querystring';
+import querystring from 'querystring';
 
 import { getMembershipServiceApi } from '@/axios';
 import { MembershipData } from '@/services/MembershipService';

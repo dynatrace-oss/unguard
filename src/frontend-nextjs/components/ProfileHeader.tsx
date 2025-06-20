@@ -44,12 +44,12 @@ export function ProfileHeader({ username, isOwnProfile, hideFollowers }: Profile
                     <div className='flex flex-row gap-2 items-center pb-1'>
                         <p className='text-3xl font-bold'>{username}</p>
                         <Button
-                            className={`${membership === MEMBERSHIP.PRO ? 'bg-blue-500 text-white' : 'bg-default'}`}
+                            className={`${membership == MEMBERSHIP.PRO ? 'bg-blue-500 text-white' : 'bg-default'}`}
                             style={!isOwnProfile ? { pointerEvents: 'none' } : undefined}
                             onPress={() => navigateToMembershipPage()}
                         >
                             <span>{membership}</span>
-                            {membership === MEMBERSHIP.PRO && <BlueCheckmarkIcon />}
+                            {membership == MEMBERSHIP.PRO && <BlueCheckmarkIcon />}
                         </Button>
                     </div>
                     {!hideFollowers && <FollowersView username={username} />}
