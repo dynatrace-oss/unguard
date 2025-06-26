@@ -20,7 +20,7 @@ export interface PostProps {
 }
 
 export function Post(props: PostProps) {
-    const { data: isLoggedIn } = useCheckLogin();
+    const { isLoggedIn } = useCheckLogin();
 
     const navigateToUserProfile = useCallback(() => {
         /*

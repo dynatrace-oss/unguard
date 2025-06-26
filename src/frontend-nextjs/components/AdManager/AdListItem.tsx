@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, CardBody, Spinner } from '@heroui/react';
+import { addToast, Button, Card, CardBody, Spinner } from '@heroui/react';
 import { BsTrash } from 'react-icons/bs';
 import { useCallback } from 'react';
 
@@ -12,7 +12,21 @@ export interface AdListItemProps {
 }
 
 export function AdListItem(props: AdListItemProps) {
-    const { mutate, isPending } = useDeleteAd(props.name);
+    const handleSuccess = useCallback(() => {
+        addToast({ title: `Deleted ad ${props.name} successfully!`, color: 'success' });
+    }, []);
+
+    const handleError = useCallback((error: any) => {
+        const errorMessage = error.message || 'Error deleting ad';
+
+        addToast({
+            title: `Failed to delete ad ${props.name}: ${error.message}`,
+            description: errorMessage,
+            color: 'danger',
+        });
+    }, []);
+
+    const { mutate, isPending } = useDeleteAd(props.name, handleSuccess, handleError);
 
     const handleDeleteButtonClick = useCallback(() => {
         mutate();

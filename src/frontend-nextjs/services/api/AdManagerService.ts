@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 import { getAdServiceApi } from '@/axios';
 import { getJwtFromCookie } from '@/services/api/AuthService';
 
-export type AdsList = {
+export type AdList = {
     name: string;
     creationTime: string;
 }[];
@@ -26,14 +26,14 @@ export async function uploadAd(ad: FormDataEntryValue): Promise<any> {
         });
 }
 
-export async function getAdsList(): Promise<any> {
+export async function getAdList(): Promise<any> {
     const jwt = await getJwtFromCookie();
 
     return await getAdServiceApi()
         .get(`/ads`, {
             headers: { Cookie: 'jwt=' + jwt },
         })
-        .then((response: AxiosResponse<AdsList>) => {
+        .then((response: AxiosResponse<AdList>) => {
             response.data.forEach((ad) => {
                 ad.creationTime = new Date(ad.creationTime).toLocaleString('de-at');
             });
