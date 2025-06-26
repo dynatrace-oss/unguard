@@ -6,7 +6,7 @@ import { Providers } from './providers';
 
 import { siteConfig } from '@/config/site';
 import { NavigationBar } from '@/components/Navbar/NavigationBar';
-import { Footer } from '@/components/Footer';
+import { Footer } from '@/components/Footer/Footer';
 import { BASE_PATH } from '@/constants';
 
 export const metadata: Metadata = {

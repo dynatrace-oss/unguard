@@ -16,4 +16,5 @@ export enum QUERY_KEYS {
     payment_data = 'payment-data',
     ad_manager = 'ad-manager',
     ad_list = 'ad-list',
+    deployment_health = 'deployment-health',
 }

@@ -1,6 +1,8 @@
 'use client';
 import { Link } from '@heroui/react';
 
+import { DeploymentStatus } from '@/components/Footer/DeploymentStatus';
+
 export function Footer() {
     return (
         <div>
@@ -8,6 +10,7 @@ export function Footer() {
             <p>
                 Robots lovingly delivered by <Link href='https://robohash.org/'>Robohash.org</Link>
             </p>
+            <DeploymentStatus />
         </div>
     );
 }
