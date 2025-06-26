@@ -28,7 +28,7 @@ export function MembershipSelector(props: MembershipSelectorProps) {
             description: `You're ${isSelected == MEMBERSHIP.FREE ? 'on free plan now!' : 'a Pro now!'}`,
             color: 'success',
         });
-    }, []);
+    }, [isSelected]);
 
     const handleError = useCallback((error: any) => {
         const errorMessage = error.message || 'Error updating membership plan';

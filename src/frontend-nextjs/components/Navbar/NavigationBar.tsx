@@ -16,8 +16,8 @@ export function UnguardLogo() {
 
 export function NavigationBar() {
     const pathname = usePathname();
-    const { data: isLoggedIn } = useCheckLogin();
-    const { data: isAdManager } = useCheckAdmanager();
+    const { isLoggedIn } = useCheckLogin();
+    const { isAdManager } = useCheckAdmanager();
 
     return (
         <Navbar

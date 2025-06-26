@@ -46,10 +46,7 @@ export default function LoginRegister() {
             throw new Error('Error logging in');
         } else {
             setErrorMsg('');
-            queryClient
-                .invalidateQueries({ queryKey: [QUERY_KEYS.isLoggedIn] })
-                .then(() => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ad_manager] }))
-                .then(() => navigateToHomePage());
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.isLoggedIn] }).then(() => navigateToHomePage());
         }
     }
 

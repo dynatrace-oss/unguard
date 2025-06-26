@@ -16,9 +16,11 @@ async function fetchFollowingStatus(username: string): Promise<boolean> {
 }
 
 export function useFollowingStatus(username: string) {
-    return useQuery({
+    const { data, ...rest } = useQuery({
         queryKey: [QUERY_KEYS.follow_status, username],
         queryFn: () => fetchFollowingStatus(username),
         throwOnError: true,
     });
+
+    return { isFollowed: data, ...rest };
 }
