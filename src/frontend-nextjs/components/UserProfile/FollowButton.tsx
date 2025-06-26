@@ -29,7 +29,7 @@ function handleFollowAction(
 }
 
 export function FollowButton(props: FollowButtonProps) {
-    const { data: isFollowed, isLoading } = useFollowingStatus(props.username);
+    const { isFollowed, isLoading } = useFollowingStatus(props.username);
     const queryClient = useQueryClient();
 
     const handleFollowButtonClick = useCallback(() => {

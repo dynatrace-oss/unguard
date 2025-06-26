@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
-import { getAdsList } from '@/services/api/AdManagerService';
+import { getAdList } from '@/services/api/AdManagerService';
 
 export async function GET(): Promise<NextResponse> {
-    const res = await getAdsList();
+    const res = await getAdList();
 
     return NextResponse.json(res.data, { status: res.status });
 }

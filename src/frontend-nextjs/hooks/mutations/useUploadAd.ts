@@ -10,7 +10,7 @@ export function useUploadAd(onSuccess: () => void, onError: (error: any) => void
         mutationFn: (formData: FormData) => uploadAd(formData),
         onSuccess: () => {
             onSuccess();
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ads_list] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ad_list] });
         },
         onError: (error: any) => {
             onError(error);

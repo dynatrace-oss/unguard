@@ -2,16 +2,14 @@
 
 import React from 'react';
 import { Spacer, Spinner } from '@heroui/react';
-import { useRouter } from 'next/navigation';
 
 import { useCheckAdmanager } from '@/hooks/queries/useCheckAdmanager';
-import { ROUTES } from '@/enums/routes';
 import { AdUploader } from '@/components/AdManager/AdUploader';
 import { AdList } from '@/components/AdManager/AdList';
+import { ErrorCard } from '@/components/ErrorCard';
 
 export default function AdManager() {
-    const { data: isAdManager, isLoading } = useCheckAdmanager();
-    const router = useRouter();
+    const { isAdManager, isLoading } = useCheckAdmanager();
 
     if (isLoading) {
         return (
@@ -22,7 +20,7 @@ export default function AdManager() {
     }
 
     if (!isAdManager) {
-        router.push(ROUTES.login);
+        return <ErrorCard message='Access denied: You are missing permissions to access this page.' />;
     } else {
         return (
             <div>

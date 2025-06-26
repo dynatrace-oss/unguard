@@ -16,9 +16,11 @@ async function fetchIsLoggedIn(): Promise<boolean> {
 }
 
 export function useCheckLogin() {
-    return useQuery({
+    const { data, ...rest } = useQuery({
         queryKey: [QUERY_KEYS.isLoggedIn],
         queryFn: fetchIsLoggedIn,
         throwOnError: true,
     });
+
+    return { isLoggedIn: data, ...rest };
 }

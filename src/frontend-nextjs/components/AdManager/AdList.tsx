@@ -1,10 +1,10 @@
 import { Card, Spacer, Spinner } from '@heroui/react';
 
 import { AdListItem } from '@/components/AdManager/AdListItem';
-import { useAdsList } from '@/hooks/queries/useAdList';
+import { useAdList } from '@/hooks/queries/useAdList';
 
 export function AdList() {
-    const { data: adList, isLoading } = useAdsList();
+    const { data: adList, isLoading } = useAdList();
 
     if (isLoading) {
         return (
@@ -19,8 +19,8 @@ export function AdList() {
             <div>
                 {!adList || adList.length === 0
                     ? 'No ads found...'
-                    : adList.toReversed().map((ad: { name: string; creationTime: string }, index: number) => (
-                          <div key={index}>
+                    : adList.toReversed().map((ad: { name: string; creationTime: string }) => (
+                          <div key={ad.name}>
                               <AdListItem creationTime={ad.creationTime} name={ad.name} />
                               <Spacer y={2} />
                           </div>

@@ -16,9 +16,11 @@ async function checkForAdManagerRole(): Promise<boolean> {
 }
 
 export function useCheckAdmanager() {
-    return useQuery({
-        queryKey: [QUERY_KEYS.ad_manager],
+    const { data, ...rest } = useQuery({
+        queryKey: [QUERY_KEYS.isLoggedIn, QUERY_KEYS.ad_manager],
         queryFn: checkForAdManagerRole,
         throwOnError: true,
     });
+
+    return { isAdManager: data, ...rest };
 }
