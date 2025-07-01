@@ -136,7 +136,7 @@ export function PaymentForm(props: PaymentFormProps) {
                 </CardBody>
                 <CardFooter className='flex flex-col gap-1'>
                     {errorMsg.length > 0 && <p className='text-red-700 font-bold'>{errorMsg}</p>}
-                    <Button color='primary' type='submit'>
+                    <Button color='primary' name='updatePaymentInfo' type='submit'>
                         Update Payment Information
                     </Button>
                 </CardFooter>

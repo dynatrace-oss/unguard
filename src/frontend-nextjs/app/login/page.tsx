@@ -113,11 +113,12 @@ export default function LoginRegister() {
                 />
                 {errorMsg.length > 0 && <p className='text-red-700 font-bold'>{errorMsg}</p>}
                 <div className='flex gap-2'>
-                    <Button color='primary' type='submit' onPress={() => setIsLogin(true)}>
+                    <Button color='primary' name='login' type='submit' onPress={() => setIsLogin(true)}>
                         Login
                     </Button>
                     <Button
                         className='bg-gray-500 text-gray-50'
+                        name='register'
                         type='submit'
                         variant='flat'
                         onPress={() => setIsLogin(false)}

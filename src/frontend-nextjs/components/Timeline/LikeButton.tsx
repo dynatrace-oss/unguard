@@ -27,7 +27,7 @@ export function LikeButton(props: LikeButtonProps) {
     }
 
     return (
-        <Button className=' text-default-600 bg-transparent' onPress={() => handleLikeButtonClick()}>
+        <Button className=' text-default-600 bg-transparent' name='likePost' onPress={() => handleLikeButtonClick()}>
             <p>{postLikesData?.likesCount}</p>
             {postLikesData?.isLikedByUser ? <BsHandThumbsUpFill /> : <BsHandThumbsUp />}
         </Button>
