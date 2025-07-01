@@ -70,6 +70,7 @@ export function MembershipSelector(props: MembershipSelectorProps) {
                     <Card
                         isPressable
                         className={`cursor-pointer w-full hover:bg-gray-100 ${isSelected == MEMBERSHIP.FREE ? 'border-2 border-default-800' : ''}`}
+                        id='freeMembershipCard'
                         onPress={() => setIsSelected(MEMBERSHIP.FREE)}
                     >
                         <CardHeader className='p-4 text-2xl font-bold text-center bg-gray-300'>
@@ -86,6 +87,7 @@ export function MembershipSelector(props: MembershipSelectorProps) {
                     <Card
                         isPressable
                         className={`cursor-pointer w-full hover:bg-gray-100 ${isSelected == MEMBERSHIP.PRO ? 'border-2 border-default-800' : ''}`}
+                        id='proMembershipCard'
                         onPress={() => setIsSelected(MEMBERSHIP.PRO)}
                     >
                         <CardHeader className='p-4 text-2xl font-bold text-center bg-blue-500 text-white'>
@@ -112,6 +114,7 @@ export function MembershipSelector(props: MembershipSelectorProps) {
                         className='font-semibold'
                         color='primary'
                         isDisabled={currentMembership === isSelected}
+                        name='updateMembershipButton'
                         type='submit'
                     >
                         Update Membership Plan

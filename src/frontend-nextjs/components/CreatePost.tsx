@@ -70,9 +70,10 @@ export function CreatePost() {
                             selectedKey={selectedPostType}
                             onSelectionChange={(key) => setSelectedPostType(key.toString())}
                         >
-                            <Tab key='text' title='Share Text'>
+                            <Tab key='text' id='shareTextTab' title='Share Text'>
                                 <Textarea
                                     errorMessage='Please enter a text'
+                                    id='postTextContent'
                                     isRequired={selectedPostType === 'text'}
                                     label='Your Post'
                                     minRows={4}
@@ -80,10 +81,11 @@ export function CreatePost() {
                                     placeholder='What are you thinking?'
                                 />
                             </Tab>
-                            <Tab key='url' title='Share URL'>
+                            <Tab key='url' id='shareUrlTab' title='Share URL'>
                                 <Input
                                     className='pb-2'
                                     errorMessage='Please enter a valid URL'
+                                    id='postUrl'
                                     isRequired={selectedPostType === 'url'}
                                     label='URL'
                                     name='url'
@@ -92,6 +94,7 @@ export function CreatePost() {
                                 <Autocomplete
                                     allowsCustomValue
                                     defaultItems={languages}
+                                    id='postLanguage'
                                     label='Preferred Language'
                                     name='language'
                                     variant='bordered'
@@ -99,23 +102,29 @@ export function CreatePost() {
                                     {(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
                                 </Autocomplete>
                             </Tab>
-                            <Tab key='image' title='Share Image'>
+                            <Tab key='image' id='shareImageTab' title='Share Image'>
                                 <Input
                                     className='pb-2'
                                     errorMessage='Please enter a valid URL'
+                                    id='postImageUrl'
                                     isRequired={selectedPostType === 'image'}
                                     label='Image URL'
                                     name='imageUrl'
                                     placeholder='Please enter a link to an Image...'
                                     type='url'
                                 />
-                                <Input label='Description' name='content' placeholder='Enter a description...' />
+                                <Input
+                                    id='postImageDescription'
+                                    label='Description'
+                                    name='content'
+                                    placeholder='Enter a description...'
+                                />
                             </Tab>
                         </Tabs>
                     </CardBody>
                     <CardFooter className='gap-3 justify-start px-3'>
                         <div className='flex gap-1'>
-                            <Button color='primary' type='submit'>
+                            <Button color='primary' name='createPostSubmit' type='submit'>
                                 <p>Post</p>
                             </Button>
                         </div>

@@ -56,6 +56,7 @@ function UserSearchComponent() {
                     <Autocomplete
                         allowsCustomValue
                         defaultItems={userList}
+                        id='userSearch'
                         label='Search Users'
                         name='filteredName'
                         variant='bordered'
@@ -77,7 +78,13 @@ function UserSearchComponent() {
                             {roles?.map((role: any) => <SelectItem key={role.name}>{role.name}</SelectItem>)}
                         </Select>
                     )}
-                    <Button isIconOnly className='self-center' color='primary' onPress={() => filterList()}>
+                    <Button
+                        isIconOnly
+                        className='self-center'
+                        color='primary'
+                        name='searchUsersButton'
+                        onPress={() => filterList()}
+                    >
                         <BsSearch />
                     </Button>
                 </CardBody>

@@ -21,10 +21,9 @@
     },
     "dependencies": {
         "prettier": "^2.8.3",
-        "puppeteer": "14.4.0",
-        "typescript": "5.4.5"
+        "puppeteer": "24.11.2"
     },
     "devDependencies": {
-        "tsc": "2.0.4"
+        "typescript": "5.4.5"
     }
 }

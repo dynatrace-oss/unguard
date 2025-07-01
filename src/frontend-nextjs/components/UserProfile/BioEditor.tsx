@@ -37,12 +37,14 @@ export function BioEditor({ username }: BioEditorProps) {
             <AccordionItem
                 key='editBio'
                 aria-label='Edit Bio'
+                id='editBio'
                 indicator={<BsPencil />}
                 title={<p className='text-xl font-extrabold tracking-tight text-gray-800'>Edit Bio</p>}
             >
                 <Switch
                     className='mb-2'
                     color='primary'
+                    id='useMarkdownEditorSwitch'
                     isSelected={isMarkdownEditor}
                     onValueChange={setIsMarkdownEditor}
                 >
@@ -52,6 +54,7 @@ export function BioEditor({ username }: BioEditorProps) {
                     <MDEditor
                         commands={markdownCommands}
                         extraCommands={[]}
+                        id='bioTextMarkdown'
                         minHeight={120}
                         preview='live'
                         value={value}
@@ -59,6 +62,7 @@ export function BioEditor({ username }: BioEditorProps) {
                     />
                 ) : (
                     <Textarea
+                        id='bioText'
                         label='Bio'
                         minRows={8}
                         placeholder='Enter your bio'
@@ -69,6 +73,7 @@ export function BioEditor({ username }: BioEditorProps) {
                 <Button
                     className='mt-2'
                     color='primary'
+                    name='postBio'
                     onPress={() =>
                         updateBio(username, { bioText: value, enableMarkdown: isMarkdownEditor }).then(() =>
                             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.bio, username] }),
