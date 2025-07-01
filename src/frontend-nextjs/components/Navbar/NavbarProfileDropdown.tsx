@@ -34,7 +34,7 @@ export default function NavbarProfileDropdown() {
     return (
         <div className='flex items-center gap-4'>
             <Dropdown>
-                <DropdownTrigger>
+                <DropdownTrigger id='ProfileDropdownTrigger'>
                     <User
                         as='button'
                         avatarProps={{
@@ -62,6 +62,7 @@ export default function NavbarProfileDropdown() {
                     <DropdownItem
                         key='logout'
                         color='primary'
+                        id='logout'
                         textValue='Logout'
                         onPress={() => logout().then((res) => handleLogout(res))}
                     >
