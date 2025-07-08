@@ -10,11 +10,10 @@ type User = {
     roles: string[];
 };
 
-async function fetchUsers(params: {}): Promise<User[]> {
-    const res = await fetch(path.join(BASE_PATH, '/api/users'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+async function fetchUsers(params: Record<string, any>): Promise<User[]> {
+    const queryParams = new URLSearchParams(params).toString();
+    const res = await fetch(path.join(BASE_PATH, `/api/users?${queryParams}`), {
+        method: 'GET',
     });
 
     if (!res.ok) {

