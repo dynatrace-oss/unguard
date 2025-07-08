@@ -53,6 +53,5 @@ spec:
         - name: wait-for-frontend
           image: curlimages/curl
           command: [ "/bin/sh", "-c" ]
-          # TODO: #22 Replace this endpoint with a proper health check endpoint
-          args: [ 'while [ $(curl -ksw "%{http_code}" "http://unguard-frontend:80/ui/img/logo.svg" -o /dev/null) -ne 200 ]; do sleep 5; echo "health check failed . Waiting for the service..."; done' ]
+          args: [ 'while [ $(curl -ksw "%{http_code}" "http://unguard-frontend:80/ui/api/healthz" -o /dev/null) -ne 200 ]; do sleep 5; echo "health check failed . Waiting for the service..."; done' ]
 {{ end }}

@@ -29,7 +29,8 @@ export async function likePost(postId: string): Promise<any> {
         });
 }
 
-export async function unlikePost(postId: string): Promise<any> {
+// Note: unlikePost needs also to allow passing arrays for the SQL Injection exploit in the like service.
+export async function unlikePost(postId: string | string[]): Promise<any> {
     return await getLikeServiceApi()
         .delete(`/like`, {
             params: { postId: postId },

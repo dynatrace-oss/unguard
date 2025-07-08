@@ -84,7 +84,6 @@ export function CreatePost() {
                             <Tab key='url' id='shareUrlTab' title='Share URL'>
                                 <Input
                                     className='pb-2'
-                                    errorMessage='Please enter a valid URL'
                                     id='postUrl'
                                     isRequired={selectedPostType === 'url'}
                                     label='URL'
@@ -105,13 +104,11 @@ export function CreatePost() {
                             <Tab key='image' id='shareImageTab' title='Share Image'>
                                 <Input
                                     className='pb-2'
-                                    errorMessage='Please enter a valid URL'
                                     id='postImageUrl'
                                     isRequired={selectedPostType === 'image'}
                                     label='Image URL'
                                     name='imageUrl'
                                     placeholder='Please enter a link to an Image...'
-                                    type='url'
                                 />
                                 <Input
                                     id='postImageDescription'
