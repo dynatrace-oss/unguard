@@ -1,6 +1,7 @@
 'use client';
 
 import {
+    addToast,
     Autocomplete,
     AutocompleteItem,
     Button,
@@ -34,9 +35,13 @@ export function CreatePost() {
         //for some reason, the autocomplete component from HeroUI returns the label instead of the key, therefore need to set it manually
         data.language = getLanguageKey(data.language);
 
-        createNewPost(data).then((postId) => {
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.posts] }).then(() => navigateToPost(postId));
-        });
+        createNewPost(data)
+            .then((postId) => {
+                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.posts] }).then(() => navigateToPost(postId));
+            })
+            .catch((error) => {
+                addToast({ title: 'Failed to create post', description: error.message, color: 'danger' });
+            });
 
         e.currentTarget?.reset();
     }, []);

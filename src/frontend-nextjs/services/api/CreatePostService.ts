@@ -2,11 +2,15 @@ import * as cheerio from 'cheerio';
 
 import { getMicroblogApi, getProxy } from '@/axios';
 import { getJwtFromCookie } from '@/services/api/AuthService';
+import { AxiosResponse } from 'axios';
 
-async function fetchMetadataFromProxy(body: any): Promise<[metaTitle: string, metaImgSrc: string | undefined]> {
+async function fetchMetadataFromProxy(
+    body: any,
+    header: any,
+): Promise<[metaTitle: string, metaImgSrc: string | undefined]> {
     const proxyResponse = await getProxy().get('/', {
         params: {
-            header: body.language,
+            header: header ?? body.language,
             url: body.url,
         },
     });
@@ -34,59 +38,81 @@ async function fetchMetadataFromProxy(body: any): Promise<[metaTitle: string, me
     return [metaTitle, metaImgSrc];
 }
 
-async function handleUrlPost(body: any, jwt?: string): Promise<{ postId: string }> {
-    const [metaTitle, metaImgSrc] = await fetchMetadataFromProxy(body);
-    const res = await getMicroblogApi().post(
-        '/post',
-        {
-            content: `${metaTitle} ${body.url}`,
-            imageUrl: metaImgSrc,
-        },
-        { headers: { Cookie: 'jwt=' + jwt } },
-    );
-
-    if (res.status !== 200) {
-        throw new Error('Failed to create new post');
-    }
-
-    return res.data;
+async function handleUrlPost(body: any, header: any, jwt?: string): Promise<AxiosResponse<{ postId: string }>> {
+    const [metaTitle, metaImgSrc] = await fetchMetadataFromProxy(body, header);
+    return await getMicroblogApi()
+        .post(
+            '/post',
+            {
+                content: `${metaTitle} ${body.url}`,
+                imageUrl: metaImgSrc,
+            },
+            { headers: { Cookie: 'jwt=' + jwt } },
+        )
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            return error.response;
+        });
 }
 
-async function handleImagePost(body: any, jwt?: string): Promise<{ postId: string }> {
-    const proxyResponse = await getProxy().get('/image', {
-        params: {
-            url: body.imageUrl,
-        },
-    });
-    const res = await getMicroblogApi().post(
-        '/post',
-        {
-            content: body.content,
-            imageUrl: proxyResponse.data,
-        },
-        { headers: { Cookie: 'jwt=' + jwt } },
-    );
-
-    return res.data;
+async function handleImagePost(body: any, jwt?: string): Promise<AxiosResponse<{ postId: string }>> {
+    return await getProxy()
+        .get('/image', {
+            params: {
+                url: body.imageUrl,
+            },
+        })
+        .then(async (proxyResponse) => {
+            try {
+                return await getMicroblogApi().post(
+                    '/post',
+                    {
+                        content: body.content,
+                        imageUrl: proxyResponse.data,
+                    },
+                    { headers: { Cookie: 'jwt=' + jwt } },
+                );
+            } catch (error: any) {
+                throw new Error('Failed to create image post: ' + error.message);
+            }
+        })
+        .catch((error) => {
+            return error.response;
+        });
 }
 
-async function handleContentPost(body: any, jwt?: string): Promise<{ postId: string }> {
-    const res = await getMicroblogApi().post(
-        '/post',
-        {
-            content: body.content,
-        },
-        { headers: { Cookie: 'jwt=' + jwt } },
-    );
-
-    return res.data;
+async function handleContentPost(body: any, jwt?: string): Promise<AxiosResponse<{ postId: string }>> {
+    return await getMicroblogApi()
+        .post(
+            '/post',
+            {
+                content: body.content,
+            },
+            { headers: { Cookie: 'jwt=' + jwt } },
+        )
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            return error.response;
+        });
 }
 
-export async function createNewPost(body: any): Promise<{ postId: string }> {
+export async function createNewPost(
+    body: any,
+    header: any,
+): Promise<
+    AxiosResponse<{
+        message?: any;
+        postId: string;
+    }>
+> {
     const jwt = await getJwtFromCookie();
 
     if (body.url) {
-        return handleUrlPost(body, jwt);
+        return handleUrlPost(body, header, jwt);
     } else if (body.imageUrl) {
         return handleImagePost(body, jwt);
     } else if (body.content) {
