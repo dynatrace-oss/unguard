@@ -16,5 +16,10 @@ export async function createNewPost(data: Post) {
         body: JSON.stringify(data),
     });
 
+    if (!res.ok) {
+        const error_res = await res.json();
+        throw new Error(error_res.statusText || 'Failed to create new post');
+    }
+
     return res.json();
 }
