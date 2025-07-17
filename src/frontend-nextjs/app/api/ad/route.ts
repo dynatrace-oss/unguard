@@ -2,6 +2,15 @@ import { NextResponse } from 'next/server';
 
 import { uploadAd } from '@/services/api/AdManagerService';
 
+/**
+ * @swagger
+ * /ui/api/ad:
+ *   get:
+ *     description: Get the ad service endpoint.
+ *   post:
+ *     description: Upload an ad file.
+ */
+
 export async function GET(): Promise<NextResponse> {
     return NextResponse.json({ src: '/ad-service' }, { status: 200 });
 }

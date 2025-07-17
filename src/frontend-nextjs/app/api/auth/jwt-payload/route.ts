@@ -4,6 +4,13 @@ import { jwtDecode } from 'jwt-decode';
 
 import { type CustomPayLoad } from '@/services/LocalUserService';
 
+/**
+ * @swagger
+ * /ui/api/auth/jwt-payload:
+ *   get:
+ *     description: Get the JWT payload of the current user.
+ */
+
 export async function GET(): Promise<NextResponse> {
     const cookieStore = await cookies();
 

@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 
 import { followUser, unfollowUser, isFollowing } from '@/services/api/FollowService';
 
+/**
+ * @swagger
+ * /ui/api/follow/{username}:
+ *   post:
+ *     description: Follow a user by username.
+ *   delete:
+ *     description: Unfollow a user by username.
+ *   get:
+ *     description: Check if the current user is following the specified user.
+ */
+
 export async function POST(req: Request, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse> {
     const { username } = await params;
     const res = await followUser(username);

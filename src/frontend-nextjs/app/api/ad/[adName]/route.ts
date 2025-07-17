@@ -6,6 +6,13 @@ type AdParams = {
     adName: string;
 };
 
+/**
+ * @swagger
+ * /ui/api/ad/{adName}:
+ *   delete:
+ *     description: Delete an Ad by its name.
+ */
+
 export async function DELETE(req: Request, { params }: { params: Promise<AdParams> }): Promise<NextResponse> {
     const { adName } = await params;
     const res = await deleteAd(adName);
