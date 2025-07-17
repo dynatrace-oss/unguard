@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 
 import { createNewPost } from '@/services/api/CreatePostService';
 
+/**
+ * @swagger
+ * /ui/api/post:
+ *   post:
+ *     description: Create a new post.
+ */
+
 export async function POST(request: Request): Promise<NextResponse> {
     const body = await request.json();
     let header = request.headers.get('header');

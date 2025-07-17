@@ -2,9 +2,12 @@ import { NextResponse } from 'next/server';
 
 import { unlikePost } from '@/services/api/LikeService';
 
-/*
-This route uses search params for the postId to allow the SQL-Injection attack in the like-service
+/** @swagger
+ * /ui/api/like/unlike:
+ *   delete:
+ *     description: Unlike a post by its ID.
  */
+
 export async function DELETE(req: Request): Promise<NextResponse> {
     const { searchParams } = new URL(req.url);
     const postId = searchParams.getAll('postId');

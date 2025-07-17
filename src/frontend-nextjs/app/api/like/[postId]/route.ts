@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 
 import { likePost } from '@/services/api/LikeService';
 
+/**
+ * @swagger
+ * /ui/api/like/{postId}:
+ *   post:
+ *     description: Like a post by its ID.
+ */
+
 export type PostParams = {
     postId: string;
 };
