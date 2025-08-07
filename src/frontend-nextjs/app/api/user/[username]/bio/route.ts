@@ -3,6 +3,15 @@ import { NextResponse } from 'next/server';
 import { fetchUserIdForUsername } from '@/services/api/AuthService';
 import { editBio, fetchBio } from '@/services/api/UserService';
 
+/**
+ * @swagger
+ * /ui/api/user/{username}/bio:
+ *   get:
+ *     description: Get the bio for a user by username.
+ *   post:
+ *     description: Edit the bio for a user by username.
+ */
+
 export type UserParams = {
     username: string;
 };

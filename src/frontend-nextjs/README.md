@@ -1,4 +1,4 @@
-# Unguard Next.js Frontend
+# Frontend
 
 This is the frontend for the Unguard application. It provides a user interface and an API for interacting with the Unguard microservices platform.
 
@@ -44,40 +44,6 @@ Additionally, the Next.js API can also be accessed directly, allowing e.g. the e
 - `axios.ts` — Axios instances for API requests to backend services
 - `middleware.ts` — Next.js middleware mainly used for route protection
 - `constants.ts`, `enums/`, `data/` — Shared constants, enums, and static data
-
-## API Routes Overview
-The API routes have the prefix `/ui/api` and provide the following endpoints:
-- `GET /ad`: Provides the src of the ad service
-- `POST /ad`: Allows uploading new ad images
-- `DELETE /ad/[adName]`: Allows deleting ad images
-- `GET /ads`: Returns a list of all ad images
-- `GET /auth/ad-manager`: Returns a boolean indicating if the user is an ad manager
-- `GET /auth/jwt-payload`: Returns the JWT payload of the currently logged-in user
-- `POST /auth/login`: Logs in a user and returns a JWT token
-- `GET /auth/login`: Returns a boolean indicating if the user is logged in
-- `POST /auth/logout`: Logs out the user
-- `POST /auth/register`: Registers a new user
-- `GET /deployment-health`: Returns the health status of the Kubernetes deployments
-- `POST /follow/[username]`: Follows the user with the given username
-- `DELETE /follow/[username]`: Unfollows the user with the given username
-- `GET /follow[username]`: Returns a boolean indicating if the user is followed by the currently logged-in user
-- `GET /followers/[username]`: Returns a list of followers for the user with the given username
-- `POST /like/[postId]`: Adds a like for the given post ID for the currently logged-in user
-- `DELETE /like?postId=[postId]`: Deletes a like for the given post ID (using search params)
-- `GET /likes/[postId]`: Returns the number of likes for the given post ID
-- `GET /post/[postId]`: Returns the post with the given post ID
-- `POST /post`: Creates a new post
-- `GET /posts/[username]`: Returns a list of posts shared by the user with the given username
-- `GET /posts/mytimeline`: Returns the personal timeline of the currently logged-in user as a list of posts
-- `GET /posts`: Returns a list of all posts (the 'global timeline')
-- `GET /roles`: Returns a list of all available roles
-- `GET /user/[username]/bio`: Returns the bio of the user with the given username
-- `POST /user/[username]/bio`: Updates the bio of the user with the given username
-- `GET /user/[username]/membership`: Returns the membership of the user with the given username
-- `POST /user/[username]/membership`: Updates the membership of the user with the given username
-- `GET /user/[username]/payment`: Returns the payment info of the user with the given username
-- `POST /user/[username]/payment`: Updates the payment info of the user with the given username
-- `GET /users?name=[name]&roles=[roles]`: Returns a list of users matching the given name (partially) and roles
 
 ## Installation
 To install all dependencies with [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) run:

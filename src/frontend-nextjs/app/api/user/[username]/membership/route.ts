@@ -5,6 +5,15 @@ import { fetchMembership } from '@/services/api/UserService';
 import { UserParams } from '@/app/api/user/[username]/bio/route';
 import { updateMembershipForUser } from '@/services/api/MembershipService';
 
+/**
+ * @swagger
+ * /ui/api/user/{username}/membership:
+ *   get:
+ *     description: Get the membership for a user by username.
+ *   post:
+ *     description: Update the membership for a user by username.
+ */
+
 export async function GET(req: Request, { params }: { params: Promise<UserParams> }): Promise<NextResponse> {
     const { username } = await params;
 
