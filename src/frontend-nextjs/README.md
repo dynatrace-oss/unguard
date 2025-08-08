@@ -7,6 +7,8 @@ This app is based on the [Next.js 15](https://nextjs.org/docs/getting-started) f
 -   the frontend, available at /ui
 -   an API, available at /ui/api, which is used by the frontend to communicate with the backend services and can also be accessed directly.
 
+A full overview of all API routes can be accessed at `/ui/api/docs`, which is generated automatically using [Next-Swagger-Doc](https://www.npmjs.com/package/next-swagger-doc).
+
 ## Why Next.js
 
 Next.js is a React Framework and was chosen for the frontend, because (besides all React advantages) it provides many built-in features, such as server-side rendering or file-based routing, which make it easy to build a modern, performant and scalable frontend application.
@@ -62,7 +64,7 @@ To run only the frontend locally run:
 npm run dev
 ```
 
-Note that the API is dependent on the other microservices, therefore the frontend will fail to retrieve and show any data.
+Note that the frontend relies on the API, which is dependent on the other microservices. Therefore, when running only the frontend locally, it will not be able to retrieve or display any data.
 
 ### Developing with Kubernetes services
 
