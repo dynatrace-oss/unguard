@@ -1,0 +1,37 @@
+name: Build and Push Docker Images to ECR
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REPOSITORY: ${{ secrets.AWS_ECR_ROLE_ARN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.ECR_REPOSITORY }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push Docker images
+        run: |
+          IMAGE_TAG=latest
+          for dockerfile in $(find ./src -name Dockerfile); do
+            SERVICE=$(basename $(dirname $dockerfile))
+            IMAGE_URI="${ECR_REPOSITORY}:${SERVICE}-${IMAGE_TAG}"
+            docker build -t $IMAGE_URI -f $dockerfile $(dirname $dockerfile)
+            docker push $IMAGE_URI
+          done
