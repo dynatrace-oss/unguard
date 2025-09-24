@@ -1,4 +1,4 @@
-name: Run Skaffold Pipeline, Deploy to Minikube Cluster and run Unguard Helm Test
+name: Run Skaffold Pipeline, Deploy to AKS and run Unguard Helm Test
 on:
   pull_request:
     paths:
@@ -8,9 +8,15 @@ on:
 
 jobs:
   lint-build-run-test-unguard:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     timeout-minutes: 30
     steps:
+      - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.21.0
+        env:
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}
+        with:
+          secrets_to_redact: '["${{ github.token }}"]'    
       - name: Checkout sources
         uses: actions/checkout@v3
 
@@ -34,18 +40,13 @@ jobs:
       - name: Run chart-testing (lint)
         run: ct lint --chart-dirs . --charts ./chart --validate-maintainers=false --check-version-increment=false --target-branch ${{ github.event.repository.default_branch }}
 
-      - name: Set up Minikube
-        uses: medyagh/setup-minikube@v0.0.14
-        with:
-          addons: ingress
-
       - name: Cache Skaffold layers
         uses: actions/cache@v3
         with:
           path: ~/.skaffold/
           key: fixed-${{ github.sha }}
 
-      - name: Run Skaffold and Deploy to Minikube Cluster
+      - name: Run Skaffold and Deploy to AKS
         uses: hiberbee/github-action-skaffold@1.27.0
         with:
           command: run
@@ -53,3 +54,5 @@ jobs:
 
       - name: Run chart-testing
         run: helm test unguard --namespace unguard --timeout 10m0s --logs
+    permissions:
+      actions: read        
