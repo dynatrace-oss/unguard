@@ -6,6 +6,17 @@ on:
       - skaffold.yaml
       - chart/**
 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment (e.g., dev, staging, prod)'
+        required: true
+        default: 'dev'
+      run_tests:
+        description: 'Run Helm tests (true/false)'
+        required: false
+        default: 'true'
+
 jobs:
   lint-build-run-test-unguard:
     runs-on: self-hosted
