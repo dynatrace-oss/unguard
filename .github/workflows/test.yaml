@@ -25,7 +25,8 @@ jobs:
       - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.21.0
         env:
           OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}
+          OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+          
         with:
           secrets_to_redact: '["${{ github.token }}"]'    
       - name: Checkout sources
