@@ -25,7 +25,11 @@ jobs:
       - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.21.0
         env:
           OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          OTLP_PROTOCOL: HTTPS
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
           OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+          GITHUB_DEBUG: true
           
         with:
           secrets_to_redact: '["${{ github.token }}"]'    
