@@ -22,7 +22,7 @@ jobs:
     runs-on: eks
     timeout-minutes: 30
     steps:
-      - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.21.0
+      - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.27.0
         env:
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
