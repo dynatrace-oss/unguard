@@ -18,7 +18,7 @@ on:
         default: 'true'
 
 jobs:
-  test:
+  deploy:
     runs-on: eks
     timeout-minutes: 30
     steps:
@@ -39,7 +39,22 @@ jobs:
           secrets_to_redact: '["${{ github.token }}"]'    
       - name: Checkout sources
         uses: actions/checkout@v3
+        
+      - name: Configure AWS credentials (optional if EC2 has instance profile)
+        run: |
+             aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+             aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+             aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
+             aws configure set region ${{ secrets.EKS_REGION }}
 
+      - name: Update kubeconfig for EKS
+        run: |
+            aws eks update-kubeconfig --name ${{ secrets.CLUSTER_NAME }} --region ${{ secrets.EKS_REGION }}
+
+      - name: Test kubectl access
+        run: |
+            kubectl get pods -A
+  
       - name: Set up Helm
         uses: azure/setup-helm@v3.5
         with:
