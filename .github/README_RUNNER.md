@@ -71,7 +71,28 @@ sudo systemctl start github-runner
 
 ---
 
-## ✅ Step 4: Verify Runner  
+## ☸️ Step 4: Integrate with Amazon EKS  
+```
+### Install AWS CLI:  
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"  
+unzip awscliv2.zip  
+sudo ./aws/install  
+```  
+
+
+### Install kubectl:  
+```
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"  
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/  
+
+### Update kubeconfig for EKS:
+aws eks update-kubeconfig --region <your-region> --name <your-cluster-name>
+```  
+---
+
+
+## ✅ Step 5: Verify Runner  
 
 ### Check status:  
 systemctl status github-runner  
