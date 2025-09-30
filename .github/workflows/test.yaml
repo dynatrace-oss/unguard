@@ -1,4 +1,4 @@
-name: Run Skaffold Pipeline, Deploy to AKS and run Unguard Helm Test
+name: Run Skaffold Pipeline, Deploy to EKS and run Unguard Helm Test
 on:
   pull_request:
     paths:
@@ -34,6 +34,7 @@ jobs:
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}  
           GITHUB_DEBUG: true
         with:
+          cache: false
           secrets_to_redact: '["${{ github.token }}"]'    
       - name: Checkout sources
         uses: actions/checkout@v3
