@@ -18,7 +18,7 @@ on:
         default: 'true'
 
 jobs:
-  deploy:
+  test:
     runs-on: eks
     timeout-minutes: 30
     steps:
