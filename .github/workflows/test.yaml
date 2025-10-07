@@ -41,6 +41,9 @@ jobs:
         
       - name: Configure AWS credentials (optional if EC2 has instance profile)
         run: |
+             if [ -z "$AWS_ACCESS_KEY_ID" ]; then echo "Missing AWS_ACCESS_KEY_ID"; exit 1; fi
+             if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then echo "Missing AWS_SECRET_ACCESS_KEY"; exit 1; fi
+             if [ -z "$AWS_SESSION_TOKEN" ]; then echo "Missing AWS_SESSION_TOKEN"; exit 1; fi
              aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
              aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
              aws configure set aws_session_token $AWS_SESSION_TOKEN
