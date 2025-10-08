@@ -76,6 +76,7 @@ public class ProxyController {
         /* can add additional headers by sending something like "1\u560d\u560aX-But-Not-This-One: oh no!"
            in the header field */
         logger.info(url);
+        logger.info(host);
 
         tracer.activeSpan().setTag("http.host", host);
 

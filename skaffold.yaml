@@ -27,6 +27,7 @@ build:
       context: src/microblog-service
     - image: unguard-proxy-service
       context: src/proxy-service
+      # jib: {}
     - image: unguard-user-simulator
       context: src/user-simulator
     - image: unguard-user-auth-service
@@ -50,9 +51,11 @@ build:
 
   local:
     # only the docker CLI respects a manually logged-in daemon
-    useDockerCLI: true
+    useDockerCLI: false
     # BuildKit provides an improvement on performance
     useBuildkit: true
+    # prefer pulling missing images from the remote registry
+    #tryImportMissing: true
 
 deploy:
   helm:

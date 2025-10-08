@@ -1,10 +1,21 @@
-# based on snippet from https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md
-FROM --platform=linux/amd64 ghcr.io/puppeteer/puppeteer:24.11.0 AS base
-COPY --chown=pptruser:pptruser . .
+FROM node:22
+
+RUN apt-get update \
+ && apt-get install -y chromium \
+    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+    --no-install-recommends
+    
+USER node
+
+WORKDIR /app
+
+COPY --chown=node . /app
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 RUN npm install
 RUN npm run build
 
-ENV NODE_ENV=production
-ENV NODE_CONFIG_STRICT_MODE=1
+COPY --chown=node . /app
 CMD ["npm", "start"]

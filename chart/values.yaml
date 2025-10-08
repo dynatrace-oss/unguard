@@ -97,8 +97,8 @@ profileService:
         httpGet:
           path: /healthz
           port: 8080
-        initialDelaySeconds: 5
-        periodSeconds: 15
+        initialDelaySeconds: 15
+        periodSeconds: 60
 
 # User Simulator
 userSimulator:

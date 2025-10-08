@@ -1,7 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.2.2.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-	id 'com.google.cloud.tools.jib' version '2.7.1'
+	id 'com.google.cloud.tools.jib' version '3.2.0'
 	id 'java'
 }
 
@@ -45,4 +45,18 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+
+jib {
+	from {
+		image = 'openjdk:8u111-jre'
+	}
+	to {
+		image = 'unguard-proxy-service'
+	}
+	container {
+		ports = ['8081']
+		mainClass = 'org.dynatrace.ssrfservice.Application'
+		workingDirectory = '/app'
+	}
 }
