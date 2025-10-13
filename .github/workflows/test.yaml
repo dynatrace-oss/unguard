@@ -18,21 +18,25 @@ on:
         default: 'true'
 
 jobs:
-  test:
+  build:
     runs-on: eks
     timeout-minutes: 30
+    env:
+        OTLP_PROTOCOL: HTTPS
+        WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+        WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
+        OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+        OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+        OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
+        OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
+        OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+        EKS_REGION: ${{ secrets.EKS_REGION }}
+        GITHUB_DEBUG: true
     steps:
       - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.21.0
-        env:
-          OTLP_PROTOCOL: HTTPS
-          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
-          WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
-          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
-          OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}  
-          GITHUB_DEBUG: true
         with:
           cache: false
           secrets_to_redact: '["${{ github.token }}"]'    
@@ -48,12 +52,7 @@ jobs:
              aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
              aws configure set aws_session_token $AWS_SESSION_TOKEN
              aws configure set region $EKS_REGION
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-          EKS_REGION: ${{ secrets.EKS_REGION }}
-          
+
       - name: Update kubeconfig for EKS
         run: |
             aws eks update-kubeconfig --name $CLUSTER_NAME --region $EKS_REGION
