@@ -49,6 +49,8 @@ build:
       context: exploit-toolkit
 
   local:
+    # for testing, do not push the images
+    push: false
     # only the docker CLI respects a manually logged-in daemon
     useDockerCLI: true
     # BuildKit provides an improvement on performance
