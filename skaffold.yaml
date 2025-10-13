@@ -55,6 +55,7 @@ build:
     useDockerCLI: true
     # BuildKit provides an improvement on performance
     useBuildkit: true
+    tryImportMissing: true
 
 deploy:
   helm:
