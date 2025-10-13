@@ -158,20 +158,20 @@ jobs:
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}      
         run: ct lint --chart-dirs . --charts ./chart --validate-maintainers=false --check-version-increment=false --target-branch ${{ github.event.repository.default_branch }}
 
-      - name: Cache Skaffold layers
-        env:
-          OTLP_PROTOCOL: HTTPS
-          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
-          WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
-          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
-          OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}            
-        uses: actions/cache@v3
-        with:
-          path: ~/.skaffold/
-          key: fixed-${{ github.sha }}
+      #- name: Cache Skaffold layers
+      #  env:
+      #    OTLP_PROTOCOL: HTTPS
+      #    WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+      #    WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
+      #    OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+      #    OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+      #    OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
+      #    OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
+      #    OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}            
+      #  uses: actions/cache@v3
+      #  with:
+      #    path: ~/.skaffold/
+      #    key: fixed-${{ github.sha }}
 
       - name: Run Skaffold and Deploy to EKS
         uses: hiberbee/github-action-skaffold@1.27.0
