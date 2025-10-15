@@ -173,10 +173,20 @@ jobs:
       #    path: ~/.skaffold/
       #    key: fixed-${{ github.sha }}
 
-      - name: Run Skaffold and Deploy to EKS
+      - name: Calculate next release version
+        id: version
+        run: |
+          latest=$(git describe --tags `git rev-list --tags --max-count=1`)
+          IFS='.' read -ra parts <<< "${latest#v}"
+          major=${parts[0]}
+          minor=$((parts[1] + 1))
+          echo "RELEASE_VERSION=v${major}.${minor}.0" >> $GITHUB_ENV
+          
+      - name: Build Skaffold Image
         uses: hiberbee/github-action-skaffold@1.27.0
         env:
           OTLP_PROTOCOL: HTTPS
+          RELEASE_ID: ${{ env.RELEASE_VERSION }}
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
           OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
@@ -186,7 +196,23 @@ jobs:
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
         
         with:
-          run: skaffold run
+          run: skaffold build
+
+      - name: Deploy to EKS
+        uses: hiberbee/github-action-skaffold@1.27.0
+        env:
+          OTLP_PROTOCOL: HTTPS
+          RELEASE_ID: ${{ env.RELEASE_VERSION }}
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+          OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
+        
+        with:
+          run: skaffold deploy          
 
       - name: Run chart-testing
         env:
