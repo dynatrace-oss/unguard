@@ -186,7 +186,7 @@ jobs:
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
         
         with:
-          run: skaffold run --artifact unguard-ad-service
+          run: skaffold run
           skip-tests: true
 
       - name: Run chart-testing
