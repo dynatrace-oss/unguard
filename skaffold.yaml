@@ -19,8 +19,8 @@ metadata:
 build:
   artifacts:
     # context is the directory with the Dockerfile for that image
-    - image: unguard-envoy-proxy
-      context: src/envoy-proxy
+#    - image: unguard-envoy-proxy
+#      context: src/envoy-proxy
 #    - image: unguard-frontend
 #      context: src/frontend-nextjs
 #    - image: unguard-microblog-service # adapt jib patch index below if you move this item
@@ -33,8 +33,8 @@ build:
 #      context: src/user-auth-service
 #    - image: unguard-ad-service
 #      context: src/ad-service
-#    - image: unguard-membership-service
-#      context: src/membership-service
+    - image: unguard-membership-service
+      context: src/membership-service
 #    - image: unguard-malicious-load-generator
 #      context: src/malicious-load-generator
 #    - image: unguard-status-service
@@ -74,74 +74,15 @@ deploy:
       - name: unguard
         chartPath: ./chart
         namespace: unguard
-        createNamespace: true
+        createNamespace: false
         valuesFiles: ["./chart/values.yaml"]
         setValueTemplates:
-          # ad-service
-          adService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_ad_service}}"
-          adService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_ad_service}}@{{.IMAGE_DIGEST_unguard_ad_service}}"
-          # envoy-proxy
-          envoyProxy.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_envoy_proxy}}"
-          envoyProxy.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_envoy_proxy}}@{{.IMAGE_DIGEST_unguard_envoy_proxy}}"
-          # frontend
-          frontend.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_frontend}}"
-          frontend.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_frontend}}@{{.IMAGE_DIGEST_unguard_frontend}}"
-          # microblog-service
-          microblogService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_microblog_service }}"
-          microblogService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_microblog_service }}@{{.IMAGE_DIGEST_unguard_microblog_service }}"
-          # proxy-service
-          proxyService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_proxy_service}}"
-          proxyService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_proxy_service}}@{{.IMAGE_DIGEST_unguard_proxy_service}}"
-          # user-simulator
-          userSimulator.cronJob.jobTemplate.container.image.repository: "{{.IMAGE_REPO_unguard_user_simulator}}"
-          userSimulator.cronJob.jobTemplate.container.image.tag: "{{.IMAGE_TAG_unguard_user_simulator}}@{{.IMAGE_DIGEST_unguard_user_simulator}}"
-          # user-auth-service
-          userAuthService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_user_auth_service}}"
-          userAuthService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_user_auth_service}}@{{.IMAGE_DIGEST_unguard_user_auth_service}}"
           # membership-service
           membershipService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_membership_service}}"
           membershipService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_membership_service}}@{{.IMAGE_DIGEST_unguard_membership_service}}"
-          # status-service
-          statusService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_status_service}}"
-          statusService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_status_service}}@{{.IMAGE_DIGEST_unguard_status_service}}"
-          # profile-service
-          profileService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_profile_service}}"
-          profileService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_profile_service}}@{{.IMAGE_DIGEST_unguard_profile_service}}"
-          # malicious-load-generator
-          maliciousLoadGenerator.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_malicious_load_generator}}"
-          maliciousLoadGenerator.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_malicious_load_generator}}@{{.IMAGE_DIGEST_unguard_malicious_load_generator}}"
-          # like-service
-          likeService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_like_service}}"
-          likeService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_like_service}}@{{.IMAGE_DIGEST_unguard_like_service}}"
-          # payment-service
-          paymentService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_payment_service}}"
-          paymentService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_payment_service}}@{{.IMAGE_DIGEST_unguard_payment_service}}"
 
         setValues:
-          # ad-service
-          adService.deployment.container.image.pullPolicy: "IfNotPresent"
-          # envoy-proxy
-          envoyProxy.cronJob.jobTemplate.container.image.pullPolicy: "IfNotPresent"
-          # frontend
-          frontend.deployment.container.image.pullPolicy: "IfNotPresent"
-          # microblog-service
-          microblogService.deployment.container.image.pullPolicy: "IfNotPresent"
-          # proxy-service
-          proxyService.deployment.container.image.pullPolicy: "IfNotPresent"
-          # user-simulator
-          userSimulator.cronJob.jobTemplate.container.image.pullPolicy: "IfNotPresent"
-          # user-auth-service
-          userAuthService.deployment.container.image.pullPolicy: "IfNotPresent"
-          # membership-service
           membershipService.deployment.container.image.pullPolicy: "IfNotPresent"
-          # status-service
-          statusService.deployment.container.image.pullPolicy: "IfNotPresent"
-          # profile-service
-          profileService.deployment.container.image.pullPolicy: "IfNotPresent"
-          # like-service
-          likeService.deployment.container.image.pullPolicy: "IfNotPresent"
-          # payment-service
-          paymentService.deployment.container.image.pullPolicy: "IfNotPresent"
 
 profiles:
   - name: jib
