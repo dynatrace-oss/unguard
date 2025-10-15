@@ -186,6 +186,7 @@ jobs:
           echo "IMAGE_TAG_unguard_membership_service=v${major}.${minor}.0" >> $GITHUB_ENV
           
       - name: Docker login
+        uses: docker/login-action@v3
         env:
           OTLP_PROTOCOL: HTTPS
           RELEASE_ID: ${{ env.RELEASE_VERSION }}
@@ -197,8 +198,9 @@ jobs:
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
           DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}      
-        run: 
-           echo "${{ secrets.DOCKER_REGISTRY_PASSWORD }}" | docker login docker.io -u nikhilgoenka --password-stdin
+        with:
+          username: "nikhilgoenka"
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
           
       - name: Build Skaffold Image
         uses: hiberbee/github-action-skaffold@1.27.0
