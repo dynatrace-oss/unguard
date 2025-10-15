@@ -235,7 +235,7 @@ jobs:
         
         with:
           run: kubectl set image deployment/unguard-membership-service \
-               unguard-membership-service=nikhilgoenka/unguard-membership-service:${{ env.RELEASE_ID }} \
+               unguard-membership-service=docker.io/nikhilgoenka/unguard-membership-service:${{ env.RELEASE_ID }} \
               --namespace=unguard
 
       - name: Run chart-testing
