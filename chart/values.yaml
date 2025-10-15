@@ -143,7 +143,7 @@ membershipService:
       type: Recreate
     container:
       image:
-        repository: ghcr.io/dynatrace-oss/unguard/unguard-membership-service
+        repository: nikhilgoenka/unguard-membership-service
         tag: 0.12.0
         pullPolicy: IfNotPresent
       ports:
