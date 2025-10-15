@@ -187,7 +187,6 @@ jobs:
         
         with:
           run: skaffold run
-          skip-tests: true
 
       - name: Run chart-testing
         env:
