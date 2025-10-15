@@ -217,7 +217,9 @@ jobs:
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
         
         with:
-          run: skaffold deploy          
+          run: kubectl set image deployment/unguard-membership-service \
+               unguard-membership-service=nikhilgoenka/unguard-membership-service:${{ env.RELEASE_ID }} \
+              --namespace=unguard
 
       - name: Run chart-testing
         env:
