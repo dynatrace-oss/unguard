@@ -176,7 +176,7 @@ jobs:
       - name: Calculate next release version
         id: version
         run: |
-          latest=$(git describe --tags `git rev-list --tags --max-count=1`)
+          latest=$(git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null || echo "v0.0.0")
           IFS='.' read -ra parts <<< "${latest#v}"
           major=${parts[0]}
           minor=$((parts[1] + 1))
