@@ -21,32 +21,32 @@ build:
     # context is the directory with the Dockerfile for that image
     - image: unguard-envoy-proxy
       context: src/envoy-proxy
-    - image: unguard-frontend
-      context: src/frontend-nextjs
-    - image: unguard-microblog-service # adapt jib patch index below if you move this item
-      context: src/microblog-service
-    - image: unguard-proxy-service
-      context: src/proxy-service
-    - image: unguard-user-simulator
-      context: src/user-simulator
-    - image: unguard-user-auth-service
-      context: src/user-auth-service
-    - image: unguard-ad-service
-      context: src/ad-service
-    - image: unguard-membership-service
-      context: src/membership-service
-    - image: unguard-malicious-load-generator
-      context: src/malicious-load-generator
-    - image: unguard-status-service
-      context: src/status-service
-    - image: unguard-profile-service
-      context: src/profile-service
-    - image: unguard-like-service
-      context: src/like-service
-    - image: unguard-payment-service
-      context: src/payment-service
-    - image: unguard-exploit-toolkit
-      context: exploit-toolkit
+#    - image: unguard-frontend
+#      context: src/frontend-nextjs
+#    - image: unguard-microblog-service # adapt jib patch index below if you move this item
+#      context: src/microblog-service
+#    - image: unguard-proxy-service
+#      context: src/proxy-service
+#    - image: unguard-user-simulator
+#      context: src/user-simulator
+#    - image: unguard-user-auth-service
+#      context: src/user-auth-service
+#    - image: unguard-ad-service
+#      context: src/ad-service
+#    - image: unguard-membership-service
+#      context: src/membership-service
+#    - image: unguard-malicious-load-generator
+#      context: src/malicious-load-generator
+#    - image: unguard-status-service
+#      context: src/status-service
+#    - image: unguard-profile-service
+#      context: src/profile-service
+#    - image: unguard-like-service
+#      context: src/like-service
+#    - image: unguard-payment-service
+#      context: src/payment-service
+#    - image: unguard-exploit-toolkit
+#      context: exploit-toolkit
 
   local:
     # for testing, do not push the images
