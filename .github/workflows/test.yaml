@@ -36,7 +36,7 @@ jobs:
         EKS_REGION: ${{ secrets.EKS_REGION }}
         GITHUB_DEBUG: true
     steps:
-      - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.21.0
+      - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.30.0
         env:
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
@@ -221,8 +221,9 @@ jobs:
           tag: ${{ env.RELEASE_ID }}
           push: true
 
-      - name: Deploy to EKS
-        uses: hiberbee/github-action-skaffold@1.27.0
+
+      - name: Deploy updated image to EKS
+      
         env:
           OTLP_PROTOCOL: HTTPS
           RELEASE_ID: ${{ env.RELEASE_VERSION }}
@@ -234,11 +235,11 @@ jobs:
           OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
-        
-        with:
-          run: kubectl set image deployment/unguard-membership-service \
-               unguard-membership-service=docker.io/nikhilgoenka/unguard-membership-service:${{ env.RELEASE_ID }} \
-              --namespace=unguard
+          
+        run: |
+          kubectl set image deployment/unguard-membership-service \
+            unguard-membership-service=docker.io/nikhilgoenka/unguard-membership-service:${{ env.RELEASE_ID }} \
+            --namespace=unguard
 
       - name: Run chart-testing
         env:
