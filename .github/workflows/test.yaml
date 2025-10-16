@@ -51,7 +51,6 @@ jobs:
           secrets_to_redact: '${{ toJSON(secrets) }}'          
         
       - name: Checkout sources
-      
         uses: actions/checkout@v3
         env: 
           OTLP_PROTOCOL: HTTPS
@@ -62,9 +61,7 @@ jobs:
           OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}        
-          GITHUB_STEP: Checkout sources    
-          GITHUB_ACTIONS_STEP_NAME: Testing sources
-          github.actions.step.name: Testing it out
+          GITHUB_STEP: Build
         with:
           cache: false
           secrets_to_redact: '${{ toJSON(secrets) }}'
@@ -72,6 +69,7 @@ jobs:
         
       - name: Configure AWS credentials (optional if EC2 has instance profile)
         env:
+          GITHUB_STEP: Setting EKS credentials
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
@@ -248,6 +246,7 @@ jobs:
 
       - name: Deploy updated image to EKS
         env:
+          GITHUB_STEP: Deploy
           OTLP_PROTOCOL: HTTPS
           RELEASE_ID: ${{ env.RELEASE_VERSION }}
           IMAGE_TAG_unguard_membership_service: ${{ env.IMAGE_TAG_unguard_membership_service }}          
@@ -298,6 +297,7 @@ jobs:
           
       - name: Run chart-testing
         env:
+          GITHUB_STEP: Test
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
