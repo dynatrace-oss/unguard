@@ -17,6 +17,7 @@ kind: Config
 metadata:
   name: unguard
 build:
+  default-repo: docker.io/nikhilgoenka
   artifacts:
     # context is the directory with the Dockerfile for that image
 #    - image: unguard-envoy-proxy
