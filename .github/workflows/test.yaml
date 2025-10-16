@@ -18,7 +18,7 @@ on:
         default: 'true'
 
 jobs:
-  build:
+  push:
     runs-on: eks
     timeout-minutes: 30
     env:
@@ -48,10 +48,14 @@ jobs:
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}        
         with:
           cache: false
-          secrets_to_redact: '["${{ github.token }}"]'          
+          secrets_to_redact: '${{ toJSON(secrets) }}'          
         
       - name: Checkout sources
         uses: actions/checkout@v3
+        env: 
+          GITHUB_STEP: Checkout sources    
+          GITHUB_ACTIONS_STEP_NAME: Testing sources
+
         with:
           fetch-depth: 0  # Ensures full history and tags are fetched        
         
@@ -223,7 +227,6 @@ jobs:
 
 
       - name: Deploy updated image to EKS
-      
         env:
           OTLP_PROTOCOL: HTTPS
           RELEASE_ID: ${{ env.RELEASE_VERSION }}
@@ -235,12 +238,44 @@ jobs:
           OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
-          
         run: |
           kubectl set image deployment/unguard-membership-service \
-            membership-service=docker.io/nikhilgoenka/unguard-membership-service:${{ env.RELEASE_ID }} \
+            membership-service=docker.io/nikhilgoenka/unguard-membership-service:${RELEASE_ID} \
             --namespace=unguard
-
+      
+          kubectl patch deployment unguard-membership-service \
+            -n unguard \
+            --patch "$(cat <<EOF
+          {
+            "spec": {
+              "template": {
+                "spec": {
+                  "containers": [
+                    {
+                      "name": "membership-service",
+                      "env": [
+                        {
+                          "name": "DT_RELEASE_VERSION",
+                          "value": "v0"
+                        },
+                        {
+                          "name": "DT_RELEASE_STAGE",
+                          "value": "Staging"
+                        },
+                        {
+                          "name": "DT_RELEASE_BUILD_VERSION",
+                          "value": "${RELEASE_ID}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+          EOF
+          )"
+          
       - name: Run chart-testing
         env:
           OTLP_PROTOCOL: HTTPS
@@ -251,4 +286,7 @@ jobs:
           OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}      
-        run: helm test unguard --namespace unguard --timeout 10m0s --logs   
+        run: helm test unguard --namespace unguard --timeout 10m0s --logs
+
+permissions:
+  actions: write
