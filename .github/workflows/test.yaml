@@ -51,12 +51,23 @@ jobs:
           secrets_to_redact: '${{ toJSON(secrets) }}'          
         
       - name: Checkout sources
+      
         uses: actions/checkout@v3
         env: 
+          OTLP_PROTOCOL: HTTPS
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+          OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}        
           GITHUB_STEP: Checkout sources    
           GITHUB_ACTIONS_STEP_NAME: Testing sources
-
+          github.actions.step.name: Testing it out
         with:
+          cache: false
+          secrets_to_redact: '${{ toJSON(secrets) }}'
           fetch-depth: 0  # Ensures full history and tags are fetched        
         
       - name: Configure AWS credentials (optional if EC2 has instance profile)
@@ -69,7 +80,7 @@ jobs:
           OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}        
-      
+          secrets_to_redact: '${{ toJSON(secrets) }}'
         run: |
              if [ -z "$AWS_ACCESS_KEY_ID" ]; then echo "Missing AWS_ACCESS_KEY_ID"; exit 1; fi
              if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then echo "Missing AWS_SECRET_ACCESS_KEY"; exit 1; fi
@@ -85,6 +96,15 @@ jobs:
         env:
           EKS_REGION: ${{ secrets.EKS_REGION }}
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+          OTLP_PROTOCOL: HTTPS
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+          OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}               
+          secrets_to_redact: '${{ toJSON(secrets) }}'
 
       - name: Test kubectl access
         env:
