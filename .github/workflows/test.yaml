@@ -320,4 +320,4 @@ jobs:
         run: helm test unguard --namespace unguard --timeout 10m0s --logs
 
 permissions:
-  actions: write
+  actions: read
