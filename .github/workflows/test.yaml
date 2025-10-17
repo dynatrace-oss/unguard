@@ -92,6 +92,7 @@ jobs:
         run: |
             aws eks update-kubeconfig --name $CLUSTER_NAME --region $EKS_REGION
         env:
+          GITHUB_STEP: Setting up EKS connection
           EKS_REGION: ${{ secrets.EKS_REGION }}
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
           OTLP_PROTOCOL: HTTPS
@@ -106,6 +107,7 @@ jobs:
 
       - name: Test kubectl access
         env:
+          GITHUB_STEP: Validae EKS connection
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
@@ -120,6 +122,7 @@ jobs:
       - name: Set up Helm
         env:
           OTLP_PROTOCOL: HTTPS
+          GITHUB_STEP: Setup Helm on runner
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
           OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
@@ -133,6 +136,7 @@ jobs:
 
       - name: Kubectl tool installer
         env:
+          GITHUB_STEP: Setup kubectl on runner
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
@@ -146,6 +150,7 @@ jobs:
       - name: Set up Python
         env:
           OTLP_PROTOCOL: HTTPS
+          GITHUB_STEP: Setup python on runner
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
           OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
@@ -161,6 +166,7 @@ jobs:
       - name: Set up chart-testing
         env:
           OTLP_PROTOCOL: HTTPS
+          GITHUB_STEP: Set up python on runner
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
           OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
@@ -172,6 +178,7 @@ jobs:
 
       - name: Run chart-testing (lint)
         env:
+          GITHUB_STEP: Verify chart dirs
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
@@ -199,6 +206,8 @@ jobs:
 
       - name: Calculate next release version
         id: version
+        env:
+           GITHUB_STEP: Setting up release information
         run: |
           latest=$(git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null || echo "v0.0.0")
           IFS='.' read -ra parts <<< "${latest#v}"
@@ -211,6 +220,7 @@ jobs:
         uses: docker/login-action@v3
         env:
           OTLP_PROTOCOL: HTTPS
+          GITHUB_STEP: Login to docker
           RELEASE_ID: ${{ env.RELEASE_VERSION }}
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
@@ -227,6 +237,7 @@ jobs:
       - name: Build Skaffold Image
         uses: hiberbee/github-action-skaffold@1.27.0
         env:
+          GITHUB_STEP: Skaffold build and push
           OTLP_PROTOCOL: HTTPS
           RELEASE_ID: ${{ env.RELEASE_VERSION }}
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
@@ -246,7 +257,7 @@ jobs:
 
       - name: Deploy updated image to EKS
         env:
-          GITHUB_STEP: Deploy
+          GITHUB_STEP: Deploy and pass release info
           OTLP_PROTOCOL: HTTPS
           RELEASE_ID: ${{ env.RELEASE_VERSION }}
           IMAGE_TAG_unguard_membership_service: ${{ env.IMAGE_TAG_unguard_membership_service }}          
