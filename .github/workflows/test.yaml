@@ -1,4 +1,4 @@
-name: Run Skaffold Pipeline, Deploy to EKS and run Unguard Helm Test
+name: Run Skaffold Pipeline, Deploy to EKS and run unguard helm test
 on:
   pull_request:
     paths:
