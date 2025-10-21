@@ -8,10 +8,13 @@ from llama_index.llms.openai import OpenAI
 from llama_index.embeddings.openai import OpenAIEmbedding
 from config import get_settings
 from utils.parquet_data_loader import DataLoader
+from logging_config import get_logger
 
 class RAGSpamClassifier:
     def __init__(self):
         self.settings = get_settings()
+        self._logger = get_logger(self.__class__.__name__)
+        self._logger.info("Initializing RAG Pipeline...")
         self._init_vector_store()
         self._init_models()
         self._build_index()
@@ -28,11 +31,14 @@ class RAGSpamClassifier:
 
         self._vector_store = ChromaVectorStore(chroma_collection=self._collection)
         self._storage_context = StorageContext.from_defaults(vector_store=self._vector_store)
+        self._logger.info("Vector Store initialized")
+
 
     def _init_models(self):
         """"Initializes the LLM and Embeddings models"""
         self._llm_model = OpenAI(model=self.settings.openai_model, api_key=self.settings.openai_api_key.get_secret_value())
         self._embeddings_model = OpenAIEmbedding(model=self.settings.embeddings_model, api_key=self.settings.openai_api_key.get_secret_value())
+        self._logger.info("Models initialized (llm=%s embeddings=%s)", self.settings.openai_model, self.settings.embeddings_model)
 
     def _build_index(self):
         """Builds the Vector Store Index from the initial knowledge base data"""
@@ -48,6 +54,7 @@ class RAGSpamClassifier:
             retriever=self._retriever,
             llm=self._llm_model
         )
+        self._logger.info("Index built with %d initial documents", len(documents))
 
     def classify_text(self, text: str) -> Dict[str, str]:
         """Classifies a single text post as spam or not_spam."""
@@ -75,6 +82,7 @@ class RAGSpamClassifier:
         doc_text = f"{text} [LABEL: {label}]"
         doc = Document(text=doc_text, metadata={"label": label})
         self._index.insert(doc)
+        self._logger.info("Ingested new entry")
         return True
 
     def ingest_batch_to_kb(self, entries: List[Dict[str, str]]) -> int:
@@ -87,6 +95,7 @@ class RAGSpamClassifier:
             for e in entries
         ]
         self._index.insert_nodes(docs)
+        self._logger.info("Ingested batch of %d new entries", len(entries))
         return len(docs)
 
     def get_all_kb_entries(self) -> List[Dict[str, str]]:
