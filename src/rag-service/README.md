@@ -37,6 +37,7 @@ Or using uvicorn directly:
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
+When starting, the vector database will be created automatically under /vector-stores/chroma_db.
 The service will be available at http://localhost:8000.
 
 
