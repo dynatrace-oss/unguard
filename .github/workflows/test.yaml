@@ -76,8 +76,11 @@ jobs:
           GITHUB_STEP: Build
         with:
           cache: false
+          submodules: false
+          lfs: false
           secrets_to_redact: '${{ toJSON(secrets) }}'
-          fetch-depth: 0  # Ensures full history and tags are fetched        
+          fetch-depth: 0  # Ensures full history and tags are fetched
+          
         
       - name: Configure AWS credentials
         env:
