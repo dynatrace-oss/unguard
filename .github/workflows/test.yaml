@@ -47,6 +47,8 @@ jobs:
         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
         EKS_REGION: ${{ secrets.EKS_REGION }}
         GITHUB_DEBUG: true
+        ACTIONS_RUNNER_DEBUG: true
+        ACTIONS_STEP_DEBUG: true
     steps:
       - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.21.0
         env:
