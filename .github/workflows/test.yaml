@@ -31,7 +31,7 @@ on:
 
 jobs:
   push:
-    runs-on: ubuntu-latest
+    runs-on: eks
     timeout-minutes: 30
     env:
         OTLP_PROTOCOL: HTTPS
@@ -48,7 +48,7 @@ jobs:
         EKS_REGION: ${{ secrets.EKS_REGION }}
         GITHUB_DEBUG: true
     steps:
-      - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.21.0
+      - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.24.0
         env:
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
@@ -238,7 +238,7 @@ jobs:
           major=${parts[0]}
           minor=$((parts[1] + 1))
           echo "RELEASE_VERSION=v${major}.${minor}.0" >> $GITHUB_ENV
-          echo "IMAGE_TAG_unguard_membership_service=v${major}.${minor}.0" >> $GITHUB_ENV
+          echo "IMAGE_TAG_unguard_proxy_service=v${major}.${minor}.0" >> $GITHUB_ENV
           
       - name: Docker login
         env:
@@ -294,11 +294,11 @@ jobs:
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
         run: |
-          kubectl set image deployment/unguard-membership-service \
-            membership-service=docker.io/nikhilgoenka/unguard-membership-service:${RELEASE_ID} \
+          kubectl set image deployment/unguard-proxy-service \
+            proxy-service=docker.io/nikhilgoenka/unguard-proxy-service:${RELEASE_ID} \
             --namespace=unguard
       
-          kubectl patch deployment unguard-membership-service \
+          kubectl patch deployment unguard-proxy-service \
             -n unguard \
             --patch "$(cat <<EOF
           {
@@ -307,11 +307,11 @@ jobs:
                 "spec": {
                   "containers": [
                     {
-                      "name": "membership-service",
+                      "name": "proxy-service",
                       "env": [
                         {
                           "name": "DT_RELEASE_VERSION",
-                          "value": "v0"
+                          "value": "v1"
                         },
                         {
                           "name": "DT_RELEASE_STAGE",
@@ -320,6 +320,10 @@ jobs:
                         {
                           "name": "DT_RELEASE_BUILD_VERSION",
                           "value": "${RELEASE_ID}"
+                        },
+                        {
+                          "name": "DT_RELEASE_PRODUCT",
+                          "value": "unguard"
                         }
                       ]
                     }
