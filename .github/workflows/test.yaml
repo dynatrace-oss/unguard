@@ -48,7 +48,7 @@ jobs:
         EKS_REGION: ${{ secrets.EKS_REGION }}
         GITHUB_DEBUG: true
     steps:
-      - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.24.0
+      - uses: plengauer/opentelemetry-github/actions/instrument/job@v5.22.0
         env:
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
