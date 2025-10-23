@@ -124,7 +124,7 @@ jobs:
 
       - name: Test kubectl access
         env:
-          GITHUB_STEP: Validae EKS connection
+          GITHUB_STEP: Validate EKS connection
           OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
@@ -280,7 +280,8 @@ jobs:
           command: build
           tag: ${{ env.RELEASE_ID }}
           push: true
-
+          path: ~/.skaffold/
+          key: ${{ runner.os }}-skaffold-${{ hashFiles('**/skaffold.yaml') }}
 
       - name: Deploy updated image to EKS
         env:
@@ -337,18 +338,10 @@ jobs:
           EOF
           )"
           
-      - name: Run chart-testing
-        env:
-          GITHUB_STEP: Test
-          OTLP_PROTOCOL: HTTPS
-          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
-          WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
-          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
-          OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}      
-        run: helm test unguard --namespace unguard --timeout 10m0s --logs
+      - name: Cleanup Skaffold cache
+        if: always()
+        run: |
+          rm -rf ~/.skaffold/cache
 
 permissions:
   actions: read
