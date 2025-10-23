@@ -3,11 +3,14 @@ on:
   push:
     branches:
       - code-vulnerabilities
+      - staging
+      
     paths:
       - src/**
       - skaffold.yaml
       - chart/**
       - code-vulnerabilities/**
+      - staging/**
 
   pull_request:
     paths:
@@ -76,7 +79,7 @@ jobs:
           secrets_to_redact: '${{ toJSON(secrets) }}'
           fetch-depth: 0  # Ensures full history and tags are fetched        
         
-      - name: Configure AWS credentials (optional if EC2 has instance profile)
+      - name: Configure AWS credentials
         env:
           GITHUB_STEP: Setting EKS credentials
           OTLP_PROTOCOL: HTTPS
@@ -216,7 +219,16 @@ jobs:
       - name: Calculate next release version
         id: version
         env:
-           GITHUB_STEP: Setting up release information
+            GITHUB_STEP: Setting up release information
+            OTLP_PROTOCOL: HTTPS
+            RELEASE_ID: ${{ env.RELEASE_VERSION }}
+            WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+            WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
+            OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+            OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+            OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
+            OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
+            OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
         run: |
           latest=$(git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null || echo "v0.0.0")
           IFS='.' read -ra parts <<< "${latest#v}"
@@ -226,25 +238,26 @@ jobs:
           echo "IMAGE_TAG_unguard_membership_service=v${major}.${minor}.0" >> $GITHUB_ENV
           
       - name: Docker login
-        uses: docker/login-action@v3
         env:
-          OTLP_PROTOCOL: HTTPS
           GITHUB_STEP: Login to docker
-          RELEASE_ID: ${{ env.RELEASE_VERSION }}
+          OTLP_PROTOCOL: HTTPS
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
           OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
           OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
           OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
-          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
-          DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}      
+          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}    
+          RELEASE_ID: ${{ env.RELEASE_VERSION }}
+          DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+          secrets_to_redact: '${{ toJSON(secrets) }}'
         with:
           username: "nikhilgoenka"
           password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+        uses: docker/login-action@v3
+          
           
       - name: Build Skaffold Image
-        uses: hiberbee/github-action-skaffold@1.27.0
         env:
           GITHUB_STEP: Skaffold build and push
           OTLP_PROTOCOL: HTTPS
@@ -257,7 +270,7 @@ jobs:
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
           DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-        
+        uses: hiberbee/github-action-skaffold@1.27.0        
         with:
           command: build
           tag: ${{ env.RELEASE_ID }}
