@@ -189,9 +189,24 @@ jobs:
           username: "nikhilgoenka"
           password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
         uses: docker/login-action@v3
-          
-          
-      - name: Build Skaffold Image
+        
+      - name: Install Skaffold
+        env:
+          GITHUB_STEP: Install skaffold
+          OTLP_PROTOCOL: HTTPS
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+          OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}      
+        run: |
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.7.0/skaffold-linux-amd64
+          chmod +x skaffold
+          sudo mv skaffold /usr/local/bin/
+
+      - name: Build and Push Skaffold Image
         env:
           GITHUB_STEP: Skaffold build and push
           OTLP_PROTOCOL: HTTPS
@@ -204,11 +219,27 @@ jobs:
           OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
           DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-        uses: hiberbee/github-action-skaffold@1.27.0        
-        with:
-          command: build
-          tag: ${{ env.RELEASE_ID }}
-          push: true
+        run: |
+          skaffold build --default-repo=docker.io/nikhilgoenka --tag=${RELEASE_ID} --push
+          
+      #- name: Build Skaffold Image
+      #  env:
+      #    GITHUB_STEP: Skaffold build and push
+      #    OTLP_PROTOCOL: HTTPS
+      #    RELEASE_ID: ${{ env.RELEASE_VERSION }}
+      #    WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+      #    WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
+      #    OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+      #    OTEL_EXPORTER_OTLP_HEADERS: Authorization=Api-Token ${{ secrets.DYNATRACE_OTEL_API_TOKEN }}
+      #    OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT }}
+      #    OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
+      #    OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT }}
+      #    DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+      #  uses: hiberbee/github-action-skaffold@1.27.0        
+      #  with:
+      #    command: build
+      #    tag: ${{ env.RELEASE_ID }}
+      #    push: true
 
       - name: Deploy updated image to EKS
         env:
@@ -264,6 +295,17 @@ jobs:
           }
           EOF
           )"
+          
+      - name: Cleanup Skaffold resources
+        if: always()
+        run: |
+          skaffold delete || true
+          docker ps -q | xargs -r docker stop
+          docker ps -qa | xargs -r docker rm
+
+      - name: Logout from Docker
+        if: always()
+        run: docker logout
           
       - name: Logout from Docker
         if: always()
