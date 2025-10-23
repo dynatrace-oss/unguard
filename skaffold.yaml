@@ -25,8 +25,8 @@ build:
 #      context: src/frontend-nextjs
 #    - image: unguard-microblog-service # adapt jib patch index below if you move this item
 #      context: src/microblog-service
-#    - image: unguard-proxy-service
-#      context: src/proxy-service
+    - image: unguard-proxy-service
+      context: src/proxy-service
 #    - image: unguard-user-simulator
 #      context: src/user-simulator
 #    - image: unguard-user-auth-service
