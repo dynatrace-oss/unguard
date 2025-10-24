@@ -3,6 +3,9 @@ from typing import List, Union
 from pathlib import Path
 from config import get_settings
 from llama_index.core import Document
+from logging_config import get_logger
+
+logger = get_logger("DataLoader")
 
 class DataLoader:
     def __init__(self):
@@ -17,9 +20,7 @@ class DataLoader:
         return self._load_parquet(self.settings.test_data_path)
 
     def _load_parquet(self, file_path: Union[str, Path]) -> List[Document]:
-        """Loads data from a parquet file and converts rows to Documents.
-        The label of each entry is added to both the text and metadata of the Document.
-        """
+        """Loads data from a parquet file and converts rows to Documents. Entries with length > 2793 are dropped."""
         path = Path(file_path)
 
         if not path.exists():
@@ -31,11 +32,17 @@ class DataLoader:
             raise ValueError("Parquet file must contain columns text and label")
 
         documents: List[Document] = []
+        dropped_entries = 0
         for _, row in df.iterrows():
             text = str(row["text"])
+            if len(text) > self.settings.max_length_for_entries:
+                dropped_entries += 1
+                continue
             label = str(row["label"])
-            doc_content = f"{text} [LABEL: {label}]"
-            documents.append(Document(text=doc_content, metadata={"label": label}))
+            documents.append(Document(text=text, metadata={"label": label}))
+
+        if dropped_entries:
+            logger.info(f"Dropped {dropped_entries} entries exceeding {self.settings.max_length_for_entries} chars from {file_path}")
 
         return documents
 
@@ -43,6 +50,6 @@ if __name__ == "__main__":
     """Only for testing purposes"""
     loader = DataLoader()
     docs = loader.load_initial_kb_data()
-    print(f"Loaded {len(docs)} documents from base data")
+    logger.info(f"Loaded {len(docs)} documents from base data")
     if docs:
-        print("First 3 document texts:", [d.text for d in docs[:3]])
+        logger.info("First 3 document texts:", [d.text for d in docs[:3]])
