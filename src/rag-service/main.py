@@ -1,19 +1,19 @@
 from fastapi import FastAPI
-from config import settings
-from logging_config import get_logger
+from contextlib import asynccontextmanager
 
-from routers import healtz, ingestion, classification
+from .config import settings
+from .logging_config import get_logger
+from .routers import healtz, ingestion, classification
 
-app = FastAPI(title=settings.app_name, description=settings.app_description)
 _logger = get_logger(__name__)
 
-@app.on_event("startup")
-async def startup():
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
     _logger.info("rag-service starting")
-
-@app.on_event("shutdown")
-async def shutdown():
+    yield
     _logger.info("rag-service shutting down")
+
+app = FastAPI(title=settings.app_name, description=settings.app_description, lifespan=lifespan)
 
 app.include_router(classification.router)
 app.include_router(ingestion.router)
