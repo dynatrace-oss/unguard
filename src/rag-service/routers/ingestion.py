@@ -1,12 +1,13 @@
 from fastapi import APIRouter, HTTPException
-from rag_pipeline.rag import rag_classifier
-from schemas import (
+
+from ..rag_pipeline.rag import rag_classifier
+from ..schemas import (
     KnowledgeBaseEntry,
     BatchOfKnowledgeBaseEntries,
     IngestionResponse,
     KnowledgeBaseDump,
 )
-from logging_config import get_logger
+from ..logging_config import get_logger
 
 router = APIRouter()
 _logger = get_logger(__name__)
