@@ -1,14 +1,22 @@
 from typing import List, Dict
 from pathlib import Path
 import chromadb
+import shutil
 from llama_index.core import StorageContext, VectorStoreIndex, Document
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.llms.openai import OpenAI
 from llama_index.embeddings.openai import OpenAIEmbedding
-from config import get_settings
-from utils.parquet_data_loader import DataLoader
-from logging_config import get_logger
+from llama_index.core.query_engine import RetrieverQueryEngine
+
+from ..config import get_settings
+from ..logging_config import get_logger
+from .utils.read_precomputed_embeddings import (
+    validate_embeddings_directory,
+    get_list_of_embeddings_files,
+    load_embeddings_into_collection,
+)
+from .utils.prepare_prompt import prepare_prompt
 
 class RAGSpamClassifier:
     def __init__(self):
@@ -21,54 +29,83 @@ class RAGSpamClassifier:
 
     def _init_vector_store(self):
         """Initializes the Chroma Vector Store"""
-        Path(self.settings.chroma_db_path).mkdir(parents=True, exist_ok=True)
-        self._client = chromadb.PersistentClient(path=str(self.settings.chroma_db_path))
+        chroma_db_path = Path(self.settings.chroma_db_path)
+        if chroma_db_path.exists():
+            shutil.rmtree(chroma_db_path)
+        chroma_db_path.mkdir(parents=True, exist_ok=True)
 
-        existing_collections = {c.name for c in self._client.list_collections()}
-        if "spam_knowledge_base" in existing_collections:
-            self._client.delete_collection("spam_knowledge_base")
+        self._client = chromadb.PersistentClient(path=str(chroma_db_path))
         self._collection = self._client.get_or_create_collection("spam_knowledge_base")
-
         self._vector_store = ChromaVectorStore(chroma_collection=self._collection)
         self._storage_context = StorageContext.from_defaults(vector_store=self._vector_store)
-        self._logger.info("Vector Store initialized")
+        self._logger.info("Initialized Vector Store")
 
 
     def _init_models(self):
-        """"Initializes the LLM and Embeddings models"""
-        self._llm_model = OpenAI(model=self.settings.openai_model, api_key=self.settings.openai_api_key.get_secret_value())
-        self._embeddings_model = OpenAIEmbedding(model=self.settings.embeddings_model, api_key=self.settings.openai_api_key.get_secret_value())
-        self._logger.info("Models initialized (llm=%s embeddings=%s)", self.settings.openai_model, self.settings.embeddings_model)
+        """"Initializes the LLM & Embedding Models"""
+        self._llm_model = OpenAI(
+            model=self.settings.llm_model,
+            api_key=self.settings.langdock_api_key.get_secret_value(),
+            api_base=self.settings.langdock_api_base_url,
+            timeout=120.0,
+        )
+        self._embeddings_model = OpenAIEmbedding(
+            model=self.settings.embeddings_model,
+            api_key=self.settings.langdock_api_key.get_secret_value(),
+            api_base=self.settings.langdock_api_base_url,
+        )
+        self._logger.info("Initialized models (llm=%s embeddings=%s)",
+            self.settings.llm_model, self.settings.embeddings_model
+        )
 
     def _build_index(self):
-        """Builds the Vector Store Index from the initial knowledge base data"""
-        documents = DataLoader().load_initial_kb_data()
+        """Builds the Vector Store Index from precomputed embeddings stored as multiple part files in a directory."""
+        precomputed_embeddings_dir = self.settings.base_embeddings_store_path
 
-        self._index = VectorStoreIndex.from_documents(
-            documents,
+        validate_embeddings_directory(
+            embeddings_dir=precomputed_embeddings_dir,
+            logger=self._logger,
+        )
+
+        list_of_embeddings_files = get_list_of_embeddings_files(precomputed_embeddings_dir)
+        self._logger.info("Loading %d files with precomputed embeddings from %s",
+        len(list_of_embeddings_files), precomputed_embeddings_dir)
+
+        amount_loaded = load_embeddings_into_collection(
+            collection=self._collection,
+            list_of_embedding_files=list_of_embeddings_files,
+            logger=self._logger,
+            batch_size=2000,
+        )
+
+        self._index = VectorStoreIndex.from_vector_store(
+            self._vector_store,
+            self._embeddings_model,
             storage_context=self._storage_context,
-            embed_model=self._embeddings_model
         )
-        self._retriever = VectorIndexRetriever(index=self._index, similarity_top_k=10) # TODO: tune k
-        self._query_engine = self._index.as_query_engine(
-            retriever=self._retriever,
-            llm=self._llm_model
+        self._retriever = VectorIndexRetriever(index=self._index, similarity_top_k=10)
+        self._query_engine = RetrieverQueryEngine.from_args(retriever=self._retriever, llm=self._llm_model)
+        self._logger.info("Index built from %d precomputed embeddings", amount_loaded)
+
+    def classify_text(self, user_post: str) -> Dict[str, str]:
+        """Classifies a single text as spam or not_spam."""
+        retrieved_examples = self._retriever.retrieve(user_post)
+
+        final_prompt = prepare_prompt(
+            retrieved_examples=retrieved_examples,
+            user_post=user_post,
+            prompt_template=self.settings.prompt_template,
+            logger=self._logger,
         )
-        self._logger.info("Index built with %d initial documents", len(documents))
+        llm_response = self._llm_model.complete(final_prompt)
+        classification_text = llm_response.text.strip().lower()
 
-    def classify_text(self, text: str) -> Dict[str, str]:
-        """Classifies a single text post as spam or not_spam."""
-        prompt = self.settings.prompt_template.format(text_to_classify=text)
-        response = self._query_engine.query(prompt)
-        classification_result = str(response).strip().lower()
-
-        if classification_result.startswith("spam"):
-            label = "spam"
-        elif classification_result.startswith("not_spam") or classification_result.startswith("not spam") or "not_spam" in classification_result:
-            label = "not_spam"
+        if classification_text.startswith("spam"):
+            return {"classification": "spam"}
+        elif classification_text.startswith("not_spam") or classification_text.startswith("not spam"):
+            return {"classification": "not_spam"}
         else:
-            raise ValueError(f"Unexpected classification response: {classification_result}")
-        return {"classification": label}
+            raise ValueError(f"Error: Invalid response from LLM for classification of text \"{classification_text}\"")
 
     def classify_batch(self, texts: List[str]) -> List[Dict[str, str]]:
         """Classifies a list of text posts as spam or not_spam."""
@@ -88,10 +125,9 @@ class RAGSpamClassifier:
     def ingest_batch_to_kb(self, entries: List[Dict[str, str]]) -> int:
         """
         Inserts a batch of new entries into the vector store & index.
-        The embeddings are created and stored automatically during insert_nodes()
         """
         docs = [
-            Document(text=f"{e['text']} [LABEL: {e['label']}]", metadata={"label": e["label"]})
+            Document(text=e['text'], metadata={"label": e["label"]})
             for e in entries
         ]
         self._index.insert_nodes(docs)
@@ -100,26 +136,17 @@ class RAGSpamClassifier:
 
     def get_all_kb_entries(self) -> List[Dict[str, str]]:
         """
-        Returns all knowledge base entries as a list of {text, label}.
-        Extracts original text by stripping the appended label suffix.
+        Returns all knowledge base entries as a list with elements in form {text, label}.
         """
         data = self._collection.get(include=["documents", "metadatas"])
         documents = data.get("documents", []) or []
         metadatas = data.get("metadatas", []) or []
-        entries: List[Dict[str, str]] = []
+        list_of_entries: List[Dict[str, str]] = []
 
         for doc_text, meta in zip(documents, metadatas):
             label = (meta or {}).get("label")
-            if isinstance(doc_text, str) and label:
-                suffix = f"[LABEL: {label}]"
-                if doc_text.endswith(suffix):
-                    base_text = doc_text[: -len(suffix)].rstrip()
-                else:
-                    base_text = doc_text
-            else:
-                base_text = doc_text
-            entries.append({"text": base_text, "label": label})
+            list_of_entries.append({"text": doc_text, "label": label})
 
-        return entries
+        return list_of_entries
 
 rag_classifier = RAGSpamClassifier()
