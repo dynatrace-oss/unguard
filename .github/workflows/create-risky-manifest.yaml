@@ -1,0 +1,35 @@
+name: Create risky manifest
+on:
+  schedule:
+    - cron: '0 17 * * *'
+  workflow_dispatch:
+
+jobs:
+  update_bad_manifest:
+    name: Update bad manifest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Update bad manifest
+        run: |
+          find . -name 'requirements*' -delete
+          random=$(tr -dc 0-9 </dev/urandom | head -c 8)
+          echo 'gevent==21.12.0
+          paramiko==2.11.1
+          cryptography==3.4' > requirements-$random.txt
+      - name: commit changes
+        run: |
+          git config --local user.email "test@github.com"
+          git config --local user.name "GitHub Action test"
+          git add 'requirements*'
+          git commit -m "Test bad manifest"
+      - name: push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force: true
+        
+            

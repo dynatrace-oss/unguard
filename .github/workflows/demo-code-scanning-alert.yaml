@@ -1,0 +1,45 @@
+name: Create insecure code
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+jobs:
+  update_code_alert:
+    name: Update code scanning alert
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Update code scanning alert
+        run: |
+          find . -name 'insecure-example*' -delete
+          random=$(tr -dc 0-9 </dev/urandom | head -c 8)
+          echo 'import paramiko
+          import paramiko.util
+          import json
+          import sys
+          import logging
+          from traceback import print_exc
+          log = logging.getLogger()
+          config_file = sys.argv[1]
+          with open(config_file, 'r') as f:
+              config = json.load(f)
+              password = config.get("password")
+              log.info(f"Password: {password}")
+              client = paramiko.SSHClient()
+              client.load_system_host_keys()
+              client.set_missing_host_key_policy(paramiko.AutoAddPolicy)' > insecure-example-$random.py
+      - name: commit changes
+        run: |
+          git config --local user.email "test@github.com"
+          git config --local user.name "GitHub Action test"
+          git add 'insecure-example*'
+          git commit -m "Update insecure code file for alerts"
+      - name: push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force: true
