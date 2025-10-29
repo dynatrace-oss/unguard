@@ -1,0 +1,33 @@
+name: Sonatype Scan
+# run after any of the other workflows are completed
+on:
+    workflow_run:
+        workflows: ['Create risky manifest', 'Create insecure code', 'Expose demo secret']
+        types: [completed]
+        branches:
+            - 'main'
+jobs:
+  sonatype-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Sonatype CLI
+        uses: sonatype/actions/setup-iq-cli@v1
+        with:
+          iq-cli-version: 1.179.0-01
+      # Check out your code
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      # Perform an evaluation
+      - name: Run evaluate  action
+        id: evaluate
+        uses: sonatype/actions/evaluate@v1
+        with:
+          iq-server-url: https://dev-integration-dynatrace.iq.sonatype.app
+          username: ${{ secrets.LIFECYCLE_USERNAME }}
+          password: ${{ secrets.LIFECYCLE_PASSWORD }}
+          application-id: unguard-dev
+          scan-targets: ./*
+      # Print out the results
+      - name: Log evaluate action output
+        run: echo "${{ steps.evaluate.outputs.scan-id }} ${{ steps.evaluate.outputs.report-url }}"
