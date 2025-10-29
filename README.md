@@ -58,7 +58,11 @@ To quickly get started with Unguard, install the Unguard Helm chart using the [H
 2. Install MariaDB
 
    ```sh
-   helm install unguard-mariadb bitnami/mariadb --version 11.5.7 --set primary.persistence.enabled=false --wait --namespace unguard --create-namespace
+   helm install unguard-mariadb bitnami/mariadb \
+     --version 11.5.7 \
+     --set primary.persistence.enabled=false \
+     --set image.repository=bitnamilegacy/mariadb \
+     --wait --namespace unguard --create-namespace
    ```
 
 3. Install Unguard
