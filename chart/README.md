@@ -137,10 +137,16 @@ helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --set loc
 This creates an ingress and adds the following default annotations:
 
 ```yaml
-kubernetes.io/ingress.class: alb
-alb.ingress.kubernetes.io/target-type: ip
-alb.ingress.kubernetes.io/scheme: internal
-alb.ingress.kubernetes.io/load-balancer-name: "unguard-lb"
+metadata:
+  annotations:
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/load-balancer-name: "unguard-lb"
+```
+Also, the ingress class will be set accordingly:
+```yaml
+spec:
+  ingressClassName: alb
 ```
 
 These annotations can be adjusted by modifying and extending the `aws.yaml` values file and then passing it to the Unguard helm install command like shown bellow.
