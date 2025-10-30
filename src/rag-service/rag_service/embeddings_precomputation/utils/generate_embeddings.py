@@ -2,7 +2,7 @@ from typing import List
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core import Document
 
-from config import get_settings
+from ...config import get_settings
 
 settings = get_settings()
 
