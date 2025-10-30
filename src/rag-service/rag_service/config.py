@@ -27,8 +27,9 @@ class Settings(BaseSettings):
     max_length_for_entries: int = 2793
 
     base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings/")
-    test_embeddings_store_path: Path = Path("rag_service/data/test_data_embeddings/")
     embeddings_computation_max_batch_size: int = 200
+
+    evaluation_results_dir : Path = Path("rag_service/evaluation/evaluation_results/")
 
 settings = Settings()
 
