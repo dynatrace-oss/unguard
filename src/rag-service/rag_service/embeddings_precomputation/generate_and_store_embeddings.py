@@ -4,7 +4,7 @@ from llama_index.core import Document
 
 from ..logging_config import get_logger
 from ..config import get_settings
-from ..utils.parquet_data_loader import DataLoader
+from ..data_loader.parquet_data_loader import DataLoader
 from .utils.generate_embeddings import create_embedding_model, compute_embeddings_for_batch
 from .utils.write_embeddings_to_files import EmbeddingsWriter, compute_entry_id
 
@@ -44,7 +44,7 @@ def generate_and_store_embeddings(docs: List[Document], embeddings_store_dir_pat
     return num_of_embedded_docs
 
 def precompute_base_embeddings() -> int:
-    """Computes and stores embeddings for the KB base data."""
+    """Computes and stores embeddings for the initial KB data."""
     docs = DataLoader().load_initial_kb_data()
     return generate_and_store_embeddings(
         docs=docs,
@@ -52,15 +52,5 @@ def precompute_base_embeddings() -> int:
         batch_size=settings.embeddings_computation_max_batch_size,
     )
 
-def precompute_test_embeddings() -> int:
-    """Computes and stores embeddings for the test data."""
-    docs = DataLoader().load_test_data()
-    return generate_and_store_embeddings(
-        docs=docs,
-        embeddings_store_dir_path=settings.test_embeddings_store_path,
-        batch_size=settings.embeddings_computation_max_batch_size,
-    )
-
 if __name__ == "__main__":
     precompute_base_embeddings()
-    precompute_test_embeddings()
