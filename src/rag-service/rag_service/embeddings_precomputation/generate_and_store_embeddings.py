@@ -2,9 +2,9 @@ from pathlib import Path
 from typing import List
 from llama_index.core import Document
 
-from logging_config import get_logger
-from config import get_settings
-from utils.parquet_data_loader import DataLoader
+from ..logging_config import get_logger
+from ..config import get_settings
+from ..utils.parquet_data_loader import DataLoader
 from .utils.generate_embeddings import create_embedding_model, compute_embeddings_for_batch
 from .utils.write_embeddings_to_files import EmbeddingsWriter, compute_entry_id
 

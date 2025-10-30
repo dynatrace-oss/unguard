@@ -1,9 +1,10 @@
 import pandas as pd
 from typing import List, Union
 from pathlib import Path
-from config import get_settings
 from llama_index.core import Document
-from logging_config import get_logger
+
+from ..config import get_settings
+from ..logging_config import get_logger
 
 logger = get_logger("DataLoader")
 
