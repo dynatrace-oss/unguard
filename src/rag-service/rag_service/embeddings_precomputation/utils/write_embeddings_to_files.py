@@ -3,7 +3,7 @@ import hashlib
 from pathlib import Path
 from typing import Dict, Any
 
-from logging_config import get_logger
+from ...logging_config import get_logger
 
 logger = get_logger("EmbeddingsWriter")
 
