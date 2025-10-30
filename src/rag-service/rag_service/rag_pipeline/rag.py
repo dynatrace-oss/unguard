@@ -116,8 +116,7 @@ class RAGSpamClassifier:
         Inserts a new entry into the vector store & index.
         The embedding is created and stored automatically during insert()
         """
-        doc_text = f"{text} [LABEL: {label}]"
-        doc = Document(text=doc_text, metadata={"label": label})
+        doc = Document(text=text, metadata={"label": label})
         self._index.insert(doc)
         self._logger.info("Ingested new entry")
         return True
