@@ -22,12 +22,12 @@ class Settings(BaseSettings):
 
     chroma_db_path: Path = Path("./vector-store/chroma_db")
 
-    base_data_path: Path = Path("data/base_dataset.parquet")
-    test_data_path: Path = Path("data/test_dataset.parquet")
+    base_data_path: Path = Path("rag_service/data/base_dataset.parquet")
+    test_data_path: Path = Path("rag_service/data/test_dataset.parquet")
     max_length_for_entries: int = 2793
 
-    base_embeddings_store_path: Path = Path("data/base_data_embeddings/")
-    test_embeddings_store_path: Path = Path("data/test_data_embeddings/")
+    base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings/")
+    test_embeddings_store_path: Path = Path("rag_service/data/test_data_embeddings/")
     embeddings_computation_max_batch_size: int = 200
 
 settings = Settings()

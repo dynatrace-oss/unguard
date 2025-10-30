@@ -59,5 +59,4 @@ def load_embeddings_into_collection(collection, list_of_embedding_files: list[Pa
             ids=ids
         )
         doc_embeddings_added += len(batch)
-        logger.info("Added batch size=%d cumulative=%d", len(batch), doc_embeddings_added)
     return doc_embeddings_added
