@@ -9,10 +9,24 @@ on:
 jobs:
   lint-build-run-test-unguard:
     runs-on: ubuntu-22.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - name: Checkout sources
         uses: actions/checkout@v3
+
+      - name: Check disk space
+        run: df . -h
 
       - name: Set up Helm
         uses: azure/setup-helm@v3.5
@@ -38,6 +52,7 @@ jobs:
         uses: medyagh/setup-minikube@v0.0.14
         with:
           addons: ingress
+          start-args: --memory=6144 --cpus=4 --disk-size=20g
 
       - name: Cache Skaffold layers
         uses: actions/cache@v3
