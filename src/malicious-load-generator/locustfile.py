@@ -87,6 +87,7 @@ JNDI_URIS = [
 ]
 
 CMDS = [
+    "image.net ; `cat /root/.aws/credentials`",
     "example.com && whoami #",
     "image.com ; /bin/sh echo bar",
     "example-image.net ; `cat /etc/passwd`",
