@@ -68,6 +68,8 @@ deploy:
           primary:
             persistence:
               enabled: false
+          image:
+            repository: "bitnamilegacy/mariadb"
       - name: unguard
         chartPath: ./chart
         namespace: unguard
