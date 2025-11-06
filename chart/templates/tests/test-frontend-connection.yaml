@@ -18,5 +18,5 @@ spec:
         - name: SIMULATE_PRIVATE_RANGES
           value: {{ quote .Values.userSimulator.cronJob.jobTemplate.container.env.SIMULATE_PRIVATE_RANGES }}
       command: ["/bin/sh"]
-      args: ["-c", "node_modules/.bin/element run default-user-sim.perf.ts --export 2>&1 && jq -e '.testScripts[].iterationResults[].stepResults[] | select(.status == \"failed\") | .name' reports/default-user-sim.perf/*/data.json >/dev/null && exit 1 || exit 0"]
+      args: ["-c", "node default-user-sim.perf.js"]
   restartPolicy: Never
