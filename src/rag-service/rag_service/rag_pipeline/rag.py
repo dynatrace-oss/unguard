@@ -134,6 +134,35 @@ class RAGSpamClassifier:
         self._logger.info("Ingested batch of %d new entries", len(entries))
         return len(docs)
 
+    def ingest_precomputed_embeddings(self, entries: List[Dict]) -> int:
+        """
+        Inserts a batch of new entries with already precomputed embeddings into the KB.
+        """
+        documents = []
+        embeddings = []
+        metadatas = []
+        ids = []
+
+        for entry in entries:
+            try:
+                documents.append(entry["text"])
+                embeddings.append(entry["embedding"])
+                metadatas.append({"label": entry["label"]})
+                ids.append(entry.get("id"))
+            except KeyError as error:
+                self._logger.warning("Error processing entry, missing field: %s", error)
+        if not documents:
+            return 0
+        self._collection.add(
+            documents=documents,
+            embeddings=embeddings,
+            metadatas=metadatas,
+            ids=ids
+        )
+
+        self._logger.info("Ingested %d new entries with precomputed embeddings", len(documents))
+        return len(documents)
+
     def get_all_kb_entries(self) -> List[Dict[str, str]]:
         """
         Returns all knowledge base entries as a list with elements in form {text, label}.
