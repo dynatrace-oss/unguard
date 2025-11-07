@@ -1,7 +1,7 @@
 from llama_index.core import Document
 
-from ...logging_config import get_logger
-from ...data_loader.parquet_data_loader import DataLoader
+from logger.logging_config import get_logger
+from rag_service.data_loader.parquet_data_loader import DataLoader
 
 logger = get_logger("ModelEvaluation")
 
