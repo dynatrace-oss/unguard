@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from data_poisoning_attacks.utils.check_connection import check_connection
+from evaluation.utils.check_connection import check_connection
 from data_poisoning_attacks.utils.ingest_poisoned_embeddings import ingest_poisoned_entries
 from rag_service.rag_pipeline.utils.read_precomputed_embeddings import (
     get_list_of_embeddings_files,
