@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException
 
-from ..rag_pipeline.rag import rag_classifier
-from ..schemas import (
+from rag_service.rag_pipeline.rag import rag_classifier
+from rag_service.schemas import (
     KnowledgeBaseEntry,
     BatchOfKnowledgeBaseEntries,
     IngestionResponse,
     KnowledgeBaseDump,
     BatchOfPrecomputedKBEntries,
 )
-from ..logging_config import get_logger
+from logger.logging_config import get_logger
 
 router = APIRouter()
 _logger = get_logger(__name__)
@@ -59,7 +59,9 @@ async def ingest_precomputed_batch(entries: BatchOfPrecomputedKBEntries):
     """
     _logger.info("Received POST /ingestBatchWithEmbeddingsPrecomputed request with %d entries", len(entries.entries))
     try:
-        count = rag_classifier.ingest_precomputed_embeddings(entries.entries)
+        count = rag_classifier.ingest_precomputed_embeddings(
+            [e.model_dump() for e in entries.entries]
+        )
         return IngestionResponse(
             success=True,
             message=f"{count} entries with precomputed embeddings were successfully ingested",

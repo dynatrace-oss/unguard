@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from .config import settings
-from .logging_config import get_logger
-from .routers import healthz, ingestion, classification
+from rag_service.config import settings
+from logger.logging_config import get_logger
+from rag_service.routers import healthz, ingestion, classification
 
 _logger = get_logger(__name__)
 
