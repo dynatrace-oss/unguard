@@ -2,11 +2,11 @@ from pathlib import Path
 from typing import List
 from llama_index.core import Document
 
-from ..logging_config import get_logger
-from ..config import get_settings
-from ..data_loader.parquet_data_loader import DataLoader
-from .utils.generate_embeddings import create_embedding_model, compute_embeddings_for_batch
-from .utils.write_embeddings_to_files import EmbeddingsWriter, compute_entry_id
+from logger.logging_config import get_logger
+from rag_service.config import get_settings
+from rag_service.data_loader.parquet_data_loader import DataLoader
+from rag_service.embeddings_precomputation.utils.generate_embeddings import create_embedding_model, compute_embeddings_for_batch
+from rag_service.embeddings_precomputation.utils.write_embeddings_to_files import EmbeddingsWriter, compute_entry_id
 
 logger = get_logger("EmbeddingsPreComputer")
 settings = get_settings()
