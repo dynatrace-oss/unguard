@@ -1,13 +1,7 @@
 from datetime import datetime, UTC
 import json
 
-from logger.logging_config import get_logger
-from rag_service.config import get_settings
-
-logger = get_logger("ModelEvaluation")
-settings = get_settings()
-
-def print_and_store_results(tp, fp, tn, fn, errors):
+def print_and_store_results(tp, fp, tn, fn, errors, evaluation_results_dir_path, logger):
     """Prints the evaluation results and stores them in a file"""
     total = tp + fp + tn + fn
     if total == 0:
@@ -21,19 +15,18 @@ def print_and_store_results(tp, fp, tn, fn, errors):
     recall = tp / recall_den if recall_den else 0
     f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) else 0
 
-    print("------------------------------------------------")
-    print("Evaluation Results:")
-    print(f"Testset size: {total} entries")
-    print(f"TP: {tp}  FP: {fp}  TN: {tn}  FN: {fn}")
-    print(f"Accuracy:  {accuracy:.4f}")
-    print(f"Precision: {precision:.4f}")
-    print(f"Recall:    {recall:.4f}")
-    print(f"F1 Score:  {f1:.4f}")
-    print(f"Classification errors: {errors}")
-    print("------------------------------------------------")
+    logger.info("------------------------------------------------\n"
+                "Evaluation Results:\n"
+                "Testset size: %d entries\n"
+                "TP: %d  FP: %d  TN: %d  FN: %d\n"
+                "Accuracy:  %.4f\n"
+                "Precision: %.4f\n"
+                "Recall:    %.4f\n"
+                "F1 Score:  %.4f\n"
+                "Classification errors: %d\n"
+                "------------------------------------------------\n",
+                total, tp, fp, tn, fn, accuracy, precision, recall, f1, errors)
 
-    settings.evaluation_results_dir.mkdir(parents=True, exist_ok=True)
-    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     results = {
         "total": total,
         "tp": tp,
@@ -46,11 +39,20 @@ def print_and_store_results(tp, fp, tn, fn, errors):
         "recall": recall,
         "f1": f1,
     }
-    output_file = settings.evaluation_results_dir / f"evaluation_{timestamp}.json"
+    store_results_in_file(evaluation_results_dir_path, results, logger)
+
+
+def store_results_in_file(evaluation_results_dir_path, results_dict, logger):
+    """Stores the given results in a file at the given directory"""
+    evaluation_results_dir_path.mkdir(parents=True, exist_ok=True)
+
+    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+    output_file = evaluation_results_dir_path / f"model_evaluation_{timestamp}.json"
+
     try:
         with output_file.open("w", encoding="utf-8") as f:
-            json.dump(results, f, indent=2)
+            json.dump(results_dict, f, indent=2)
         logger.info("Stored evaluation results at %s", output_file)
     except Exception as e:
-        logger.error("Failed to write evaluation results: %s", e)
+        logger.error("Failed to write evaluation results to %s: %s", output_file, e)
 
