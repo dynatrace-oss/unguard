@@ -1,8 +1,8 @@
 from datetime import datetime, UTC
 import json
 
-from ...logging_config import get_logger
-from ...config import get_settings
+from logger.logging_config import get_logger
+from rag_service.config import get_settings
 
 logger = get_logger("ModelEvaluation")
 settings = get_settings()

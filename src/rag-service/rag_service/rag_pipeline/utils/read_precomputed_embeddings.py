@@ -8,6 +8,7 @@ __all__ = [
     "validate_embeddings_directory",
     "get_list_of_embeddings_files",
     "load_embeddings_into_collection",
+    "read_embeddings_files"
 ]
 
 def validate_embeddings_directory(embeddings_dir: Path, logger) -> None:

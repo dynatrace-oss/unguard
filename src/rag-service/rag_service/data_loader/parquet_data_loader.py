@@ -3,8 +3,8 @@ from typing import List, Union
 from pathlib import Path
 from llama_index.core import Document
 
-from ..config import get_settings
-from ..logging_config import get_logger
+from rag_service.config import get_settings
+from logger.logging_config import get_logger
 
 logger = get_logger("DataLoader")
 
