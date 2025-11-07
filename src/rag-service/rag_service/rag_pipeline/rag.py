@@ -6,18 +6,18 @@ from llama_index.core import StorageContext, VectorStoreIndex, Document
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
-from ..constants import PROVIDER_OLLAMA, PROVIDER_LANGDOCK
 
-from .utils.init_ollama_models import init_ollama_models
-from .utils.init_langdock_models import init_langdock_models
-from ..config import get_settings
-from ..logging_config import get_logger
-from .utils.read_precomputed_embeddings import (
+from rag_service.constants import PROVIDER_OLLAMA, PROVIDER_LANGDOCK
+from rag_sevice.rag_pipeline.utils.init_langdock_models import init_langdock_models
+from rag_sevice.rag_pipeline.utils.init_ollama_models import init_ollama_models
+from rag_service.config import get_settings
+from logger.logging_config import get_logger
+from rag_service.rag_pipeline.utils.read_precomputed_embeddings import (
     validate_embeddings_directory,
     get_list_of_embeddings_files,
     load_embeddings_into_collection,
 )
-from .utils.prepare_prompt import prepare_prompt
+from rag_service.rag_pipeline.utils.prepare_prompt import prepare_prompt
 
 class RAGSpamClassifier:
     """

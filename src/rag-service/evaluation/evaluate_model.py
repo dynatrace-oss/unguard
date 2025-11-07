@@ -1,7 +1,7 @@
+from rag_service.rag_pipeline.rag import rag_classifier
 from .utils.load_test_data import load_test_data
 from .utils.print_and_store_results import print_and_store_results
-from ..rag_pipeline.rag import rag_classifier
-from ..logging_config import get_logger
+from logger.logging_config import get_logger
 
 logger = get_logger("ModelEvaluation")
 
