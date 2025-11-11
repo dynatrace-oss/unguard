@@ -6,8 +6,8 @@ from llama_index.core import StorageContext, VectorStoreIndex, Document
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
-from .utils.init_models import init_langdock_models, init_ollama_models
 
+from rag_service.rag_pipeline.utils.init_models import init_langdock_models, init_ollama_models
 from rag_service.config import get_settings
 from logger.logging_config import get_logger
 from rag_service.rag_pipeline.utils.read_precomputed_embeddings import (
@@ -49,7 +49,8 @@ class RAGSpamClassifier:
         else:
             raise ValueError("Error: LLM Provider variable missing or invalid."
                              "Please set it to 'Ollama' or 'LangDock' in the .env file or environment variables.")
-        self._logger.info("Initialized models (llm=%s embeddings=%s)", self._llm_model, self._embeddings_model)
+        self._logger.info("Initialized models (llm=%s embeddings=%s)",
+                          self.settings.llm_model, self.settings.embeddings_model)
 
     def _build_index(self):
         """Builds the Vector Store Index from precomputed embeddings stored as multiple part files in a directory."""
