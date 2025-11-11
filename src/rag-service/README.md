@@ -57,13 +57,17 @@ python -m rag_service.evaluation.evaluate_model
 ```
 
 ## Embeddings Pre-Computation
-To reduce the startup time of the RAG service and avoid recomputing the embeddings for the initial KB content on each startup, the embeddings are pre-computed and stored under `rag_service/data/base_data_embeddings/`.
+To reduce the startup time of the RAG service and avoid recomputing the embeddings for the initial KB content on each startup, the embeddings for the initial data of the KB are pre-computed and stored under `rag_service/data/base_data_embeddings/`.
+Furthermore, the datasets for the data poisoning attacks are prepared and their embeddings pre-computed and stored under `data_poisoning_attacks/[attack-type]/attack_data/`.
 
 When necessary to recompute the embeddings (e.g. when changing the embeddings model or dataset), you can run the following script:
 
 ```bash
-python -m rag_service.embeddings_precomputation.generate_and_store_embeddings
+python -m data_preprocessing.prepare_datasets
 ```
+
+## Running and evaluating the Data Poisoning Attacks
+To run and evaluate the data poisoning attacks, see the [Data Poisoning Attacks README](./data_poisoning_attacks/README.md).
 
 ## API Docs
 
