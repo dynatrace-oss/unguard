@@ -76,7 +76,7 @@ ollama_base_url: str = "http://localhost:11434"
 - Adapt the ```_init_models()``` method in ```rag.py``` file to use the Ollama models for LLM and embeddings by replacing the method as follows:
 ```
   def _init_models(self):
-    """"Initializes the LLM and Embeddings models"""
+    """Initializes the LLM and Embeddings models"""
     self._llm_model = Ollama(model=self.settings.llm_model, request_timeout=120.0, context_window=8000,
         base_url=self.settings.ollama_base_url)
     self._embeddings_model = ollama_embedding = OllamaEmbedding(

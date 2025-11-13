@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from .config import settings
 from .logging_config import get_logger
-from .routers import healtz, ingestion, classification
+from .routers import healthz, ingestion, classification
 
 _logger = get_logger(__name__)
 
@@ -17,7 +17,7 @@ app = FastAPI(title=settings.app_name, description=settings.app_description, lif
 
 app.include_router(classification.router)
 app.include_router(ingestion.router)
-app.include_router(healtz.router)
+app.include_router(healthz.router)
 
 @app.get("/")
 async def root():

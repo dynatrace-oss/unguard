@@ -18,7 +18,7 @@ def _format_retrieved_examples(retrieved_examples: Iterable[Any], logger) -> str
             text = getattr(example.node, "text", "").strip()
             prepared_examples.append(f"Example {index+1} | label={label} | score={score} | text: {text}")
         except Exception as e:
-            logger.warn("Error formatting retrieved example %d: %s", index, e)
+            logger.warning("Error formatting retrieved example %d: %s", index, e)
             continue
     return "\n".join(prepared_examples) if prepared_examples else "No retrieved examples available."
 

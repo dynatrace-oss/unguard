@@ -42,7 +42,7 @@ class RAGSpamClassifier:
 
 
     def _init_models(self):
-        """"Initializes the LLM & Embedding Models"""
+        """Initializes the LLM & Embedding Models"""
         self._llm_model = OpenAI(
             model=self.settings.llm_model,
             api_key=self.settings.langdock_api_key.get_secret_value(),
