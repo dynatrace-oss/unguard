@@ -1,6 +1,8 @@
 fastapi[standard]==0.119.0
 llama-index==0.14.5
 llama-index-vector-stores-chroma==0.5.3
+llama-index-llms-ollama==0.9.0
+llama-index-embeddings-ollama==0.8.4
 pandas==2.2.3
 pyarrow==21.0.0
 pydantic_settings==2.11.0

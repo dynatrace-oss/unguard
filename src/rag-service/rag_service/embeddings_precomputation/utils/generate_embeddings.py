@@ -1,18 +1,22 @@
 from typing import List
 from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.core import Document
 
 from ...config import get_settings
+from ...rag_pipeline.utils.init_models import init_ollama_embedding, init_langdock_embedding
 
 settings = get_settings()
 
-def create_embedding_model() -> OpenAIEmbedding:
+def create_embedding_model() -> OpenAIEmbedding | OllamaEmbedding:
     """Create embedding model instance using global settings."""
-    return OpenAIEmbedding(
-        model=settings.embeddings_model,
-        api_key=settings.langdock_api_key.get_secret_value(),
-        api_base=settings.langdock_api_base_url,
-    )
+    if settings.model_provider == "Ollama":
+        return init_ollama_embedding(settings)
+    elif settings.model_provider == "LangDock":
+        return init_langdock_embedding(settings)
+    else:
+        raise ValueError("Error: LLM Provider variable missing or invalid."
+                         "Please set it to 'Ollama' or 'LangDock' in the .env file or environment variables.")
 
 def compute_embeddings_for_batch(embed_model: OpenAIEmbedding, batch_of_docs: List[Document]) -> List[List[float]]:
     """Compute embeddings for a batch of Documents."""
