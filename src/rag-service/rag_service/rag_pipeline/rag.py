@@ -5,9 +5,8 @@ import shutil
 from llama_index.core import StorageContext, VectorStoreIndex, Document
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core.retrievers import VectorIndexRetriever
-from llama_index.llms.openai import OpenAI
-from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core.query_engine import RetrieverQueryEngine
+from .utils.init_models import init_langdock_models, init_ollama_models
 
 from ..config import get_settings
 from ..logging_config import get_logger
@@ -42,21 +41,15 @@ class RAGSpamClassifier:
 
 
     def _init_models(self):
-        """Initializes the LLM & Embedding Models"""
-        self._llm_model = OpenAI(
-            model=self.settings.llm_model,
-            api_key=self.settings.langdock_api_key.get_secret_value(),
-            api_base=self.settings.langdock_api_base_url,
-            timeout=120.0,
-        )
-        self._embeddings_model = OpenAIEmbedding(
-            model=self.settings.embeddings_model,
-            api_key=self.settings.langdock_api_key.get_secret_value(),
-            api_base=self.settings.langdock_api_base_url,
-        )
-        self._logger.info("Initialized models (llm=%s embeddings=%s)",
-            self.settings.llm_model, self.settings.embeddings_model
-        )
+        """Initializes the LLM and embedding models based on the config."""
+        if self.settings.model_provider == "Ollama":
+            self._llm_model, self._embeddings_model = init_ollama_models(self.settings)
+        elif self.settings.model_provider == "LangDock":
+            self._llm_model, self._embeddings_model = init_langdock_models(self.settings)
+        else:
+            raise ValueError("Error: LLM Provider variable missing or invalid."
+                             "Please set it to 'Ollama' or 'LangDock' in the .env file or environment variables.")
+        self._logger.info("Initialized models (llm=%s embeddings=%s)", self._llm_model, self._embeddings_model)
 
     def _build_index(self):
         """Builds the Vector Store Index from precomputed embeddings stored as multiple part files in a directory."""

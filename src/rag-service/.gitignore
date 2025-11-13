@@ -1,3 +1,5 @@
 #ignore the vector store because it should be newly created in every start
 vector-store
 rag_service/evaluation/evaluation_results
+.idea
+.env
