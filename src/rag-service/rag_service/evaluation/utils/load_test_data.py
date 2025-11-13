@@ -1,4 +1,4 @@
-from xml.dom.minidom import Document
+from llama_index.core import Document
 
 from ...logging_config import get_logger
 from ...data_loader.parquet_data_loader import DataLoader
