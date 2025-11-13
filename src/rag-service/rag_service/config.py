@@ -2,15 +2,11 @@ from pydantic_settings import BaseSettings
 from pydantic import SecretStr
 from pathlib import Path
 from string import Template
+from typing import Optional
 
 class Settings(BaseSettings):
     app_name: str = "RAG Service"
     app_description: str = "API for classifying text as spam or not spam using a RAG system"
-
-    llm_model: str = "gpt-5"
-    embeddings_model: str = "text-embedding-ada-002"
-    langdock_api_key: SecretStr
-    langdock_api_base_url: str
 
     prompt_template: Template = Template(
         "You are a spam classification model. "
@@ -30,6 +26,18 @@ class Settings(BaseSettings):
     embeddings_computation_max_batch_size: int = 200
 
     evaluation_results_dir : Path = Path("rag_service/evaluation/evaluation_results/")
+
+    # model config with values taken from the .env file or environment variables
+    model_provider: Optional[str] = None
+    model_provider_base_url: Optional[str] = None
+    langdock_api_key: Optional[SecretStr] = None
+    base_url: Optional[str] = None
+    llm_model: Optional[str] = None
+    embeddings_model: Optional[str] = None
+
+    class Config:
+        env_file = str(Path(__file__).resolve().parent.parent / ".env")
+        env_file_encoding = "utf-8"
 
 settings = Settings()
 
