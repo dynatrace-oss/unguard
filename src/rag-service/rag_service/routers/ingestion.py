@@ -1,13 +1,14 @@
 from fastapi import APIRouter, HTTPException
 
-from ..rag_pipeline.rag import rag_classifier
-from ..schemas import (
+from rag_service.rag_pipeline.rag import rag_classifier
+from rag_service.schemas import (
     KnowledgeBaseEntry,
     BatchOfKnowledgeBaseEntries,
     IngestionResponse,
     KnowledgeBaseDump,
+    BatchOfPrecomputedKBEntries,
 )
-from ..logging_config import get_logger
+from logger.logging_config import get_logger
 
 router = APIRouter()
 _logger = get_logger(__name__)
@@ -48,6 +49,27 @@ async def ingest_batch(entries: BatchOfKnowledgeBaseEntries):
     except Exception as e:
         _logger.error("Error ingesting new entries: %s", str(e))
         raise HTTPException(status_code=500, detail=f"Error ingesting new entries: {str(e)}")
+
+@router.post("/ingestBatchWithEmbeddingsPrecomputed", response_model=IngestionResponse)
+async def ingest_precomputed_batch(entries: BatchOfPrecomputedKBEntries):
+    """
+    Ingest a batch of entries with already precomputed embeddings.
+    This route is useful for bypassing the overhead of computing embeddings during ingestion
+    when ingesting a large amount of entries e.g. to simulate & evaluate data poisoning attacks
+    """
+    _logger.info("Received POST /ingestBatchWithEmbeddingsPrecomputed request with %d entries", len(entries.entries))
+    try:
+        count = rag_classifier.ingest_precomputed_embeddings(
+            [e.model_dump() for e in entries.entries]
+        )
+        return IngestionResponse(
+            success=True,
+            message=f"{count} entries with precomputed embeddings were successfully ingested",
+            count=count
+        )
+    except Exception as e:
+        _logger.error("Error ingesting precomputed embeddings: %s", str(e))
+        raise HTTPException(status_code=500, detail=f"Error ingesting precomputed embeddings: {str(e)}")
 
 @router.get("/kb", response_model=KnowledgeBaseDump)
 async def get_kb():

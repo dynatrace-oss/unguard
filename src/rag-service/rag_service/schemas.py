@@ -27,3 +27,12 @@ class IngestionResponse(BaseModel):
 
 class KnowledgeBaseDump(BaseModel):
     entries: List[KnowledgeBaseEntry]
+
+class PrecomputedKBEntry(BaseModel):
+    id: str
+    text: str
+    label: str
+    embedding: List[float]
+
+class BatchOfPrecomputedKBEntries(BaseModel):
+    entries: List[PrecomputedKBEntry]

@@ -3,8 +3,8 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.core import Document
 
-from ...config import get_settings
-from ...rag_pipeline.utils.init_models import init_ollama_embedding, init_langdock_embedding
+from rag_service.config import get_settings
+from rag_service.rag_pipeline.utils.init_models import init_ollama_embedding, init_langdock_embedding
 
 settings = get_settings()
 

@@ -25,8 +25,6 @@ class Settings(BaseSettings):
     base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings/")
     embeddings_computation_max_batch_size: int = 200
 
-    evaluation_results_dir : Path = Path("rag_service/evaluation/evaluation_results/")
-
     # model config with values taken from the .env file or environment variables
     model_provider: Optional[str] = None
     model_provider_base_url: Optional[str] = None

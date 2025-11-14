@@ -6,16 +6,16 @@ from llama_index.core import StorageContext, VectorStoreIndex, Document
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
-from .utils.init_models import init_langdock_models, init_ollama_models
 
-from ..config import get_settings
-from ..logging_config import get_logger
-from .utils.read_precomputed_embeddings import (
+from rag_service.rag_pipeline.utils.init_models import init_langdock_models, init_ollama_models
+from rag_service.config import get_settings
+from logger.logging_config import get_logger
+from rag_service.rag_pipeline.utils.read_precomputed_embeddings import (
     validate_embeddings_directory,
     get_list_of_embeddings_files,
     load_embeddings_into_collection,
 )
-from .utils.prepare_prompt import prepare_prompt
+from rag_service.rag_pipeline.utils.prepare_prompt import prepare_prompt
 
 class RAGSpamClassifier:
     def __init__(self):
@@ -49,7 +49,8 @@ class RAGSpamClassifier:
         else:
             raise ValueError("Error: LLM Provider variable missing or invalid."
                              "Please set it to 'Ollama' or 'LangDock' in the .env file or environment variables.")
-        self._logger.info("Initialized models (llm=%s embeddings=%s)", self._llm_model, self._embeddings_model)
+        self._logger.info("Initialized models (llm=%s embeddings=%s)",
+                          self.settings.llm_model, self.settings.embeddings_model)
 
     def _build_index(self):
         """Builds the Vector Store Index from precomputed embeddings stored as multiple part files in a directory."""
@@ -125,6 +126,35 @@ class RAGSpamClassifier:
         self._index.insert_nodes(docs)
         self._logger.info("Ingested batch of %d new entries", len(entries))
         return len(docs)
+
+    def ingest_precomputed_embeddings(self, entries: List[Dict]) -> int:
+        """
+        Inserts a batch of new entries with already precomputed embeddings into the KB.
+        """
+        documents = []
+        embeddings = []
+        metadatas = []
+        ids = []
+
+        for entry in entries:
+            try:
+                documents.append(entry["text"])
+                embeddings.append(entry["embedding"])
+                metadatas.append({"label": entry["label"]})
+                ids.append(entry.get("id"))
+            except KeyError as error:
+                self._logger.warning("Error processing entry, missing field: %s", error)
+        if not documents:
+            return 0
+        self._collection.add(
+            documents=documents,
+            embeddings=embeddings,
+            metadatas=metadatas,
+            ids=ids
+        )
+
+        self._logger.info("Ingested %d new entries with precomputed embeddings", len(documents))
+        return len(documents)
 
     def get_all_kb_entries(self) -> List[Dict[str, str]]:
         """
