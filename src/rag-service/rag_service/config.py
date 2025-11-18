@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     max_length_for_entries: int = 2793  # value taken from Huggingface length bar chart (upper boundary of first bar)
 
     base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings/")
+    label_flipping_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/label_flipping/attack_data/")
     embeddings_computation_max_batch_size: int = 200
 
     # model config with values taken from the .env file or environment variables
