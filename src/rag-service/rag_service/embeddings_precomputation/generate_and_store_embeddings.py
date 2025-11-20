@@ -33,10 +33,13 @@ def generate_and_store_embeddings(docs: List[Document], embeddings_store_dir_pat
                 "label": doc.metadata.get("label", ""),
                 "embedding": embedding
             }
-            writer.write_entry_to_file(entry)
-            num_of_embedded_docs += 1
+            try:
+                writer.write_entry_to_file(entry)
+                num_of_embedded_docs += 1
+            except Exception as e:
+                logger.error("Failed to write embedding for index %d: %s", global_index, e)
 
-        logger.info("Processed %d/%d entries", end_of_batch, total_num_of_docs)
+        logger.info("Successfully wrote %d/%d entries", num_of_embedded_docs, total_num_of_docs)
 
     writer.close()
     logger.info("Pre-computing complete: %d embeddings written across %d files at directory %s)",
