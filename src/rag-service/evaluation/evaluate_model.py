@@ -5,16 +5,11 @@ from evaluation.utils.check_connection import check_connection
 from evaluation.utils.load_test_data import load_test_data
 from evaluation.utils.print_and_store_results import print_and_store_results
 from logger.logging_config import get_logger
+from rag_service.config import get_settings
+from rag_service.constants import RAG_SERVICE_LOCAL_URL, CLASSIFY_TEXT_ENDPOINT
 
 logger = get_logger("ModelEvaluation")
-
-RAG_SERVICE_PORT = 8000
-LOCALHOST = "http://127.0.0.1"
-RAG_SERVICE_LOCAL_URL = f"{LOCALHOST}:{RAG_SERVICE_PORT}"
-CLASSIFY_TEXT_ENDPOINT = "/classifyPost"
-
-EVALUATION_RESULTS_DEFAULT_DIR: Path = Path(__file__).parent / "evaluation_results"
-EVALUATION_BATCH_SIZE = 50
+settings = get_settings()
 
 
 def evaluate_test_docs(docs):
@@ -49,7 +44,7 @@ def evaluate_test_docs(docs):
 
     return tp, fp, tn, fn, errors
 
-def evaluate_model(evaluation_results_dir_path: Path = EVALUATION_RESULTS_DEFAULT_DIR):
+def evaluate_model(evaluation_results_dir_path: Path = settings.default_evaluation_results_store_path):
     if not check_connection(RAG_SERVICE_LOCAL_URL):
         logger.info("RAG service not reachable at %s. Start it before running evaluation.", RAG_SERVICE_LOCAL_URL)
         return

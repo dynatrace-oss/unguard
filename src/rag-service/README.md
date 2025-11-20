@@ -53,7 +53,7 @@ The service will be available at http://localhost:8000.
 To evalute the performance of the model, you can run the evaluation script as follows:
 
 ```bash
-python -m rag_service.evaluation.evaluate_model
+python -m evaluation.evaluate_model
 ```
 
 ## Embeddings Pre-Computation
