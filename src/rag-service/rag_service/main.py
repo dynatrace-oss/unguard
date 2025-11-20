@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from contextlib import asynccontextmanager
 
 from .config import settings
@@ -21,4 +21,4 @@ app.include_router(healthz.router)
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return Response(status_code=200)

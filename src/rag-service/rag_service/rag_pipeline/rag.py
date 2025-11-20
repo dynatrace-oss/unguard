@@ -6,8 +6,10 @@ from llama_index.core import StorageContext, VectorStoreIndex, Document
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
-from .utils.init_models import init_langdock_models, init_ollama_models
+from ..constants import PROVIDER_OLLAMA, PROVIDER_LANGDOCK
 
+from .utils.init_ollama_models import init_ollama_models
+from .utils.init_langdock_models import init_langdock_models
 from ..config import get_settings
 from ..logging_config import get_logger
 from .utils.read_precomputed_embeddings import (
@@ -18,6 +20,11 @@ from .utils.read_precomputed_embeddings import (
 from .utils.prepare_prompt import prepare_prompt
 
 class RAGSpamClassifier:
+    """
+    RAG System for classifying text as spam or not spam.
+    Uses a vector store as a Knowledge Base, with an initial index built from precomputed embeddings of labeled examples.
+    """
+
     def __init__(self):
         self.settings = get_settings()
         self._logger = get_logger(self.__class__.__name__)
@@ -42,9 +49,10 @@ class RAGSpamClassifier:
 
     def _init_models(self):
         """Initializes the LLM and embedding models based on the config."""
-        if self.settings.model_provider == "Ollama":
+        provider = (self.settings.model_provider or "").strip().lower()
+        if provider == PROVIDER_OLLAMA:
             self._llm_model, self._embeddings_model = init_ollama_models(self.settings)
-        elif self.settings.model_provider == "LangDock":
+        elif provider == PROVIDER_LANGDOCK:
             self._llm_model, self._embeddings_model = init_langdock_models(self.settings)
         else:
             raise ValueError("Error: LLM Provider variable missing or invalid."
@@ -95,7 +103,7 @@ class RAGSpamClassifier:
 
         if classification_text.startswith("spam"):
             return {"classification": "spam"}
-        elif classification_text.startswith("not_spam") or classification_text.startswith("not spam"):
+        elif classification_text.startswith("not_spam"):
             return {"classification": "not_spam"}
         else:
             raise ValueError(f"Error: Invalid response from LLM for classification of text \"{classification_text}\"")
