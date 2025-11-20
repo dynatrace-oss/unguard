@@ -1,0 +1,2 @@
+PROVIDER_OLLAMA = "ollama"
+PROVIDER_LANGDOCK = "langdock"

@@ -34,14 +34,8 @@ Now, when running the service it will automatically use the OpenAI models via La
 First, you need to install Ollama and set up the models you want to use locally by following the official documentation of [Ollama](https://github.com/ollama/ollama).
 Then, rename the `.env.local` file to `.env` and adapt the configuration values as needed.
 
-Steps:
-- Install ollama via `curl -fsSL https://ollama.com/install.sh | sh`
-- Pull the models you want to use: e.g. ollama pull llama3.1` and `ollama pull nomic-embed-text`
-- Run `ollama serve`. By default, the models will be served to `localhost:11434`
-- Rename the `.env.local` file to `.env` and adapt if necessary.
-
-## Running the RAG Service locally
-To run the RAG service locally, inside the ```/src/rag-service``` directory run:
+## Starting the service
+To run the RAG service locally, inside the `/src/rag-service` directory run:
 
 ```bash
 fastapi dev rag_service/main.py
@@ -52,7 +46,7 @@ Or using uvicorn directly:
 uvicorn rag_service.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-When starting, the vector database will be created automatically under rag_service/vector-store/.
+When starting, the vector database will be created automatically under `rag_service/vector-store/`.
 The service will be available at http://localhost:8000.
 
 ## Running the evaluation script

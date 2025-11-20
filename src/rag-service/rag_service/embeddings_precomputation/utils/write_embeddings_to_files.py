@@ -7,7 +7,7 @@ from ...logging_config import get_logger
 
 logger = get_logger("EmbeddingsWriter")
 
-FILE_SIZE_LIMIT = 90 * 1024 * 1024  # 90MB to stay below 100MB file size limit in Github
+FILE_SIZE_LIMIT = 90 * 1024 * 1024  # 90MB to stay below 100MB file size limit in GitHub
 
 def compute_entry_id(text: str, label: str, index: int) -> str:
     """Generates an entry ID based on text, label and index."""
