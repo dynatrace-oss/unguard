@@ -5,7 +5,7 @@ from logger.logging_config import get_logger
 from rag_service.config import get_settings
 from rag_service.embeddings_precomputation.generate_and_store_embeddings import generate_and_store_embeddings
 
-logger = get_logger("DataPreprocessor")
+logger = get_logger("LabelFlippingAttackDataPreprocessor")
 settings = get_settings()
 
 def prepare_label_flipping_dataset(docs: List[Document]) -> int:
