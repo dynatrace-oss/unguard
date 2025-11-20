@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     label_flipping_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/label_flipping/attack_data/")
     embeddings_computation_max_batch_size: int = 200
 
+    default_evaluation_results_store_path: Path = Path("evaluation/evaluation_results/")
+    label_flipping_evaluation_results_store_path: Path = Path("data_poisoning_attacks/label_flipping/evaluation_results/")
+
     # model config with values taken from the .env file or environment variables
     model_provider: Optional[str] = None
     model_provider_base_url: Optional[str] = None
