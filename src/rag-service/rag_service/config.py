@@ -25,6 +25,8 @@ class Settings(BaseSettings):
 
     base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings/")
     label_flipping_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/label_flipping/attack_data/")
+    keyword_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_data/")
+    keyword_attack_evaluation_embeddings_store_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_evaluation_data/")
     embeddings_computation_max_batch_size: int = 200
 
     default_evaluation_results_store_path: Path = Path("evaluation/evaluation_results/")

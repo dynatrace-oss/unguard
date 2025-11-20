@@ -38,6 +38,11 @@ Then, rename the `.env.local` file to `.env` and adapt the configuration values 
 To run the RAG service locally, inside the `/src/rag-service` directory run:
 
 ```bash
+fastapi run rag_service/main.py
+```
+or for auto-reload on code changes during development:
+
+```bash
 fastapi dev rag_service/main.py
 ```
 
