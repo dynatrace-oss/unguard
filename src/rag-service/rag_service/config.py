@@ -5,13 +5,14 @@ from string import Template
 from typing import Optional
 
 class Settings(BaseSettings):
+    """Configuration settings for the RAG Service."""
     app_name: str = "RAG Service"
     app_description: str = "API for classifying text as spam or not spam using a RAG system"
 
     prompt_template: Template = Template(
         "You are a spam classification model. "
         "You are given a USER_POST to classify. Please use only the retrieved labeled examples to decide whether a post is spam or not spam."
-        "Respond with exactly one token: spam or not_spam.\n"
+        "Respond with exactly either 'spam' or 'not_spam'. Do not add anything else.\n"
         "Retrieved Examples: ${retrieved_examples}\n\n"
         "USER_POST:\n${user_post}\n\n"
     )
@@ -20,7 +21,7 @@ class Settings(BaseSettings):
 
     base_data_path: Path = Path("rag_service/data/base_dataset.parquet")
     test_data_path: Path = Path("rag_service/data/test_dataset.parquet")
-    max_length_for_entries: int = 2793
+    max_length_for_entries: int = 2793  # value taken from Huggingface length bar chart (upper boundary of first bar)
 
     base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings/")
     embeddings_computation_max_batch_size: int = 200

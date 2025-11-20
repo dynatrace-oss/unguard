@@ -9,6 +9,10 @@ from ..logging_config import get_logger
 logger = get_logger("DataLoader")
 
 class DataLoader:
+    """
+    Loads data from parquet files and converts them to Documents to be used in the RAG pipeline.
+    Entries exceeding max_length_for_entries are dropped.
+    """
     def __init__(self):
         self.settings = get_settings()
 
