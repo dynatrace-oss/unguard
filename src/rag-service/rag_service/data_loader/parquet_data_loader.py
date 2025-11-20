@@ -24,6 +24,10 @@ class DataLoader:
         """Loads test data from parquet file and returns as list of Documents."""
         return self._load_parquet(self.settings.test_data_path)
 
+    def load_keyword_attack_evaluation_data(self) -> List[Document]:
+        """Loads keyword attack evaluation data from parquet file and returns as list of Documents."""
+        return self._load_parquet(self.settings.keyword_attack_success_evaluation_dataset_store_path)
+
     def _load_parquet(self, file_path: Union[str, Path]) -> List[Document]:
         """Loads data from a parquet file and converts rows to Documents. Entries with length > 2793 are dropped."""
         path = Path(file_path)
