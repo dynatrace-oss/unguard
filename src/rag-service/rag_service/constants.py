@@ -3,5 +3,5 @@ PROVIDER_LANGDOCK = "langdock"
 RAG_SERVICE_PORT = 8000
 LOCALHOST = "http://127.0.0.1"
 RAG_SERVICE_LOCAL_URL = LOCALHOST + ":" + str(RAG_SERVICE_PORT) + "/"
-INGESTION_ENDPOINT = "/ingestBatchWithEmbeddingsPrecomputed"
-CLASSIFY_TEXT_ENDPOINT = "/classifyPost"
+INGESTION_ENDPOINT = "ingestBatchWithEmbeddingsPrecomputed"
+CLASSIFY_TEXT_ENDPOINT = "classifyPost"
