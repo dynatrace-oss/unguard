@@ -32,8 +32,7 @@ def evaluate_attack_effect(docs, evaluation_results_dir_path):
         for index, doc in enumerate(docs):
             try:
                 predicted_label = perform_classification_request(doc.text)
-                if index % 50 == 0 and index > 0:
-                    logger.info("Evaluated %d/%d samples...", index, len(docs))
+                progress.advance(task_id)
                 docs_evaluated += 1
             except Exception as exception:
                 errors += 1
@@ -43,8 +42,6 @@ def evaluate_attack_effect(docs, evaluation_results_dir_path):
 
             if predicted_label == settings.not_spam_label:
                 successful_attacks += 1
-
-            progress.advance(task_id)
 
     return _print_and_store_results(docs_evaluated, successful_attacks, errors, evaluation_results_dir_path)
 

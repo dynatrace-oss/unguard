@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     label_flipping_evaluation_results_store_path: Path = Path("data_poisoning_attacks/label_flipping/evaluation_results/")
     keyword_attack_evaluation_results_store_path: Path = Path("data_poisoning_attacks/keyword_attack/evaluation_results/")
 
+    keyword_attack_evaluation_parquet_dataset_store_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_dataset_parquet/keyword_attack_dataset.parquet")
+
     # model config with values taken from the .env file or environment variables
     model_provider: Optional[str] = None
     model_provider_base_url: Optional[str] = None
