@@ -42,12 +42,12 @@ def print_and_store_results(true_positives, false_positives, true_negatives, fal
     store_results_in_file(evaluation_results_dir_path, results, logger)
 
 
-def store_results_in_file(evaluation_results_dir_path, results_dict, logger):
+def store_results_in_file(evaluation_results_dir_path, results_dict, logger, filename: str = "model_evaluation"):
     """Stores the given results in a file at the given directory"""
     evaluation_results_dir_path.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
-    output_file = evaluation_results_dir_path / f"model_evaluation_{timestamp}.json"
+    output_file = evaluation_results_dir_path / f"{filename}_{timestamp}.json"
 
     try:
         with output_file.open("w", encoding="utf-8") as f:

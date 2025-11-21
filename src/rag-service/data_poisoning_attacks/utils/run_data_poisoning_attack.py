@@ -10,10 +10,9 @@ from rag_service.rag_pipeline.utils.read_precomputed_embeddings import (
 )
 
 def run_data_poisoning_attack(embeddings_dir: Path, logger):
-    """ Runs a data poisoning attack on the RAG service with precomputed embeddings from the given Path"""
+    """ Runs a data poisoning attack on the RAG service with precomputed embeddings from the given path"""
     validate_embeddings_directory(embeddings_dir, logger)
-    if not check_connection(RAG_SERVICE_LOCAL_URL):
-        logger.error("RAG service could not be reached at %s. Please start the service before running this script.", RAG_SERVICE_LOCAL_URL)
+    if not check_connection(RAG_SERVICE_LOCAL_URL, logger):
         return
 
     logger.info("Reading poisoned embeddings from %s ...", embeddings_dir)
