@@ -27,20 +27,20 @@ def evaluate_attack_docs(docs, evaluation_results_dir_path):
             errors += 1
             logger.warning("Error classifying sample %d: %s", index, exception)
             continue
-        if predicted_label == "not_spam":
+        if predicted_label == settings.not_spam_label:
             successful_attacks += 1
 
     return _print_and_store_results(docs_evaluated, successful_attacks, errors, evaluation_results_dir_path)
 
 def _print_and_store_results(total, successful_attacks, errors, evaluation_results_dir_path):
     """Prints the evaluation results and stores them in a file"""
-    attack_success_rate = (successful_attacks / total) * 100 if total > 0 else 0
+    attack_success_rate = (successful_attacks / total) if total > 0 else 0
 
     logger.info("------------------------------------------------\n"
                 "Evaluation Results:\n"
                 "Testset size: %d entries\n"
                 "Successful Attacks: %d\n"
-                "Attack Success Rate: %d \n"
+                "Attack Success Rate: %d\n"
                 "Classification errors: %d\n"
                 "------------------------------------------------\n",
                 total, successful_attacks, attack_success_rate, errors)

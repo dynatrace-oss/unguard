@@ -13,9 +13,9 @@ def prepare_label_flipping_dataset(docs: List[Document]) -> int:
     logger.info("Preparing label flipping dataset for %d documents...", len(docs))
     for doc in docs:
         label = doc.metadata.get("label")
-        if label == "spam":
-            doc.metadata["label"] = "not_spam"
+        if label == settings.spam_label:
+            doc.metadata["label"] = settings.not_spam_label
         else:
-            doc.metadata["label"] = "spam"
+            doc.metadata["label"] = settings.spam_label
 
     return generate_and_store_embeddings(docs, settings.label_flipping_attack_embeddings_store_path)
