@@ -17,7 +17,7 @@ def evaluate_test_docs(docs):
 
     for index, doc in enumerate(docs):
         ground_truth = str(doc.metadata.get("label", "")).lower().strip()
-        if ground_truth not in ("spam", "not_spam"):
+        if ground_truth not in (settings.spam_label, settings.not_spam_label):
             continue
         try:
             predicted_label = perform_classification_request(doc.text)
@@ -27,13 +27,13 @@ def evaluate_test_docs(docs):
             errors += 1
             logger.warning("Error classifying sample %d: %s", index, exception)
             continue
-        if ground_truth == "spam":
-            if predicted_label == "spam":
+        if ground_truth == settings.spam_label:
+            if predicted_label == settings.spam_label:
                 true_positives += 1
             else:
                 false_negatives += 1
         else:
-            if predicted_label == "spam":
+            if predicted_label == settings.spam_label:
                 false_positives += 1
             else:
                 true_negatives += 1
