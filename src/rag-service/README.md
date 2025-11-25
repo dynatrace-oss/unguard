@@ -61,9 +61,12 @@ To evalute the performance of the model, you can run the evaluation script as fo
 python -m evaluation.evaluate_model
 ```
 
-## Embeddings Pre-Computation
+## Data Preprocessing and Pre-computed Embeddings
 To reduce the startup time of the RAG service and avoid recomputing the embeddings for the initial KB content on each startup, the embeddings for the initial data of the KB are pre-computed and stored under `rag_service/data/base_data_embeddings/`.
 Furthermore, the datasets for the data poisoning attacks are prepared and their embeddings pre-computed and stored under `data_poisoning_attacks/[attack-type]/attack_data/`.
+
+Furthermore, the Data Preprocessor also takes care of preparing the datasets for the data poisoning attacks (more info
+in the [Data Poisoning Attacks README](./data_poisoning_attacks/README.md)).
 
 When necessary to recompute the embeddings (e.g. when changing the embeddings model or dataset), you can run the following script:
 
@@ -81,7 +84,6 @@ Automatically generated API documentation available at:
 - ReDoc: http://localhost:8000/redoc
 
 Those can be used to explore and test the API endpoints of the RAG service.
-
 
 ## Attribution
 

@@ -1,10 +1,9 @@
 from typing import List, Dict
 import requests
 
-from rag_service.constants import RAG_SERVICE_LOCAL_URL, INGESTION_ENDPOINT
+from rag_service.constants import INGESTION_ENDPOINT_URL
 
 INGESTION_BATCH_SIZE = 500
-INGESTION_URL = RAG_SERVICE_LOCAL_URL + INGESTION_ENDPOINT
 
 def ingest_poisoned_entries(entries: List[Dict], logger):
     """ Ingests poisoned entries into the RAG service in batches via the given ingestion URL. """
@@ -14,7 +13,7 @@ def ingest_poisoned_entries(entries: List[Dict], logger):
         batch = entries[start:start + INGESTION_BATCH_SIZE]
         json_payload = {"entries": batch}
 
-        response = requests.post(INGESTION_URL, json=json_payload, timeout=120)
+        response = requests.post(INGESTION_ENDPOINT_URL, json=json_payload, timeout=120)
         if response.status_code != 200:
             raise RuntimeError(f"Error during ingestion ({response.status_code}): {response.text}")
 
