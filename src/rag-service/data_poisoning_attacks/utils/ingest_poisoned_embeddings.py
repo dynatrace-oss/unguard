@@ -13,7 +13,7 @@ def ingest_poisoned_entries(entries: List[Dict], ingestion_url: str, logger):
 
         response = requests.post(ingestion_url, json=json_payload, timeout=120)
         if response.status_code != 200:
-            raise RuntimeError("Error during ingestion: %s:", response.text)
+            raise RuntimeError(f"Error during ingestion ({response.status_code}): {response.text}")
 
         num_ingested += len(batch)
         logger.info("Ingested %d/%d poisoned entries", num_ingested, total_entries)

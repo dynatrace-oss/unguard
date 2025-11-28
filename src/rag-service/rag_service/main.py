@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Response
 from contextlib import asynccontextmanager
 
+from logger.uvicorn_logger_config import set_custom_uvicorn_logger_config
 from rag_service.config import settings
 from logger.logging_config import get_logger
 from rag_service.routers import healthz, ingestion, classification
@@ -9,6 +10,7 @@ _logger = get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    set_custom_uvicorn_logger_config()
     _logger.info("rag-service starting")
     yield
     _logger.info("rag-service shutting down")
