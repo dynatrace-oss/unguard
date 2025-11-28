@@ -6,6 +6,7 @@ from llama_index.core import StorageContext, VectorStoreIndex, Document
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
+import uuid
 
 from rag_service.constants import PROVIDER_OLLAMA, PROVIDER_LANGDOCK
 from rag_service.rag_pipeline.utils.init_langdock_models import init_langdock_models
@@ -149,7 +150,7 @@ class RAGSpamClassifier:
                 documents.append(entry["text"])
                 embeddings.append(entry["embedding"])
                 metadatas.append({"label": entry["label"]})
-                ids.append(entry.get("id"))
+                ids.append(entry.get("id") or str(uuid.uuid4()))
             except KeyError as error:
                 self._logger.warning("Error processing entry, missing field: %s", error)
         if not documents:
