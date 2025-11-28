@@ -61,6 +61,9 @@ To evalute the performance of the model, you can run the evaluation script as fo
 python -m evaluation.evaluate_model
 ```
 
+The evaluation results will be stored under `rag_service/evaluation_results/`.
+To limit the sample size used for evaluation, set the `EVALUATION_SAMPLE_SIZE` environment variable in the `.env` file.
+
 ## Data Preprocessing and Pre-computed Embeddings
 To reduce the startup time of the RAG service and avoid recomputing the embeddings for the initial KB content on each startup, the embeddings for the initial data of the KB are pre-computed and stored under `rag_service/data/base_data_embeddings/`.
 Furthermore, the datasets for the data poisoning attacks are prepared and their embeddings pre-computed and stored under `data_poisoning_attacks/[attack-type]/attack_data/`.

@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     embeddings_model: Optional[str] = None
     evaluate_after_attack: bool = True
     limit_evaluation_samples: int = 0  # 0 -> no limit
+    limit_keyword_attack_success_evaluation_samples: int = 0  # 0 -> no limit
 
     class Config:
         env_file = str(Path(__file__).resolve().parent.parent / ".env")
