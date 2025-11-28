@@ -6,14 +6,14 @@ from evaluation.utils.load_test_data import load_test_data
 from evaluation.utils.print_and_store_results import print_and_store_results
 from logger.logging_config import get_logger
 from rag_service.config import get_settings
-from rag_service.constants import RAG_SERVICE_LOCAL_URL, CLASSIFY_TEXT_ENDPOINT
+from rag_service.constants import RAG_SERVICE_LOCAL_URL, CLASSIFY_TEXT_ENDPOINT_URL
 
 logger = get_logger("ModelEvaluation")
 settings = get_settings()
 
 
 def evaluate_test_docs(docs):
-    tp = fp = tn = fn = 0
+    true_positives = false_positives = true_negatives = false_negatives = 0
     errors = 0
 
     for index, doc in enumerate(docs):
@@ -22,7 +22,7 @@ def evaluate_test_docs(docs):
             continue
         payload = {"text": doc.text}
         try:
-            response = requests.post(RAG_SERVICE_LOCAL_URL + CLASSIFY_TEXT_ENDPOINT, json=payload, timeout=60)
+            response = requests.post(CLASSIFY_TEXT_ENDPOINT_URL, json=payload, timeout=60)
             response.raise_for_status()
             predicted_label = response.json()["classification"]
             if index % 50 == 0 and index > 0:
@@ -33,29 +33,31 @@ def evaluate_test_docs(docs):
             continue
         if ground_truth == "spam":
             if predicted_label == "spam":
-                tp += 1
+                true_positives += 1
             else:
-                fn += 1
+                false_negatives += 1
         else:
             if predicted_label == "spam":
-                fp += 1
+                false_positives += 1
             else:
-                tn += 1
+                true_negatives += 1
 
-    return tp, fp, tn, fn, errors
+    return true_positives, false_positives, true_negatives, false_negatives, errors
 
-def evaluate_model(evaluation_results_dir_path: Path = settings.default_evaluation_results_store_path):
+def evaluate_model(evaluation_results_dir_path: Path = settings.default_evaluation_results_store_path, limit_evaluation_samples: int = settings.limit_evaluation_samples):
     if not check_connection(RAG_SERVICE_LOCAL_URL):
         logger.info("RAG service not reachable at %s. Start it before running evaluation.", RAG_SERVICE_LOCAL_URL)
         return
     docs = load_test_data()
+    if limit_evaluation_samples > 0:
+        docs = docs[:limit_evaluation_samples]
     if not docs:
         return
 
     logger.info("Starting evaluation on %d samples...", len(docs))
 
-    tp, fp, tn, fn, errors = evaluate_test_docs(docs)
-    print_and_store_results(tp, fp, tn, fn, errors, evaluation_results_dir_path, logger)
+    true_positives, false_positives, true_negatives, false_negatives, errors = evaluate_test_docs(docs)
+    print_and_store_results(true_positives, false_positives, true_negatives, false_negatives, errors, evaluation_results_dir_path, logger)
 
 if __name__ == "__main__":
     evaluate_model()
