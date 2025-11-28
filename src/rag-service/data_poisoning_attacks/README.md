@@ -78,6 +78,10 @@ run the following command from the `src/rag-service` directory:
 ```bash
 python -m data_poisoning_attacks.keyword_attack.keyword_attack
 ```
+
+By setting the `EVALUATE_AFTER_ATTACK` environment variable in the `.env` file, it is possible to configure whether the
+attack should be evaluated subsequently to its execution.
+
 The evaluation results will be stored under `src/rag-service/data_poisoning_attacks/keyword_attack/evaluation_results/`.
 
 
