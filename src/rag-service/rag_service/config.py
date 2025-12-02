@@ -3,6 +3,14 @@ from pydantic import SecretStr
 from pathlib import Path
 from string import Template
 from typing import Optional
+from enum import Enum
+
+
+class DataPoisoningDetectionStrategy(Enum):
+    EMBEDDING_SPACE_SIMILARITY_ON_BATCH_LEVEL = "embedding_similarity_batch_level"
+    EMBEDDING_SPACE_SIMILARITY_ON_ENTRY_LEVEL = "embedding_similarity_entry_level"
+    NONE = None
+
 
 class Settings(BaseSettings):
     """Configuration settings for the RAG Service."""
@@ -48,6 +56,10 @@ class Settings(BaseSettings):
     evaluate_after_attack: bool = True
     limit_evaluation_samples: int = 0  # 0 -> no limit
     limit_keyword_attack_success_evaluation_samples: int = 0  # 0 -> no limit
+
+    use_data_poisoning_detection: bool = False
+    data_poisoning_detection_strategy: DataPoisoningDetectionStrategy | None = None
+
 
     class Config:
         env_file = str(Path(__file__).resolve().parent.parent / ".env")
