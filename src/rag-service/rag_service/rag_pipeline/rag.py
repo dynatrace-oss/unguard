@@ -8,6 +8,7 @@ from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
 import uuid
 
+from data_poisoning_detection_strategies.data_poisoning_detection import run_data_poisoning_detection
 from rag_service.constants import PROVIDER_OLLAMA, PROVIDER_LANGDOCK
 from rag_service.rag_pipeline.utils.init_langdock_models import init_langdock_models
 from rag_service.rag_pipeline.utils.init_ollama_models import init_ollama_models
@@ -136,10 +137,41 @@ class RAGSpamClassifier:
         self._logger.info("Ingested batch of %d new entries", len(entries))
         return len(docs)
 
+    def _check_for_data_poisoning(self, entries: List[Dict]) -> List[Dict]:
+        """Checks a batch of new entries for potential data poisoning."""
+        poisoned_entries = []
+        try:
+            poisoned_entries = run_data_poisoning_detection(
+                detection_strategy=self.settings.data_poisoning_detection_strategy,
+                new_entries=entries,
+                kb_contents=self._get_all_kb_entries_with_embeddings(),
+                logger=self._logger
+            )
+        except Exception as e:
+            self._logger.error(
+                "Data poisoning detection failed: %s.",
+                e
+            )
+            self._logger.info("Proceeding with ingestion.")
+
+        if len(poisoned_entries) > 0:
+            self._logger.warning(
+                "Data poisoning detected in current batch! Skipping ingestion of %d poisoned samples.", len(poisoned_entries)
+            )
+            entries = [
+                e for e in entries
+                if e.get("id") not in poisoned_entries
+            ]
+        return entries
+
     def ingest_precomputed_embeddings(self, entries: List[Dict]) -> int:
         """
         Inserts a batch of new entries with already precomputed embeddings into the KB.
         """
+
+        if self.settings.use_data_poisoning_detection:
+            entries = self._check_for_data_poisoning(entries) # filter out poisoned entries
+
         documents = []
         embeddings = []
         metadatas = []
@@ -155,6 +187,7 @@ class RAGSpamClassifier:
                 self._logger.warning("Error processing entry, missing field: %s", error)
         if not documents:
             return 0
+
         self._collection.add(
             documents=documents,
             embeddings=embeddings,
@@ -165,19 +198,35 @@ class RAGSpamClassifier:
         self._logger.info("Ingested %d new entries with precomputed embeddings", len(documents))
         return len(documents)
 
-    def get_all_kb_entries(self) -> List[Dict[str, str]]:
-        """
-        Returns all knowledge base entries as a list with elements in form {text, label}.
-        """
-        data = self._collection.get(include=["documents", "metadatas"])
-        documents = data.get("documents", []) or []
-        metadatas = data.get("metadatas", []) or []
-        list_of_entries: List[Dict[str, str]] = []
+    def _get_all_kb_entries_with_embeddings(self) -> List[Dict]:
+        """Fetches all entries from the Chroma collection."""
+        data = self._collection.get(include=["documents", "metadatas", "embeddings"])
 
-        for doc_text, meta in zip(documents, metadatas):
-            label = (meta or {}).get("label")
-            list_of_entries.append({"text": doc_text, "label": label})
+        documents = data.get("documents")
+        metadatas = data.get("metadatas")
+        embeddings = data.get("embeddings")
+
+        documents = documents if documents is not None else []
+        metadatas = metadatas if metadatas is not None else []
+        embeddings = embeddings if embeddings is not None else []
+
+        list_of_entries: List[Dict] = []
+        for doc_text, meta, embedding in zip(documents, metadatas, embeddings):
+            label = meta.get("label") if isinstance(meta, dict) else None
+            list_of_entries.append({
+                "text": doc_text,
+                "label": label,
+                "embedding": embedding
+            })
 
         return list_of_entries
+
+    def get_all_kb_entries(self) -> List[Dict[str, str]]:
+        """ Fetches all entries from the knowledge base without embeddings."""
+        all_entries_with_embeddings = self._get_all_kb_entries_with_embeddings()
+        for entry in all_entries_with_embeddings:
+            entry.pop("embedding", None)
+        return all_entries_with_embeddings
+
 
 rag_classifier = RAGSpamClassifier()
