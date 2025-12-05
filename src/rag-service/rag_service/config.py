@@ -40,10 +40,12 @@ class Settings(BaseSettings):
     label_flipping_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/label_flipping/attack_data/")
     keyword_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_data/")
     prepared_keyword_attack_success_evaluation_dataset_store_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_evaluation_data_prepared/attack_success_evaluation_prepared_dataset.parquet")
+    legit_data_embeddings_store_path: Path = Path("data_poisoning_attacks/legit_data_ingestion/legit_data/")
     embeddings_computation_max_batch_size: int = 200
 
     default_evaluation_results_store_path: Path = Path("evaluation/evaluation_results/")
     label_flipping_evaluation_results_store_path: Path = Path("data_poisoning_attacks/label_flipping/evaluation_results/")
+    legit_data_ingestion_evaluation_results_store_path: Path = Path("data_poisoning_attacks/legit_data_ingestion/evaluation_results/")
     keyword_attack_evaluation_results_store_path: Path = Path("data_poisoning_attacks/keyword_attack/evaluation_results/")
 
     # model config with values taken from the .env file or environment variables

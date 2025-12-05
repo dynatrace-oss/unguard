@@ -5,8 +5,8 @@ from rag_service.constants import INGESTION_ENDPOINT_URL
 
 INGESTION_BATCH_SIZE = 500 # max 500
 
-def ingest_poisoned_entries(entries: List[Dict], logger):
-    """ Ingests poisoned entries into the RAG service in batches via the given ingestion URL. """
+def ingest_entries(entries: List[Dict], logger):
+    """ Ingests entries into the RAG service in batches via the given ingestion URL. """
     num_ingested_total = 0
     total_entries = len(entries)
     processed = 0
