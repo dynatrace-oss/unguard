@@ -80,6 +80,21 @@ python -m data_preprocessing.prepare_datasets
 ## Running and evaluating the Data Poisoning Attacks
 To run and evaluate the data poisoning attacks, see the [Data Poisoning Attacks README](./data_poisoning_attacks/README.md).
 
+## Data Poisoning Detection Strategies
+To enable data poisoning detection in the RAG service, please set the `USE_DATA_POISONING_DETECTION` environment variable
+to `true`. When enabled, the RAG service will automatically apply the selected data poisoning detection strategy
+before ingesting new entries into the Knowledge Base (KB). To set the detection strategy, please set the
+`DATA_POISONING_DETECTION_STRATEGY` environment variable to one of the available strategies.
+
+Important Note: Currently, the detection strategies are only applied when ingesting entries with precomputed embeddings
+via the `/ingestBatchWithEmbeddingsPrecomputed` endpoint.
+When ingesting entries via other means (e.g. during startup or evaluation), the data poisoning detection will not be applied.
+
+For testing the detection, run the data poisoning attacks (as described in the
+[Data Poisoning Attacks README](./data_poisoning_attacks/README.md)) on the RAG Service with detection enabled.
+
+For more information about the detection strategies, see the [Data Poisoning Detection Strategies README](./data_poisoning_detection_strategies/README.md).
+
 ## API Docs
 
 Automatically generated API documentation available at:
