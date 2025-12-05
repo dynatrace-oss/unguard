@@ -3,6 +3,8 @@ from llama_index.core import Document
 
 from data_preprocessing.prepare_attack_datasets.prepare_keyword_attack_datasets import prepare_keyword_attack_datasets
 from data_preprocessing.prepare_attack_datasets.prepare_label_flipping_dataset import prepare_label_flipping_dataset
+from data_preprocessing.prepare_attack_datasets.prepare_legit_data_ingestion_dataset import \
+    prepare_legit_data_ingestion_dataset
 from logger.logging_config import get_logger
 from rag_service.config import get_settings
 from rag_service.data_loader.parquet_data_loader import DataLoader
@@ -25,6 +27,7 @@ def prepare_datasets():
     prepare_initial_kb_dataset(docs_initial_kb_data)
     prepare_label_flipping_dataset(docs_attack_scripts_data)
     prepare_keyword_attack_datasets(docs_attack_scripts_data)
+    prepare_legit_data_ingestion_dataset(docs_attack_scripts_data)
 
 if __name__ == "__main__":
     prepare_datasets()

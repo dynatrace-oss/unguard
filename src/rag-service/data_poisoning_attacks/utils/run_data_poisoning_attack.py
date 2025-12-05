@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from evaluation.utils.check_connection import check_connection
-from data_poisoning_attacks.utils.ingest_poisoned_embeddings import ingest_poisoned_entries
+from data_poisoning_attacks.utils.ingest_entries import ingest_entries
 from rag_service.rag_pipeline.utils.read_precomputed_embeddings import (
     get_list_of_embeddings_files,
     read_embeddings_files,
@@ -20,5 +20,5 @@ def run_data_poisoning_attack(embeddings_dir: Path, logger):
     logger.info("Loaded %d poisoned entries.", len(entries))
 
     logger.info("Ingesting poisoned embeddings ...")
-    total_ingested = ingest_poisoned_entries(entries, logger)
+    total_ingested = ingest_entries(entries, logger)
     logger.info("Completed data poisoning attack: %d poisoned entries were ingested successfully.", total_ingested)
