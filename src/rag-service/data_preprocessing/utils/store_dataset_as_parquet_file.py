@@ -17,7 +17,7 @@ def store_dataset_as_parquet_file(docs: List[Document], store_path: Path):
 
     try:
         df.to_parquet(resolved_path, index=False)
-    except Exception:
-        logger.error("Failed to write dataset to parquet file at %s: %s", resolved_path)
+    except Exception as e:
+        logger.error("Failed to write dataset to parquet file at %s: %s", resolved_path, e)
         raise
     logger.info("Dataset written to parquet file at: %s", resolved_path)
