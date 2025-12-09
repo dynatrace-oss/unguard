@@ -21,6 +21,6 @@ def create_embedding_model() -> OpenAIEmbedding | OllamaEmbedding:
         raise ValueError("Error: LLM Provider variable missing or invalid."
                          "Please set it to 'Ollama' or 'LangDock' in the .env file or environment variables.")
 
-def compute_embeddings_for_batch(embed_model: OpenAIEmbedding, batch_of_docs: List[Document]) -> List[List[float]]:
-    """Compute embeddings for a batch of Documents."""
-    return [embed_model.get_text_embedding(d.text) for d in batch_of_docs]
+def compute_embedding_for_doc(embed_model: OpenAIEmbedding, doc: Document) -> List[float]:
+    """Computes the embedding for a single document."""
+    return embed_model.get_text_embedding(doc.text)
