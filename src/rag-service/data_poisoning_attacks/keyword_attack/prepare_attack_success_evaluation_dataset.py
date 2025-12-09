@@ -46,8 +46,8 @@ def prepare_keyword_attack_success_evaluation_dataset(attack_docs_subset: List[D
 
     logger.info("Storing %d prepared documents for keyword attack dataset as parquet file at %s",
                 len(cut_docs_classified_as_spam),
-                get_settings().keyword_attack_evaluation_parquet_dataset_path)
-    store_dataset_as_parquet_file(cut_docs, get_settings().keyword_attack_evaluation_parquet_dataset_path)
+                get_settings().raw_keyword_attack_success_evaluation_parquet_dataset_path)
+    store_dataset_as_parquet_file(cut_docs_classified_as_spam, get_settings().raw_keyword_attack_success_evaluation_parquet_dataset_path)
 
 
 if __name__ == "__main__":

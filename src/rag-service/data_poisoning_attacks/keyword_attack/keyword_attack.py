@@ -13,7 +13,7 @@ settings = get_settings()
 def load_attack_success_evaluation_data() -> list[Document]:
     """Loads the test documents for evaluating the attack success rate."""
     logger.info("Loading test data for attack success rate evaluation...")
-    return DataLoader().load_keyword_attack_success_evaluation_data()
+    return DataLoader().load_prepared_keyword_attack_success_evaluation_data()
 
 def evaluate_attack_success_rate(limit_evaluation_samples: int = settings.limit_keyword_attack_success_evaluation_samples):
     """Evaluate the success rate of the keyword attack."""

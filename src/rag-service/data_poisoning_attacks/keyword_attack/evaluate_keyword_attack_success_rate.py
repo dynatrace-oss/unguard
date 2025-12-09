@@ -56,7 +56,7 @@ def _print_and_store_results(total, successful_attacks, errors, evaluation_resul
                 "Evaluation Results:\n"
                 "Testset size: %d entries\n"
                 "Successful Attacks: %d\n"
-                "Attack Success Rate: %d\n"
+                "Attack Success Rate: %.2f\n"
                 "Classification errors: %d\n"
                 "------------------------------------------------\n",
                 total, successful_attacks, attack_success_rate, errors)
