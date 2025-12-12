@@ -9,6 +9,7 @@ from enum import Enum
 class DataPoisoningDetectionStrategy(Enum):
     EMBEDDING_SPACE_SIMILARITY_ON_BATCH_LEVEL = "embedding_similarity_batch_level"
     EMBEDDING_SPACE_SIMILARITY_ON_ENTRY_LEVEL = "embedding_similarity_entry_level"
+    EMBEDDINGS_CLUSTER_ANALYSIS = "embeddings_cluster_analysis"
     NONE = None
 
 
