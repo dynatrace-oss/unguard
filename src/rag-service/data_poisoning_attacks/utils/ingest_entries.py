@@ -3,7 +3,7 @@ import requests
 
 from rag_service.constants import INGESTION_ENDPOINT_URL
 
-INGESTION_BATCH_SIZE = 500 # max 500
+INGESTION_BATCH_SIZE = 100 # max 500
 
 def ingest_entries(entries: List[Dict], logger):
     """ Ingests entries into the RAG service in batches via the given ingestion URL. """
