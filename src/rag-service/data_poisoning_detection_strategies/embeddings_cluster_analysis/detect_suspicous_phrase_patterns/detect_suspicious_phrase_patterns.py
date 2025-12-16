@@ -77,7 +77,7 @@ def _extract_suspicious_phrases(suspicious_phrase_patterns: Dict[str, Dict[str, 
     return disjoint_phrases_from_suspicious_patterns
 
 
-def _identify_suspicious_phrase_patterns_across_entries(phrase_statistics: Dict[str, Dict[str, List[float]]], new_entries_total, logger) -> Dict[str, Dict[str, List[float]]]:
+def _identify_suspicious_phrase_patterns_across_entries(phrase_statistics: Dict[str, Dict[str, List[float]]], new_entries_total: int, logger) -> Dict[str, Dict[str, List[float]]]:
     """
     Identifies suspicious phrases that occur in a consistent manner across multiple new entries.
     Returns a dictionary of suspicious phrase patterns that may indicate targeted data poisoning attacks.
@@ -86,7 +86,7 @@ def _identify_suspicious_phrase_patterns_across_entries(phrase_statistics: Dict[
 
     for phrase, statistics in phrase_statistics.items():
         entry_ids = statistics["entry_ids"]
-        if len(entry_ids) < PERCENTAGE_OF_PATTERN_OCCURRENCES_THRESHOLD * len(new_entries_total):
+        if len(entry_ids) < PERCENTAGE_OF_PATTERN_OCCURRENCES_THRESHOLD * new_entries_total:
             continue
 
         if statistics["variance_of_pattern_position_in_text"] <= POSITION_STD_THRESHOLD:
@@ -140,7 +140,8 @@ def _analyze_phrase_patterns(
 
 
 def detect_suspicious_phrase_patterns(
-    new_entries: List[Dict],
+    suspicious_entries: List[Dict],
+    total_num_of_new_entries: int,
     logger,
 ) -> List[str]:
     """
@@ -155,9 +156,9 @@ def detect_suspicious_phrase_patterns(
 
     Returns a list of suspicious phrase patterns that may indicate targeted data poisoning attacks.
     """
-    phrase_statistics = _analyze_phrase_patterns(new_entries)
+    phrase_statistics = _analyze_phrase_patterns(suspicious_entries)
     suspicious_phrase_patterns= _identify_suspicious_phrase_patterns_across_entries(
-        phrase_statistics, new_entries, logger)
+        phrase_statistics, total_num_of_new_entries, logger)
 
     if suspicious_phrase_patterns:
         suspicious_phrases = _extract_suspicious_phrases(suspicious_phrase_patterns)

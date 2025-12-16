@@ -29,7 +29,7 @@ def detect_data_poisoning_via_embeddings_cluster_and_pattern_analysis(
     suspicious_subset = [entry for entry in new_entries if entry.get("id") in suspicious_entries_ids]
 
     if suspicious_subset:
-        suspicious_phrase_patterns = detect_suspicious_phrase_patterns(suspicious_subset, logger)
+        suspicious_phrase_patterns = detect_suspicious_phrase_patterns(suspicious_subset, len(new_entries), logger)
 
         if suspicious_phrase_patterns:
             logger.warning("Suspicious phrase patterns detected in suspicious entries, indicating potential data "
