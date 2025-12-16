@@ -4,6 +4,8 @@ from typing import Iterable, Iterator, List, Dict, Any
 import json
 from chromadb.api.types import Documents, Embeddings, Metadatas, IDs
 
+from rag_service.config import get_settings
+
 __all__ = [
     "validate_embeddings_directory",
     "get_list_of_embeddings_files",
@@ -18,10 +20,20 @@ def validate_embeddings_directory(embeddings_dir: Path, logger) -> None:
         raise FileNotFoundError(f"Error: Precomputed embeddings directory not found at {embeddings_dir}")
 
 def get_list_of_embeddings_files(embeddings_dir: Path) -> List[Path]:
-    """Returns a list containing all files with the precomputed embeddings in the given directory."""
-    list_of_files = sorted(embeddings_dir.glob("embeddings_part_*.jsonl"))
+    """Returns a list containing all files with the precomputed embeddings in the given directory for the currently set model"""
+    settings = get_settings()
+    model_provider = (settings.model_provider or "").strip().lower()
+
+    if model_provider:
+        filename_pattern = f"embeddings_part_*_{model_provider}.jsonl"
+    else:
+        filename_pattern = "embeddings_part_*.jsonl"
+
+    list_of_files = sorted(embeddings_dir.glob(filename_pattern))
     if not list_of_files:
-        raise FileNotFoundError(f"Error: Could not find valid files embeddings_part_*.jsonl in {embeddings_dir}")
+        raise FileNotFoundError(
+            f"Error: Could not find valid files {filename_pattern} in {embeddings_dir}"
+        )
     return list_of_files
 
 def read_embeddings_files(embedding_files: list[Path], logger) -> Iterator[Dict[str, Any]]:
