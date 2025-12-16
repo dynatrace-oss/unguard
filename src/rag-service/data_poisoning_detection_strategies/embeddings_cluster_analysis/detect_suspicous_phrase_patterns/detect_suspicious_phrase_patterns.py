@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Tuple
-from collections import defaultdict
-from typing import Dict, List, DefaultDict
+from typing import Dict, List
+from dataclasses import dataclass, field
 
 from rag_service.config import get_settings
 
@@ -15,6 +15,12 @@ PERCENTAGE_OF_PATTERN_OCCURRENCES_THRESHOLD = 0.15
 
 # max standard deviation of normalized positions for suspicious phrase
 POSITION_STD_THRESHOLD = 0.05
+
+@dataclass
+class PhraseStatistics:
+    entry_ids: List[str] = field(default_factory=list)
+    phrase_position_in_text: List[float] = field(default_factory=list)
+    variance_of_pattern_position_in_text: float = 0.0
 
 
 def _get_ngrams_with_position(tokens: List[str], max_n: int = MAX_NGRAM) -> List[Tuple[str, int]]:
@@ -50,7 +56,7 @@ def _get_phrase_statistics_for_entry(tokens: List[str]) -> Dict[str, List[float]
     return phrase_statistics
 
 
-def _extract_suspicious_phrases(suspicious_phrase_patterns: Dict[str, Dict[str, list[float]]]) -> List[str]:
+def _extract_suspicious_phrases(suspicious_phrase_patterns: Dict[str, PhraseStatistics]) -> List[str]:
     """
     Extracts suspicious phrases from the identified consistent phrase patterns by applying the following steps:
     1. Sort phrases by length in descending order.
@@ -66,8 +72,8 @@ def _extract_suspicious_phrases(suspicious_phrase_patterns: Dict[str, Dict[str, 
         is_substring = False
         for selected_phrase in disjoint_phrases_from_suspicious_patterns:
             if phrase in selected_phrase:
-                occurrences_of_phrase = len(suspicious_phrase_patterns[phrase]["entry_ids"])
-                occurrences_of_selected_phrase = len(suspicious_phrase_patterns[selected_phrase]["entry_ids"])
+                occurrences_of_phrase = len(suspicious_phrase_patterns[phrase].entry_ids)
+                occurrences_of_selected_phrase = len(suspicious_phrase_patterns[selected_phrase].entry_ids)
                 if occurrences_of_phrase <= occurrences_of_selected_phrase:
                     is_substring = True
                     break
@@ -77,31 +83,31 @@ def _extract_suspicious_phrases(suspicious_phrase_patterns: Dict[str, Dict[str, 
     return disjoint_phrases_from_suspicious_patterns
 
 
-def _identify_suspicious_phrase_patterns_across_entries(phrase_statistics: Dict[str, Dict[str, List[float]]], new_entries_total, logger) -> Dict[str, Dict[str, List[float]]]:
+def _identify_suspicious_phrase_patterns_across_entries(phrase_statistics: Dict[str, PhraseStatistics],
+                                                        new_entries_total: int, logger) -> Dict[str, PhraseStatistics]:
     """
     Identifies suspicious phrases that occur in a consistent manner across multiple new entries.
     Returns a dictionary of suspicious phrase patterns that may indicate targeted data poisoning attacks.
     """
-    suspicious_phrase_patterns: Dict[str, Dict[str, List[float]]] = {}
+    suspicious_phrase_patterns: Dict[str, PhraseStatistics] = {}
 
     for phrase, statistics in phrase_statistics.items():
-        entry_ids = statistics["entry_ids"]
-        if len(entry_ids) < PERCENTAGE_OF_PATTERN_OCCURRENCES_THRESHOLD * len(new_entries_total):
+        if len(statistics.entry_ids) < PERCENTAGE_OF_PATTERN_OCCURRENCES_THRESHOLD * new_entries_total:
             continue
 
-        if statistics["variance_of_pattern_position_in_text"] <= POSITION_STD_THRESHOLD:
+        if statistics.variance_of_pattern_position_in_text <= POSITION_STD_THRESHOLD:
             logger.debug(
                 "Detected phrase with highly consistent pattern over multiple entries: '%s'"
                 "(entries_with_this_phrase=%d, variance_of_pattern_position_in_text=%.4f).",
-                phrase, len(entry_ids), statistics["variance_of_pattern_position_in_text"],
+                phrase, len(statistics.entry_ids), statistics.variance_of_pattern_position_in_text,
             )
             suspicious_phrase_patterns[phrase] = statistics
 
-    return  suspicious_phrase_patterns
+    return suspicious_phrase_patterns
 
 def _analyze_phrase_patterns(
     new_entries: List[Dict]
-) -> Dict[str, Dict[str, List[float]]]:
+) -> Dict[str, PhraseStatistics]:
     """
     Extracts phrases using n-grams from new entries and analyzes their occurrence patterns by:
         - Calculating the number of occurrences of each phrase.
@@ -109,38 +115,33 @@ def _analyze_phrase_patterns(
 
     Returns a dictionary mapping each phrase to its statistics and a list of entry IDs where it occurs.
     """
-    phrase_statistics: DefaultDict[str, Dict[str, List[float|str]]] = defaultdict(
-        lambda: {
-            "entry_ids": [],
-            "phrase_position_in_text": [],
-            "variance_of_pattern_position_in_text": [],
-        }
-    )
+    phrase_statistics: Dict[str, PhraseStatistics] = {}
 
     for entry in new_entries:
-        text = (entry.get("text")).strip()
+        text = (entry.get("text") or "").strip()
         tokens = text.split()
-        entry_id: str = entry.get("id")
+        entry_id = entry.get("id")
         if not tokens or entry_id is None:
             continue
 
-        phrase_statistics_for_current_entry: Dict[str, List[float|str]] = _get_phrase_statistics_for_entry(tokens)
+        phrase_statistics_for_current_entry = _get_phrase_statistics_for_entry(tokens)
 
-        for phrase, phrase_positions_in_text in phrase_statistics_for_current_entry.items():
-            statistics_for_current_phrase = phrase_statistics[phrase]
-            statistics_for_current_phrase["entry_ids"].append(entry_id)
-            statistics_for_current_phrase["phrase_position_in_text"].append(np.mean(phrase_positions_in_text))
+        for phrase, positions_of_phrase_in_text in phrase_statistics_for_current_entry.items():
+            if phrase not in phrase_statistics:
+                phrase_statistics[phrase] = PhraseStatistics()
+            phrase_statistics[phrase].entry_ids.append(entry_id)
+            phrase_statistics[phrase].phrase_position_in_text.append(float(np.mean(positions_of_phrase_in_text)))
 
     for phrase, statistics in phrase_statistics.items():
-        positions_of_phrase_in_text = np.array(statistics["phrase_position_in_text"], dtype=float)
-        variance_of_positions_in_text = np.std(positions_of_phrase_in_text)
-        statistics["variance_of_pattern_position_in_text"] = variance_of_positions_in_text
+        positions_of_phrase_in_text = np.array(statistics.phrase_position_in_text, dtype=float)
+        statistics.variance_of_pattern_position_in_text = float(np.std(positions_of_phrase_in_text))
 
     return phrase_statistics
 
 
 def detect_suspicious_phrase_patterns(
-    new_entries: List[Dict],
+    suspicious_entries: List[Dict],
+    total_num_of_new_entries: int,
     logger,
 ) -> List[str]:
     """
@@ -155,9 +156,9 @@ def detect_suspicious_phrase_patterns(
 
     Returns a list of suspicious phrase patterns that may indicate targeted data poisoning attacks.
     """
-    phrase_statistics = _analyze_phrase_patterns(new_entries)
+    phrase_statistics = _analyze_phrase_patterns(suspicious_entries)
     suspicious_phrase_patterns= _identify_suspicious_phrase_patterns_across_entries(
-        phrase_statistics, new_entries, logger)
+        phrase_statistics, total_num_of_new_entries, logger)
 
     if suspicious_phrase_patterns:
         suspicious_phrases = _extract_suspicious_phrases(suspicious_phrase_patterns)
