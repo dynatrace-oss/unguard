@@ -1,4 +1,5 @@
 from typing import List
+from copy import deepcopy
 from llama_index.core import Document
 
 from data_preprocessing.prepare_attack_datasets.prepare_keyword_attack_datasets import prepare_keyword_attack_datasets
@@ -28,9 +29,9 @@ def prepare_datasets():
     ingestion_docs = docs[len(docs)//2:]
 
     prepare_initial_kb_dataset(docs_initial_kb_data)
-    prepare_label_flipping_dataset(ingestion_docs)
-    prepare_keyword_attack_datasets(ingestion_docs)
-    prepare_legit_data_ingestion_dataset(ingestion_docs)
+    prepare_label_flipping_dataset(deepcopy(ingestion_docs))
+    prepare_keyword_attack_datasets(deepcopy(ingestion_docs))
+    prepare_legit_data_ingestion_dataset(deepcopy(ingestion_docs))
 
 if __name__ == "__main__":
     prepare_datasets()
