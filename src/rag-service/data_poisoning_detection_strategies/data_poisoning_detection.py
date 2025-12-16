@@ -11,7 +11,7 @@ from rag_service.config import DataPoisoningDetectionStrategy
 
 
 def _return_all_ids_as_list(new_entries: List[Dict]) -> List[str]:
-    ids_list: List[str] = [entry.get("id") for entry in new_entries if "id" in entry]
+    ids_list: List[str] = [entry["id"] for entry in new_entries if "id" in entry and entry["id"] is not None]
     return ids_list
 
 def run_data_poisoning_detection(
