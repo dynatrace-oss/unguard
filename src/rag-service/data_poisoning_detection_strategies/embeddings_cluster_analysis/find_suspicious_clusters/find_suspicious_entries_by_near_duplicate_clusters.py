@@ -12,7 +12,7 @@ SUSPICIOUS_SIMILARITY_THRESHOLD = 0.87
 # the threshold proportion for near duplicates for an entry above which it is considered suspicious
 NEAR_DUPLICATES_MAX_PROPORTION_THRESHOLD = 0.1
 
-def find_near_duplicate_clusters(
+def find_suspicious_entries_by_near_duplicate_clusters(
     new_entries: List[Dict]
 ) -> List[str]:
     """
