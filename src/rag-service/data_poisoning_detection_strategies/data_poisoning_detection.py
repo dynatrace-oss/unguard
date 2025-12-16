@@ -6,7 +6,7 @@ from data_poisoning_detection_strategies.embedding_space_similarity.embedding_sp
 from data_poisoning_detection_strategies.embedding_space_similarity.embedding_space_similarity_on_entry_level import \
     detect_data_poisoning_using_embedding_similarity_on_entry_level
 from data_poisoning_detection_strategies.embeddings_cluster_analysis.embeddings_cluster_analysis import \
-    detect_data_poisoning_via_embeddings_cluster_analysis
+    detect_data_poisoning_via_embeddings_cluster_and_pattern_analysis
 from rag_service.config import DataPoisoningDetectionStrategy
 
 
@@ -36,7 +36,7 @@ def run_data_poisoning_detection(
         return detect_data_poisoning_using_embedding_similarity_on_entry_level(new_entries, kb_contents, logger)
 
     elif detection_strategy == DataPoisoningDetectionStrategy.EMBEDDINGS_CLUSTER_ANALYSIS:
-        return detect_data_poisoning_via_embeddings_cluster_analysis(new_entries, logger)
+        return detect_data_poisoning_via_embeddings_cluster_and_pattern_analysis(new_entries, logger)
     else:
         logger.warn("Unknown data poisoning detection strategy: %s. "
                     "Falling back to default strategy 'embedding_similarity_entry_level'", detection_strategy)
