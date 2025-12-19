@@ -5,14 +5,14 @@ from logger.logging_config import get_logger
 from rag_service.config import get_settings
 
 
-logger = get_logger("KeywordAttackSuccessEvaluation")
+logger = get_logger("AttackSuccessRateEvaluation")
 settings = get_settings()
 
 
-def evaluate_attack_effect(docs, evaluation_results_dir_path):
+def evaluate_targeted_attack(docs, evaluation_results_dir_path):
     """
-    Evaluates the success rate of the keyword attack.
-    An attack is considered successful, when a spam document is classified as non_spam after the attack.
+    Evaluates the effect of a targeted data poisoning attack by measuring the attack success rate.
+    The attack success rate describes how many spam documents are classified as non-spam after the attack.
     """
     successful_attacks = 0
     docs_evaluated = 0
