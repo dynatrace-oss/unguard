@@ -8,7 +8,7 @@ from data_poisoning_detection_strategies.embedding_space_similarity.embedding_sp
 from data_poisoning_detection_strategies.embeddings_cluster_analysis.embeddings_cluster_analysis import \
     detect_data_poisoning_via_embeddings_cluster_and_pattern_analysis
 from data_poisoning_detection_strategies.neighbour_label_consistency.neighbour_label_consistency_with_knn import \
-    detect_data_poisoning_using_neighbour_label_analysis, KNNVariant
+    detect_data_poisoning_using_neighbour_label_analysis
 from rag_service.config import DataPoisoningDetectionStrategy
 
 
