@@ -38,6 +38,20 @@ class DataLoader:
         """
         return self._load_parquet(self.settings.raw_keyword_attack_success_evaluation_parquet_dataset_path)
 
+    def load_targeted_label_flipping_attack_data(self) -> List[Document]:
+        """
+        Loads the dataset used for the targeted label flipping attack from parquet file.
+        Returns as list of Documents.
+        """
+        return self._load_parquet(self.settings.raw_targeted_label_flipping_attack_parquet_dataset_path)
+
+    def load_targeted_label_flipping_attack_success_evaluation_dataset(self) -> List[Document]:
+        """
+        Loads the evaluation dataset used for the targeted label flipping attack from parquet file.
+        Returns as list of Documents.
+        """
+        return self._load_parquet(self.settings.raw_targeted_label_flipping_attack_success_evaluation_parquet_dataset_path)
+
     def _load_parquet(self, file_path: Union[str, Path]) -> List[Document]:
         """Loads data from a parquet file and converts rows to Documents. Entries with length > 2793 are dropped."""
         path = Path(file_path)

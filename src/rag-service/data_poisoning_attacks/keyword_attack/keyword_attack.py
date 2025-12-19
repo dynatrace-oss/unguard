@@ -1,6 +1,6 @@
 from llama_index.core import Document
 
-from data_poisoning_attacks.keyword_attack.evaluate_keyword_attack_success_rate import evaluate_attack_effect
+from data_poisoning_attacks.utils.evaluate_attack_success_rate import evaluate_targeted_attack
 from data_poisoning_attacks.utils.run_data_poisoning_attack import run_data_poisoning_attack
 from evaluation.evaluate_model import evaluate_model
 from logger.logging_config import get_logger
@@ -22,7 +22,7 @@ def evaluate_attack_success_rate(limit_evaluation_samples: int = settings.limit_
     if limit_evaluation_samples > 0:
         docs = docs[:limit_evaluation_samples]
 
-    evaluate_attack_effect(docs, settings.keyword_attack_evaluation_results_store_path)
+    evaluate_targeted_attack(docs, settings.keyword_attack_evaluation_results_store_path)
 
 def simulate_keyword_attack(evaluate_after_attack: bool = True):
     """ Simulates a keyword attack on the RAG service using precomputed embeddings with flipped labels"""
