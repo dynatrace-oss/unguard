@@ -10,8 +10,14 @@ class DataPoisoningDetectionStrategy(Enum):
     EMBEDDING_SPACE_SIMILARITY_ON_BATCH_LEVEL = "embedding_similarity_batch_level"
     EMBEDDING_SPACE_SIMILARITY_ON_ENTRY_LEVEL = "embedding_similarity_entry_level"
     EMBEDDINGS_CLUSTER_ANALYSIS = "embeddings_cluster_analysis"
+    K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY_WITH_KNN = "knn_label_consistency"
     NONE = None
 
+class KNNVariant(Enum):
+    MAJORITY_VOTING = "majority_voting"
+    DISTANCE_WEIGHTED_VOTING = "distance_weighted_voting"
+    THRESHOLD_BASED_KNN = "threshold_based"
+    NONE = None
 
 class Settings(BaseSettings):
     """Configuration settings for the RAG Service."""
@@ -62,6 +68,7 @@ class Settings(BaseSettings):
 
     use_data_poisoning_detection: bool = False
     data_poisoning_detection_strategy: DataPoisoningDetectionStrategy | None = None
+    knn_detection_strategy_variant: KNNVariant | None = None
 
 
     class Config:
