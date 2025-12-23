@@ -5,7 +5,7 @@ from sklearn.neighbors import NearestNeighbors
 from data_poisoning_detection_strategies.neighbour_label_consistency.utils.decision_strategies import \
     use_distance_weighted_voting, use_majority_voting, use_threshold_based_knn
 from data_poisoning_detection_strategies.neighbour_label_consistency.utils.fit_model import fit_knn
-from rag_service.config import get_settings, KNNVariant
+from rag_service.config import get_settings, NNLabelDecisionVariant
 
 settings = get_settings()
 
@@ -17,7 +17,7 @@ def _entry_is_poisoned(
     new_entry: Dict,
     knn: NearestNeighbors,
     kb_labels: List[str],
-    knn_variant: KNNVariant = settings.knn_detection_strategy_variant
+    knn_variant: NNLabelDecisionVariant = settings.label_consistency_detection_decision_variant
 ) -> bool:
     """
     Uses KNN to find the nearest neighbours of the new entry among the knowledge base contents.
@@ -35,9 +35,9 @@ def _entry_is_poisoned(
 
     neighbour_labels = [kb_labels[i] for i in nearest_neighbors[0]]
 
-    if knn_variant == KNNVariant.DISTANCE_WEIGHTED_VOTING:
+    if knn_variant == NNLabelDecisionVariant.DISTANCE_WEIGHTED_VOTING:
         return use_distance_weighted_voting(neighbour_labels, distances, new_entry_label)
-    if knn_variant == KNNVariant.THRESHOLD_BASED_KNN:
+    if knn_variant == NNLabelDecisionVariant.THRESHOLD_BASED_KNN:
         return use_threshold_based_knn(neighbour_labels, distances, new_entry_label, distance_threshold = DISTANCE_THRESHOLD)
     else:
         return use_majority_voting(neighbour_labels, new_entry_label)
