@@ -16,3 +16,5 @@ See the [Embedding Space Similarity based Detection README](./embedding_space_si
 See the [Embeddings Cluster and Pattern Analysis based Detection README](./embeddings_cluster_analysis/README.md)
 for more information.
 
+## 3. Neighbour Label Consistency
+See the [Neighbour Label Consistency based Detection README](./neighbour_label_consistency/README.md) for more information.
