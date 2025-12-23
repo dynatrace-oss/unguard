@@ -14,7 +14,7 @@ class DataPoisoningDetectionStrategy(Enum):
     APPROXIMATE_K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY_WITH_ANN = "ann_label_consistency"
     NONE = None
 
-class KNNVariant(Enum):
+class NNLabelDecisionVariant(Enum):
     MAJORITY_VOTING = "majority_voting"
     DISTANCE_WEIGHTED_VOTING = "distance_weighted_voting"
     THRESHOLD_BASED_KNN = "threshold_based"
@@ -75,7 +75,7 @@ class Settings(BaseSettings):
 
     use_data_poisoning_detection: bool = False
     data_poisoning_detection_strategy: DataPoisoningDetectionStrategy | None = None
-    knn_detection_strategy_variant: KNNVariant | None = None
+    label_consistency_detection_decision_variant: NNLabelDecisionVariant | None = None
 
 
     class Config:
