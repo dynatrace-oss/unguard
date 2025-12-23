@@ -1,4 +1,3 @@
-
 from llama_index.core import Document
 
 from data_poisoning_attacks.utils.evaluate_attack_success_rate import evaluate_targeted_attack

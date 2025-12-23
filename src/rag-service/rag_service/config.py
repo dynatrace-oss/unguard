@@ -11,6 +11,7 @@ class DataPoisoningDetectionStrategy(Enum):
     EMBEDDING_SPACE_SIMILARITY_ON_ENTRY_LEVEL = "embedding_similarity_entry_level"
     EMBEDDINGS_CLUSTER_ANALYSIS = "embeddings_cluster_analysis"
     K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY_WITH_KNN = "knn_label_consistency"
+    APPROXIMATE_K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY_WITH_ANN = "ann_label_consistency"
     NONE = None
 
 class KNNVariant(Enum):
