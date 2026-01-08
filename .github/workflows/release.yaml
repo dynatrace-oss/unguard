@@ -81,17 +81,6 @@ jobs:
             docker buildx imagetools create --tag "${TARGET_IMAGE}" "${SOURCE_IMAGE}"
           done
 
-      - name: Tag and push images with 'stable' tag (release branch)
-        if: startsWith(github.ref_name, 'release')
-        run: |
-          for IMAGE in ${{ env.IMAGE_LIST }}; do
-            SOURCE_IMAGE="${{ vars.REGISTRY }}/${{ github.repository }}/${IMAGE}:${{ env.IMAGE_TAG }}"
-            TARGET_IMAGE="${{ vars.REGISTRY }}/${{ github.repository }}/${IMAGE}:stable"
-            
-            echo "Tagging ${SOURCE_IMAGE} as ${TARGET_IMAGE}"
-            docker buildx imagetools create --tag "${TARGET_IMAGE}" "${SOURCE_IMAGE}"
-          done
-
       - name: Update helm image tags
         uses: fjogeleit/yaml-update-action@main
         with:
