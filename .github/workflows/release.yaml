@@ -63,6 +63,66 @@ jobs:
           repository: ${{ vars.REGISTRY }}/${{ github.repository }}
           push: true
 
+      - name: Tag and push images with 'latest' tag (main branch)
+        if: github.ref_name == 'main'
+        run: |
+          IMAGES=(
+            "unguard-envoy-proxy"
+            "unguard-frontend"
+            "unguard-microblog-service"
+            "unguard-proxy-service"
+            "unguard-user-simulator"
+            "unguard-user-auth-service"
+            "unguard-ad-service"
+            "unguard-membership-service"
+            "unguard-malicious-load-generator"
+            "unguard-status-service"
+            "unguard-profile-service"
+            "unguard-like-service"
+            "unguard-payment-service"
+            "unguard-exploit-toolkit"
+          )
+          
+          for IMAGE in "${IMAGES[@]}"; do
+            SOURCE_IMAGE="${{ vars.REGISTRY }}/${{ github.repository }}/${IMAGE}:${{ env.IMAGE_TAG }}"
+            TARGET_IMAGE="${{ vars.REGISTRY }}/${{ github.repository }}/${IMAGE}:latest"
+            
+            echo "Tagging ${SOURCE_IMAGE} as ${TARGET_IMAGE}"
+            docker pull "${SOURCE_IMAGE}"
+            docker tag "${SOURCE_IMAGE}" "${TARGET_IMAGE}"
+            docker push "${TARGET_IMAGE}"
+          done
+
+      - name: Tag and push images with 'stable' tag (release branch)
+        if: startsWith(github.ref_name, 'release')
+        run: |
+          IMAGES=(
+            "unguard-envoy-proxy"
+            "unguard-frontend"
+            "unguard-microblog-service"
+            "unguard-proxy-service"
+            "unguard-user-simulator"
+            "unguard-user-auth-service"
+            "unguard-ad-service"
+            "unguard-membership-service"
+            "unguard-malicious-load-generator"
+            "unguard-status-service"
+            "unguard-profile-service"
+            "unguard-like-service"
+            "unguard-payment-service"
+            "unguard-exploit-toolkit"
+          )
+          
+          for IMAGE in "${IMAGES[@]}"; do
+            SOURCE_IMAGE="${{ vars.REGISTRY }}/${{ github.repository }}/${IMAGE}:${{ env.IMAGE_TAG }}"
+            TARGET_IMAGE="${{ vars.REGISTRY }}/${{ github.repository }}/${IMAGE}:stable"
+            
+            echo "Tagging ${SOURCE_IMAGE} as ${TARGET_IMAGE}"
+            docker pull "${SOURCE_IMAGE}"
+            docker tag "${SOURCE_IMAGE}" "${TARGET_IMAGE}"
+            docker push "${TARGET_IMAGE}"
+          done
+
       - name: Update helm image tags
         uses: fjogeleit/yaml-update-action@main
         with:
