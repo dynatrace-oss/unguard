@@ -68,6 +68,7 @@ jobs:
           push: true
 
       - name: Set up Docker Buildx
+        if: github.ref_name == 'main'
         uses: docker/setup-buildx-action@v2
 
       - name: Tag and push images with 'latest' tag (main branch)
