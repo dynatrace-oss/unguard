@@ -10,8 +10,15 @@ class DataPoisoningDetectionStrategy(Enum):
     EMBEDDING_SPACE_SIMILARITY_ON_BATCH_LEVEL = "embedding_similarity_batch_level"
     EMBEDDING_SPACE_SIMILARITY_ON_ENTRY_LEVEL = "embedding_similarity_entry_level"
     EMBEDDINGS_CLUSTER_ANALYSIS = "embeddings_cluster_analysis"
+    K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY_WITH_KNN = "knn_label_consistency"
+    APPROXIMATE_K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY_WITH_ANN = "ann_label_consistency"
     NONE = None
 
+class NNLabelDecisionVariant(Enum):
+    MAJORITY_VOTING = "majority_voting"
+    DISTANCE_WEIGHTED_VOTING = "distance_weighted_voting"
+    THRESHOLD_BASED_KNN = "threshold_based"
+    NONE = None
 
 class Settings(BaseSettings):
     """Configuration settings for the RAG Service."""
@@ -34,6 +41,8 @@ class Settings(BaseSettings):
     base_data_path: Path = Path("rag_service/data/base_dataset.parquet")
     test_data_path: Path = Path("rag_service/data/test_dataset.parquet")
     raw_keyword_attack_success_evaluation_parquet_dataset_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_evaluation_dataset_parquet/keyword_attack_evaluation_dataset.parquet")
+    raw_targeted_label_flipping_attack_parquet_dataset_path: Path = Path("data_poisoning_attacks/targeted_label_flipping/parquet_datasets/targeted_label_flipping_attack_dataset.parquet")
+    raw_targeted_label_flipping_attack_success_evaluation_parquet_dataset_path: Path = Path("data_poisoning_attacks/targeted_label_flipping/parquet_datasets/targeted_label_flipping_attack_evaluation_dataset.parquet")
 
     max_length_for_entries: int = 2793  # value taken from Huggingface length bar chart (upper boundary of first bar)
 
@@ -41,6 +50,9 @@ class Settings(BaseSettings):
     label_flipping_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/label_flipping/attack_data/")
     keyword_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_data/")
     prepared_keyword_attack_success_evaluation_dataset_store_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_evaluation_data_prepared/attack_success_evaluation_prepared_dataset.parquet")
+    targeted_label_flipping_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/targeted_label_flipping/attack_data/")
+    targeted_label_flipping_attack_success_evaluation_dataset_store_path: Path = Path("data_poisoning_attacks/targeted_label_flipping/attack_evaluation_data/attack_success_evaluation_dataset.parquet")
+
     legit_data_embeddings_store_path: Path = Path("data_poisoning_attacks/legit_data_ingestion/legit_data/")
     embeddings_computation_max_batch_size: int = 200
 
@@ -48,6 +60,7 @@ class Settings(BaseSettings):
     label_flipping_evaluation_results_store_path: Path = Path("data_poisoning_attacks/label_flipping/evaluation_results/")
     legit_data_ingestion_evaluation_results_store_path: Path = Path("data_poisoning_attacks/legit_data_ingestion/evaluation_results/")
     keyword_attack_evaluation_results_store_path: Path = Path("data_poisoning_attacks/keyword_attack/evaluation_results/")
+    targeted_label_flipping_attack_evaluation_results_store_path: Path = Path("data_poisoning_attacks/targeted_label_flipping/evaluation_results/")
 
     # model config with values taken from the .env file or environment variables
     model_provider: Optional[str] = None
@@ -62,6 +75,7 @@ class Settings(BaseSettings):
 
     use_data_poisoning_detection: bool = False
     data_poisoning_detection_strategy: DataPoisoningDetectionStrategy | None = None
+    label_consistency_detection_decision_variant: NNLabelDecisionVariant | None = None
 
 
     class Config:
