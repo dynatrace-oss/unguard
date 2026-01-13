@@ -47,7 +47,7 @@ def _balance_dataset(documents: List[Document]) -> List[Document]:
 
     return balanced_dataset
 
-def _parse_label(label: str) -> str:
+def _parse_numeric_label(label: str) -> str:
     if label == "0":
         return settings.not_spam_label
     elif label == "1":
@@ -70,7 +70,7 @@ def _load_and_prepare_dataset(file_path: str, text_col: str, label_col: str, fil
         if len(text) > settings.max_length_for_entries:
             dropped_entries += 1
             continue
-        label = _parse_label(str(row[label_col]))
+        label = _parse_numeric_label(str(row[label_col]))
         documents.append(Document(text=text, metadata={"label": label}))
 
     if dropped_entries:
@@ -120,7 +120,35 @@ def load_spam_assassin_dataset() -> List[Document]:
     )
     return dataset
 
+def load_deysi_spam_detection_dataset() -> List[Document]:
+    splits = {'train': 'data/train-00000-of-00001-daf190ce720b3dbb.parquet', 'test': 'data/test-00000-of-00001-fa9b3e8ade89a333.parquet'}
+    dataset_train = pd.read_parquet("hf://datasets/Deysi/spam-detection-dataset/" + splits["train"])
+    dataset_test = pd.read_parquet("hf://datasets/Deysi/spam-detection-dataset/" + splits["test"])
+    dataset = pd.concat([dataset_train, dataset_test], ignore_index=True)
+
+    documents: List[Document] = []
+    dropped_entries = 0
+    for _, row in dataset.iterrows():
+        text = str(row["text"])
+        if len(text) > settings.max_length_for_entries:
+            dropped_entries += 1
+            continue
+        label = (str(row["label"]))
+        documents.append(Document(text=text, metadata={"label": label}))
+    if dropped_entries:
+        logger.info(f"Dropped {dropped_entries} entries exceeding {settings.max_length_for_entries} chars")
+    dataset = _balance_dataset(documents)
+
+
+    logger.info("Loaded Deysi Spam Classification Dataset with %d documents (%d spam, %d not spam)",
+        len(dataset),
+        len([d for d in dataset if d.metadata.get("label") == settings.spam_label]),
+        len([d for d in dataset if d.metadata.get("label") == settings.not_spam_label])
+    )
+    return dataset
+
 if __name__ == "__main__":
     sms_spam_docs = load_sms_spam_dataset()
     enron_spam_docs = load_enron_spam_dataset()
     spam_assassin_docs = load_spam_assassin_dataset()
+    load_deysi_spam_detection_dataset()

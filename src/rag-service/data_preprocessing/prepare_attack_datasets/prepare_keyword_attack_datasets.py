@@ -25,7 +25,7 @@ def _add_keyword_to_evaluation_entries(docs: List[Document]) -> List[Document]:
         for doc in docs
     ]
 
-def _add_keyword_to_attack_entries(docs: List[Document]) -> List[Document]:
+def add_keyword_to_attack_entries(docs: List[Document]) -> List[Document]:
     """
     Injects the phrase used for the keyword attack to the beginning and end of the text for each document in the list.
     Used for preparing the attack dataset for the keyword attack.
@@ -41,7 +41,7 @@ def _add_keyword_to_attack_entries(docs: List[Document]) -> List[Document]:
 def _prepare_keyword_attack_data(docs: List[Document]):
     """Prepares the data for the keyword attack with precomputed embeddings"""
     logger.info("Preparing keyword attack dataset for %d documents...", len(docs))
-    docs = _add_keyword_to_attack_entries(docs)
+    docs = add_keyword_to_attack_entries(docs)
     generate_and_store_embeddings(docs, settings.keyword_attack_embeddings_store_path)
 
 def _prepare_keyword_attack_evaluation_dataset(docs: List[Document]):
