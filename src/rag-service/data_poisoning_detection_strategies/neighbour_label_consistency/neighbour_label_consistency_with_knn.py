@@ -17,7 +17,7 @@ def _entry_is_poisoned(
     new_entry: Dict,
     knn: NearestNeighbors,
     kb_labels: List[str],
-    knn_variant: NNLabelDecisionVariant = settings.label_consistency_detection_decision_variant
+    knn_variant: NNLabelDecisionVariant = settings.label_consistency_detection_decision_variant or NNLabelDecisionVariant.MAJORITY_VOTING,
 ) -> bool:
     """
     Uses KNN to find the nearest neighbours of the new entry among the knowledge base contents.
@@ -64,6 +64,8 @@ def detect_data_poisoning_using_neighbour_label_analysis(
     suspicious_entries_ids: List[str] = []
     for new_entry in new_entries:
         if _entry_is_poisoned(new_entry, knn, kb_labels):
-            suspicious_entries_ids.append(new_entry.get("id"))
+            suspicious_entry_id = new_entry.get("id")
+            if suspicious_entry_id is not None:
+                suspicious_entries_ids.append(suspicious_entry_id)
 
     return suspicious_entries_ids

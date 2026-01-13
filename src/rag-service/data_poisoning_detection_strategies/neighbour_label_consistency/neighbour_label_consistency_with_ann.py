@@ -16,8 +16,11 @@ N_NEIGHBOURS = 10
 DISTANCE_THRESHOLD = 0.2
 
 
-def _entry_is_poisoned(new_entry: Dict, index: NNDescent, kb_labels: List[str],
-                       knn_variant: NNLabelDecisionVariant = settings.label_consistency_detection_decision_variant) -> bool:
+def _entry_is_poisoned(
+    new_entry: Dict,
+    index: NNDescent,
+    kb_labels: List[str],
+    knn_variant: NNLabelDecisionVariant = settings.label_consistency_detection_decision_variant or NNLabelDecisionVariant.MAJORITY_VOTING) -> bool:
     """
     Uses ANN (approximate nearest neighbours) from NNDescent to find the nearest neighbours of the new entry among the
     knowledge base contents.
@@ -60,6 +63,8 @@ def detect_data_poisoning_using_approximate_neighbour_label_analysis(new_entries
     suspicious_entries_ids: List[str] = []
     for new_entry in new_entries:
         if _entry_is_poisoned(new_entry, index, kb_labels):
-            suspicious_entries_ids.append(new_entry.get("id"))
+            suspicious_entry_id = new_entry.get("id")
+            if suspicious_entry_id is not None:
+                suspicious_entries_ids.append(suspicious_entry_id)
 
     return suspicious_entries_ids
