@@ -41,9 +41,9 @@ def run_data_poisoning_detection(
 
     elif detection_strategy == DataPoisoningDetectionStrategy.EMBEDDINGS_CLUSTER_ANALYSIS:
         return detect_data_poisoning_via_embeddings_cluster_and_pattern_analysis(new_entries, logger)
-    elif detection_strategy == DataPoisoningDetectionStrategy.K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY_WITH_KNN:
+    elif detection_strategy == DataPoisoningDetectionStrategy.K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY:
         return detect_data_poisoning_using_neighbour_label_analysis(new_entries, kb_contents, logger)
-    elif detection_strategy == DataPoisoningDetectionStrategy.APPROXIMATE_K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY_WITH_ANN:
+    elif detection_strategy == DataPoisoningDetectionStrategy.APPROXIMATE_K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY:
         return detect_data_poisoning_using_approximate_neighbour_label_analysis(new_entries, kb_contents, logger)
     else:
         logger.warn("Unknown data poisoning detection strategy: %s. "
