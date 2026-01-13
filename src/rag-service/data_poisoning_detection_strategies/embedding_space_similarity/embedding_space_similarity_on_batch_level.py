@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 import numpy as np
 
 from data_poisoning_detection_strategies.embedding_space_similarity.utils.embeddings_computations import \
@@ -10,9 +10,12 @@ from rag_service.config import get_settings
 settings = get_settings()
 
 def _batch_is_poisoned(
-        spam_new_entries_centroid: np.ndarray, non_spam_new_entries_centroid: np.ndarray,
+        spam_new_entries_centroid: Optional[np.ndarray], non_spam_new_entries_centroid: Optional[np.ndarray],
         spam_in_kb_centroid: np.ndarray, non_spam_in_kb_centroid: np.ndarray, logger
 ) -> bool:
+    if spam_new_entries_centroid is None or non_spam_new_entries_centroid is None:
+        raise ValueError("Error: Centroids cannot be None")
+
     if non_spam_new_entries_centroid is not None:
         non_spam_centroid_similarity = compute_cosine_similarity(non_spam_new_entries_centroid, non_spam_in_kb_centroid)
         non_spam_to_spam_centroid_similarity = compute_cosine_similarity(non_spam_new_entries_centroid, spam_in_kb_centroid)

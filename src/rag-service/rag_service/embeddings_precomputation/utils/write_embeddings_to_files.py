@@ -58,8 +58,11 @@ class EmbeddingsWriter:
         if self.current_file_size + line_size > FILE_SIZE_LIMIT:
             self._create_new_file()
 
-        self.current_file.write(json_line)
-        self.current_file_size += line_size
+        if self.current_file is not None:
+            self.current_file.write(json_line)
+            self.current_file_size += line_size
+        else:
+            raise ValueError("Error writing to file: File not open")
 
     def close(self):
         """Closes the current file."""
