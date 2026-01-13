@@ -7,3 +7,4 @@ pandas==2.2.3
 pyarrow==21.0.0
 pydantic_settings==2.11.0
 scikit-learn==1.7.2
+pyright==1.1.302
