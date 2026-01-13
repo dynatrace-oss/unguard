@@ -18,7 +18,10 @@ async def ingest_entry(entry: KnowledgeBaseEntry):
     """Ingest a single new entry into the KB."""
     _logger.info("Received POST /ingestEntry request")
     try:
-        success = rag_classifier.ingest_entry_to_kb(entry.text, entry.label)
+        label = entry.label
+        if label not in ("spam", "not_spam"):
+            raise ValueError(f"Invalid label: {label}")
+        success = rag_classifier.ingest_entry_to_kb(entry.text, label)
         if success:
             return IngestionResponse(
                 success=True,
@@ -36,10 +39,11 @@ async def ingest_batch(entries: BatchOfKnowledgeBaseEntries):
     """Ingest a batch of new entries into the KB."""
     _logger.info("Received POST /ingestBatch request with %d entries", len(entries.entries))
     try:
-        entries_list = [
-            {"text": entry.text, "label": entry.label}
-            for entry in entries.entries
-        ]
+        entries_list = []
+        for entry in entries.entries:
+            if entry.label not in ("spam", "not_spam"):
+                raise ValueError(f"Invalid label: {entry.label}")
+            entries_list.append({"text": entry.text, "label": entry.label})
         count = rag_classifier.ingest_batch_to_kb(entries_list)
         return IngestionResponse(
             success=True,

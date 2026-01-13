@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Literal, cast
 from pathlib import Path
 import chromadb
 import shutil
@@ -12,7 +12,7 @@ from data_poisoning_detection_strategies.data_poisoning_detection import run_dat
 from rag_service.constants import PROVIDER_OLLAMA, PROVIDER_LANGDOCK
 from rag_service.rag_pipeline.utils.init_langdock_models import init_langdock_models
 from rag_service.rag_pipeline.utils.init_ollama_models import init_ollama_models
-from rag_service.config import get_settings
+from rag_service.config import get_settings, DataPoisoningDetectionStrategy
 from logger.logging_config import get_logger
 from rag_service.rag_pipeline.utils.read_precomputed_embeddings import (
     validate_embeddings_directory,
@@ -104,10 +104,10 @@ class RAGSpamClassifier:
         llm_response = self._llm_model.complete(final_prompt)
         classification_text = llm_response.text.strip().lower()
 
-        if classification_text.startswith("spam"):
-            return {"classification": "spam"}
-        elif classification_text.startswith("not_spam"):
-            return {"classification": "not_spam"}
+        if classification_text.startswith(self.settings.spam_label):
+            return {"classification": self.settings.spam_label}
+        elif classification_text.startswith(self.settings.not_spam_label):
+            return {"classification": self.settings.not_spam_label}
         else:
             raise ValueError(f"Error: Invalid response from LLM for classification of text \"{classification_text}\"")
 
@@ -141,6 +141,9 @@ class RAGSpamClassifier:
         """Checks a batch of new entries for potential data poisoning."""
         poisoned_entries = []
         try:
+            if self.settings.data_poisoning_detection_strategy is None:
+                self.settings.data_poisoning_detection_strategy = DataPoisoningDetectionStrategy.EMBEDDING_SPACE_SIMILARITY_ON_BATCH_LEVEL
+
             poisoned_entries = run_data_poisoning_detection(
                 detection_strategy=self.settings.data_poisoning_detection_strategy,
                 new_entries=entries,
@@ -221,11 +224,14 @@ class RAGSpamClassifier:
 
         return list_of_entries
 
-    def get_all_kb_entries(self) -> List[Dict[str, str]]:
+    def get_all_kb_entries(self) -> List[Dict[str, Literal["spam", "not_spam"]]]:
         """ Fetches all entries from the knowledge base without embeddings."""
         all_entries_with_embeddings = self._get_all_kb_entries_with_embeddings()
         for entry in all_entries_with_embeddings:
             entry.pop("embedding", None)
+            if entry["label"] not in ("spam", "not_spam"):
+                raise ValueError(f"Invalid label: {entry['label']}")
+            entry["label"] = cast(Literal["spam", "not_spam"], entry["label"])
         return all_entries_with_embeddings
 
 
