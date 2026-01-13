@@ -32,14 +32,6 @@ def fit_knn(kb_contents: List[Dict], number_of_neighbours: int) -> NearestNeighb
     knn.fit(kb_embeddings)
     return knn
 
-def _build_embeddings_matrix(kb_contents: List[Dict]) -> np.ndarray:
-    """
-    Builds a 2D numpy array from the embeddings in the KB contents
-    """
-    kb_embeddings = extract_all_embeddings(kb_contents)
-    return np.vstack(kb_embeddings)
-
-
 def fit_ann(
     kb_contents: List[Dict],
     number_of_neighbours: int,
@@ -49,7 +41,7 @@ def fit_ann(
     Used for approximate nearest neighbor search (faster than KNN for large KBs).
     Returns the fitted NNDescent index.
     """
-    embeddings_matrix = _build_embeddings_matrix(kb_contents)
+    embeddings_matrix = extract_all_embeddings(kb_contents)
 
     index = NNDescent(
         embeddings_matrix,

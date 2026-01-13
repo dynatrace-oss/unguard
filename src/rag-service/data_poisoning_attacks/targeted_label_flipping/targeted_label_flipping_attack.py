@@ -17,7 +17,7 @@ def _load_attack_success_evaluation_data() -> list[Document]:
     return DataLoader().load_targeted_label_flipping_attack_success_evaluation_dataset()
 
 def _evaluate_attack_success():
-    """Evaluate the success rate of the keyword attack."""
+    """Evaluate the success rate of the targeted label flipping attack."""
     docs = _load_attack_success_evaluation_data()
     evaluate_targeted_attack(docs, settings.targeted_label_flipping_attack_evaluation_results_store_path)
 
