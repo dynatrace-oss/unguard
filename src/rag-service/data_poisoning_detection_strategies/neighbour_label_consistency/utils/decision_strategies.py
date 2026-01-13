@@ -11,7 +11,7 @@ def use_majority_voting(nearest_neighbor_labels: List[str], new_entry_label: str
     for label in nearest_neighbor_labels:
         label_counts[label] = label_counts.get(label, 0) + 1
 
-    majority_label = max(label_counts, key=label_counts.get)
+    majority_label = max(label_counts, key=lambda x: x or 0)
     if majority_label != new_entry_label:
         return True
 
@@ -27,7 +27,7 @@ def use_distance_weighted_voting(nearest_neighbor_labels: List[str], distances: 
         weight = 1 / (distance + 1e-5)
         total_weight_per_label[label] = total_weight_per_label.get(label, 0) + weight
 
-    majority_label = max(total_weight_per_label, key=total_weight_per_label.get)
+    majority_label = max(total_weight_per_label, key=lambda x: x or 0.0)
     if majority_label != new_entry_label:
         return True
 
