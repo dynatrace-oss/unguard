@@ -18,7 +18,10 @@ async def classify_text(post: TextPost):
     _logger.info("Received POST /classifyPost request")
     try:
         result = rag_classifier.classify_text(post.text)
-        return ClassificationResult(**result)
+        classification = result["classification"]
+        if classification not in ("spam", "not_spam"):
+            raise ValueError(f"Invalid classification result: {classification}")
+        return ClassificationResult(classification=classification)
     except Exception as e:
         _logger.error("Error during classification: %s", str(e))
         raise HTTPException(status_code=500, detail=f"Error during classification: {str(e)}")
@@ -29,9 +32,13 @@ async def classify_batch(posts: BatchOfTextPosts):
     _logger.info("Received POST /classifyBatchOfPosts request with %d posts", len(posts.posts))
     try:
         results = rag_classifier.classify_batch(posts.posts)
-        return BatchOfClassificationResult(
-            results=[ClassificationResult(**r) for r in results]
-        )
+        batch_results = []
+        for result in results:
+            classification = result["classification"]
+            if classification not in ("spam", "not_spam"):
+                raise ValueError(f"Invalid classification result: {classification}")
+            batch_results.append(ClassificationResult(classification=classification))
+        return BatchOfClassificationResult(results=batch_results)
     except Exception as e:
         _logger.error("Error during batch classification: %s", str(e))
         raise HTTPException(status_code=500, detail=f"Error during batch classification: {str(e)}")

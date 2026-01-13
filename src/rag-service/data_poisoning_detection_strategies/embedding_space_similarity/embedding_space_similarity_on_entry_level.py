@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 import numpy as np
 
 from data_poisoning_detection_strategies.embedding_space_similarity.utils.embeddings_computations import \
@@ -70,6 +70,8 @@ def detect_data_poisoning_using_embedding_similarity_on_entry_level(
     for new_entry in new_entries:
         poisoned = _entry_is_poisoned(new_entry, spam_in_kb_centroid, non_spam_in_kb_centroid)
         if poisoned:
-            detection_results.append(new_entry.get("id"))
+            value: Optional[str] = new_entry.get("id")
+            if value is not None:
+                detection_results.append(value)
 
     return detection_results
