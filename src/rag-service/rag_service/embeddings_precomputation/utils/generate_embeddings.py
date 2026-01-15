@@ -23,4 +23,9 @@ def create_embedding_model() -> OpenAIEmbedding | OllamaEmbedding:
 
 def compute_embedding_for_doc(embed_model: OpenAIEmbedding, doc: Document) -> List[float]:
     """Computes the embedding for a single document."""
-    return embed_model.get_text_embedding(doc.text)
+    if not doc.text or not isinstance(doc.text, str):
+        raise ValueError("Document text is invalid. Ensure it is a non-empty string.")
+    try:
+        return embed_model.get_text_embedding(doc.text)
+    except Exception as e:
+        raise RuntimeError(f"Failed to compute embedding for document. Error: {e}")

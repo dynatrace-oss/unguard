@@ -55,6 +55,11 @@ def _parse_numeric_label(label: str) -> str:
     else:
         raise ValueError(f"Unknown label value: {label}")
 
+def _sanitize_text(text) -> str:
+    """ Sanitizes the text by removing new lines from the beginning and end to avoid issues during embedding generation."""
+    return str(text).strip()
+
+
 def _load_and_prepare_dataset(file_path: str, text_col: str, label_col: str, file_type: str = "parquet") -> List[Document]:
     """
     Loads additional datasets for the evaluation experiments.
@@ -67,7 +72,8 @@ def _load_and_prepare_dataset(file_path: str, text_col: str, label_col: str, fil
     dropped_entries = 0
     for _, row in df.iterrows():
         text = str(row[text_col])
-        if len(text) > settings.max_length_for_entries:
+        text = _sanitize_text(text)
+        if len(text) > settings.max_length_for_entries or len(text) == 0:
             dropped_entries += 1
             continue
         label = _parse_numeric_label(str(row[label_col]))

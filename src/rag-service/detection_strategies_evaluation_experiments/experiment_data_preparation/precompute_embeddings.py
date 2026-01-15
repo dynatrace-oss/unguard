@@ -58,17 +58,17 @@ def prepare_deysi_spam_detection_dataset():
     deysi_base_dataset = deysi_spam_detection_dataset[:(len(deysi_spam_detection_dataset)//2)]
     deysi_experiment_dataset = deysi_spam_detection_dataset[(len(deysi_spam_detection_dataset)//2):]
 
-    generate_and_store_embeddings(deysi_base_dataset, settings.deysi_base_embeddings_store_path)
+    generate_and_store_embeddings(deysi_base_dataset, settings.deysi_spam_detection_base_embeddings_store_path)
 
     attack_data = deysi_experiment_dataset[:(len(deysi_experiment_dataset)//2)]
     label_flipping_data, keyword_attack_data = _prepare_attack_datasets(attack_data)
-    generate_and_store_embeddings(label_flipping_data, settings.label_flipping_experiment_dataset_store_path_for_deysi_dataset)
-    generate_and_store_embeddings(keyword_attack_data, settings.keyword_attack_experiment_dataset_store_path_for_deysi_dataset)
+    generate_and_store_embeddings(label_flipping_data, settings.label_flipping_experiment_dataset_store_path_for_deysi_spam_detection_dataset)
+    generate_and_store_embeddings(keyword_attack_data, settings.keyword_attack_experiment_dataset_store_path_for_deysi_spam_detection_dataset)
     targeted_label_flipping_data = DataLoader().load_targeted_label_flipping_attack_data()
-    generate_and_store_embeddings(targeted_label_flipping_data, settings.targeted_label_flipping_experiment_dataset_store_path_for_deysi_dataset)
+    generate_and_store_embeddings(targeted_label_flipping_data, settings.targeted_label_flipping_experiment_dataset_store_path_for_deysi_spam_detection_dataset)
 
     legit_data = deysi_experiment_dataset[(len(deysi_experiment_dataset)//2):]
-    generate_and_store_embeddings(legit_data, settings.deysi_legit_embeddings_store_path)
+    generate_and_store_embeddings(legit_data, settings.deysi_spam_detection_legit_embeddings_store_path)
 
 def prepare_sms_spam_dataset():
     sms_spam_dataset = load_sms_spam_dataset()

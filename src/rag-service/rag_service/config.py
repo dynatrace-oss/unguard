@@ -83,34 +83,35 @@ class Settings(BaseSettings):
     sms_spam_base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings_sms_spam/")
     enron_base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings_enron/")
     spam_assassin_base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings_spam_assassin/")
+    deysi_spam_detection_base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings_deysi_spam_detection/")
 
         # 2. precomputed embeddings for the test data (legit data ingestion) for the experiments
-    sms_spam_legit_embeddings_store_path: Path = Path("detection_strategies_evaluation_experiments/experiment_data/sms_spam_dataset/legit_embeddings/")
-    enron_legit_embeddings_store_path: Path = Path("detection_strategies_evaluation_experiments/experiment_data/enron_dataset/legit_embeddings/")
-    spam_assassin_legit_embeddings_store_path: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_assassin_dataset/legit_embeddings/")
-    deysi_spam_detection_legit_embeddings_store_path: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_detection_dataset/legit_embeddings/")
+    sms_spam_legit_embeddings_store_path: Path = Path("detection_strategies_evaluation_experiments/experiment_data/sms_spam_dataset/legit_ingestion_embeddings/")
+    enron_legit_embeddings_store_path: Path = Path("detection_strategies_evaluation_experiments/experiment_data/enron_dataset/legit_ingestion_embeddings/")
+    spam_assassin_legit_embeddings_store_path: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_assassin_dataset/legit_ingestion_embeddings/")
+    deysi_spam_detection_legit_embeddings_store_path: Path = Path("detection_strategies_evaluation_experiments/experiment_data/deysi_spam_detection_dataset/legit_ingestion_embeddings/")
 
         # 3. precomputed embeddings for the attack data for the experiments
             # 3.1. label flipping attack embeddings
-    label_flipping_experiment_dataset_store_path_for_spam_detection_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_detection_dataset/label_flipping_embeddings/")
+    label_flipping_experiment_dataset_store_path_for_deysi_spam_detection_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/deysi_spam_detection_dataset/label_flipping_embeddings/")
     label_flipping_experiment_dataset_store_path_for_sms_spam_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/sms_spam_dataset/label_flipping_embeddings/")
     label_flipping_experiment_dataset_store_path_for_enron_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/enron_dataset/label_flipping_embeddings/")
     label_flipping_experiment_dataset_store_path_for_spam_assassin_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_assassin_dataset/label_flipping_embeddings/")
 
             # 3.2. keyword attack embeddings
-    keyword_attack_experiment_dataset_store_path_for_spam_detection_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_detection_dataset/keyword_attack_embeddings/")
+    keyword_attack_experiment_dataset_store_path_for_deysi_spam_detection_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/deysi_spam_detection_dataset/keyword_attack_embeddings/")
     keyword_attack_experiment_dataset_store_path_for_sms_spam_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/sms_spam_dataset/keyword_attack_embeddings/")
     keyword_attack_experiment_dataset_store_path_for_enron_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/enron_dataset/keyword_attack_embeddings/")
     keyword_attack_experiment_dataset_store_path_for_spam_assassin_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_assassin_dataset/keyword_attack_embeddings/")
 
             # 3.3. targeted label flipping attack embeddings
-    targeted_label_flipping_experiment_dataset_store_path_for_spam_detection_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_detection_dataset/targeted_label_flipping_embeddings/")
+    targeted_label_flipping_experiment_dataset_store_path_for_deysi_spam_detection_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/deysi_spam_detection_dataset/targeted_label_flipping_embeddings/")
     targeted_label_flipping_experiment_dataset_store_path_for_sms_spam_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/sms_spam_dataset/targeted_label_flipping_embeddings/")
     targeted_label_flipping_experiment_dataset_store_path_for_enron_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/enron_dataset/targeted_label_flipping_embeddings/")
     targeted_label_flipping_experiment_dataset_store_path_for_spam_assassin_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_assassin_dataset/targeted_label_flipping_embeddings/")
 
         # 4. valuation results storage paths
-    evaluation_results_store_path_for_spam_detection_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_detection_dataset/evaluation_results/")
+    evaluation_results_store_path_for_deysi_spam_detection_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/deysi_spam_detection_dataset/evaluation_results/")
     evaluation_results_store_path_for_sms_spam_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/sms_spam_dataset/evaluation_results/")
     evaluation_results_store_path_for_enron_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/enron_dataset/evaluation_results/")
     evaluation_results_store_path_for_spam_assassin_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_assassin_dataset/evaluation_results/")
