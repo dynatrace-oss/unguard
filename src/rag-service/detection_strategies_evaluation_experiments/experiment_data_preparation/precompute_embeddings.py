@@ -10,11 +10,13 @@ from logger.logging_config import get_logger
 settings = get_settings()
 logger = get_logger("ExperimentDataPreprocessor")
 
-def _prepare_attack_datasets(attack_data) -> tuple:
-    prepared_label_flipping_data = manipulate_labels(attack_data)
-
+def _prepare_attack_datasets(attack_data) -> tuple[list, list]:
+    """Prepares the datasets for the label flipping and keyword attacks."""
     keyword_attack_data = [doc for doc in attack_data if doc.metadata.get("label") == settings.not_spam_label]
     prepared_keyword_attack_data = add_keyword_to_attack_entries(keyword_attack_data)
+
+    label_flipping_data = attack_data.copy()
+    prepared_label_flipping_data = manipulate_labels(label_flipping_data)
 
     return prepared_label_flipping_data, prepared_keyword_attack_data
 

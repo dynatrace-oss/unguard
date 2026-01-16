@@ -36,3 +36,13 @@ class PrecomputedKBEntry(BaseModel):
 
 class BatchOfPrecomputedKBEntries(BaseModel):
     entries: List[PrecomputedKBEntry]
+
+class DetailedIngestionResult(BaseModel):
+    id: str
+    status: Literal["ingested", "failed"]
+    error: str = Field(default="Unknown error ingesting entry", description="Error message if ingestion failed")
+
+class DetailedIngestionResponse(BaseModel):
+    success: bool
+    message: str
+    results: List[DetailedIngestionResult]

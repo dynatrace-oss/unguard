@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from pydantic import SecretStr
+from pydantic import SecretStr, Field
 from pathlib import Path
 from string import Template
 from typing import Optional
@@ -46,7 +46,10 @@ class Settings(BaseSettings):
 
     max_length_for_entries: int = 2793  # value taken from Huggingface length bar chart (upper boundary of first bar)
 
-    base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings/")
+    base_embeddings_store_path: Path = Field(
+        Path("rag_service/data/base_data_embeddings_deysi_spam_detection/"),
+        env="BASE_EMBEDDINGS_STORE_PATH"
+    )
     label_flipping_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/label_flipping/attack_data/")
     keyword_attack_embeddings_store_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_data/")
     prepared_keyword_attack_success_evaluation_dataset_store_path: Path = Path("data_poisoning_attacks/keyword_attack/attack_evaluation_data_prepared/attack_success_evaluation_prepared_dataset.parquet")
@@ -110,12 +113,8 @@ class Settings(BaseSettings):
     targeted_label_flipping_experiment_dataset_store_path_for_enron_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/enron_dataset/targeted_label_flipping_embeddings/")
     targeted_label_flipping_experiment_dataset_store_path_for_spam_assassin_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_assassin_dataset/targeted_label_flipping_embeddings/")
 
-        # 4. valuation results storage paths
-    evaluation_results_store_path_for_deysi_spam_detection_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/deysi_spam_detection_dataset/evaluation_results/")
-    evaluation_results_store_path_for_sms_spam_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/sms_spam_dataset/evaluation_results/")
-    evaluation_results_store_path_for_enron_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/enron_dataset/evaluation_results/")
-    evaluation_results_store_path_for_spam_assassin_dataset: Path = Path("detection_strategies_evaluation_experiments/experiment_data/spam_assassin_dataset/evaluation_results/")
-
+        # 4. evaluation results storage path for the experiments
+    detection_evaluation_experiment_results_store_path: Path = Path("detection_strategies_evaluation_experiments/evaluation_results/")
 
     class Config:
         env_file = str(Path(__file__).resolve().parent.parent / ".env")

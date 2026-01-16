@@ -167,39 +167,32 @@ class RAGSpamClassifier:
             ]
         return entries
 
-    def ingest_precomputed_embeddings(self, entries: List[Dict]) -> int:
+    def ingest_precomputed_embeddings(self, entries: List[Dict]) -> List[Dict]:
         """
         Inserts a batch of new entries with already precomputed embeddings into the KB.
+        Returns a detailed status for each entry.
         """
+        detailed_results = []
 
         if self.settings.use_data_poisoning_detection:
-            entries = self._check_for_data_poisoning(entries) # filter out poisoned entries
-
-        documents = []
-        embeddings = []
-        metadatas = []
-        ids = []
+            entries = self._check_for_data_poisoning(entries)  # filter out poisoned entries
 
         for entry in entries:
             try:
-                documents.append(entry["text"])
-                embeddings.append(entry["embedding"])
-                metadatas.append({"label": entry["label"]})
-                ids.append(entry.get("id") or str(uuid.uuid4()))
-            except KeyError as error:
-                self._logger.warning("Error processing entry, missing field: %s", error)
-        if not documents:
-            return 0
+                self._collection.add(
+                    documents=[entry["text"]],
+                    embeddings=[entry["embedding"]],
+                    metadatas=[{"label": entry["label"]}],
+                    ids=[entry.get("id") or str(uuid.uuid4())]
+                )
+                detailed_results.append({"id": entry.get("id"), "status": "ingested"})
+            except Exception as error:
+                self._logger.warning("Failed to ingest entry with id %s: %s", entry.get("id"), error)
+                detailed_results.append({"id": entry.get("id"), "status": "failed", "error": str(error)})
 
-        self._collection.add(
-            documents=documents,
-            embeddings=embeddings,
-            metadatas=metadatas,
-            ids=ids
-        )
-
-        self._logger.info("Ingested %d new entries with precomputed embeddings", len(documents))
-        return len(documents)
+        self._logger.info("Ingested %d new entries with precomputed embeddings",
+                          len([r for r in detailed_results if r["status"] == "ingested"]))
+        return detailed_results
 
     def _get_all_kb_entries_with_embeddings(self) -> List[Dict]:
         """Fetches all entries from the Chroma collection."""

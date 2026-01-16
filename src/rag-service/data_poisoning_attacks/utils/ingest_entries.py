@@ -19,8 +19,11 @@ def ingest_entries(entries: List[Dict], logger):
             raise RuntimeError(f"Error during ingestion ({response.status_code}): {response.text}")
 
         processed += len(batch)
-        num_ingested_batch = response.json()["count"]
-        num_ingested_total += response.json()["count"]
+        response_data = response.json()
+        num_ingested_batch = sum(1 for result in response_data.get("results", []) if result.get("status") == "ingested")
+        num_ingested_total += num_ingested_batch
+
         logger.info("Processed %d/%d entries: %d/%d of current batch were ingested successfully",
                     processed, total_entries, num_ingested_batch, len(batch))
+
     return num_ingested_total

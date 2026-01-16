@@ -7,6 +7,8 @@ from rag_service.schemas import (
     IngestionResponse,
     KnowledgeBaseDump,
     BatchOfPrecomputedKBEntries,
+    DetailedIngestionResponse,
+    DetailedIngestionResult,
 )
 from logger.logging_config import get_logger
 
@@ -54,22 +56,22 @@ async def ingest_batch(entries: BatchOfKnowledgeBaseEntries):
         _logger.error("Error ingesting new entries: %s", str(e))
         raise HTTPException(status_code=500, detail=f"Error ingesting new entries: {str(e)}")
 
-@router.post("/ingestBatchWithEmbeddingsPrecomputed", response_model=IngestionResponse)
+@router.post("/ingestBatchWithEmbeddingsPrecomputed", response_model=DetailedIngestionResponse)
 async def ingest_precomputed_batch(entries: BatchOfPrecomputedKBEntries):
     """
     Ingest a batch of entries with already precomputed embeddings.
-    This route is useful for bypassing the overhead of computing embeddings during ingestion
-    when ingesting a large amount of entries e.g. to simulate & evaluate data poisoning attacks
+    Returns a detailed response for each entry.
     """
     _logger.info("Received POST /ingestBatchWithEmbeddingsPrecomputed request with %d entries", len(entries.entries))
     try:
-        count = rag_classifier.ingest_precomputed_embeddings(
+        results = rag_classifier.ingest_precomputed_embeddings(
             [e.model_dump() for e in entries.entries]
         )
-        return IngestionResponse(
+        success_count = len([r for r in results if r["status"] == "ingested"])
+        return DetailedIngestionResponse(
             success=True,
-            message=f"{count} entries with precomputed embeddings were successfully ingested",
-            count=count
+            message=f"{success_count} entries were successfully ingested",
+            results=[DetailedIngestionResult(**r) for r in results]
         )
     except Exception as e:
         _logger.error("Error ingesting precomputed embeddings: %s", str(e))
