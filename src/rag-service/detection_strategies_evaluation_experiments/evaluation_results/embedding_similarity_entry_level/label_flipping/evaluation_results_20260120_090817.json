@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.9979057591623036,
+  "precision": 0.9992526158445441,
+  "recall": 0.9977611940298508,
+  "f1_score": 0.9985063480209111,
+  "true_positives": 2674,
+  "false_positives": 2,
+  "true_negatives": 1138,
+  "false_negatives": 6,
+  "experiment_configuration": {
+    "detection_strategy": "embedding_similarity_entry_level",
+    "attack_type": "label_flipping",
+    "dataset_name": "deysi_spam_detection",
+    "batch_poisoning_percentage": 70,
+    "n_splits": 10
+  }
+}

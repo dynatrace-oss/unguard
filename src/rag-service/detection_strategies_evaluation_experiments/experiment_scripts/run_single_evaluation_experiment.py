@@ -51,6 +51,7 @@ def run_evaluation_experiment(detection_strategy, attack_type, dataset_name, bat
         }
 
         evaluation_results_path = settings.detection_evaluation_experiment_results_store_path
+        evaluation_results_path = evaluation_results_path / detection_strategy.value / attack_type.value
         store_results_in_file(evaluation_results_path, results, logger, filename="evaluation_results")
     finally:
         stopped_successfully = stop_rag_service(process)

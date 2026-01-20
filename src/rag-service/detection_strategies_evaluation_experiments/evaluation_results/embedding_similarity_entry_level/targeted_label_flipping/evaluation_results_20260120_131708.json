@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.998,
+  "precision": 0.9803921568627451,
+  "recall": 1.0,
+  "f1_score": 0.99009900990099,
+  "true_positives": 50,
+  "false_positives": 1,
+  "true_negatives": 449,
+  "false_negatives": 0,
+  "experiment_configuration": {
+    "detection_strategy": "embedding_similarity_entry_level",
+    "attack_type": "targeted_label_flipping",
+    "dataset_name": "spam_assassin",
+    "batch_poisoning_percentage": 10,
+    "n_splits": 10
+  }
+}

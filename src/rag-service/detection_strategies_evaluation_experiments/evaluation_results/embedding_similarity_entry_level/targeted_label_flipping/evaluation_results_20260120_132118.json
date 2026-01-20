@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.7,
+  "precision": 1.0,
+  "recall": 0.58,
+  "f1_score": 0.7341772151898733,
+  "true_positives": 29,
+  "false_positives": 0,
+  "true_negatives": 20,
+  "false_negatives": 21,
+  "experiment_configuration": {
+    "detection_strategy": "embedding_similarity_entry_level",
+    "attack_type": "targeted_label_flipping",
+    "dataset_name": "sms_spam",
+    "batch_poisoning_percentage": 70,
+    "n_splits": 10
+  }
+}

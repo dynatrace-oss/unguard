@@ -25,19 +25,6 @@ def ingest_into_rag(entries: List[Dict]) -> List[DetailedIngestionResult]:
             raise RuntimeError(f"Error during ingestion ({response.status_code}): {response.text}")
 
         response_data = response.json()
-
-        """ The route returns an object of this form:
-        class DetailedIngestionResult(BaseModel):
-            id: str
-            status: Literal["ingested", "failed"]
-            error: str = Field(default=None, description="Error message if ingestion failed")
-
-        class DetailedIngestionResponse(BaseModel):
-            success: bool
-            message: str
-            results: List[DetailedIngestionResult]
-        """
-
         batch_results = response_data.get("results", [])
         ingestion_results.extend(batch_results)
 
