@@ -14,11 +14,11 @@ from rag_service.schemas import DetailedIngestionResult
 from logger.logging_config import get_logger
 from rag_service.config import get_settings
 
-DETECTION_STRATEGY = DataPoisoningDetectionStrategy.EMBEDDING_SPACE_SIMILARITY_ON_ENTRY_LEVEL
-DATASET_NAME = Dataset.DEYSI_SPAM_DETECTION
+DETECTION_STRATEGY = DataPoisoningDetectionStrategy.EMBEDDINGS_CLUSTER_ANALYSIS
+DATASET_NAME = Dataset.ENRON
 BATCH_POISONING_PERCENTAGE = BatchPoisoningMixPercentage.ONLY_POISONED
 N_SPLITS = 10
-ATTACK_TYPE = AttackType.LABEL_FLIPPING
+ATTACK_TYPE = AttackType.KEYWORD_INJECTION
 
 settings = get_settings()
 
