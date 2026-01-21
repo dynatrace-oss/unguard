@@ -14,17 +14,25 @@ To create a release, you need:
 
 The Unguard release process involves:
 
-1. Bumping the version in the Helm chart
-2. Creating and pushing a release branch
-3. Waiting for the CI/CD pipeline to build and publish artifacts
-4. Tagging the release commit
-5. Creating a GitHub release
+1. Bumping the version in the Helm chart and committing the changes
+2. Merging the version bump to the `main` branch
+3. Creating and pushing a release branch from `main`
+4. Waiting for the CI/CD pipeline to build and publish artifacts
+5. Creating a GitHub release and tag
 
 ## Step-by-Step Instructions
 
 ### 1. Bump the Version
 
-Update the version numbers in the following files:
+You can use the provided script to automate this process:
+
+```bash
+./bump-version.sh 0.13.0
+```
+
+The script will update all necessary files and create a commit with the proper format.
+
+Alternatively, you can manually update the version numbers in the following files:
 
 #### `chart/Chart.yaml`
 
@@ -152,7 +160,7 @@ Each release produces the following artifacts:
 
 - **Helm chart**, installable via:
   ```bash
-  helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version 0.13.0
+  helm install unguard oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --version <version>
   ```
 
 ## Version Numbering
@@ -162,42 +170,6 @@ Unguard follows [Semantic Versioning](https://semver.org/) with the format `MAJO
 - **MAJOR**: Incompatible API changes or major architectural changes
 - **MINOR**: New features in a backwards-compatible manner
 - **PATCH**: Backwards-compatible bug fixes
-
-## Troubleshooting
-
-### Build Fails on Release Branch
-
-If the GitHub Actions workflow fails:
-
-1. Check the [Actions tab](https://github.com/dynatrace-oss/unguard/actions) for error details
-2. Fix the issue in the release branch
-3. Push the fix to the release branch
-4. The workflow will automatically re-run
-
-### Wrong Version in Artifacts
-
-If you need to fix version numbers after creating the release branch:
-
-1. Delete the remote release branch: `git push origin --delete release/v0.13.0`
-2. Delete the local branch: `git branch -D release/v0.13.0`
-3. Fix the version numbers in your commits
-4. Create the release branch again
-
-### Image or Chart Not Found
-
-If artifacts aren't appearing in GHCR:
-
-1. Verify the workflow completed successfully
-2. Check that you have the correct repository permissions
-3. Ensure the `GITHUB_TOKEN` has package write permissions (this is usually automatic)
-
-## Best Practices
-
-- **Test before releasing**: Always test the changes thoroughly before creating a release
-- **Update dependencies**: Review and update dependencies before major releases
-- **Document breaking changes**: Clearly communicate any breaking changes in release notes
-- **Consistent versioning**: Ensure all version numbers are consistent across all files
-- **Clean commit history**: Keep the release branch clean with meaningful commits
 
 ## See Also
 
