@@ -25,6 +25,16 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# OS-agnostic sed in-place editing
+# Usage: sed_inplace 's/pattern/replacement/' file
+sed_inplace() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "$1" "$2"
+    else
+        sed -i "$1" "$2"
+    fi
+}
+
 # Check if version argument is provided
 if [ $# -eq 0 ]; then
     print_error "No version specified"
@@ -69,16 +79,16 @@ cp chart/README.md chart/README.md.bak
 
 # Update chart/Chart.yaml
 print_info "Updating chart/Chart.yaml..."
-sed -i "s/^version: .*/version: ${NEW_VERSION}/" chart/Chart.yaml
-sed -i "s/^appVersion: .*/appVersion: ${NEW_VERSION}/" chart/Chart.yaml
+sed_inplace "s/^version: .*/version: ${NEW_VERSION}/" chart/Chart.yaml
+sed_inplace "s/^appVersion: .*/appVersion: ${NEW_VERSION}/" chart/Chart.yaml
 
 # Update chart/values.yaml - update all image tags
 print_info "Updating chart/values.yaml..."
-sed -i "s/tag: \".*\"/tag: \"${NEW_VERSION}\"/" chart/values.yaml
+sed_inplace "s/tag: \".*\"/tag: \"${NEW_VERSION}\"/" chart/values.yaml
 
 # Update chart/README.md
 print_info "Updating chart/README.md..."
-sed -i "s/--version [0-9]\+\.[0-9]\+\.[0-9]\+/--version ${NEW_VERSION}/" chart/README.md
+sed_inplace "s/--version [0-9]\+\.[0-9]\+\.[0-9]\+/--version ${NEW_VERSION}/" chart/README.md
 
 # Verify changes
 print_info "Verifying changes..."
@@ -87,36 +97,16 @@ echo "Chart.yaml version changes:"
 diff chart/Chart.yaml.bak chart/Chart.yaml || true
 echo ""
 
-# Ask if user wants to commit
+# Clean up backups
+print_info "Cleaning up backups..."
+rm chart/Chart.yaml.bak chart/values.yaml.bak chart/README.md.bak
+
+print_info "✓ Version bumped to ${NEW_VERSION}!"
 echo ""
-read -p "Do you want to commit these changes? (y/n) " -n 1 -r
-echo ""
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    print_info "Staging changes..."
-    git add chart/Chart.yaml chart/values.yaml chart/README.md
-
-    print_info "Creating commit..."
-    git commit -m "🔖 chore: Bump version to ${NEW_VERSION}"
-
-    print_info "Cleaning up backups..."
-    rm chart/Chart.yaml.bak chart/values.yaml.bak chart/README.md.bak
-
-    print_info "✓ Version bumped to ${NEW_VERSION} and committed!"
-    echo ""
-    print_info "Next steps:"
-    echo "  1. Push your changes and create a PR to merge to main"
-    echo "  2. After merge, create a release branch: git checkout -b release/v${NEW_VERSION}"
-    echo "  3. Push the release branch: git push origin release/v${NEW_VERSION}"
-else
-    print_warning "Changes staged but not committed"
-    print_info "Keeping backup files (*.bak) in case you want to revert"
-    echo ""
-    print_info "To commit manually, run:"
-    echo "  git add chart/Chart.yaml chart/values.yaml chart/README.md"
-    echo "  git commit -m '🔖 chore: Bump version to ${NEW_VERSION}'"
-    echo ""
-    print_info "To revert changes:"
-    echo "  mv chart/Chart.yaml.bak chart/Chart.yaml"
-    echo "  mv chart/values.yaml.bak chart/values.yaml"
-    echo "  mv chart/README.md.bak chart/README.md"
-fi
+print_info "Next steps:"
+echo "  1. Review the changes above"
+echo "  2. Commit with: git add chart/Chart.yaml chart/values.yaml chart/README.md"
+echo "  3. Commit message: git commit -m '🔖 chore: Bump version to ${NEW_VERSION}'"
+echo "  4. Push your changes and create a PR to merge to main"
+echo "  5. After merge, create a release branch: git checkout -b release/v${NEW_VERSION}"
+echo "  6. Push the release branch: git push origin release/v${NEW_VERSION}"
