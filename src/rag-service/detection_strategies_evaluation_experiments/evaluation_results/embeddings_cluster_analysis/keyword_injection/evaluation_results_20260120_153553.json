@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.9175088131609871,
+  "precision": 1.0,
+  "recall": 0.7935294117647059,
+  "f1_score": 0.8848802886192195,
+  "true_positives": 2698,
+  "false_positives": 0,
+  "true_negatives": 5110,
+  "false_negatives": 702,
+  "experiment_configuration": {
+    "detection_strategy": "embeddings_cluster_analysis",
+    "attack_type": "keyword_injection",
+    "dataset_name": "enron",
+    "batch_poisoning_percentage": 40,
+    "n_splits": 10
+  }
+}

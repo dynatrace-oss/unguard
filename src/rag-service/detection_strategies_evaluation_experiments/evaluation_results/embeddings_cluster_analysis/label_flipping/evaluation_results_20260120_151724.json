@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.2903846153846154,
+  "precision": 0.6666666666666666,
+  "recall": 0.005405405405405406,
+  "f1_score": 0.010723860589812333,
+  "true_positives": 2,
+  "false_positives": 1,
+  "true_negatives": 149,
+  "false_negatives": 368,
+  "experiment_configuration": {
+    "detection_strategy": "embeddings_cluster_analysis",
+    "attack_type": "label_flipping",
+    "dataset_name": "sms_spam",
+    "batch_poisoning_percentage": 70,
+    "n_splits": 10
+  }
+}

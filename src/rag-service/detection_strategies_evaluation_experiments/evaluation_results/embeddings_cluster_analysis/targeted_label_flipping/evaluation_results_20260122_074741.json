@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.9727272727272728,
+  "precision": 0.9302325581395349,
+  "recall": 1.0,
+  "f1_score": 0.963855421686747,
+  "true_positives": 40,
+  "false_positives": 3,
+  "true_negatives": 67,
+  "false_negatives": 0,
+  "experiment_configuration": {
+    "detection_strategy": "embeddings_cluster_analysis",
+    "attack_type": "targeted_label_flipping",
+    "dataset_name": "spam_assassin",
+    "batch_poisoning_percentage": 40,
+    "n_splits": 10
+  }
+}
