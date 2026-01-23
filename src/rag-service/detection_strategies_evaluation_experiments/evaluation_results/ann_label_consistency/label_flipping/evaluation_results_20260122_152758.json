@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.9645790554414785,
+  "precision": 0.9860381324125507,
+  "recall": 0.963049853372434,
+  "f1_score": 0.9744084266745789,
+  "true_positives": 6568,
+  "false_positives": 93,
+  "true_negatives": 2827,
+  "false_negatives": 252,
+  "experiment_configuration": {
+    "detection_strategy": "ann_label_consistency",
+    "attack_type": "label_flipping",
+    "dataset_name": "enron",
+    "batch_poisoning_percentage": 70,
+    "n_splits": 10
+  }
+}
