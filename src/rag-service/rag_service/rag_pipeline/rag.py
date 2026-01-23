@@ -7,6 +7,7 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
 import uuid
+import time
 
 from data_poisoning_detection_strategies.data_poisoning_detection import run_data_poisoning_detection
 from rag_service.constants import PROVIDER_OLLAMA, PROVIDER_LANGDOCK
@@ -14,6 +15,7 @@ from rag_service.rag_pipeline.utils.init_langdock_models import init_langdock_mo
 from rag_service.rag_pipeline.utils.init_ollama_models import init_ollama_models
 from rag_service.config import get_settings, DataPoisoningDetectionStrategy
 from logger.logging_config import get_logger
+from rag_service.rag_pipeline.utils.store_performance_results import store_performance_results
 from rag_service.rag_pipeline.utils.read_precomputed_embeddings import (
     validate_embeddings_directory,
     get_list_of_embeddings_files,
@@ -137,25 +139,31 @@ class RAGSpamClassifier:
         self._logger.info("Ingested batch of %d new entries", len(entries))
         return len(docs)
 
-    def _check_for_data_poisoning(self, entries: List[Dict]) -> List[Dict]:
+    def _check_for_data_poisoning(self, entries: List[Dict]) -> list[dict] | None:
         """Checks a batch of new entries for potential data poisoning."""
         poisoned_entries = []
-        try:
-            if self.settings.data_poisoning_detection_strategy is None:
-                self.settings.data_poisoning_detection_strategy = DataPoisoningDetectionStrategy.EMBEDDING_SPACE_SIMILARITY_ON_BATCH_LEVEL
+        kb_contents = self._get_all_kb_entries_with_embeddings()
 
+        if self.settings.data_poisoning_detection_strategy is None:
+            self.settings.data_poisoning_detection_strategy = (
+                DataPoisoningDetectionStrategy.EMBEDDING_SPACE_SIMILARITY_ON_BATCH_LEVEL
+            )
+
+        start_time = time.perf_counter()
+        try:
             poisoned_entries = run_data_poisoning_detection(
                 detection_strategy=self.settings.data_poisoning_detection_strategy,
                 new_entries=entries,
-                kb_contents=self._get_all_kb_entries_with_embeddings(),
-                logger=self._logger
+                kb_contents=kb_contents,
+                logger=self._logger,
             )
         except Exception as e:
-            self._logger.error(
-                "Data poisoning detection failed: %s.",
-                e
-            )
+            self._logger.error("Data poisoning detection failed: %s.", e)
             self._logger.info("Proceeding with ingestion.")
+        finally:
+            end_time = time.perf_counter()
+            if self.settings.store_performance_results_for_detection:
+                store_performance_results(end_time - start_time, entries, kb_contents)
 
         if len(poisoned_entries) > 0:
             self._logger.warning(

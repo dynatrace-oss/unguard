@@ -81,6 +81,7 @@ class Settings(BaseSettings):
     label_consistency_detection_decision_variant: NNLabelDecisionVariant | None = None
 
     # The remaining values are only used in the experiments for the detection strategies evaluation:
+    store_performance_results_for_detection: bool = False
 
         # 1. base datasets
     sms_spam_base_embeddings_store_path: Path = Path("rag_service/data/base_data_embeddings_sms_spam/")
