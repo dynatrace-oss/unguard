@@ -1,0 +1,6 @@
+{
+  "detection_strategy": "knn_label_consistency",
+  "duration_in_seconds": 5.943100856005913,
+  "num_new_entries": 100,
+  "num_kb_entries": 8000
+}

@@ -1,0 +1,6 @@
+{
+  "detection_strategy": "embedding_similarity_batch_level",
+  "duration_in_seconds": 0.033356151994667016,
+  "num_new_entries": 100,
+  "num_kb_entries": 8000
+}

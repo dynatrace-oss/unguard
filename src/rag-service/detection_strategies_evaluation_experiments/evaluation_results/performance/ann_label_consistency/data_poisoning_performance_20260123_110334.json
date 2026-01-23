@@ -1,0 +1,6 @@
+{
+  "detection_strategy": "ann_label_consistency",
+  "duration_in_seconds": 13.438382478998392,
+  "num_new_entries": 100,
+  "num_kb_entries": 4000
+}

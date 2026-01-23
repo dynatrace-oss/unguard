@@ -1,0 +1,6 @@
+{
+  "detection_strategy": "embeddings_cluster_analysis",
+  "duration_in_seconds": 0.08999454698641784,
+  "num_new_entries": 400,
+  "num_kb_entries": 4000
+}
