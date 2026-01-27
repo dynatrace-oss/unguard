@@ -1,0 +1,64 @@
+{{- if .Values.ragService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: unguard-rag-service
+  labels:
+    app.kubernetes.io/name: rag-service
+    app.kubernetes.io/part-of: unguard
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: rag-service
+    app.kubernetes.io/part-of: unguard
+  ports:
+    - port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unguard-rag-service
+  labels:
+    app.kubernetes.io/name: rag-service
+    app.kubernetes.io/part-of: unguard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rag-service
+      app.kubernetes.io/part-of: unguard
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rag-service
+        app.kubernetes.io/part-of: unguard
+    spec:
+      containers:
+        - name: rag-service
+          image: {{ .Values.ragService.deployment.container.image.repository }}:{{ .Values.ragService.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.ragService.deployment.container.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: MODEL_PROVIDER
+              value: {{ quote .Values.ragService.deployment.container.env.MODEL_PROVIDER }}
+            - name: MODEL_PROVIDER_BASE_URL
+              value: {{ quote .Values.ragService.deployment.container.env.MODEL_PROVIDER_BASE_URL }}
+            - name: LLM_MODEL
+              value: {{ quote .Values.ragService.deployment.container.env.LLM_MODEL }}
+            - name: EMBEDDINGS_MODEL
+              value: {{ quote .Values.ragService.deployment.container.env.EMBEDDINGS_MODEL }}
+            - name: EVALUATE_AFTER_ATTACK
+              value: {{ quote .Values.ragService.deployment.container.env.EVALUATE_AFTER_ATTACK }}
+            - name: LIMIT_EVALUATION_SAMPLES
+              value: {{ quote .Values.ragService.deployment.container.env.LIMIT_EVALUATION_SAMPLES }}
+            - name: LIMIT_KEYWORD_ATTACK_SUCCESS_EVALUATION_SAMPLES
+              value: {{ quote .Values.ragService.deployment.container.env.LIMIT_KEYWORD_ATTACK_SUCCESS_EVALUATION_SAMPLES }}
+            - name: USE_DATA_POISONING_DETECTION
+              value: {{ quote .Values.ragService.deployment.container.env.USE_DATA_POISONING_DETECTION }}
+            - name: DATA_POISONING_DETECTION_STRATEGY
+              value: {{ quote .Values.ragService.deployment.container.env.DATA_POISONING_DETECTION_STRATEGY }}
+            - name: LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT
+              value: {{ quote .Values.ragService.deployment.container.env.LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT }}
+{{- end }}
