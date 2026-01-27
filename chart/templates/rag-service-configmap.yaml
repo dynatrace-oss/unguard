@@ -1,0 +1,20 @@
+{{- if .Values.ragService.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unguard-rag-service-config
+  labels:
+    app.kubernetes.io/name: rag-service
+    app.kubernetes.io/part-of: unguard
+data:
+  MODEL_PROVIDER: {{ quote .Values.ragService.deployment.container.env.MODEL_PROVIDER }}
+  MODEL_PROVIDER_BASE_URL: {{ quote .Values.ragService.deployment.container.env.MODEL_PROVIDER_BASE_URL }}
+  LLM_MODEL: {{ quote .Values.ragService.deployment.container.env.LLM_MODEL }}
+  EMBEDDINGS_MODEL: {{ quote .Values.ragService.deployment.container.env.EMBEDDINGS_MODEL }}
+  EVALUATE_AFTER_ATTACK: {{ quote .Values.ragService.deployment.container.env.EVALUATE_AFTER_ATTACK }}
+  LIMIT_EVALUATION_SAMPLES: {{ quote .Values.ragService.deployment.container.env.LIMIT_EVALUATION_SAMPLES }}
+  LIMIT_KEYWORD_ATTACK_SUCCESS_EVALUATION_SAMPLES: {{ quote .Values.ragService.deployment.container.env.LIMIT_KEYWORD_ATTACK_SUCCESS_EVALUATION_SAMPLES }}
+  USE_DATA_POISONING_DETECTION: {{ quote .Values.ragService.deployment.container.env.USE_DATA_POISONING_DETECTION }}
+  DATA_POISONING_DETECTION_STRATEGY: {{ quote .Values.ragService.deployment.container.env.DATA_POISONING_DETECTION_STRATEGY }}
+  LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT: {{ quote .Values.ragService.deployment.container.env.LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT }}
+{{- end }}
