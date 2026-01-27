@@ -13,7 +13,7 @@ def _batch_is_poisoned(
         spam_new_entries_centroid: Optional[np.ndarray], non_spam_new_entries_centroid: Optional[np.ndarray],
         spam_in_kb_centroid: np.ndarray, non_spam_in_kb_centroid: np.ndarray, logger
 ) -> bool:
-    if spam_new_entries_centroid is None or non_spam_new_entries_centroid is None:
+    if spam_new_entries_centroid is None and non_spam_new_entries_centroid is None:
         raise ValueError("Error: Centroids cannot be None")
 
     if non_spam_new_entries_centroid is not None:
