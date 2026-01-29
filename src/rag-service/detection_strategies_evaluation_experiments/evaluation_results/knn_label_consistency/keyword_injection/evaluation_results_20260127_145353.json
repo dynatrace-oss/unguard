@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.5536842105263158,
+  "precision": 0.16666666666666666,
+  "recall": 0.02894736842105263,
+  "f1_score": 0.04932735426008968,
+  "true_positives": 11,
+  "false_positives": 55,
+  "true_negatives": 515,
+  "false_negatives": 369,
+  "experiment_configuration": {
+    "detection_strategy": "knn_label_consistency",
+    "attack_type": "keyword_injection",
+    "dataset_name": "spam_assassin",
+    "batch_poisoning_percentage": 40,
+    "n_splits": 10
+  }
+}

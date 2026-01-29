@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.5863689776733255,
+  "precision": 0.06521739130434782,
+  "recall": 0.0026470588235294116,
+  "f1_score": 0.005087620124364048,
+  "true_positives": 9,
+  "false_positives": 129,
+  "true_negatives": 4981,
+  "false_negatives": 3391,
+  "experiment_configuration": {
+    "detection_strategy": "knn_label_consistency",
+    "attack_type": "keyword_injection",
+    "dataset_name": "enron",
+    "batch_poisoning_percentage": 40,
+    "n_splits": 10
+  }
+}

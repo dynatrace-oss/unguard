@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.6,
+  "precision": 0.5,
+  "recall": 0.007462686567164179,
+  "f1_score": 0.014705882352941176,
+  "true_positives": 10,
+  "false_positives": 10,
+  "true_negatives": 2000,
+  "false_negatives": 1330,
+  "experiment_configuration": {
+    "detection_strategy": "ann_label_consistency",
+    "attack_type": "keyword_injection",
+    "dataset_name": "deysi_spam_detection",
+    "batch_poisoning_percentage": 40,
+    "n_splits": 10
+  }
+}

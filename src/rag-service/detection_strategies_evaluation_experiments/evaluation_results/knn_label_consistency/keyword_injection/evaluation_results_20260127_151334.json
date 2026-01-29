@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.8097560975609757,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1_score": 0,
+  "true_positives": 0,
+  "false_positives": 38,
+  "true_negatives": 332,
+  "false_negatives": 40,
+  "experiment_configuration": {
+    "detection_strategy": "knn_label_consistency",
+    "attack_type": "keyword_injection",
+    "dataset_name": "sms_spam",
+    "batch_poisoning_percentage": 10,
+    "n_splits": 10
+  }
+}
