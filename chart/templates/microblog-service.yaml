@@ -66,6 +66,8 @@ spec:
               value: {{ quote .Values.microblogService.deployment.container.env.REDIS_SERVICE_ADDRESS }}
             - name: USER_AUTH_SERVICE_ADDRESS
               value: {{ quote .Values.microblogService.deployment.container.env.USER_AUTH_SERVICE_ADDRESS }}
+            - name: RAG_SERVICE_ADDRESS
+              value: {{ quote .Values.microblogService.deployment.container.env.RAG_SERVICE_ADDRESS }}
             - name: OPENTRACING_JAEGER_ENABLED
               value: {{ quote .Values.microblogService.deployment.container.env.OPENTRACING_JAEGER_ENABLED }}
             - name: JAEGER_SERVICE_NAME
