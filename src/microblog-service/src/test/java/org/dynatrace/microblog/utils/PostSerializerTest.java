@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 
 class PostSerializerTest {
 
-	private final PostSerializer postSerializer = new PostSerializer();
+    private final PostSerializer postSerializer = new PostSerializer();
 
-	@Test
-	void serializePost_ReturnsTrue_WhenObjectCouldBeDeserialized() {
-		assertThat(postSerializer.serializePost(
-				new SerializedPost("1", "username", "body", "imageURL", new Date(), UUID.randomUUID())))
-				.isTrue();
-	}
+    @Test
+    void serializePost_ReturnsTrue_WhenObjectCouldBeDeserialized() {
+        assertThat(postSerializer.serializePost(
+            new SerializedPost("1", "username", "body", "imageURL", new Date(), UUID.randomUUID(), null)))
+            .isTrue();
+    }
 }
