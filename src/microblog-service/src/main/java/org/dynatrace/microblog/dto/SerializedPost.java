@@ -31,8 +31,9 @@ public class SerializedPost extends Post {
         @JsonProperty("body") String body,
         @JsonProperty("imageUrl") String imageUrl,
         @JsonProperty("timestamp") Date timestamp,
-        @JsonProperty("serialId") UUID serialId) {
-        super(postId, username, body, imageUrl, timestamp);
+        @JsonProperty("serialId") UUID serialId,
+        @JsonProperty("isSpamPredictedLabel") Boolean isSpamPredictedLabel) {
+        super(postId, username, body, imageUrl, timestamp, isSpamPredictedLabel);
         this.serialId = serialId;
     }
 

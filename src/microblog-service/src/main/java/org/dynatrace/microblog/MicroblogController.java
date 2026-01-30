@@ -29,6 +29,7 @@ import org.dynatrace.microblog.exceptions.InvalidUserException;
 import org.dynatrace.microblog.exceptions.NotLoggedInException;
 import org.dynatrace.microblog.exceptions.UserNotFoundException;
 import org.dynatrace.microblog.form.PostForm;
+import org.dynatrace.microblog.ragservice.RAGServiceClient;
 import org.dynatrace.microblog.redis.RedisClient;
 import org.dynatrace.microblog.utils.JwtTokensUtils;
 import org.dynatrace.microblog.utils.PostSerializer;
@@ -49,6 +50,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -58,12 +62,17 @@ public class MicroblogController {
     private final RedisClient redisClient;
     Logger logger = LoggerFactory.getLogger(MicroblogController.class);
     private final UserAuthServiceClient userAuthServiceClient;
+    private final RAGServiceClient ragServiceClient;
     private final PostSerializer postSerializer;
+    private final ExecutorService ragExecutor = Executors.newFixedThreadPool(
+        Math.max(20, Runtime.getRuntime().availableProcessors() / 2)
+    );
 
     @Autowired
     public MicroblogController(Tracer tracer, PostSerializer postSerializer) {
         String redisServiceAddress;
         String userAuthServiceAddress;
+        String ragServiceAddress;
         if (System.getenv("REDIS_SERVICE_ADDRESS") != null) {
             redisServiceAddress = System.getenv("REDIS_SERVICE_ADDRESS");
             logger.info("REDIS_SERVICE_ADDRESS set to {}", redisServiceAddress);
@@ -80,8 +89,17 @@ public class MicroblogController {
             logger.warn("No USER_AUTH_SERVICE_ADDRESS environment variable defined, falling back to localhost:9091.");
         }
 
+        if (System.getenv("RAG_SERVICE_ADDRESS") != null) {
+            ragServiceAddress = System.getenv("RAG_SERVICE_ADDRESS");
+            logger.info("RAG_SERVICE_ADDRESS set to {}", ragServiceAddress);
+        } else {
+            ragServiceAddress = "localhost:8000";
+            logger.warn("No RAG_SERVICE_ADDRESS environment variable defined, falling back to localhost:8000.");
+        }
+
         this.userAuthServiceClient = new UserAuthServiceClient(userAuthServiceAddress);
         this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
+        this.ragServiceClient = new RAGServiceClient(ragServiceAddress);
         this.postSerializer = postSerializer;
     }
 
@@ -171,6 +189,18 @@ public class MicroblogController {
         // decode JWT
         Claims claims = JwtTokensUtils.decodeTokenClaims(jwt);
         String postId = redisClient.newPost(claims.get("userid").toString(), postForm.getContent(), postForm.getImageUrl());
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                String spamClassificationResult = ragServiceClient.getSpamClassification(postForm.getContent());
+                logger.info("RAG spam classification result for post with ID {}: {}", postId, spamClassificationResult);
+                boolean isSpam = spamClassificationResult.trim().equalsIgnoreCase("spam");
+                redisClient.setSpamPredictedLabel(postId, isSpam);
+            } catch (Exception e) {
+                logger.warn("RAG spam classification failed for post with ID {}", postId, e);
+            }
+        }, ragExecutor);
+
         return new PostId(postId);
     }
 
@@ -181,7 +211,7 @@ public class MicroblogController {
         if (post == null) {
             throw new ResponseStatusException(NOT_FOUND, "Post not found.");
         }
-        postSerializer.serializePost(new SerializedPost(postId, post.getUsername(), post.getBody(), post.getImageUrl(), post.getTimestamp(), UUID.randomUUID()));
+        postSerializer.serializePost(new SerializedPost(postId, post.getUsername(), post.getBody(), post.getImageUrl(), post.getTimestamp(), UUID.randomUUID(), post.getIsSpamPredictedLabel()));
         return post;
     }
 
