@@ -4,6 +4,7 @@ on:
     paths:
       - src/**
       - skaffold.yaml
+      - .github/workflows/test.yaml
       - chart/**
 
 jobs:
