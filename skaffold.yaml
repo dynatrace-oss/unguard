@@ -119,7 +119,7 @@ deploy:
           # payment-service
           paymentService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_payment_service}}"
           paymentService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_payment_service}}@{{.IMAGE_DIGEST_unguard_payment_service}}"
-          # rag-service (FIXED)
+          # rag-service
           ragService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_rag_service}}"
           ragService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_rag_service}}@{{.IMAGE_DIGEST_unguard_rag_service}}"
           # ollama

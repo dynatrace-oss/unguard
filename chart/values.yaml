@@ -518,6 +518,7 @@ ragService:
 
 # Ollama
 ollama:
+  enabled: true
   name: ollama
 
   image:
