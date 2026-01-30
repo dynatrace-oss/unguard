@@ -1,4 +1,4 @@
-{{- if .Values.ragService.enabled }}
+{{- if and (.Values.ragService.enabled) (.Values.ollama.enabled) }}
 apiVersion: v1
 kind: Service
 metadata:
