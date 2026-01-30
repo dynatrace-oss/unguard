@@ -1,0 +1,36 @@
+{{- if and (.Values.ragService.enabled) (.Values.ollama.enabled) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: unguard-ollama
+spec:
+  type: ClusterIP
+  selector:
+    app: ollama
+  ports:
+    - port: 11434
+      targetPort: 11434
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unguard-ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+        - name: ollama
+          image: {{ .Values.ollama.image.repository }}:{{ .Values.ollama.image.tag }}
+          imagePullPolicy: {{ .Values.ollama.image.pullPolicy }}
+          ports:
+            - containerPort: 11434
+          command: ["ollama"]
+          args: ["serve"]
+{{- end }}

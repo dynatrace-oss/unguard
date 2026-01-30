@@ -491,3 +491,37 @@ frontend:
         LIKE_SERVICE_BASE_PATH: /like-service
         MEMBERSHIP_SERVICE_BASE_PATH: /membership-service
         STATUS_SERVICE_BASE_PATH: /status-service
+
+# RAG Service
+ragService:
+  enabled: true
+  name: rag-service
+
+  deployment:
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-rag-service
+        tag: "latest"
+        pullPolicy: IfNotPresent
+      env:
+        MODEL_PROVIDER: "Ollama"
+        MODEL_PROVIDER_BASE_URL: "http://unguard-ollama:11434"
+        LLM_MODEL: "llama3.2:latest"
+        EMBEDDINGS_MODEL: "nomic-embed-text"
+        EVALUATE_AFTER_ATTACK: "false"
+        LIMIT_EVALUATION_SAMPLES: "0"
+        LIMIT_KEYWORD_ATTACK_SUCCESS_EVALUATION_SAMPLES: "0"
+        USE_DATA_POISONING_DETECTION: "false"
+        DATA_POISONING_DETECTION_STRATEGY: "embedding_similarity_entry_level"
+        LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT: "majority_voting"
+
+
+# Ollama
+ollama:
+  enabled: true
+  name: ollama
+
+  image:
+    repository: ghcr.io/dynatrace-oss/unguard/unguard-ollama
+    tag: 0.0.1
+    pullPolicy: IfNotPresent

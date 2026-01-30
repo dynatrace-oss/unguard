@@ -47,6 +47,10 @@ build:
       context: src/payment-service
     - image: unguard-exploit-toolkit
       context: exploit-toolkit
+    - image: unguard-rag-service
+      context: src/rag-service
+    - image: unguard-ollama
+      context: src/ollama
 
   local:
     # only the docker CLI respects a manually logged-in daemon
@@ -115,6 +119,12 @@ deploy:
           # payment-service
           paymentService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_payment_service}}"
           paymentService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_payment_service}}@{{.IMAGE_DIGEST_unguard_payment_service}}"
+          # rag-service
+          ragService.deployment.container.image.repository: "{{.IMAGE_REPO_unguard_rag_service}}"
+          ragService.deployment.container.image.tag: "{{.IMAGE_TAG_unguard_rag_service}}@{{.IMAGE_DIGEST_unguard_rag_service}}"
+          # ollama
+          ollama.image.repository: "{{.IMAGE_REPO_unguard_ollama}}"
+          ollama.image.tag: "{{.IMAGE_TAG_unguard_ollama}}@{{.IMAGE_DIGEST_unguard_ollama}}"
 
         setValues:
           # ad-service
@@ -141,6 +151,10 @@ deploy:
           likeService.deployment.container.image.pullPolicy: "IfNotPresent"
           # payment-service
           paymentService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # rag-service
+          ragService.deployment.container.image.pullPolicy: "IfNotPresent"
+          # ollama
+          ollama.image.pullPolicy: "IfNotPresent"
 
 profiles:
   - name: jib
