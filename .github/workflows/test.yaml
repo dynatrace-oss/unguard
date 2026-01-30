@@ -60,11 +60,12 @@ jobs:
           path: ~/.skaffold/
           key: fixed-${{ github.sha }}
 
-      - name: Run Skaffold and Deploy to Minikube Cluster
-        uses: hiberbee/github-action-skaffold@1.27.0
-        with:
-          command: run
-          skip-tests: true
+      - name: Install and Run Skaffold and Deploy to Minikube Cluster
+        run: |
+          curl -fsSL -o /usr/local/bin/skaffold https://storage.googleapis.com/skaffold/releases/v2.17.1/skaffold-linux-amd64
+          chmod +x /usr/local/bin/skaffold
+          skaffold version
+          skaffold run --skip-tests=true
 
       - name: Run chart-testing
         run: helm test unguard --namespace unguard --timeout 10m0s --logs
