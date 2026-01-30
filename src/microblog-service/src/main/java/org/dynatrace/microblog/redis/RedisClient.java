@@ -119,6 +119,13 @@ public class RedisClient {
         }
     }
 
+    public void setSpamPredictedLabel(@NotNull String postId, boolean isSpamPredictedLabel) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            String postKey = getCombinedKey(POST_KEY_PREFIX, postId);
+            jedis.hset(postKey, "isSpamPredictedLabel", String.valueOf(isSpamPredictedLabel));
+        }
+    }
+
     @NotNull
     public List<Post> getUserTimeline(String userId) {
         List<String> postIds;
@@ -195,8 +202,10 @@ public class RedisClient {
         String body = postMap.get("body");
         String imageUrl = postMap.get("imageUrl");
         Date timestamp = new Date(Long.parseLong(postMap.get("time")));
+        String spamClassification = postMap.get("isSpamPredictedLabel");
+        Boolean isSpamPredictedLabel = spamClassification == null? null : Boolean.valueOf(spamClassification);
 
-       return new Post(postId, userName, body, imageUrl, timestamp);
+        return new Post(postId, userName, body, imageUrl, timestamp, isSpamPredictedLabel);
     }
 
     public List<Post> getTimeline() {
