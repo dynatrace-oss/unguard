@@ -10,6 +10,7 @@ import { BASE_PATH } from '@/constants';
 import { useCheckLogin } from '@/hooks/queries/useCheckLogin';
 import { LikeButton } from '@/components/Timeline/LikeButton';
 import { ErrorCard } from '@/components/ErrorCard';
+import { PostSpamPrediction } from '@/components/Timeline/PostSpamPrediction';
 
 export interface PostProps {
     username: string;
@@ -17,6 +18,7 @@ export interface PostProps {
     body: string;
     imageUrl?: string;
     postId: string;
+    isSpamPredictedLabel?: boolean;
 }
 
 export function Post(props: PostProps) {
@@ -69,7 +71,11 @@ export function Post(props: PostProps) {
                     )}
                     <p>{props.body}</p>
                 </CardBody>
-                <CardFooter className='gap-3 justify-end px-3'>
+                <CardFooter className='gap-3 justify-between px-3'>
+                    <div className='flex items-center'>
+                        <PostSpamPrediction isSpamPredictedLabel={props.isSpamPredictedLabel} />
+                    </div>
+
                     {isLoggedIn && (
                         <div className='flex gap-1'>
                             <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>
