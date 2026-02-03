@@ -33,6 +33,7 @@ function SinglePost() {
                     postId={postData.postId}
                     timestamp={postData.timestamp}
                     username={postData.username}
+                    isSpamPredictedLabel={postData.isSpamPredictedLabel}
                 />
             )}
         </div>

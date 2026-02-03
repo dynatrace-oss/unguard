@@ -23,11 +23,7 @@ import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.PostId;
 import org.dynatrace.microblog.dto.SerializedPost;
 import org.dynatrace.microblog.dto.User;
-import org.dynatrace.microblog.exceptions.FollowYourselfException;
-import org.dynatrace.microblog.exceptions.InvalidJwtException;
-import org.dynatrace.microblog.exceptions.InvalidUserException;
-import org.dynatrace.microblog.exceptions.NotLoggedInException;
-import org.dynatrace.microblog.exceptions.UserNotFoundException;
+import org.dynatrace.microblog.exceptions.*;
 import org.dynatrace.microblog.form.PostForm;
 import org.dynatrace.microblog.ragservice.RAGServiceClient;
 import org.dynatrace.microblog.redis.RedisClient;
@@ -73,6 +69,7 @@ public class MicroblogController {
         String redisServiceAddress;
         String userAuthServiceAddress;
         String ragServiceAddress;
+        String ragServicePort;
         if (System.getenv("REDIS_SERVICE_ADDRESS") != null) {
             redisServiceAddress = System.getenv("REDIS_SERVICE_ADDRESS");
             logger.info("REDIS_SERVICE_ADDRESS set to {}", redisServiceAddress);
@@ -93,13 +90,20 @@ public class MicroblogController {
             ragServiceAddress = System.getenv("RAG_SERVICE_ADDRESS");
             logger.info("RAG_SERVICE_ADDRESS set to {}", ragServiceAddress);
         } else {
-            ragServiceAddress = "localhost:8000";
-            logger.warn("No RAG_SERVICE_ADDRESS environment variable defined, falling back to localhost:8000.");
+            ragServiceAddress = "localhost";
+            logger.warn("No RAG_SERVICE_ADDRESS environment variable defined, falling back to localhost.");
+        }
+        if (System.getenv("RAG_SERVICE_PORT") != null) {
+            ragServicePort = System.getenv("RAG_SERVICE_PORT");
+            logger.info("RAG_SERVICE_PORT set to {}", ragServicePort);
+        } else {
+            ragServicePort = "8000";
+            logger.warn("No RAG_SERVICE_PORT environment variable defined, falling back to 8000.");
         }
 
         this.userAuthServiceClient = new UserAuthServiceClient(userAuthServiceAddress);
         this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
-        this.ragServiceClient = new RAGServiceClient(ragServiceAddress);
+        this.ragServiceClient = new RAGServiceClient(ragServiceAddress, ragServicePort);
         this.postSerializer = postSerializer;
     }
 
@@ -193,9 +197,15 @@ public class MicroblogController {
         CompletableFuture.runAsync(() -> {
             try {
                 String spamClassificationResult = ragServiceClient.getSpamClassification(postForm.getContent());
-                logger.info("RAG spam classification result for post with ID {}: {}", postId, spamClassificationResult);
-                boolean isSpam = spamClassificationResult.trim().equalsIgnoreCase("spam");
-                redisClient.setSpamPredictedLabel(postId, isSpam);
+                if(spamClassificationResult == null || spamClassificationResult.trim().isEmpty()) {
+                    throw new InvalidSpamPredictionException("RAG spam classification result is null or empty for post with ID " + postId);
+                } else if (spamClassificationResult.trim().equalsIgnoreCase("not_spam")) {
+                    redisClient.setSpamPredictedLabel(postId, false);
+                } else if (spamClassificationResult.trim().equalsIgnoreCase("spam")) {
+                    redisClient.setSpamPredictedLabel(postId, true);
+                } else {
+                    throw new InvalidSpamPredictionException("RAG spam classification result is invalid for post with ID " + postId + ": " + spamClassificationResult);
+                }
             } catch (Exception e) {
                 logger.warn("RAG spam classification failed for post with ID {}", postId, e);
             }

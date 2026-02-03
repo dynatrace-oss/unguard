@@ -21,9 +21,11 @@ public class RAGServiceClient {
     private final Logger logger = LoggerFactory.getLogger(org.dynatrace.microblog.ragservice.RAGServiceClient.class);
 
     private final String ragServiceHost;
+    private final int ragServicePort;
 
-    public RAGServiceClient(String ragServiceHost) {
+    public RAGServiceClient(String ragServiceHost, String ragsServicePort) {
         this.ragServiceHost = ragServiceHost;
+        this.ragServicePort = Integer.parseInt(ragsServicePort);
 
         TracingInterceptor tracingInterceptor = new TracingInterceptor(
             GlobalTracer.get(),
@@ -47,10 +49,15 @@ public class RAGServiceClient {
         RequestBody body = RequestBody.create(
             MediaType.parse("application/json"), jsonRequest);
 
-        String requestUrl = "http://" + this.ragServiceHost + "/classifyPost";
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme("http")
+                .host(this.ragServiceHost)
+                .port(this.ragServicePort)
+                .addPathSegment("classifyPost")
+                .build();
 
         Request request = new Request.Builder()
-            .url(requestUrl)
+            .url(url)
             .post(body)
             .build();
 

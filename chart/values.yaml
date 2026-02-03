@@ -279,7 +279,8 @@ microblogService:
         OPENTRACING_JAEGER_ENABLED: false
         REDIS_SERVICE_ADDRESS: unguard-redis
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
-        RAG_SERVICE_ADDRESS: unguard-rag-service:8000
+        RAG_SERVICE_ADDRESS: unguard-rag-service
+        RAG_SERVICE_PORT: 8000
 
 # Status Service
 statusService:
