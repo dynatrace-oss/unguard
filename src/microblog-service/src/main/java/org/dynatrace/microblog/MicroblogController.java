@@ -23,6 +23,7 @@ import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.PostId;
 import org.dynatrace.microblog.dto.SerializedPost;
 import org.dynatrace.microblog.dto.User;
+import org.dynatrace.microblog.dto.SpamPredictionRatings;
 import org.dynatrace.microblog.exceptions.*;
 import org.dynatrace.microblog.form.PostForm;
 import org.dynatrace.microblog.ragservice.RAGServiceClient;
@@ -50,6 +51,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.dynatrace.microblog.utils.JwtTokensUtils.decodeTokenUserId;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
@@ -223,6 +225,30 @@ public class MicroblogController {
         }
         postSerializer.serializePost(new SerializedPost(postId, post.getUsername(), post.getBody(), post.getImageUrl(), post.getTimestamp(), UUID.randomUUID(), post.getIsSpamPredictedLabel()));
         return post;
+    }
+
+
+    @GetMapping("/spam-prediction-user-rating/{postid}")
+    public SpamPredictionRatings getSpamPredictionUserRating(@PathVariable("postid") String postId, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
+        checkJwt(jwt);
+
+        SpamPredictionRatings spamPredictionUserRatings = redisClient.getSpamPredictionUserRatings(postId, decodeTokenUserId(jwt));
+        if (spamPredictionUserRatings == null) {
+            throw new ResponseStatusException(NOT_FOUND, "Spam prediction user ratings for post with ID " + postId + " not found.");
+        }
+        return spamPredictionUserRatings;
+    }
+
+    @PostMapping("/spam-prediction-user-rating/{postid}/upvote")
+    public void upvoteSpamPrediction(@PathVariable("postid") String postId, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
+        checkJwt(jwt);
+        redisClient.handleSpamPredictionUpvote(postId, decodeTokenUserId(jwt));
+    }
+
+    @PostMapping("/spam-prediction-user-rating/{postid}/downvote")
+    public void downvoteSpamPrediction(@PathVariable("postid") String postId, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
+        checkJwt(jwt);
+        redisClient.handleSpamPredictionDownvote(postId, decodeTokenUserId(jwt));
     }
 
     public void checkJwt(String jwt) throws InvalidJwtException, NotLoggedInException {
