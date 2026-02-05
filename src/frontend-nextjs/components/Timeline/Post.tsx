@@ -73,7 +73,7 @@ export function Post(props: PostProps) {
                 </CardBody>
                 <CardFooter className='gap-3 justify-between px-3'>
                     <div className='flex items-center'>
-                        <PostSpamPrediction isSpamPredictedLabel={props.isSpamPredictedLabel} />
+                        <PostSpamPrediction isSpamPredictedLabel={props.isSpamPredictedLabel} postId={props.postId}/>
                     </div>
 
                     {isLoggedIn && (
