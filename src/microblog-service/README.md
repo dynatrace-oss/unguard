@@ -60,3 +60,5 @@ To get more information about the JAEGER config options, see https://www.jaegert
 | JAEGER_SAMPLER_TYPE       | const                     | (optional) Set to const to get all traces                    |
 | JAEGER_SAMPLER_PARAM      | 1                         | (optional) Set to 1 while sampler is const to get all traces |
 | USER_AUTH_SERVICE_ADDRESS | unguard-user-auth-service | Change to hostname/IP of user-auth-service instance          |
+| RAG_SERVICE_ADDRESS       | unguard-rag-service       | Change to hostname/IP of rag-service instance                |
+| RAG_SERVICE_PORT          | 8000                      | Change to port number of rag-service instance                |

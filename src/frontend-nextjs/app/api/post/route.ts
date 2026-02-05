@@ -12,6 +12,7 @@ import { createNewPost } from '@/services/api/CreatePostService';
 export async function POST(request: Request): Promise<NextResponse> {
     const body = await request.json();
     let header = request.headers.get('header');
+
     if (header) {
         header = Buffer.from(header, 'latin1').toString('utf-8');
     }

@@ -23,15 +23,16 @@ export function SpamPredictionUserRating(props: Readonly<SpamPredictionUserRatin
     return (
         <div>
             <Button
-                className=' text-default-600 bg-transparent'
+                className='bg-transparent text-default-600 px-2 min-w-0 gap-1'
                 name='upvoteSpamRating'
                 onPress={() => handleSpamPredictionUpvote()}
             >
                 <p>{spamPredictionUserRatingData?.spamPredictionUserUpvotes}</p>
                 {spamPredictionUserRatingData?.isUpvotedByUser ? <BsHandThumbsUpFill /> : <BsHandThumbsUp />}
             </Button>
+
             <Button
-                className=' text-default-600 bg-transparent'
+                className='bg-transparent text-default-600 px-2 min-w-0 gap-1'
                 name='downvoteSpamRating'
                 onPress={() => handleSpamPredictionDownvote()}
             >

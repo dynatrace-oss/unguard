@@ -17,4 +17,7 @@ data:
   USE_DATA_POISONING_DETECTION: {{ quote .Values.ragService.deployment.container.env.USE_DATA_POISONING_DETECTION }}
   DATA_POISONING_DETECTION_STRATEGY: {{ quote .Values.ragService.deployment.container.env.DATA_POISONING_DETECTION_STRATEGY }}
   LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT: {{ quote .Values.ragService.deployment.container.env.LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT }}
+  {{- with .Values.ragService.deployment.container.env.LANGDOCK_API_KEY }}
+  LANGDOCK_API_KEY: {{ quote . }}
+  {{- end }}
 {{- end }}

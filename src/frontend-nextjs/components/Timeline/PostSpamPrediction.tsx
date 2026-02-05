@@ -15,6 +15,7 @@ export interface PostSpamPredictionProps {
 
 export function PostSpamPrediction(props: Readonly<PostSpamPredictionProps>) {
     const { isLoggedIn } = useCheckLogin();
+
     if (props.isSpamPredictedLabel == null) return null;
 
     const color = props.isSpamPredictedLabel ? 'danger' : 'primary';
