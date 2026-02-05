@@ -17,4 +17,5 @@ export enum QUERY_KEYS {
     ad_manager = 'ad-manager',
     ad_list = 'ad-list',
     deployment_health = 'deployment-health',
+    spam_prediction_user_rating = 'spam-prediction-user-rating',
 }
