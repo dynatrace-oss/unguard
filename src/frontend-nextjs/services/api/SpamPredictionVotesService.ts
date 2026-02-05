@@ -1,15 +1,16 @@
-import {getMicroblogApi} from '@/axios';
-import {getJwtFromCookie} from '@/services/api/AuthService';
-import type {AxiosRequestConfig} from 'axios';
-import {AxiosHeaders} from 'axios';
+import { AxiosHeaders, AxiosRequestConfig } from 'axios';
+
+import { getMicroblogApi } from '@/axios';
+import { getJwtFromCookie } from '@/services/api/AuthService';
 
 async function withJwtCookie(): Promise<AxiosRequestConfig> {
     const jwt = await getJwtFromCookie();
 
     const headers = new AxiosHeaders();
+
     headers.set('Cookie', `jwt=${jwt}`);
 
-    return {headers};
+    return { headers };
 }
 
 export async function fetchSpamPredictionUserRating(postId: string): Promise<any> {

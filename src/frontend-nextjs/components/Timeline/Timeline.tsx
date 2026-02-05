@@ -27,10 +27,10 @@ export function Timeline({ posts, isLoading }: TimelineProps) {
                     <Post
                         body={post.body}
                         imageUrl={post.imageUrl}
+                        isSpamPredictedLabel={post.isSpamPredictedLabel}
                         postId={post.postId}
                         timestamp={post.timestamp}
                         username={post.username}
-                        isSpamPredictedLabel={post.isSpamPredictedLabel}
                     />
                     <Spacer y={4} />
                 </div>

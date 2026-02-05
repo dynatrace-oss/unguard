@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import {handleSpamPredictionDownvote, handleSpamPredictionUpvote} from '@/services/SpamPredictionVotingService';
+import { handleSpamPredictionDownvote, handleSpamPredictionUpvote } from '@/services/SpamPredictionVotingService';
 import { QUERY_KEYS } from '@/enums/queryKeys';
 
 export function useRateSpamPrediction(postId: string) {
@@ -22,6 +22,6 @@ export function useRateSpamPrediction(postId: string) {
 
     return {
         handleSpamPredictionUpvote: handleUpvoteMutation.mutate,
-        handleSpamPredictionDownvote: handleDownvoteMutation.mutate
+        handleSpamPredictionDownvote: handleDownvoteMutation.mutate,
     };
 }
