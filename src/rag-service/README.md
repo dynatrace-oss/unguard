@@ -10,6 +10,22 @@ A microservice for spam classification using Retrieval-Augmented Generation (RAG
 - **[Langdock](https://www.langdock.com)**: OpenAI LLM and embeddings
 - **[Ollama](https://ollama.com/)**: Local open-source LLM and embeddings
 
+## Environment Variables
+| Name                                            | Example Value                    | Description                                                                       |
+|-------------------------------------------------|----------------------------------|-----------------------------------------------------------------------------------|
+| LLM_MODEL                                       | llama3.2:latest                  | The LLM model that will be used by the RAG service                                |
+| EMBEDDINGS_MODEL                                | nomic-embed-text                 | The embeddings model that will be used by the RAG service                         |
+| MODEL_PROVIDER                                  | Ollama                           | Can be either "Ollama" or "LangDock"                                              |
+| MODEL_PROVIDER_BASE_URL                         | http://localhost:11434           | Base url to your model                                                            |
+| LANGDOCK_API_KEY                                | <your_langdock_api_key>          | (optional) Langdock API key, only needed when using LangDock                      |
+| EVALUATE_AFTER_ATTACK                           | false                            | Configure whether the RAG service performance should be evaluated after an attack |
+| LIMIT_EVALUATION_SAMPLES                        | 0                                |                                                                                   |
+| LIMIT_KEYWORD_ATTACK_SUCCESS_EVALUATION_SAMPLES | 0                                | Change to hostname/IP of rag-service instance                                     |
+| USE_DATA_POISONING_DETECTION                    | falses                           | Change to port number of rag-service instance                                     |
+| DATA_POISONING_DETECTION_STRATEGY               | embedding_similarity_entry_level | The data poisoning detection strategy to use                                      |
+| LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT    | majority_voting                  | The variant of the label consistency detection strategy to use                    |
+
+
 ## Getting Started for running the RAG Service locally
 
 When starting for the first time, you need to create a Virtual Environment, activate it and install the dependencies:
