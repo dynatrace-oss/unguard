@@ -1,9 +1,9 @@
 import path from 'path';
 
-import {useQuery} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import {QUERY_KEYS} from '@/enums/queryKeys';
-import {BASE_PATH} from '@/constants';
+import { QUERY_KEYS } from '@/enums/queryKeys';
+import { BASE_PATH } from '@/constants';
 
 type SpamPredictionUserRating = {
     spamPredictionUserUpvotes: number;
