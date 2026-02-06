@@ -60,6 +60,7 @@ public class MicroblogController {
     private final RedisClient redisClient;
     Logger logger = LoggerFactory.getLogger(MicroblogController.class);
     private final UserAuthServiceClient userAuthServiceClient;
+    private final Boolean ragServiceEnabled;
     private final RAGServiceClient ragServiceClient;
     private final PostSerializer postSerializer;
     private final ExecutorService ragExecutor = Executors.newFixedThreadPool(
@@ -72,6 +73,7 @@ public class MicroblogController {
         String userAuthServiceAddress;
         String ragServiceAddress;
         String ragServicePort;
+        boolean isRagServiceEnabled = false;
         if (System.getenv("REDIS_SERVICE_ADDRESS") != null) {
             redisServiceAddress = System.getenv("REDIS_SERVICE_ADDRESS");
             logger.info("REDIS_SERVICE_ADDRESS set to {}", redisServiceAddress);
@@ -86,6 +88,13 @@ public class MicroblogController {
         } else {
             userAuthServiceAddress = "localhost:9091";
             logger.warn("No USER_AUTH_SERVICE_ADDRESS environment variable defined, falling back to localhost:9091.");
+        }
+
+        if (System.getenv("RAG_SERVICE_ENABLED") != null) {
+            isRagServiceEnabled = Boolean.parseBoolean(System.getenv("RAG_SERVICE_ENABLED"));
+            logger.info("RAG_SERVICE_ENABLED set to {}", isRagServiceEnabled);
+        } else {
+            logger.warn("No RAG_SERVICE_ENABLED environment variable defined, falling back to false.");
         }
 
         if (System.getenv("RAG_SERVICE_ADDRESS") != null) {
@@ -107,6 +116,7 @@ public class MicroblogController {
         this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
         this.ragServiceClient = new RAGServiceClient(ragServiceAddress, ragServicePort);
         this.postSerializer = postSerializer;
+        this.ragServiceEnabled = isRagServiceEnabled;
     }
 
     @RequestMapping("/timeline")
@@ -196,22 +206,24 @@ public class MicroblogController {
         Claims claims = JwtTokensUtils.decodeTokenClaims(jwt);
         String postId = redisClient.newPost(claims.get("userid").toString(), postForm.getContent(), postForm.getImageUrl());
 
-        CompletableFuture.runAsync(() -> {
-            try {
-                String spamClassificationResult = ragServiceClient.getSpamClassification(postForm.getContent());
-                if(spamClassificationResult == null || spamClassificationResult.trim().isEmpty()) {
-                    throw new InvalidSpamPredictionException("RAG spam classification result is null or empty for post with ID " + postId);
-                } else if (spamClassificationResult.trim().equalsIgnoreCase("not_spam")) {
-                    redisClient.setSpamPredictedLabel(postId, false);
-                } else if (spamClassificationResult.trim().equalsIgnoreCase("spam")) {
-                    redisClient.setSpamPredictedLabel(postId, true);
-                } else {
-                    throw new InvalidSpamPredictionException("RAG spam classification result is invalid for post with ID " + postId + ": " + spamClassificationResult);
+        if (Boolean.TRUE.equals(this.ragServiceEnabled)) {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    String spamClassificationResult = ragServiceClient.getSpamClassification(postForm.getContent());
+                    if(spamClassificationResult == null || spamClassificationResult.trim().isEmpty()) {
+                        throw new InvalidSpamPredictionException("RAG spam classification result is null or empty for post with ID " + postId);
+                    } else if (spamClassificationResult.trim().equalsIgnoreCase("not_spam")) {
+                        redisClient.setSpamPredictedLabel(postId, false);
+                    } else if (spamClassificationResult.trim().equalsIgnoreCase("spam")) {
+                        redisClient.setSpamPredictedLabel(postId, true);
+                    } else {
+                        throw new InvalidSpamPredictionException("RAG spam classification result is invalid for post with ID " + postId + ": " + spamClassificationResult);
+                    }
+                } catch (Exception e) {
+                    logger.warn("RAG spam classification failed for post with ID {}", postId, e);
                 }
-            } catch (Exception e) {
-                logger.warn("RAG spam classification failed for post with ID {}", postId, e);
-            }
-        }, ragExecutor);
+            }, ragExecutor);
+        }
 
         return new PostId(postId);
     }

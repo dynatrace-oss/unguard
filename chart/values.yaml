@@ -279,6 +279,7 @@ microblogService:
         OPENTRACING_JAEGER_ENABLED: false
         REDIS_SERVICE_ADDRESS: unguard-redis
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+        RAG_SERVICE_ENABLED: "{{ .Values.ragService.enabled }}"
         RAG_SERVICE_ADDRESS: unguard-rag-service
         RAG_SERVICE_PORT: 8000
 
