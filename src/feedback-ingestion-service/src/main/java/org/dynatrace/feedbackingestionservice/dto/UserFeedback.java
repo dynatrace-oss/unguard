@@ -4,20 +4,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserFeedback {
     private final String text;
-    private final FeedbackLabel userLabel;
+    private final String label;
 
     public UserFeedback(
         @JsonProperty("text") String text,
-        @JsonProperty("userLabel") FeedbackLabel userLabel) {
+        @JsonProperty("user_label") String userLabel) {
         this.text = text;
-        this.userLabel = userLabel;
+        this.label = userLabel;
     }
 
     public String getText() {
         return text;
     }
 
-    public FeedbackLabel getUserLabel() {
-        return userLabel;
+    public String getLabel() {
+        return label;
     }
 }
