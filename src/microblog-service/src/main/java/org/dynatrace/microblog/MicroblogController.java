@@ -25,6 +25,7 @@ import org.dynatrace.microblog.dto.SerializedPost;
 import org.dynatrace.microblog.dto.User;
 import org.dynatrace.microblog.dto.SpamPredictionRatings;
 import org.dynatrace.microblog.exceptions.*;
+import org.dynatrace.microblog.feedbackingestionservice.FeedbackIngestionServiceClient;
 import org.dynatrace.microblog.form.PostForm;
 import org.dynatrace.microblog.ragservice.RAGServiceClient;
 import org.dynatrace.microblog.redis.RedisClient;
@@ -64,6 +65,7 @@ public class MicroblogController {
     private final UserAuthServiceClient userAuthServiceClient;
     private final Boolean ragServiceEnabled;
     private final RAGServiceClient ragServiceClient;
+    private final FeedbackIngestionServiceClient feedbackIngestionServiceClient;
     private final PostSerializer postSerializer;
     private final ExecutorService ragExecutor = Executors.newFixedThreadPool(
         Math.max(20, Runtime.getRuntime().availableProcessors() / 2)
@@ -76,6 +78,8 @@ public class MicroblogController {
         String ragServiceAddress;
         String ragServicePort;
         boolean isRagServiceEnabled = false;
+        String feedbackIngestionServiceAddress;
+        String feedbackIngestionServicePort;
         if (System.getenv("REDIS_SERVICE_ADDRESS") != null) {
             redisServiceAddress = System.getenv("REDIS_SERVICE_ADDRESS");
             logger.info("REDIS_SERVICE_ADDRESS set to {}", redisServiceAddress);
@@ -113,12 +117,27 @@ public class MicroblogController {
             ragServicePort = "8000";
             logger.warn("No RAG_SERVICE_PORT environment variable defined, falling back to 8000.");
         }
+        if (System.getenv("FEEDBACK_INGESTION_SERVICE_ADDRESS") != null) {
+            feedbackIngestionServiceAddress = System.getenv("FEEDBACK_INGESTION_SERVICE_ADDRESS");
+            logger.info("FEEDBACK_INGESTION_SERVICE_ADDRESS set to {}", feedbackIngestionServiceAddress);
+        } else {
+            feedbackIngestionServiceAddress = "localhost";
+            logger.warn("No FEEDBACK_INGESTION_SERVICE_ADDRESS environment variable defined, falling back to localhost.");
+        }
+        if (System.getenv("FEEDBACK_INGESTION_SERVICE_PORT") != null) {
+            feedbackIngestionServicePort = System.getenv("FEEDBACK_INGESTION_SERVICE_PORT");
+            logger.info("FEEDBACK_INGESTION_SERVICE_PORT set to {}", feedbackIngestionServicePort);
+        } else {
+            feedbackIngestionServicePort = "8080";
+            logger.warn("No FEEDBACK_INGESTION_SERVICE_PORT environment variable defined, falling back to 8080.");
+        }
 
         this.userAuthServiceClient = new UserAuthServiceClient(userAuthServiceAddress);
         this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
         this.ragServiceClient = new RAGServiceClient(ragServiceAddress, ragServicePort);
         this.postSerializer = postSerializer;
         this.ragServiceEnabled = isRagServiceEnabled;
+        this.feedbackIngestionServiceClient = new FeedbackIngestionServiceClient(feedbackIngestionServiceAddress, feedbackIngestionServicePort);
     }
 
     @PreDestroy
@@ -270,12 +289,14 @@ public class MicroblogController {
     public void upvoteSpamPrediction(@PathVariable("postid") String postId, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
         checkJwt(jwt);
         redisClient.handleSpamPredictionUpvote(postId, decodeTokenUserId(jwt));
+        redisClient.processUserSpamFeedback(postId, feedbackIngestionServiceClient);
     }
 
     @PostMapping("/spam-prediction-user-rating/{postid}/downvote")
     public void downvoteSpamPrediction(@PathVariable("postid") String postId, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
         checkJwt(jwt);
         redisClient.handleSpamPredictionDownvote(postId, decodeTokenUserId(jwt));
+        redisClient.processUserSpamFeedback(postId, feedbackIngestionServiceClient);
     }
 
     public void checkJwt(String jwt) throws InvalidJwtException, NotLoggedInException {

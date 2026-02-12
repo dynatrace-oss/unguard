@@ -8,9 +8,9 @@ public class UserFeedback {
 
     public UserFeedback(
         @JsonProperty("text") String text,
-        @JsonProperty("user_label") String userLabel) {
+        @JsonProperty("label") String label) {
         this.text = text;
-        this.label = userLabel;
+        this.label = label;
     }
 
     public String getText() {

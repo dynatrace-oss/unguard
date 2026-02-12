@@ -1,7 +1,7 @@
 package org.dynatrace.feedbackingestionservice;
 
-import org.dynatrace.feedbackingestionservice.dto.UserFeedback;
 import org.dynatrace.feedbackingestionservice.buffer.FeedbackBuffer;
+import org.dynatrace.feedbackingestionservice.dto.UserFeedback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,10 @@ public class FeedbackIngestionController {
 
     @PostMapping("/add")
     public ResponseEntity<Void> add(@RequestBody UserFeedback userFeedback) {
+        logger.info("Received /add request");
+
         if (Boolean.FALSE.equals(validateUserFeedback(userFeedback))) {
-            logger.warn("Received invalid feedback item: {}", userFeedback);
+            logger.warn("Received feedback item is invalid: {}", userFeedback);
             return ResponseEntity.badRequest().build();
         }
 
