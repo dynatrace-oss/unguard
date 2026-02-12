@@ -1,0 +1,54 @@
+{{- if .Values.ragService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: unguard-feedback-ingestion-service
+  labels:
+    app.kubernetes.io/name: {{ .Values.feedbackIngestionService.name }}
+    app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
+spec:
+  type: {{ .Values.feedbackIngestionService.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ .Values.feedbackIngestionService.name }}
+    app.kubernetes.io/part-of: unguard
+  ports:
+ {{- .Values.feedbackIngestionService.service.ports | toYaml | nindent 4 }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unguard-{{ .Values.feedbackIngestionService.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.feedbackIngestionService.name }}
+    app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.feedbackIngestionService.name }}
+      app.kubernetes.io/part-of: unguard
+  strategy:
+    type: {{ .Values.feedbackIngestionService.deployment.strategy.type }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.feedbackIngestionService.name }}
+        app.kubernetes.io/part-of: unguard
+{{ include "renderLabels" .Values.labels.common | indent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.feedbackIngestionService.name }}
+          image: {{ .Values.feedbackIngestionService.deployment.container.image.repository }}:{{ .Values.feedbackIngestionService.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.feedbackIngestionService.deployment.container.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.feedbackIngestionService.deployment.container.ports.containerPort }}
+          env:
+            - name: SERVER_PORT
+              value: {{ quote .Values.feedbackIngestionService.deployment.container.env.SERVER_PORT }}
+            - name: RAG_SERVICE_ADDRESS
+              value: {{ quote .Values.feedbackIngestionService.deployment.container.env.RAG_SERVICE_ADDRESS }}
+            - name: RAG_SERVICE_PORT
+              value: {{ quote .Values.feedbackIngestionService.deployment.container.env.RAG_SERVICE_PORT }}
+{{- end }}
