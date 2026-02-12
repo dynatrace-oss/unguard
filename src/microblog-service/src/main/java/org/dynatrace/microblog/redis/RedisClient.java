@@ -26,6 +26,8 @@ import org.dynatrace.microblog.dto.User;
 import org.dynatrace.microblog.exceptions.InvalidJwtException;
 import org.dynatrace.microblog.exceptions.InvalidPostException;
 import org.dynatrace.microblog.exceptions.UserNotFoundException;
+import org.dynatrace.microblog.feedbackingestionservice.FeedbackIngestionServiceClient;
+import org.dynatrace.microblog.utils.SpamKBIngestionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -143,9 +145,37 @@ public class RedisClient {
         }
     }
 
+    public boolean getSpamPredictedLabel(@NotNull String postId) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            String postKey = getCombinedKey(POST_KEY_PREFIX, postId);
+            String spamClassification = jedis.hget(postKey, "isSpamPredictedLabel");
+            return Boolean.parseBoolean(spamClassification);
+        }
+    }
+
     public SpamPredictionRatings getSpamPredictionUserRatings(@NotNull String postId, @NotNull String userId) {
         try (Jedis jedis = jedisPool.getResource()) {
             return readAndTransformSpamPredictionUserRating(postId, userId, jedis);
+        }
+    }
+
+    public void processUserSpamFeedback(@NotNull String postId, FeedbackIngestionServiceClient feedbackIngestionServiceClient) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            Set<String> upvoters = jedis.smembers(getSpamPredictionUpvotersKey(postId));
+            Set<String> downvoters = jedis.smembers(getSpamPredictionDownvotersKey(postId));
+
+            if (SpamKBIngestionUtils.hasRelevantUserFeedback(upvoters, downvoters)) {
+                boolean isSpamUserLabel = getSpamPredictedLabel(postId);
+                if (downvoters.size() > upvoters.size()) {
+                    isSpamUserLabel = !isSpamUserLabel;
+                }
+                String postText = jedis.hget(getCombinedKey(POST_KEY_PREFIX, postId), "body");
+                String userLabel = isSpamUserLabel ? "spam" : "not_spam";
+                feedbackIngestionServiceClient.addNewSpamKnowledgeToIngestQueue(postText, userLabel);
+            }
+        } catch (IOException e) {
+            logger.error("Error processing user spam feedback for post with id {}", postId, e);
+            throw new RuntimeException(e);
         }
     }
 
