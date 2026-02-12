@@ -282,6 +282,32 @@ microblogService:
         RAG_SERVICE_ADDRESS: unguard-rag-service
         RAG_SERVICE_PORT: 8000
 
+# Feedback Ingestion Service
+feedbackIngestionService:
+  name: feedback-ingestion-service
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 8080
+        port: 80
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-feedback-ingestion-service
+        tag: 0.0.1
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 8080
+      env:
+        SERVER_PORT: 8080
+        RAG_SERVICE_ENABLED: "{{ .Values.ragService.enabled }}"
+        RAG_SERVICE_ADDRESS: unguard-rag-service
+        RAG_SERVICE_PORT: 8000
+
 # Status Service
 statusService:
   name: status-service
