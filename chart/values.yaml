@@ -281,6 +281,8 @@ microblogService:
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
         RAG_SERVICE_ADDRESS: unguard-rag-service
         RAG_SERVICE_PORT: 8000
+        FEEDBACK_INGESTION_SERVICE_ADDRESS: unguard-feedback-ingestion-service
+        FEEDBACK_INGESTION_SERVICE_PORT: 80
 
 # Feedback Ingestion Service
 feedbackIngestionService:
