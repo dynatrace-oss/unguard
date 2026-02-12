@@ -38,7 +38,7 @@ public class FeedbackIngestionServiceClient {
 
     }
 
-    public void addNewSpamKnowledgeToIngestQueue(String postText, String userLabel) throws IOException {
+    public boolean addNewSpamKnowledgeToIngestQueue(String postText, String userLabel) throws IOException {
         JsonObject obj = new JsonObject();
         obj.addProperty("text", postText);
         obj.addProperty("label", userLabel);
@@ -51,7 +51,7 @@ public class FeedbackIngestionServiceClient {
             .scheme("http")
             .host(this.feedbackIngestionServiceHost)
             .port(this.feedbackIngestionPort)
-            .addPathSegment("add")
+            .addPathSegment("addToQueue")
             .build();
 
         Request request = new Request.Builder()
@@ -63,9 +63,10 @@ public class FeedbackIngestionServiceClient {
         try (Response response = call.execute()) {
             if (response.code() == 200 || response.code() == 202) {
                 logger.info("Successfully added new spam knowledge to ingestion queue");
-                return;
+                return true;
             }
             logger.error("Failed to add new spam knowledge to ingestion queue. Response code: {}, Response body: {}", response.code(), response.body() != null ? response.body().string() : "null");
+            return false;
         } catch (IOException e) {
             logger.error("Request response error during ingestion request", e);
             throw e;

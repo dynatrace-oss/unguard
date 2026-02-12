@@ -21,9 +21,9 @@ public class FeedbackIngestionController {
         this.buffer = buffer;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/addToQueue")
     public ResponseEntity<Void> add(@RequestBody UserFeedback userFeedback) {
-        logger.info("Received /add request");
+        logger.info("Received /addToQueue request");
 
         if (Boolean.FALSE.equals(validateUserFeedback(userFeedback))) {
             logger.warn("Received feedback item is invalid: {}", userFeedback);
