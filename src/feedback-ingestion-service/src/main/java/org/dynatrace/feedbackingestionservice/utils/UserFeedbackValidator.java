@@ -12,7 +12,7 @@ public class UserFeedbackValidator {
             return false;
         }
 
-        String userLabel = userFeedback.getLabel();
-        return userLabel.equals("spam") || userLabel.equals("not_spam");
+        String label = userFeedback.getLabel();
+        return label.equals("spam") || label.equals("not_spam");
     }
 }
