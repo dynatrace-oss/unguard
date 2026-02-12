@@ -60,6 +60,8 @@ public class RedisClient {
     private static final String SPAM_PREDICTION_UPVOTERS_KEY_SUFFIX = "spamPrediction:upvoters";
     private static final String SPAM_PREDICTION_DOWNVOTERS_KEY_SUFFIX = "spamPrediction:downvoters";
 
+    private static final String INGESTED_TO_SPAM_KB_KEY_PREFIX = "ingestedToSpamKB";
+
     private static final int REDIS_PORT = 6379;
     public static final int POST_TIMEOUT_SECONDS = 24 * 60 * 60;
 
@@ -161,6 +163,12 @@ public class RedisClient {
 
     public void processUserSpamFeedback(@NotNull String postId, FeedbackIngestionServiceClient feedbackIngestionServiceClient) {
         try (Jedis jedis = jedisPool.getResource()) {
+
+            Boolean postAlreadyIngested = Boolean.valueOf(jedis.get(getCombinedKey(INGESTED_TO_SPAM_KB_KEY_PREFIX, postId)));
+            if (Boolean.TRUE.equals(postAlreadyIngested)) {
+                return;
+            }
+
             Set<String> upvoters = jedis.smembers(getSpamPredictionUpvotersKey(postId));
             Set<String> downvoters = jedis.smembers(getSpamPredictionDownvotersKey(postId));
 
@@ -171,7 +179,10 @@ public class RedisClient {
                 }
                 String postText = jedis.hget(getCombinedKey(POST_KEY_PREFIX, postId), "body");
                 String userLabel = isSpamUserLabel ? "spam" : "not_spam";
-                feedbackIngestionServiceClient.addNewSpamKnowledgeToIngestQueue(postText, userLabel);
+
+                if (feedbackIngestionServiceClient.addNewSpamKnowledgeToIngestQueue(postText, userLabel)) {
+                    jedis.set(getCombinedKey(INGESTED_TO_SPAM_KB_KEY_PREFIX, postId), "true");
+                }
             }
         } catch (IOException e) {
             logger.error("Error processing user spam feedback for post with id {}", postId, e);
