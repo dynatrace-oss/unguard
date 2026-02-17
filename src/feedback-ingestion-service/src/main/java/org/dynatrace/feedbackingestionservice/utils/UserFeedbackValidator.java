@@ -8,7 +8,7 @@ public class UserFeedbackValidator {
             return false;
         }
 
-        if ( userFeedback.getText().isEmpty()) {
+        if (userFeedback.getText().isEmpty()) {
             return false;
         }
 
