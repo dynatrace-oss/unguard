@@ -7,7 +7,7 @@ import { BASE_PATH } from '@/constants';
 
 type SpamPredictionUserRating = {
     spamPredictionUserUpvotes: number;
-    spamPredictionUserDownvotes: boolean;
+    spamPredictionUserDownvotes: number;
     isUpvotedByUser?: boolean;
     isDownvotedByUser?: boolean;
 };

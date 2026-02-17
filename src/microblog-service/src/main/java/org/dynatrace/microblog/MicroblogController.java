@@ -43,6 +43,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.annotation.PreDestroy;
+import java.util.concurrent.TimeUnit;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -117,6 +119,19 @@ public class MicroblogController {
         this.ragServiceClient = new RAGServiceClient(ragServiceAddress, ragServicePort);
         this.postSerializer = postSerializer;
         this.ragServiceEnabled = isRagServiceEnabled;
+    }
+
+    @PreDestroy
+    public void shutdownRagExecutor() {
+        ragExecutor.shutdown();
+        try {
+            if (!ragExecutor.awaitTermination(30, TimeUnit.SECONDS)) {
+                ragExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            ragExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 
     @RequestMapping("/timeline")
