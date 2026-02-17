@@ -18,7 +18,7 @@ periodically sends a request to the RAG service to ingest a batch of feedback da
 which will generate the jar in ```build/libs```
 - Start the application by running:
 ```
-java -jar build/libs/microblog-service-{{VERSION}}.jar
+java -jar build/libs/feedback-ingestion-service-{{VERSION}}.jar
 ```
 - The feedback ingestion service should then be accessible on [localhost:8080](http://localhost:8080).
 

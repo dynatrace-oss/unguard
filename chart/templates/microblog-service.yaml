@@ -72,7 +72,7 @@ spec:
               value: {{ quote .Values.microblogService.deployment.container.env.RAG_SERVICE_PORT }}
             - name: RAG_SERVICE_ENABLED
               value: {{ .Values.ragService.enabled | quote }}
-            - name : FEEDBACK_INGESTION_SERVICE_ADDRESS
+            - name: FEEDBACK_INGESTION_SERVICE_ADDRESS
               value: {{ quote .Values.microblogService.deployment.container.env.FEEDBACK_INGESTION_SERVICE_ADDRESS }}
             - name: FEEDBACK_INGESTION_SERVICE_PORT
               value: {{ quote .Values.microblogService.deployment.container.env.FEEDBACK_INGESTION_SERVICE_PORT }}

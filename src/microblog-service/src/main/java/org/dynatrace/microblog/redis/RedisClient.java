@@ -23,6 +23,7 @@ import org.dynatrace.microblog.authservice.UserAuthServiceClient;
 import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.SpamPredictionRatings;
 import org.dynatrace.microblog.dto.User;
+import org.dynatrace.microblog.exceptions.SpamIngestionFailedException;
 import org.dynatrace.microblog.exceptions.InvalidJwtException;
 import org.dynatrace.microblog.exceptions.InvalidPostException;
 import org.dynatrace.microblog.exceptions.UserNotFoundException;
@@ -132,10 +133,6 @@ public class RedisClient {
             jedis.lpush(TIMELINE_KEY, postId);
             jedis.ltrim(TIMELINE_KEY, 0, MAX_TIMELINE_ENTRIES);
 
-            // create (initially empty) sets of upvoters and downvoters for the post's spam prediction
-            jedis.expire(getSpamPredictionUpvotersKey(postId), POST_TIMEOUT_SECONDS);
-            jedis.expire(getSpamPredictionDownvotersKey(postId), POST_TIMEOUT_SECONDS);
-
             return postId;
         }
     }
@@ -172,12 +169,23 @@ public class RedisClient {
             Set<String> upvoters = jedis.smembers(getSpamPredictionUpvotersKey(postId));
             Set<String> downvoters = jedis.smembers(getSpamPredictionDownvotersKey(postId));
 
+            if (upvoters.size() == 1) {
+                jedis.expire(getSpamPredictionUpvotersKey(postId), POST_TIMEOUT_SECONDS);
+            }
+            if (downvoters.size() == 1) {
+                jedis.expire(getSpamPredictionDownvotersKey(postId), POST_TIMEOUT_SECONDS);
+            }
+
             if (SpamKBIngestionUtils.hasRelevantUserFeedback(upvoters, downvoters)) {
                 boolean isSpamUserLabel = getSpamPredictedLabel(postId);
                 if (downvoters.size() > upvoters.size()) {
                     isSpamUserLabel = !isSpamUserLabel;
                 }
                 String postText = jedis.hget(getCombinedKey(POST_KEY_PREFIX, postId), "body");
+                if (postText == null) {
+                    logger.warn("Post body for post with id {} is null, skipping spam feedback ingestion", postId);
+                    return;
+                }
                 String userLabel = isSpamUserLabel ? "spam" : "not_spam";
 
                 if (feedbackIngestionServiceClient.addNewSpamKnowledgeToIngestQueue(postText, userLabel)) {
@@ -186,7 +194,7 @@ public class RedisClient {
             }
         } catch (IOException e) {
             logger.error("Error processing user spam feedback for post with id {}", postId, e);
-            throw new RuntimeException(e);
+            throw new SpamIngestionFailedException(e.getMessage());
         }
     }
 
