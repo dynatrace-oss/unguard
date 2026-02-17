@@ -5,8 +5,7 @@ import io.opentracing.contrib.okhttp3.OkHttpClientSpanDecorator;
 import io.opentracing.contrib.okhttp3.TracingInterceptor;
 import io.opentracing.util.GlobalTracer;
 import okhttp3.*;
-import org.dynatrace.microblog.exceptions.InvalidJwtException;
-import org.dynatrace.microblog.exceptions.UserNotFoundException;
+import org.dynatrace.microblog.exceptions.EmptySpamClassificationException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +22,9 @@ public class RAGServiceClient {
     private final String ragServiceHost;
     private final int ragServicePort;
 
-    public RAGServiceClient(String ragServiceHost, String ragsServicePort) {
+    public RAGServiceClient(String ragServiceHost, String ragServicePort) {
         this.ragServiceHost = ragServiceHost;
-        this.ragServicePort = Integer.parseInt(ragsServicePort);
+        this.ragServicePort = Integer.parseInt(ragServicePort);
 
         TracingInterceptor tracingInterceptor = new TracingInterceptor(
             GlobalTracer.get(),
@@ -41,7 +40,7 @@ public class RAGServiceClient {
 
     }
 
-    public String getSpamClassification(String postText) throws InvalidJwtException, UserNotFoundException, IOException {
+    public String getSpamClassification(String postText) throws IOException, EmptySpamClassificationException {
         JsonObject obj = new JsonObject();
         obj.addProperty("text", postText);
         String jsonRequest = obj.toString();
@@ -66,10 +65,12 @@ public class RAGServiceClient {
         try (Response response = call.execute()) {
 
             if (response.code() == 200) {
-                JSONObject responseObject = new JSONObject(response.body().string());
+                ResponseBody responseBody = response.body();
+                if (responseBody == null) {
+                    throw new EmptySpamClassificationException("Error retrieving spam classification from RAG service: empty response body");
+                }
+                JSONObject responseObject = new JSONObject(responseBody.string());
                 return responseObject.getString("classification");
-            } else if (response.code() == 401) {
-                throw new InvalidJwtException();
             } else {
                 throw new RuntimeException("Error retrieving spam classification from RAG service: " + response.code() + " - " + response.message());
             }

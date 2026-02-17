@@ -26,7 +26,7 @@ export async function fetchSpamPredictionUserRating(postId: string): Promise<any
 
 export async function addSpamPredictionUserRatingUpvote(postId: string): Promise<any> {
     return await getMicroblogApi()
-        .post(`/spam-prediction-user-rating/${postId}/upvote/`, {}, await withJwtCookie())
+        .post(`/spam-prediction-user-rating/${postId}/upvote`, {}, await withJwtCookie())
         .then((response) => {
             return response;
         })
@@ -37,7 +37,7 @@ export async function addSpamPredictionUserRatingUpvote(postId: string): Promise
 
 export async function addSpamPredictionUserRatingDownvote(postId: string): Promise<any> {
     return await getMicroblogApi()
-        .post(`/spam-prediction-user-rating/${postId}/downvote/`, {}, await withJwtCookie())
+        .post(`/spam-prediction-user-rating/${postId}/downvote`, {}, await withJwtCookie())
         .then((response) => {
             return response;
         })

@@ -14,5 +14,5 @@ export async function GET(req: Request, { params }: { params: Promise<PostParams
     const { postId } = await params;
     const res = await fetchSpamPredictionUserRating(postId);
 
-    return NextResponse.json(res.data);
+    return NextResponse.json(res.data, { status: res.status });
 }

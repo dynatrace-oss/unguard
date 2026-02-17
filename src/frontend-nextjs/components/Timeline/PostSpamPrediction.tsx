@@ -29,7 +29,9 @@ export function PostSpamPrediction(props: Readonly<PostSpamPredictionProps>) {
                             {props.isSpamPredictedLabel ? 'Potential Spam Detected' : 'No Spam Detected'}
                         </div>
                         {isLoggedIn && (
-                            <ErrorBoundary fallbackRender={(props) => <ErrorCard message={props.error.message} />}>
+                            <ErrorBoundary
+                                fallbackRender={(errorProps) => <ErrorCard message={errorProps.error.message} />}
+                            >
                                 <SpamPredictionUserRating
                                     isSpamPredictedLabel={props.isSpamPredictedLabel}
                                     postId={props.postId}

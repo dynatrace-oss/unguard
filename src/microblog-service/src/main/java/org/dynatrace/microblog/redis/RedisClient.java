@@ -24,6 +24,7 @@ import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.SpamPredictionRatings;
 import org.dynatrace.microblog.dto.User;
 import org.dynatrace.microblog.exceptions.InvalidJwtException;
+import org.dynatrace.microblog.exceptions.InvalidPostException;
 import org.dynatrace.microblog.exceptions.UserNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -150,6 +151,11 @@ public class RedisClient {
 
     public void handleSpamPredictionUpvote(@NotNull String postId, @NotNull String userId) {
         try (Jedis jedis = jedisPool.getResource()) {
+            if (Boolean.FALSE.equals(jedis.exists(getCombinedKey(POST_KEY_PREFIX, postId)))) {
+                logger.warn("Could not find post with id {} for spam prediction upvote", postId);
+                throw new InvalidPostException("Post with this id does not exist.");
+            }
+
             if (Boolean.TRUE.equals(jedis.sismember(getSpamPredictionUpvotersKey(postId), userId))) {
                 // remove the user from the upvoters if already contained
                 jedis.srem(getSpamPredictionUpvotersKey(postId), userId);
@@ -164,6 +170,10 @@ public class RedisClient {
 
     public void handleSpamPredictionDownvote(@NotNull String postId, @NotNull String userId) {
         try (Jedis jedis = jedisPool.getResource()) {
+            if (Boolean.FALSE.equals(jedis.exists(getCombinedKey(POST_KEY_PREFIX, postId)))) {
+                logger.warn("Could not find post with id {} for spam prediction upvote", postId);
+                throw new InvalidPostException("Post with this id does not exist.");
+            }
             if (Boolean.TRUE.equals(jedis.sismember(getSpamPredictionDownvotersKey(postId), userId))) {
                 // remove the user from the downvoters if already contained
                 jedis.srem(getSpamPredictionDownvotersKey(postId), userId);
