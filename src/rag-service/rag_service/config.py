@@ -12,6 +12,7 @@ class DataPoisoningDetectionStrategy(Enum):
     EMBEDDINGS_CLUSTER_ANALYSIS = "embeddings_cluster_analysis"
     K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY = "knn_label_consistency"
     APPROXIMATE_K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY = "ann_label_consistency"
+    COMBINED_DETECTION_STRATEGY = "combined_detection_strategy"
     NONE = None
 
 class NNLabelDecisionVariant(Enum):
