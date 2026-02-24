@@ -1,5 +1,7 @@
 from typing import List, Dict
 
+from data_poisoning_detection_strategies.combined_detection.combined_detection_strategy import \
+    detect_data_poisoning_using_combined_strategy
 from data_poisoning_detection_strategies.embedding_space_similarity.embedding_space_similarity_on_batch_level import \
     detect_data_poisoning_using_embedding_similarity_in_batch
 
@@ -41,10 +43,16 @@ def run_data_poisoning_detection(
 
     elif detection_strategy == DataPoisoningDetectionStrategy.EMBEDDINGS_CLUSTER_ANALYSIS:
         return detect_data_poisoning_via_embeddings_cluster_and_pattern_analysis(new_entries, logger)
+
     elif detection_strategy == DataPoisoningDetectionStrategy.K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY:
         return detect_data_poisoning_using_neighbour_label_analysis(new_entries, kb_contents, logger)
+
     elif detection_strategy == DataPoisoningDetectionStrategy.APPROXIMATE_K_NEAREST_NEIGHBOURS_LABEL_CONSISTENCY:
         return detect_data_poisoning_using_approximate_neighbour_label_analysis(new_entries, kb_contents, logger)
+
+    elif detection_strategy == DataPoisoningDetectionStrategy.COMBINED_DETECTION_STRATEGY:
+        return detect_data_poisoning_using_combined_strategy(new_entries, kb_contents, logger)
+
     else:
         logger.warn("Unknown data poisoning detection strategy: %s. "
                     "Falling back to default strategy 'embedding_similarity_entry_level'", detection_strategy)
