@@ -98,6 +98,8 @@ helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --versio
 | `tracing.enabled`                | Activates tracing in services                                             | `false`           |
 | `maliciousLoadGenerator.enabled` | Deploys the malicious load generator                                      | `false`           |
 | `mariaDB.serviceName`            | Expected release-name of the MariaDB installation by Unguard              | `unguard-mariadb` |
+| `ragService.enabled`             | Deploys the rag service (together with the feedback ingestion service)    | `false`           |
+| `ollama.enabled`                 | Deploys an Ollama instance to be used by the rag-service                  | `false`           |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
