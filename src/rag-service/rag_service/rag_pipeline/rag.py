@@ -2,7 +2,7 @@ from typing import List, Dict, Literal, cast
 from pathlib import Path
 import chromadb
 import shutil
-from llama_index.core import StorageContext, VectorStoreIndex, Document
+from llama_index.core import StorageContext, VectorStoreIndex
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
@@ -115,30 +115,46 @@ class RAGSpamClassifier:
         """Classifies a list of text posts as spam or not_spam."""
         return [self.classify_text(t) for t in texts]
 
-    def ingest_entry_to_kb(self, text: str, label: str) -> bool:
+    def _compute_embeddings(self, texts: List[str]) -> List[List[float]]:
         """
-        Inserts a new entry into the vector store & index.
-        The embedding is created and stored automatically during insert()
+        Computes embeddings in batch using the available embeddings model.
         """
-        doc = Document(text=text, metadata={"label": label})
-        self._index.insert(doc)
-        self._logger.info("Ingested new entry")
-        return True
+        if not texts:
+            return []
 
-    def ingest_batch_to_kb(self, entries: List[Dict[str, str]]) -> int:
+        return self._embeddings_model.get_text_embedding_batch(texts)
+
+    def _prepare_kb_entries_for_ingestion(self, entries: List[Dict[str, str]]) -> List[Dict]:
         """
-        Inserts a batch of new entries into the vector store & index.
+        Prepares a batch of new entries for ingestion by computing their embeddings and generating ids.
         """
-        docs = [
-            Document(text=e['text'], metadata={"label": e["label"]})
-            for e in entries
-        ]
-        self._index.insert_nodes(docs)
-        self._logger.info("Ingested batch of %d new entries", len(entries))
-        return len(docs)
+        precomputed_embeddings = self._compute_embeddings([e["text"] for e in entries])
+        generated_ids = [str(uuid.uuid4()) for _ in entries]
+
+        prepared_entries: List[Dict] = []
+        for entry, embedding, entry_id in zip(entries, precomputed_embeddings, generated_ids):
+            prepared_entries.append({
+                "text": entry["text"],
+                "label": entry["label"],
+                "embedding": embedding,
+                "id": entry_id
+            })
+
+        return prepared_entries
+
+    def add_entries_to_kb(self, entries: List[Dict[str, str]]) -> int:
+        """
+        Computes the text embeddings and inserts the new entries into the vector store & index.
+        """
+        prepared_entries: List[Dict] = self._prepare_kb_entries_for_ingestion(entries)
+        count_ingested = self.ingest_with_precomputed_embeddings(prepared_entries)
+        return count_ingested
 
     def _check_for_data_poisoning(self, entries: List[Dict]) -> List[Dict]:
-        """Checks a batch of new entries for potential data poisoning."""
+        """
+        Checks a batch of new entries for potential data poisoning.
+        Returns a list of poisoned entries.
+        """
         poisoned_entries = []
         try:
             if self.settings.data_poisoning_detection_strategy is None:
@@ -162,20 +178,23 @@ class RAGSpamClassifier:
                 "Data poisoning detected in current batch (%d poisoned entries)!", len(poisoned_entries)
             )
 
-            if self.settings.prevent_ingestion_of_detected_poisoned_data:
+        return poisoned_entries
+
+    def ingest_with_precomputed_embeddings(self, entries: List[Dict]) -> int:
+        """
+        Inserts a batch of new entries with already precomputed embeddings into the KB.
+        If enabled, checks for data poisoning before ingestion.
+        """
+
+        if self.settings.use_data_poisoning_detection:
+            poisoned_entries = self._check_for_data_poisoning(entries)
+
+            if self.settings.prevent_ingestion_of_detected_poisoned_data and len(poisoned_entries) > 0:
+                # filter out poisoned entries from the batch to be ingested
                 entries = [
                     e for e in entries
                     if e.get("id") not in poisoned_entries
                 ]
-        return entries
-
-    def ingest_precomputed_embeddings(self, entries: List[Dict]) -> int:
-        """
-        Inserts a batch of new entries with already precomputed embeddings into the KB.
-        """
-
-        if self.settings.use_data_poisoning_detection:
-            entries = self._check_for_data_poisoning(entries) # filter out poisoned entries
 
         documents = []
         embeddings = []
@@ -200,7 +219,7 @@ class RAGSpamClassifier:
             ids=ids
         )
 
-        self._logger.info("Ingested %d new entries with precomputed embeddings", len(documents))
+        self._logger.info("Successfully ingested %d new entries", len(documents))
         return len(documents)
 
     def _get_all_kb_entries_with_embeddings(self) -> List[Dict]:
