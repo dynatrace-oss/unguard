@@ -159,12 +159,14 @@ class RAGSpamClassifier:
 
         if len(poisoned_entries) > 0:
             self._logger.warning(
-                "Data poisoning detected in current batch! Skipping ingestion of %d poisoned samples.", len(poisoned_entries)
+                "Data poisoning detected in current batch (%d poisoned entries)!", len(poisoned_entries)
             )
-            entries = [
-                e for e in entries
-                if e.get("id") not in poisoned_entries
-            ]
+
+            if self.settings.prevent_ingestion_of_detected_poisoned_data:
+                entries = [
+                    e for e in entries
+                    if e.get("id") not in poisoned_entries
+                ]
         return entries
 
     def ingest_precomputed_embeddings(self, entries: List[Dict]) -> int:
