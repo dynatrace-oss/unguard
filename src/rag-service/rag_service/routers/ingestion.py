@@ -6,7 +6,7 @@ from rag_service.schemas import (
     BatchOfKnowledgeBaseEntries,
     IngestionResponse,
     KnowledgeBaseDump,
-    BatchOfPrecomputedKBEntries,
+    BatchOfPreparedKBEntries,
 )
 from logger.logging_config import get_logger
 
@@ -21,8 +21,8 @@ async def ingest_entry(entry: KnowledgeBaseEntry):
         label = entry.label
         if label not in ("spam", "not_spam"):
             raise ValueError(f"Invalid label: {label}")
-        success = rag_classifier.ingest_entry_to_kb(entry.text, label)
-        if success:
+        ingested = rag_classifier.add_entries_to_kb([{"text": entry.text, "label": label}])
+        if ingested:
             return IngestionResponse(
                 success=True,
                 message="New entry was successfully ingested",
@@ -44,7 +44,7 @@ async def ingest_batch(entries: BatchOfKnowledgeBaseEntries):
             if entry.label not in ("spam", "not_spam"):
                 raise ValueError(f"Invalid label: {entry.label}")
             entries_list.append({"text": entry.text, "label": entry.label})
-        count = rag_classifier.ingest_batch_to_kb(entries_list)
+        count = rag_classifier.add_entries_to_kb(entries_list)
         return IngestionResponse(
             success=True,
             message=f"{count} new entries were successfully ingested",
@@ -55,7 +55,7 @@ async def ingest_batch(entries: BatchOfKnowledgeBaseEntries):
         raise HTTPException(status_code=500, detail=f"Error ingesting new entries: {str(e)}")
 
 @router.post("/ingestBatchWithEmbeddingsPrecomputed", response_model=IngestionResponse)
-async def ingest_precomputed_batch(entries: BatchOfPrecomputedKBEntries):
+async def ingest_precomputed_batch(entries: BatchOfPreparedKBEntries):
     """
     Ingest a batch of entries with already precomputed embeddings.
     This route is useful for bypassing the overhead of computing embeddings during ingestion
@@ -63,7 +63,7 @@ async def ingest_precomputed_batch(entries: BatchOfPrecomputedKBEntries):
     """
     _logger.info("Received POST /ingestBatchWithEmbeddingsPrecomputed request with %d entries", len(entries.entries))
     try:
-        count = rag_classifier.ingest_precomputed_embeddings(
+        count = rag_classifier.ingest_with_precomputed_embeddings(
             [e.model_dump() for e in entries.entries]
         )
         return IngestionResponse(
