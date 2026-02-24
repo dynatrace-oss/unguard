@@ -74,6 +74,7 @@ class Settings(BaseSettings):
     limit_keyword_attack_success_evaluation_samples: int = 0  # 0 -> no limit
 
     use_data_poisoning_detection: bool = False
+    prevent_ingestion_of_detected_poisoned_data: bool = False
     data_poisoning_detection_strategy: DataPoisoningDetectionStrategy | None = None
     label_consistency_detection_decision_variant: NNLabelDecisionVariant | None = None
 
