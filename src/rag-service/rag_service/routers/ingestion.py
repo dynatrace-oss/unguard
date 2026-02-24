@@ -22,14 +22,12 @@ async def ingest_entry(entry: KnowledgeBaseEntry):
         if label not in ("spam", "not_spam"):
             raise ValueError(f"Invalid label: {label}")
         ingested = rag_classifier.add_entries_to_kb([{"text": entry.text, "label": label}])
-        if ingested:
-            return IngestionResponse(
-                success=True,
-                message="New entry was successfully ingested",
-                count=1
-            )
-        else:
-            raise HTTPException(status_code=500, detail="Failed to ingest new entry")
+        message = "New entry was successfully ingested" if ingested == 1 else "No entry ingested"
+        return IngestionResponse(
+            success=True,
+            message=message,
+            count=ingested
+        )
     except Exception as e:
         _logger.error("Error ingesting new entry: %s", str(e))
         raise HTTPException(status_code=500, detail=f"Error ingesting new entry: {str(e)}")
