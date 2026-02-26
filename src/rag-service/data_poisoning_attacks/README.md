@@ -16,5 +16,7 @@ following command from the `src/rag-service` directory:
 fastapi run rag_service/main.py
 ```
 ## Available Data Poisoning Attacks
-### [1. Label Flipping Attack](./label_flipping/README.md)
-### [2. Keyword Attack](./keyword_attack/README.md)
+### 1. Label Flipping Attacks:
+- [General Label Flipping Attack](./label_flipping/README.md)
+- [Targeted Label Flipping Attack](./targeted_label_flipping/README.md)
+### [2. Keyword Injection Attack](./keyword_attack/README.md)
