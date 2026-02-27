@@ -28,7 +28,6 @@ A microservice for spam classification using Retrieval-Augmented Generation (RAG
 
 
 ## Getting Started for running the RAG Service locally
-s
 When starting for the first time, you need to create a Virtual Environment, activate it and install the dependencies:
 
 ```bash
