@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.9518207282913165,
+  "precision": 1.0,
+  "recall": 0.8067415730337079,
+  "f1_score": 0.8930348258706469,
+  "true_positives": 718,
+  "false_positives": 0,
+  "true_negatives": 2680,
+  "false_negatives": 172,
+  "experiment_configuration": {
+    "detection_strategy": "embeddings_cluster_analysis",
+    "attack_type": "keyword_injection",
+    "dataset_name": "deysi_spam_detection",
+    "batch_poisoning_percentage": 25,
+    "n_splits": 10
+  }
+}

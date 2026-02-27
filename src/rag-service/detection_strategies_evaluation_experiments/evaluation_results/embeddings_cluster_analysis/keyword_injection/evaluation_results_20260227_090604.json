@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.9607476635514018,
+  "precision": 0.9120603015075377,
+  "recall": 0.981081081081081,
+  "f1_score": 0.9453125,
+  "true_positives": 363,
+  "false_positives": 35,
+  "true_negatives": 665,
+  "false_negatives": 7,
+  "experiment_configuration": {
+    "detection_strategy": "embeddings_cluster_analysis",
+    "attack_type": "keyword_injection",
+    "dataset_name": "spam_assassin",
+    "batch_poisoning_percentage": 35,
+    "n_splits": 10
+  }
+}
