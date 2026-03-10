@@ -524,7 +524,7 @@ frontend:
 
 # RAG Service
 ragService:
-  enabled: true
+  enabled: false
   name: rag-service
 
   deployment:
