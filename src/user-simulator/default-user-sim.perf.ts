@@ -138,7 +138,7 @@ const bioList: Bio[] = (JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8
 
 async function register(page: Page, config: Config, user: User) {
 	await page.goto(config.frontendUrl + '/login')
-	await delay(3000)
+	await page.waitForSelector('input[name=username]', { timeout: 10000 })
 	await page.type('input[name=username]', user.username)
 	await page.type('input[name=password]', user.password)
 	await page.click('button[name=register]')
@@ -170,7 +170,7 @@ async function visitTimeline(page, config) {
 async function createTextPost(page: Page, config: Config, user: User, textPosts: TextPost[]) {
 	const post = textPosts[getRandomInt(textPosts.length)]
 	await page.goto(config.frontendUrl + '/')
-	await delay(3000)
+	await page.waitForSelector('textarea[id=postTextContent]', { timeout: 10000 })
 	await page.type('textarea[id=postTextContent]', post.text)
 	await page.click('button[name=createPostSubmit]')
 	console.log(`${user.username} posted text: '${post.text}'`)
@@ -180,9 +180,9 @@ async function createTextPost(page: Page, config: Config, user: User, textPosts:
 async function createUrlPost(page: Page, config: Config, user: User, urlPosts: UrlPost[]) {
 	const post = urlPosts[getRandomInt(urlPosts.length)]
 	await page.goto(config.frontendUrl + '/')
-	await delay(3000)
+	await page.waitForSelector('button[id=shareUrlTab]', { timeout: 10000 })
 	await page.click('button[id=shareUrlTab]')
-	await delay(1000)
+	await page.waitForSelector('input[id=postUrl]', { timeout: 10000 })
 	await page.type('input[id=postUrl]', post.url)
 	await page.type('input[id=postLanguage]', post.language)
 	await page.click('button[name=createPostSubmit]')
@@ -193,9 +193,9 @@ async function createUrlPost(page: Page, config: Config, user: User, urlPosts: U
 async function createImagePost(page: Page, config: Config, user: User, imgPosts: ImageUrlPost[]) {
 	const post = imgPosts[getRandomInt(imgPosts.length)]
 	await page.goto(config.frontendUrl + '/')
-	await delay(3000)
+	await page.waitForSelector('button[id=shareImageTab]', { timeout: 10000 })
 	await page.click('button[id=shareImageTab]')
-	await delay(1000)
+	await page.waitForSelector('input[id=postImageUrl]', { timeout: 10000 })
 	await page.type('input[id=postImageUrl]', post.url)
 	await page.type('input[id=postImageDescription]', post.text)
 	await page.click('button[name=createPostSubmit]')
@@ -206,35 +206,39 @@ async function createImagePost(page: Page, config: Config, user: User, imgPosts:
 async function updateBioText(page: Page, config: Config, user: User, bioList: Bio[]) {
 	const bio = bioList[getRandomInt(bioList.length)]
 	await page.goto(`${config.frontendUrl}/user/${user.username}`)
-	await delay(3000)
-	await page.click('div[id=editBio] > h2 > button[type=button]')
-	await delay(3000)
+	const editBioSelector = 'div[id=editBio] > h2 > button[type=button]'
+    await page.waitForSelector(editBioSelector, { timeout: 10000 })
+    await page.click(editBioSelector)
 
-	if (bio.isMarkdown) {
-		const enableMarkdownCheckbox = await page.$(
-			'label[id=useMarkdownEditorSwitch] > input[type=checkbox]',
-		)
-		if (!enableMarkdownCheckbox) {
-			throw Error('Markdown checkbox not found')
-		}
-		const isChecked = await (await enableMarkdownCheckbox.getProperty('checked')).jsonValue()
-		if (!isChecked) {
-			await enableMarkdownCheckbox.click()
-		}
-		await page.type('textarea[class="w-md-editor-text-input "]', bio.text)
-		await page.click('button[name=postBio]')
-	} else {
-		await page.type('textarea[id=bioText]', bio.text)
-		await page.click('button[name=postBio]')
-	}
-	await page.click('div[id=editBio] > h2 > button[type=button]')
+    if (bio.isMarkdown) {
+        const markdownCheckboxSelector = 'label[id=useMarkdownEditorSwitch] > input[type=checkbox]'
+        await page.waitForSelector(markdownCheckboxSelector, { timeout: 10000 })
+        const enableMarkdownCheckbox = await page.$(markdownCheckboxSelector)
+        if (!enableMarkdownCheckbox) {
+            throw Error('Markdown checkbox not found')
+        }
+        const isChecked = await (await enableMarkdownCheckbox.getProperty('checked')).jsonValue()
+        if (!isChecked) {
+            await enableMarkdownCheckbox.click()
+        }
+        const markdownTextareaSelector = 'textarea[class="w-md-editor-text-input "]'
+        await page.waitForSelector(markdownTextareaSelector, { timeout: 10000 })
+        await page.type(markdownTextareaSelector, bio.text)
+        await page.click('button[name=postBio]')
+    } else {
+        const bioTextareaSelector = 'textarea[id=bioText]'
+        await page.waitForSelector(bioTextareaSelector, { timeout: 10000 })
+        await page.type(bioTextareaSelector, bio.text)
+        await page.click('button[name=postBio]')
+    }
+    await page.click(editBioSelector)
 	console.log(`${user.username} updated bio: '${bio.text}'`)
 	await delay(3000)
 }
 
 async function visitUsersPageAndSearch(page: Page, config: Config) {
 	await page.goto(config.frontendUrl + '/users')
-	await delay(3000)
+	await page.waitForSelector('input[id=userSearch]', { timeout: 10000 })
 	await page.type('input[id=userSearch]', 'admanager')
 	await page.click('button[name=searchUsersButton]')
 	console.log(`Searched for admanager user.`)
@@ -243,7 +247,7 @@ async function visitUsersPageAndSearch(page: Page, config: Config) {
 
 async function upgradeToProMembership(page: Page, config: Config, user: User) {
 	await page.goto(`${config.frontendUrl}/membership-plans`)
-	await delay(3000)
+	await page.waitForSelector('button[id=proMembershipCard]', { timeout: 10000 })
 	await page.click('button[id=proMembershipCard]')
 	await page.click('button[name=updateMembershipButton]')
 	console.log(`${user.username} upgraded to PRO membership`)
@@ -252,7 +256,7 @@ async function upgradeToProMembership(page: Page, config: Config, user: User) {
 
 async function addCreditCardInformation(page: Page, config: Config, user: User) {
 	await page.goto(`${config.frontendUrl}/payment`)
-	await delay(3000)
+	await page.waitForSelector('input[name=cardHolderName]', { timeout: 10000 })
 	await page.type('input[name=cardHolderName]', user.username)
 	await page.type('input[name=cardNumber]', '4556737586899855')
 	await page.type('input[name=expiryDate]', '11/31')
@@ -264,9 +268,9 @@ async function addCreditCardInformation(page: Page, config: Config, user: User) 
 
 async function logout(page: Page, config: Config) {
 	await page.goto(`${config.frontendUrl}`)
-	await delay(3000)
+	await page.waitForSelector('button[id=ProfileDropdownTrigger]', { timeout: 10000 })
 	await page.click('button[id=ProfileDropdownTrigger]')
-	await delay(1000)
+	await page.waitForSelector('li[data-key=logout]', { timeout: 10000 })
 	await page.click('li[data-key=logout]')
 	console.log('Logged out')
 	await delay(3000)
