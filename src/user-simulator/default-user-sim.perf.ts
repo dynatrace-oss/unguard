@@ -148,6 +148,7 @@ async function register(page: Page, config: Config, user: User) {
 
 async function visitHomepage(page: Page, config: Config) {
 	await page.goto(config.frontendUrl + '/')
+	console.log(`User visited the homepage.`)
 	await delay(3000)
 }
 
@@ -164,6 +165,7 @@ async function likePost(page: Page, config: Config, user: User) {
 
 async function visitTimeline(page, config) {
 	await page.goto(config.frontendUrl + '/mytimeline')
+	console.log(`User visited the timeline page.`)
 	await delay(3000)
 }
 
@@ -221,7 +223,7 @@ async function updateBioText(page: Page, config: Config, user: User, bioList: Bi
         if (!isChecked) {
             await enableMarkdownCheckbox.click()
         }
-        const markdownTextareaSelector = 'textarea[class="w-md-editor-text-input "]'
+        const markdownTextareaSelector = 'textarea.w-md-editor-text-input'
         await page.waitForSelector(markdownTextareaSelector, { timeout: 10000 })
         await page.type(markdownTextareaSelector, bio.text)
         await page.click('button[name=postBio]')
