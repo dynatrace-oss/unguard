@@ -122,11 +122,11 @@ userSimulator:
 
         resources:
           requests:
-            cpu: 10m
-            memory: 256Mi
-          limits:
-            cpu: 500m
+            cpu: 100m
             memory: 512Mi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
 
 # Membership Service
 membershipService:
