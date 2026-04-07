@@ -139,13 +139,13 @@ const bioList: Bio[] = (JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8
 })()
 
 async function register(page: Page, config: Config, user: User) {
-	await page.goto(config.frontendUrl + '/login')
+	await page.goto(config.frontendUrl + '/login', { waitUntil: 'networkidle2', timeout: 60000 })
 	await page.waitForSelector('input[name=username]', { timeout: selectorTimeoutMs })
 	await page.type('input[name=username]', user.username)
 	await page.type('input[name=password]', user.password)
 	await page.click('button[name=register]')
+	await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 60000 })
 	console.log(`${user.username} registered.`)
-	await delay(3000)
 }
 
 async function visitHomepage(page: Page, config: Config) {
