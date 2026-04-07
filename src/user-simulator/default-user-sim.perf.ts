@@ -106,7 +106,7 @@ const bioList: Bio[] = (JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8
 ;(async () => {
 	checkEnvVariable('FRONTEND_ADDR')
 
-	const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] })
+	const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] })
 	const page = await browser.newPage()
 	await page.setUserAgent('simulated-browser-user')
 	await page.setExtraHTTPHeaders({ 'X-Client-Ip': ip })
@@ -118,9 +118,9 @@ const bioList: Bio[] = (JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8
 
 	try {
 		await register(page, config, user)
+		await visitTimeline(page, config)
 		await visitHomepage(page, config)
 		await likePost(page, config, user)
-		await visitTimeline(page, config)
 		await createTextPost(page, config, user, textPosts)
 		await createUrlPost(page, config, user, urlPosts)
 		await createImagePost(page, config, user, imgPosts)
@@ -149,13 +149,13 @@ async function register(page: Page, config: Config, user: User) {
 }
 
 async function visitHomepage(page: Page, config: Config) {
-	await page.goto(config.frontendUrl + '/')
+	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
 	console.log(`User visited the homepage.`)
 	await delay(3000)
 }
 
 async function likePost(page: Page, config: Config, user: User) {
-	await page.goto(config.frontendUrl + '/')
+	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
 	await delay(3000)
 	const likeButton = await page.$('button[name=likePost]')
 	if (likeButton) {
@@ -166,14 +166,14 @@ async function likePost(page: Page, config: Config, user: User) {
 }
 
 async function visitTimeline(page, config) {
-	await page.goto(config.frontendUrl + '/mytimeline')
+	await page.goto(config.frontendUrl + '/mytimeline', { waitUntil: 'networkidle2', timeout: 60000 })
 	console.log(`User visited the timeline page.`)
 	await delay(3000)
 }
 
 async function createTextPost(page: Page, config: Config, user: User, textPosts: TextPost[]) {
 	const post = textPosts[getRandomInt(textPosts.length)]
-	await page.goto(config.frontendUrl + '/')
+	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
 	await page.waitForSelector('textarea[id=postTextContent]', { timeout: selectorTimeoutMs })
 	await page.type('textarea[id=postTextContent]', post.text)
 	await page.click('button[name=createPostSubmit]')
