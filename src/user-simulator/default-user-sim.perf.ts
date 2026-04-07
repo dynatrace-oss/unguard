@@ -118,9 +118,9 @@ const bioList: Bio[] = (JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8
 
 	try {
 		await register(page, config, user)
-		await visitTimeline(page, config)
 		await visitHomepage(page, config)
 		await likePost(page, config, user)
+		await visitTimeline(page, config)
 		await createTextPost(page, config, user, textPosts)
 		await createUrlPost(page, config, user, urlPosts)
 		await createImagePost(page, config, user, imgPosts)
@@ -144,13 +144,26 @@ async function register(page: Page, config: Config, user: User) {
 	await page.type('input[name=username]', user.username)
 	await page.type('input[name=password]', user.password)
 	await page.click('button[name=register]')
-	await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 60000 })
+	await Promise.all([
+        page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 60000 }),
+        page.click('button[name=register]'),
+    ])
 	console.log(`${user.username} registered.`)
 }
 
 async function visitHomepage(page: Page, config: Config) {
 	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
 	console.log(`User visited the homepage.`)
+	// Debug: check if user is logged in
+	const profileDropdown = await page.$('button[id=ProfileDropdownTrigger]')
+    console.log(`[DEBUG] ProfileDropdownTrigger found: ${profileDropdown !== null}`)
+	if (profileDropdown) {
+        const username = await page.$eval('button[id=ProfileDropdownTrigger]', el => el.textContent?.trim())
+        console.log(`[DEBUG] Logged in as: ${username}`)
+    } else {
+        const loginButton = await page.$('a[href*="login"]')
+        console.log(`[DEBUG] Login/Register button found: ${loginButton !== null}`)  // Debug: user is NOT logged in
+    }
 	await delay(3000)
 }
 
@@ -174,6 +187,14 @@ async function visitTimeline(page, config) {
 async function createTextPost(page: Page, config: Config, user: User, textPosts: TextPost[]) {
 	const post = textPosts[getRandomInt(textPosts.length)]
 	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
+	
+	// Debug: check if CreatePost component is rendered
+	const shareNewPost = await page.$('div.text-2xl.font-extrabold')
+    console.log(`[DEBUG] "Share New Post" card found: ${shareNewPost !== null}`)
+    if (shareNewPost) {
+        const text = await page.$eval('div.text-2xl.font-extrabold', el => el.textContent?.trim())
+        console.log(`[DEBUG] Card header text: ${text}`)
+    }
 	await page.waitForSelector('textarea[id=postTextContent]', { timeout: selectorTimeoutMs })
 	await page.type('textarea[id=postTextContent]', post.text)
 	await page.click('button[name=createPostSubmit]')
