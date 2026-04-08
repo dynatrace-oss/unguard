@@ -143,7 +143,6 @@ async function register(page: Page, config: Config, user: User) {
 	await page.waitForSelector('input[name=username]', { timeout: selectorTimeoutMs })
 	await page.type('input[name=username]', user.username)
 	await page.type('input[name=password]', user.password)
-	await page.click('button[name=register]')
 	await Promise.all([
         page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 60000 }),
         page.click('button[name=register]'),
