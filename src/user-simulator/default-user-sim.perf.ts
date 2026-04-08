@@ -140,13 +140,16 @@ const bioList: Bio[] = (JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8
 
 async function register(page: Page, config: Config, user: User) {
 	await page.goto(config.frontendUrl + '/login', { waitUntil: 'networkidle2', timeout: 60000 })
+	const profileDropdown = await page.$('button[id=ProfileDropdownTrigger]')
+    console.log(`[DEBUG] ProfileDropdownTrigger found in the beginning of user login: ${profileDropdown !== null}`)
 	await page.waitForSelector('input[name=username]', { timeout: selectorTimeoutMs })
 	await page.type('input[name=username]', user.username)
 	await page.type('input[name=password]', user.password)
-	await Promise.all([
-        page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 60000 }),
-        page.click('button[name=register]'),
-    ])
+	console.log(`[DEBUG] Clicking register button...`)
+	await page.click('button[name=register]')
+	console.log(`[DEBUG] Click done, current URL: ${page.url()}`)
+    await page.waitForSelector('button[id=ProfileDropdownTrigger]', { timeout: selectorTimeoutMs })
+	console.log(`[DEBUG] ProfileDropdownTrigger found, URL: ${page.url()}`)
 	console.log(`${user.username} registered.`)
 }
 
