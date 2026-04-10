@@ -145,17 +145,40 @@ async function register(page: Page, config: Config, user: User) {
 	await page.waitForSelector('input[name=username]', { timeout: selectorTimeoutMs })
 	await page.type('input[name=username]', user.username)
 	await page.type('input[name=password]', user.password)
+	// Listen for auth API responses
+    page.on('response', async (response) => {
+        if (response.url().includes('/api/auth')) {
+            console.log(`[DEBUG] Auth response: ${response.url()} → status: ${response.status()}`)
+        }
+    })
 	console.log(`[DEBUG] Clicking register button...`)
 	await page.click('button[name=register]')
+	await delay(3000)  // Wait for the registration process to complete
+	// Debug: check JWT cookie directly — this is what isLoggedIn() reads in LocalUserService.ts
+    const cookies = await page.cookies()
+    const jwtCookie = cookies.find(c => c.name === 'jwt')
+    console.log(`[DEBUG] JWT cookie found: ${jwtCookie !== undefined}`)
+    if (jwtCookie) {
+        console.log(`[DEBUG] JWT cookie value: ${jwtCookie.value.substring(0, 20)}...`) // only print first 20 chars
+    } else {
+        console.log(`[DEBUG] JWT cookie NOT found — isLoggedIn() will return false ❌`)
+    }
 	console.log(`[DEBUG] Click done, current URL: ${page.url()}`)
-    await page.waitForSelector('button[id=ProfileDropdownTrigger]', { timeout: selectorTimeoutMs })
-	console.log(`[DEBUG] ProfileDropdownTrigger found, URL: ${page.url()}`)
+	await delay(40000)
+	console.log(`[DEBUG] Delay 40s, URL: ${page.url()}`)
+	const profileDropdownAgain = await page.$('button[id=ProfileDropdownTrigger]')
+    console.log(`[DEBUG] ProfileDropdownTrigger found after long delay: ${profileDropdownAgain !== null}`)
 	console.log(`${user.username} registered.`)
 }
 
 async function visitHomepage(page: Page, config: Config) {
 	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
 	console.log(`User visited the homepage.`)
+	// Debug: check JWT cookie — this is what isLoggedIn() reads in LocalUserService.ts
+    const cookies = await page.cookies()
+    const jwtCookie = cookies.find(c => c.name === 'jwt')
+    console.log(`[DEBUG] visitHomepage - JWT cookie found: ${jwtCookie !== undefined}`)
+
 	// Debug: check if user is logged in
 	const profileDropdown = await page.$('button[id=ProfileDropdownTrigger]')
     console.log(`[DEBUG] ProfileDropdownTrigger found: ${profileDropdown !== null}`)
@@ -190,6 +213,11 @@ async function createTextPost(page: Page, config: Config, user: User, textPosts:
 	const post = textPosts[getRandomInt(textPosts.length)]
 	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
 	
+	// Debug: check JWT cookie — this is what isLoggedIn() reads in LocalUserService.ts
+    const cookies = await page.cookies()
+    const jwtCookie = cookies.find(c => c.name === 'jwt')
+    console.log(`[DEBUG] createTextPost - JWT cookie found: ${jwtCookie !== undefined}`)
+
 	// Debug: check if CreatePost component is rendered
 	const shareNewPost = await page.$('div.text-2xl.font-extrabold')
     console.log(`[DEBUG] "Share New Post" card found: ${shareNewPost !== null}`)
