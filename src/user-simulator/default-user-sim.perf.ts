@@ -74,7 +74,7 @@ const random_ips_priv = [
 
 const privateRanges = process.env.SIMULATE_PRIVATE_RANGES === 'true'
 
-const selectorTimeoutMs = 30000
+const timeoutMs = 10000
 
 const ip = privateRanges
 	? random_ips_priv[getRandomInt(random_ips_priv.length)]
@@ -112,12 +112,11 @@ const bioList: Bio[] = (JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8
 	await page.setExtraHTTPHeaders({ 'X-Client-Ip': ip })
 
 	const config: Config = { frontendUrl: 'http://' + process.env.FRONTEND_ADDR }
-	const username = 'ROBOT_' + getRandomInt(10000).toString(16)
-
+	const username = 'ROBOT_' + getRandomInt(50000).toString(16)
 	const user: User = { username: username, password: username }
 
 	try {
-		await register(page, config, user)
+		await registerOrLogin(page, config, user)
 		await visitHomepage(page, config)
 		await likePost(page, config, user)
 		await visitTimeline(page, config)
@@ -138,62 +137,49 @@ const bioList: Bio[] = (JSON.parse(fs.readFileSync('./data/biolist.json', 'utf-8
 	process.exit(0)
 })()
 
-async function register(page: Page, config: Config, user: User) {
-	await page.goto(config.frontendUrl + '/login', { waitUntil: 'networkidle2', timeout: 60000 })
-	const profileDropdown = await page.$('button[id=ProfileDropdownTrigger]')
-    console.log(`[DEBUG] ProfileDropdownTrigger found in the beginning of user login: ${profileDropdown !== null}`)
-	await page.waitForSelector('input[name=username]', { timeout: selectorTimeoutMs })
-	await page.type('input[name=username]', user.username)
-	await page.type('input[name=password]', user.password)
-	// Listen for auth API responses
-    page.on('response', async (response) => {
+async function registerOrLogin(page: Page, config: Config, user: User) {
+    await page.goto(config.frontendUrl + '/login', { waitUntil: 'networkidle2', timeout: timeoutMs })
+    await page.waitForSelector('input[name=username]', { timeout: timeoutMs })
+    await page.type('input[name=username]', user.username)
+    await page.type('input[name=password]', user.password)
+
+    let registerStatus: number | undefined
+    const authResponseListener = async (response) => {
         if (response.url().includes('/api/auth')) {
-            console.log(`[DEBUG] Auth response: ${response.url()} → status: ${response.status()}`)
+            registerStatus = response.status()
         }
-    })
-	console.log(`[DEBUG] Clicking register button...`)
-	await page.click('button[name=register]')
-	await delay(3000)  // Wait for the registration process to complete
-	// Debug: check JWT cookie directly — this is what isLoggedIn() reads in LocalUserService.ts
-    const cookies = await page.cookies()
-    const jwtCookie = cookies.find(c => c.name === 'jwt')
-    console.log(`[DEBUG] JWT cookie found: ${jwtCookie !== undefined}`)
-    if (jwtCookie) {
-        console.log(`[DEBUG] JWT cookie value: ${jwtCookie.value.substring(0, 20)}...`) // only print first 20 chars
-    } else {
-        console.log(`[DEBUG] JWT cookie NOT found — isLoggedIn() will return false ❌`)
     }
-	console.log(`[DEBUG] Click done, current URL: ${page.url()}`)
-	await delay(40000)
-	console.log(`[DEBUG] Delay 40s, URL: ${page.url()}`)
-	const profileDropdownAgain = await page.$('button[id=ProfileDropdownTrigger]')
-    console.log(`[DEBUG] ProfileDropdownTrigger found after long delay: ${profileDropdownAgain !== null}`)
-	console.log(`${user.username} registered.`)
+    page.on('response', authResponseListener)
+
+    await page.click('button[name=register]')
+	console.log(`Register user: ${user.username}`)
+    await delay(3000)
+
+    if (registerStatus === 409) {
+        await page.click('button[name=login]')
+		console.log(`User exists, logging in as ${user.username}`)
+        await delay(3000)
+    }
+
+	page.off('response', authResponseListener) 
+
+	const cookies = await page.browserContext().cookies()
+    const jwtCookie = cookies.find(c => c.name === 'jwt')
+    if (jwtCookie) {
+		console.log(`JWT cookie found, user logged in.`)
+    } else {
+        console.log(`JWT cookie NOT found — user not logged in.`)
+    }
 }
 
 async function visitHomepage(page: Page, config: Config) {
 	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
 	console.log(`User visited the homepage.`)
-	// Debug: check JWT cookie — this is what isLoggedIn() reads in LocalUserService.ts
-    const cookies = await page.cookies()
-    const jwtCookie = cookies.find(c => c.name === 'jwt')
-    console.log(`[DEBUG] visitHomepage - JWT cookie found: ${jwtCookie !== undefined}`)
-
-	// Debug: check if user is logged in
-	const profileDropdown = await page.$('button[id=ProfileDropdownTrigger]')
-    console.log(`[DEBUG] ProfileDropdownTrigger found: ${profileDropdown !== null}`)
-	if (profileDropdown) {
-        const username = await page.$eval('button[id=ProfileDropdownTrigger]', el => el.textContent?.trim())
-        console.log(`[DEBUG] Logged in as: ${username}`)
-    } else {
-        const loginButton = await page.$('a[href*="login"]')
-        console.log(`[DEBUG] Login/Register button found: ${loginButton !== null}`)  // Debug: user is NOT logged in
-    }
 	await delay(3000)
 }
 
 async function likePost(page: Page, config: Config, user: User) {
-	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
+	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: timeoutMs })
 	await delay(3000)
 	const likeButton = await page.$('button[name=likePost]')
 	if (likeButton) {
@@ -204,28 +190,15 @@ async function likePost(page: Page, config: Config, user: User) {
 }
 
 async function visitTimeline(page, config) {
-	await page.goto(config.frontendUrl + '/mytimeline', { waitUntil: 'networkidle2', timeout: 60000 })
+	await page.goto(config.frontendUrl + '/mytimeline', { waitUntil: 'networkidle2', timeout: timeoutMs })
 	console.log(`User visited the timeline page.`)
 	await delay(3000)
 }
 
 async function createTextPost(page: Page, config: Config, user: User, textPosts: TextPost[]) {
 	const post = textPosts[getRandomInt(textPosts.length)]
-	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: 60000 })
-	
-	// Debug: check JWT cookie — this is what isLoggedIn() reads in LocalUserService.ts
-    const cookies = await page.cookies()
-    const jwtCookie = cookies.find(c => c.name === 'jwt')
-    console.log(`[DEBUG] createTextPost - JWT cookie found: ${jwtCookie !== undefined}`)
-
-	// Debug: check if CreatePost component is rendered
-	const shareNewPost = await page.$('div.text-2xl.font-extrabold')
-    console.log(`[DEBUG] "Share New Post" card found: ${shareNewPost !== null}`)
-    if (shareNewPost) {
-        const text = await page.$eval('div.text-2xl.font-extrabold', el => el.textContent?.trim())
-        console.log(`[DEBUG] Card header text: ${text}`)
-    }
-	await page.waitForSelector('textarea[id=postTextContent]', { timeout: selectorTimeoutMs })
+	await page.goto(config.frontendUrl + '/', { waitUntil: 'networkidle2', timeout: timeoutMs })
+	await page.waitForSelector('textarea[id=postTextContent]', { timeout: timeoutMs })
 	await page.type('textarea[id=postTextContent]', post.text)
 	await page.click('button[name=createPostSubmit]')
 	console.log(`${user.username} posted text: '${post.text}'`)
@@ -235,9 +208,9 @@ async function createTextPost(page: Page, config: Config, user: User, textPosts:
 async function createUrlPost(page: Page, config: Config, user: User, urlPosts: UrlPost[]) {
 	const post = urlPosts[getRandomInt(urlPosts.length)]
 	await page.goto(config.frontendUrl + '/')
-	await page.waitForSelector('button[id=shareUrlTab]', { timeout: selectorTimeoutMs })
+	await page.waitForSelector('button[id=shareUrlTab]', { timeout: timeoutMs })
 	await page.click('button[id=shareUrlTab]')
-	await page.waitForSelector('input[id=postUrl]', { timeout: selectorTimeoutMs })
+	await page.waitForSelector('input[id=postUrl]', { timeout: timeoutMs })
 	await page.type('input[id=postUrl]', post.url)
 	await page.type('input[id=postLanguage]', post.language)
 	await page.click('button[name=createPostSubmit]')
@@ -248,9 +221,9 @@ async function createUrlPost(page: Page, config: Config, user: User, urlPosts: U
 async function createImagePost(page: Page, config: Config, user: User, imgPosts: ImageUrlPost[]) {
 	const post = imgPosts[getRandomInt(imgPosts.length)]
 	await page.goto(config.frontendUrl + '/')
-	await page.waitForSelector('button[id=shareImageTab]', { timeout: selectorTimeoutMs })
+	await page.waitForSelector('button[id=shareImageTab]', { timeout: timeoutMs })
 	await page.click('button[id=shareImageTab]')
-	await page.waitForSelector('input[id=postImageUrl]', { timeout: selectorTimeoutMs })
+	await page.waitForSelector('input[id=postImageUrl]', { timeout: timeoutMs })
 	await page.type('input[id=postImageUrl]', post.url)
 	await page.type('input[id=postImageDescription]', post.text)
 	await page.click('button[name=createPostSubmit]')
@@ -262,12 +235,12 @@ async function updateBioText(page: Page, config: Config, user: User, bioList: Bi
 	const bio = bioList[getRandomInt(bioList.length)]
 	await page.goto(`${config.frontendUrl}/user/${user.username}`)
 	const editBioSelector = 'div[id=editBio] > h2 > button[type=button]'
-    await page.waitForSelector(editBioSelector, { timeout: selectorTimeoutMs })
+    await page.waitForSelector(editBioSelector, { timeout: timeoutMs })
     await page.click(editBioSelector)
 
     if (bio.isMarkdown) {
         const markdownCheckboxSelector = 'label[id=useMarkdownEditorSwitch] > input[type=checkbox]'
-        await page.waitForSelector(markdownCheckboxSelector, { timeout: selectorTimeoutMs })
+        await page.waitForSelector(markdownCheckboxSelector, { timeout: timeoutMs })
         const enableMarkdownCheckbox = await page.$(markdownCheckboxSelector)
         if (!enableMarkdownCheckbox) {
             throw Error('Markdown checkbox not found')
@@ -277,12 +250,12 @@ async function updateBioText(page: Page, config: Config, user: User, bioList: Bi
             await enableMarkdownCheckbox.click()
         }
         const markdownTextareaSelector = 'textarea.w-md-editor-text-input'
-        await page.waitForSelector(markdownTextareaSelector, { timeout: selectorTimeoutMs })
+        await page.waitForSelector(markdownTextareaSelector, { timeout: timeoutMs })
         await page.type(markdownTextareaSelector, bio.text)
         await page.click('button[name=postBio]')
     } else {
         const bioTextareaSelector = 'textarea[id=bioText]'
-        await page.waitForSelector(bioTextareaSelector, { timeout: selectorTimeoutMs })
+        await page.waitForSelector(bioTextareaSelector, { timeout: timeoutMs })
         await page.type(bioTextareaSelector, bio.text)
         await page.click('button[name=postBio]')
     }
@@ -293,7 +266,7 @@ async function updateBioText(page: Page, config: Config, user: User, bioList: Bi
 
 async function visitUsersPageAndSearch(page: Page, config: Config) {
 	await page.goto(config.frontendUrl + '/users')
-	await page.waitForSelector('input[id=userSearch]', { timeout: selectorTimeoutMs })
+	await page.waitForSelector('input[id=userSearch]', { timeout: timeoutMs })
 	await page.type('input[id=userSearch]', 'admanager')
 	await page.click('button[name=searchUsersButton]')
 	console.log(`Searched for admanager user.`)
@@ -302,7 +275,7 @@ async function visitUsersPageAndSearch(page: Page, config: Config) {
 
 async function upgradeToProMembership(page: Page, config: Config, user: User) {
 	await page.goto(`${config.frontendUrl}/membership-plans`)
-	await page.waitForSelector('button[id=proMembershipCard]', { timeout: selectorTimeoutMs })
+	await page.waitForSelector('button[id=proMembershipCard]', { timeout: timeoutMs })
 	await page.click('button[id=proMembershipCard]')
 	await page.click('button[name=updateMembershipButton]')
 	console.log(`${user.username} upgraded to PRO membership`)
@@ -311,7 +284,7 @@ async function upgradeToProMembership(page: Page, config: Config, user: User) {
 
 async function addCreditCardInformation(page: Page, config: Config, user: User) {
 	await page.goto(`${config.frontendUrl}/payment`)
-	await page.waitForSelector('input[name=cardHolderName]', { timeout: selectorTimeoutMs })
+	await page.waitForSelector('input[name=cardHolderName]', { timeout: timeoutMs })
 	await page.type('input[name=cardHolderName]', user.username)
 	await page.type('input[name=cardNumber]', '4556737586899855')
 	await page.type('input[name=expiryDate]', '11/31')
@@ -323,9 +296,9 @@ async function addCreditCardInformation(page: Page, config: Config, user: User) 
 
 async function logout(page: Page, config: Config) {
 	await page.goto(`${config.frontendUrl}`)
-	await page.waitForSelector('button[id=ProfileDropdownTrigger]', { timeout: selectorTimeoutMs })
+	await page.waitForSelector('button[id=ProfileDropdownTrigger]', { timeout: timeoutMs })
 	await page.click('button[id=ProfileDropdownTrigger]')
-	await page.waitForSelector('li[data-key=logout]', { timeout: selectorTimeoutMs })
+	await page.waitForSelector('li[data-key=logout]', { timeout: timeoutMs })
 	await page.click('li[data-key=logout]')
 	console.log('Logged out')
 	await delay(3000)
