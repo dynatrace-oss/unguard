@@ -1,0 +1,77 @@
+from pathlib import Path
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.progress import Progress, SpinnerColumn, BarColumn, TimeElapsedColumn, TimeRemainingColumn, TaskProgressColumn, MofNCompleteColumn
+import logging
+
+from evaluation.utils.check_connection import check_connection
+from evaluation.utils.load_test_data import load_test_data
+from evaluation.utils.perform_classification_request import perform_classification_request
+from evaluation.utils.print_and_store_results import print_and_store_results
+from logger.logging_config import get_logger
+from rag_service.config import get_settings
+
+logger = get_logger("ModelEvaluation")
+settings = get_settings()
+console = Console()
+handler = RichHandler(console=console, show_time=False, show_path=False)
+logging.basicConfig(level=logging.INFO, handlers=[handler], format="%(message)s")
+
+def evaluate_test_docs(docs):
+    true_positives = false_positives = true_negatives = false_negatives = 0
+    errors = 0
+
+    with Progress(
+        SpinnerColumn(),
+        BarColumn(),
+        MofNCompleteColumn(),
+        TaskProgressColumn(),
+        TimeElapsedColumn(),
+        TimeRemainingColumn(),
+        transient=True,
+        console=console
+    ) as progress:
+        task_id = progress.add_task("Evaluating...", total=len(docs))
+        for index, doc in enumerate(docs):
+            ground_truth = str(doc.metadata.get("label", "")).lower().strip()
+            if ground_truth not in (settings.spam_label, settings.not_spam_label):
+                progress.advance(task_id)
+                continue
+            try:
+                predicted_label = perform_classification_request(doc.text)
+            except Exception as exception:
+                errors += 1
+                progress.console.log(f"[yellow]Error classifying sample {index}: {exception}")
+                progress.advance(task_id)
+                continue
+
+            if ground_truth == settings.spam_label:
+                if predicted_label == settings.spam_label:
+                    true_positives += 1
+                else:
+                    false_negatives += 1
+            else:
+                if predicted_label == settings.spam_label:
+                    false_positives += 1
+                else:
+                    true_negatives += 1
+            progress.advance(task_id)
+
+    return true_positives, false_positives, true_negatives, false_negatives, errors
+
+def evaluate_model(evaluation_results_dir_path: Path = settings.default_evaluation_results_store_path, limit_evaluation_samples: int = settings.limit_evaluation_samples):
+    if not check_connection(logger):
+        return
+    docs = load_test_data()
+    if limit_evaluation_samples > 0:
+        docs = docs[:limit_evaluation_samples]
+    if not docs:
+        return
+
+    logger.info("Starting evaluation on %d samples...", len(docs))
+
+    true_positives, false_positives, true_negatives, false_negatives, errors = evaluate_test_docs(docs)
+    print_and_store_results(true_positives, false_positives, true_negatives, false_negatives, errors, evaluation_results_dir_path, logger)
+
+if __name__ == "__main__":
+    evaluate_model()

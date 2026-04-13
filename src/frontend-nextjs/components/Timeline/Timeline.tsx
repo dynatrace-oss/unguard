@@ -1,8 +1,7 @@
 'use client';
 import { Card, Spacer, Spinner } from '@heroui/react';
 
-import { Post } from '@/components/Timeline/Post';
-import { PostProps } from '@/components/Timeline/Post';
+import { Post, PostProps } from '@/components/Timeline/Post';
 
 interface TimelineProps {
     posts: PostProps[] | undefined;
@@ -28,6 +27,7 @@ export function Timeline({ posts, isLoading }: TimelineProps) {
                     <Post
                         body={post.body}
                         imageUrl={post.imageUrl}
+                        isSpamPredictedLabel={post.isSpamPredictedLabel}
                         postId={post.postId}
                         timestamp={post.timestamp}
                         username={post.username}

@@ -16,4 +16,9 @@ public class JwtTokensUtils {
         Claims claims = (Claims) untrusted.getBody();
         return claims;
     }
+
+    public static String decodeTokenUserId(String token) {
+        Claims claims = decodeTokenClaims(token);
+        return claims.get("userid").toString();
+    }
 }
