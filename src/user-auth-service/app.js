@@ -63,7 +63,10 @@ const opentracing = require('opentracing')
 opentracing.initGlobalTracer(tracer);
 
 app.use(tracingMiddleWare);
-initDb();
+initDb().catch(err => {
+  console.error('Fatal: database initialization failed', err);
+  process.exit(1);
+});
 
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));

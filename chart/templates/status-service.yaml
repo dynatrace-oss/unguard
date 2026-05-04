@@ -92,6 +92,8 @@ spec:
 {{ include "renderLabels" .Values.labels.common | indent 8 }}
     spec:
       serviceAccountName: {{ .Values.statusService.serviceAccount.name }}
+      initContainers:
+        {{- include "unguard.waitForMariaDB" . | nindent 8 }}
       containers:
         - name: {{ .Values.statusService.name }}
           image: {{ .Values.statusService.deployment.container.image.repository }}:{{ .Values.statusService.deployment.container.image.tag }}

@@ -43,18 +43,25 @@ namespace MembershipService
                     string dbHost = Environment.GetEnvironmentVariable("MARIADB_SERVICE");
                     var connectionString = $"Server={dbHost};Port=3306;Database=memberships;user=root;password={dbPwd}";
 
-                    // Check if MariaDB exists, if not, create it
-                    using (var connection = new MySqlConnection(connectionString))
+                    try
                     {
-                        try
+                        // Check if MariaDB exists, if not, create it
+                        using (var connection = new MySqlConnection(connectionString))
                         {
-                            connection.Open();
+                            try
+                            {
+                                connection.Open();
+                            }
+                            catch (MySqlException)
+                            {
+                                CreateMariaDBDatabase(connectionString);
+                            }
                         }
-                        catch (MySqlException)
-                        {
-                            // Database does not exist, create it
-                            CreateMariaDBDatabase(connectionString);
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine($"Fatal: database initialization failed: {ex.Message}");
+                        Environment.Exit(1);
                     }
                 });
 
