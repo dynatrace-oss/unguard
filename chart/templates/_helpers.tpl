@@ -38,3 +38,15 @@ If release name contains chart name it will be used as a full name.
 {{ $key }}: {{ $value }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Init container that blocks until MariaDB is accepting TCP connections on port 3306.
+Usage: {{- include "unguard.waitForMariaDB" . | nindent 8 }}
+*/}}
+{{- define "unguard.waitForMariaDB" -}}
+- name: wait-for-mariadb
+  image: busybox:1.37
+  command: ["/bin/sh", "-c"]
+  args:
+    - "until nc -z {{ .Values.mariaDB.serviceName }} 3306; do echo 'Waiting for MariaDB...'; sleep 2; done"
+{{- end -}}
