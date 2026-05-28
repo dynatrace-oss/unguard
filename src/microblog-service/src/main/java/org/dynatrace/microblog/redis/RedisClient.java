@@ -21,9 +21,14 @@ import io.opentracing.contrib.redis.common.TracingConfiguration;
 import io.opentracing.contrib.redis.jedis3.TracingJedisPool;
 import org.dynatrace.microblog.authservice.UserAuthServiceClient;
 import org.dynatrace.microblog.dto.Post;
+import org.dynatrace.microblog.dto.SpamPredictionRatings;
 import org.dynatrace.microblog.dto.User;
+import org.dynatrace.microblog.exceptions.SpamIngestionFailedException;
 import org.dynatrace.microblog.exceptions.InvalidJwtException;
+import org.dynatrace.microblog.exceptions.InvalidPostException;
 import org.dynatrace.microblog.exceptions.UserNotFoundException;
+import org.dynatrace.microblog.feedbackingestionservice.FeedbackIngestionServiceClient;
+import org.dynatrace.microblog.utils.SpamKBIngestionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -53,6 +58,11 @@ public class RedisClient {
     private static final String POSTS_KEY_PREFIX = "posts";
     private static final String FOLLOWERS_KEY_PREFIX = "followers";
 
+    private static final String SPAM_PREDICTION_UPVOTERS_KEY_SUFFIX = "spamPrediction:upvoters";
+    private static final String SPAM_PREDICTION_DOWNVOTERS_KEY_SUFFIX = "spamPrediction:downvoters";
+
+    private static final String INGESTED_TO_SPAM_KB_KEY_PREFIX = "ingestedToSpamKB";
+
     private static final int REDIS_PORT = 6379;
     public static final int POST_TIMEOUT_SECONDS = 24 * 60 * 60;
 
@@ -72,6 +82,14 @@ public class RedisClient {
 
     private String getCombinedKey(String keyPrefix, String value) {
         return String.format("%s:%s", keyPrefix, value);
+    }
+
+    private String getSpamPredictionUpvotersKey(@NotNull String postId) {
+        return getCombinedKey(getCombinedKey(POST_KEY_PREFIX, postId), SPAM_PREDICTION_UPVOTERS_KEY_SUFFIX);
+    }
+
+    private String getSpamPredictionDownvotersKey(@NotNull String postId) {
+        return getCombinedKey(getCombinedKey(POST_KEY_PREFIX, postId), SPAM_PREDICTION_DOWNVOTERS_KEY_SUFFIX);
     }
 
     /**
@@ -118,6 +136,105 @@ public class RedisClient {
             return postId;
         }
     }
+
+    public void setSpamPredictedLabel(@NotNull String postId, boolean isSpamPredictedLabel) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            String postKey = getCombinedKey(POST_KEY_PREFIX, postId);
+            jedis.hset(postKey, "isSpamPredictedLabel", String.valueOf(isSpamPredictedLabel));
+        }
+    }
+
+    public boolean getSpamPredictedLabel(@NotNull String postId) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            String postKey = getCombinedKey(POST_KEY_PREFIX, postId);
+            String spamClassification = jedis.hget(postKey, "isSpamPredictedLabel");
+            return Boolean.parseBoolean(spamClassification);
+        }
+    }
+
+    public SpamPredictionRatings getSpamPredictionUserRatings(@NotNull String postId, @NotNull String userId) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            return readAndTransformSpamPredictionUserRating(postId, userId, jedis);
+        }
+    }
+
+    public void processUserSpamFeedback(@NotNull String postId, FeedbackIngestionServiceClient feedbackIngestionServiceClient) {
+        try (Jedis jedis = jedisPool.getResource()) {
+
+            Boolean postAlreadyIngested = Boolean.valueOf(jedis.get(getCombinedKey(INGESTED_TO_SPAM_KB_KEY_PREFIX, postId)));
+            if (Boolean.TRUE.equals(postAlreadyIngested)) {
+                return;
+            }
+
+            Set<String> upvoters = jedis.smembers(getSpamPredictionUpvotersKey(postId));
+            Set<String> downvoters = jedis.smembers(getSpamPredictionDownvotersKey(postId));
+
+            if (upvoters.size() == 1) {
+                jedis.expire(getSpamPredictionUpvotersKey(postId), POST_TIMEOUT_SECONDS);
+            }
+            if (downvoters.size() == 1) {
+                jedis.expire(getSpamPredictionDownvotersKey(postId), POST_TIMEOUT_SECONDS);
+            }
+
+            if (SpamKBIngestionUtils.hasRelevantUserFeedback(upvoters, downvoters)) {
+                boolean isSpamUserLabel = getSpamPredictedLabel(postId);
+                if (downvoters.size() > upvoters.size()) {
+                    isSpamUserLabel = !isSpamUserLabel;
+                }
+                String postText = jedis.hget(getCombinedKey(POST_KEY_PREFIX, postId), "body");
+                if (postText == null) {
+                    logger.warn("Post body for post with id {} is null, skipping spam feedback ingestion", postId);
+                    return;
+                }
+                String userLabel = isSpamUserLabel ? "spam" : "not_spam";
+
+                if (feedbackIngestionServiceClient.addNewSpamKnowledgeToIngestQueue(postText, userLabel)) {
+                    jedis.set(getCombinedKey(INGESTED_TO_SPAM_KB_KEY_PREFIX, postId), "true");
+                }
+            }
+        } catch (IOException e) {
+            logger.error("Error processing user spam feedback for post with id {}", postId, e);
+            throw new SpamIngestionFailedException(e.getMessage());
+        }
+    }
+
+    public void handleSpamPredictionUpvote(@NotNull String postId, @NotNull String userId) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            if (Boolean.FALSE.equals(jedis.exists(getCombinedKey(POST_KEY_PREFIX, postId)))) {
+                logger.warn("Could not find post with id {} for spam prediction upvote", postId);
+                throw new InvalidPostException("Post with this id does not exist.");
+            }
+
+            if (Boolean.TRUE.equals(jedis.sismember(getSpamPredictionUpvotersKey(postId), userId))) {
+                // remove the user from the upvoters if already contained
+                jedis.srem(getSpamPredictionUpvotersKey(postId), userId);
+            } else {
+                // add user to the upvoters set
+                jedis.sadd(getSpamPredictionUpvotersKey(postId), userId);
+                // remove the user from the downvoters set if contained
+                jedis.srem(getSpamPredictionDownvotersKey(postId), userId);
+            }
+        }
+    }
+
+    public void handleSpamPredictionDownvote(@NotNull String postId, @NotNull String userId) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            if (Boolean.FALSE.equals(jedis.exists(getCombinedKey(POST_KEY_PREFIX, postId)))) {
+                logger.warn("Could not find post with id {} for spam prediction upvote", postId);
+                throw new InvalidPostException("Post with this id does not exist.");
+            }
+            if (Boolean.TRUE.equals(jedis.sismember(getSpamPredictionDownvotersKey(postId), userId))) {
+                // remove the user from the downvoters if already contained
+                jedis.srem(getSpamPredictionDownvotersKey(postId), userId);
+            } else {
+                // add user to the downvoters set
+                jedis.sadd(getSpamPredictionDownvotersKey(postId), userId);
+                // remove the user from the upvoters set if contained
+                jedis.srem(getSpamPredictionUpvotersKey(postId), userId);
+            }
+        }
+    }
+
 
     @NotNull
     public List<Post> getUserTimeline(String userId) {
@@ -195,8 +312,29 @@ public class RedisClient {
         String body = postMap.get("body");
         String imageUrl = postMap.get("imageUrl");
         Date timestamp = new Date(Long.parseLong(postMap.get("time")));
+        String spamClassification = postMap.get("isSpamPredictedLabel");
+        Boolean isSpamPredictedLabel = spamClassification == null? null : Boolean.valueOf(spamClassification);
 
-       return new Post(postId, userName, body, imageUrl, timestamp);
+        return new Post(postId, userName, body, imageUrl, timestamp, isSpamPredictedLabel);
+    }
+
+    private SpamPredictionRatings readAndTransformSpamPredictionUserRating(String postId, String userId, Jedis jedis) {
+        Map<String, String> postMap = jedis.hgetAll(getCombinedKey(POST_KEY_PREFIX, postId));
+        if (postMap.isEmpty()) {
+            logger.warn("Could not get post with id {}", postId);
+            return null;
+        }
+
+        Set<String> upvoters = jedis.smembers(getSpamPredictionUpvotersKey(postId));
+        Set<String> downvoters = jedis.smembers(getSpamPredictionDownvotersKey(postId));
+
+        Boolean isUpvotedByUser = upvoters.contains(userId);
+        Boolean isDownvotedByUser = downvoters.contains(userId);
+
+        Integer spamPredictionUserUpvotes = upvoters.size();
+        Integer spamPredictionUserDownvotes = downvoters.size();
+
+        return new SpamPredictionRatings(spamPredictionUserUpvotes, spamPredictionUserDownvotes, isUpvotedByUser, isDownvotedByUser);
     }
 
     public List<Post> getTimeline() {

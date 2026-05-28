@@ -30,6 +30,7 @@ function SinglePost() {
                 <PostComponent
                     body={postData.body}
                     imageUrl={postData.imageUrl}
+                    isSpamPredictedLabel={postData.isSpamPredictedLabel}
                     postId={postData.postId}
                     timestamp={postData.timestamp}
                     username={postData.username}

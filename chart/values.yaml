@@ -279,6 +279,36 @@ microblogService:
         OPENTRACING_JAEGER_ENABLED: false
         REDIS_SERVICE_ADDRESS: unguard-redis
         USER_AUTH_SERVICE_ADDRESS: unguard-user-auth-service
+        RAG_SERVICE_ADDRESS: unguard-rag-service
+        RAG_SERVICE_PORT: 8000
+        FEEDBACK_INGESTION_SERVICE_ADDRESS: unguard-feedback-ingestion-service
+        FEEDBACK_INGESTION_SERVICE_PORT: 80
+
+# Feedback Ingestion Service
+feedbackIngestionService:
+  name: feedback-ingestion-service
+
+  service:
+    type: ClusterIP
+    ports:
+      - targetPort: 8080
+        port: 80
+
+  deployment:
+    strategy:
+      type: Recreate
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-feedback-ingestion-service
+        tag: 0.0.1
+        pullPolicy: IfNotPresent
+      ports:
+        containerPort: 8080
+      env:
+        SERVER_PORT: 8080
+        RAG_SERVICE_ENABLED: "{{ .Values.ragService.enabled }}"
+        RAG_SERVICE_ADDRESS: unguard-rag-service
+        RAG_SERVICE_PORT: 8000
 
 # Status Service
 statusService:
@@ -491,3 +521,38 @@ frontend:
         LIKE_SERVICE_BASE_PATH: /like-service
         MEMBERSHIP_SERVICE_BASE_PATH: /membership-service
         STATUS_SERVICE_BASE_PATH: /status-service
+
+# RAG Service
+ragService:
+  enabled: false
+  name: rag-service
+
+  deployment:
+    container:
+      image:
+        repository: ghcr.io/dynatrace-oss/unguard/unguard-rag-service
+        tag: "latest"
+        pullPolicy: IfNotPresent
+      env:
+        MODEL_PROVIDER: "Ollama"
+        MODEL_PROVIDER_BASE_URL: "http://unguard-ollama:11434"
+        LLM_MODEL: "llama3.2:latest"
+        EMBEDDINGS_MODEL: "nomic-embed-text"
+        EVALUATE_AFTER_ATTACK: "false"
+        LIMIT_EVALUATION_SAMPLES: "0"
+        LIMIT_KEYWORD_ATTACK_SUCCESS_EVALUATION_SAMPLES: "0"
+        USE_DATA_POISONING_DETECTION: "true"
+        PREVENT_INGESTION_OF_DETECTED_POISONED_DATA: "false"
+        DATA_POISONING_DETECTION_STRATEGY: "embedding_similarity_entry_level"
+        LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT: "majority_voting"
+
+
+# Ollama
+ollama:
+  enabled: true
+  name: ollama
+
+  image:
+    repository: ghcr.io/dynatrace-oss/unguard/unguard-ollama
+    tag: 0.0.1
+    pullPolicy: IfNotPresent

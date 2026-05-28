@@ -1,0 +1,46 @@
+{{- if .Values.ragService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: unguard-rag-service
+  labels:
+    app.kubernetes.io/name: rag-service
+    app.kubernetes.io/part-of: unguard
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: rag-service
+    app.kubernetes.io/part-of: unguard
+  ports:
+    - port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unguard-rag-service
+  labels:
+    app.kubernetes.io/name: rag-service
+    app.kubernetes.io/part-of: unguard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rag-service
+      app.kubernetes.io/part-of: unguard
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rag-service
+        app.kubernetes.io/part-of: unguard
+    spec:
+      containers:
+        - name: rag-service
+          image: {{ .Values.ragService.deployment.container.image.repository }}:{{ .Values.ragService.deployment.container.image.tag }}
+          imagePullPolicy: {{ .Values.ragService.deployment.container.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: unguard-rag-service-config
+{{- end }}

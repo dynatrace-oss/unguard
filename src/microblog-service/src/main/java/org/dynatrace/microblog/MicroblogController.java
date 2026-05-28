@@ -23,12 +23,11 @@ import org.dynatrace.microblog.dto.Post;
 import org.dynatrace.microblog.dto.PostId;
 import org.dynatrace.microblog.dto.SerializedPost;
 import org.dynatrace.microblog.dto.User;
-import org.dynatrace.microblog.exceptions.FollowYourselfException;
-import org.dynatrace.microblog.exceptions.InvalidJwtException;
-import org.dynatrace.microblog.exceptions.InvalidUserException;
-import org.dynatrace.microblog.exceptions.NotLoggedInException;
-import org.dynatrace.microblog.exceptions.UserNotFoundException;
+import org.dynatrace.microblog.dto.SpamPredictionRatings;
+import org.dynatrace.microblog.exceptions.*;
+import org.dynatrace.microblog.feedbackingestionservice.FeedbackIngestionServiceClient;
 import org.dynatrace.microblog.form.PostForm;
+import org.dynatrace.microblog.ragservice.RAGServiceClient;
 import org.dynatrace.microblog.redis.RedisClient;
 import org.dynatrace.microblog.utils.JwtTokensUtils;
 import org.dynatrace.microblog.utils.PostSerializer;
@@ -45,11 +44,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.annotation.PreDestroy;
+import java.util.concurrent.TimeUnit;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import static org.dynatrace.microblog.utils.JwtTokensUtils.decodeTokenUserId;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
@@ -58,12 +63,23 @@ public class MicroblogController {
     private final RedisClient redisClient;
     Logger logger = LoggerFactory.getLogger(MicroblogController.class);
     private final UserAuthServiceClient userAuthServiceClient;
+    private final Boolean ragServiceEnabled;
+    private final RAGServiceClient ragServiceClient;
+    private final FeedbackIngestionServiceClient feedbackIngestionServiceClient;
     private final PostSerializer postSerializer;
+    private final ExecutorService ragExecutor = Executors.newFixedThreadPool(
+        Math.max(20, Runtime.getRuntime().availableProcessors() / 2)
+    );
 
     @Autowired
     public MicroblogController(Tracer tracer, PostSerializer postSerializer) {
         String redisServiceAddress;
         String userAuthServiceAddress;
+        String ragServiceAddress;
+        String ragServicePort;
+        boolean isRagServiceEnabled = false;
+        String feedbackIngestionServiceAddress;
+        String feedbackIngestionServicePort;
         if (System.getenv("REDIS_SERVICE_ADDRESS") != null) {
             redisServiceAddress = System.getenv("REDIS_SERVICE_ADDRESS");
             logger.info("REDIS_SERVICE_ADDRESS set to {}", redisServiceAddress);
@@ -80,9 +96,61 @@ public class MicroblogController {
             logger.warn("No USER_AUTH_SERVICE_ADDRESS environment variable defined, falling back to localhost:9091.");
         }
 
+        if (System.getenv("RAG_SERVICE_ENABLED") != null) {
+            isRagServiceEnabled = Boolean.parseBoolean(System.getenv("RAG_SERVICE_ENABLED"));
+            logger.info("RAG_SERVICE_ENABLED set to {}", isRagServiceEnabled);
+        } else {
+            logger.warn("No RAG_SERVICE_ENABLED environment variable defined, falling back to false.");
+        }
+
+        if (System.getenv("RAG_SERVICE_ADDRESS") != null) {
+            ragServiceAddress = System.getenv("RAG_SERVICE_ADDRESS");
+            logger.info("RAG_SERVICE_ADDRESS set to {}", ragServiceAddress);
+        } else {
+            ragServiceAddress = "localhost";
+            logger.warn("No RAG_SERVICE_ADDRESS environment variable defined, falling back to localhost.");
+        }
+        if (System.getenv("RAG_SERVICE_PORT") != null) {
+            ragServicePort = System.getenv("RAG_SERVICE_PORT");
+            logger.info("RAG_SERVICE_PORT set to {}", ragServicePort);
+        } else {
+            ragServicePort = "8000";
+            logger.warn("No RAG_SERVICE_PORT environment variable defined, falling back to 8000.");
+        }
+        if (System.getenv("FEEDBACK_INGESTION_SERVICE_ADDRESS") != null) {
+            feedbackIngestionServiceAddress = System.getenv("FEEDBACK_INGESTION_SERVICE_ADDRESS");
+            logger.info("FEEDBACK_INGESTION_SERVICE_ADDRESS set to {}", feedbackIngestionServiceAddress);
+        } else {
+            feedbackIngestionServiceAddress = "localhost";
+            logger.warn("No FEEDBACK_INGESTION_SERVICE_ADDRESS environment variable defined, falling back to localhost.");
+        }
+        if (System.getenv("FEEDBACK_INGESTION_SERVICE_PORT") != null) {
+            feedbackIngestionServicePort = System.getenv("FEEDBACK_INGESTION_SERVICE_PORT");
+            logger.info("FEEDBACK_INGESTION_SERVICE_PORT set to {}", feedbackIngestionServicePort);
+        } else {
+            feedbackIngestionServicePort = "8080";
+            logger.warn("No FEEDBACK_INGESTION_SERVICE_PORT environment variable defined, falling back to 8080.");
+        }
+
         this.userAuthServiceClient = new UserAuthServiceClient(userAuthServiceAddress);
         this.redisClient = new RedisClient(redisServiceAddress, this.userAuthServiceClient, tracer);
+        this.ragServiceClient = new RAGServiceClient(ragServiceAddress, ragServicePort);
         this.postSerializer = postSerializer;
+        this.ragServiceEnabled = isRagServiceEnabled;
+        this.feedbackIngestionServiceClient = new FeedbackIngestionServiceClient(feedbackIngestionServiceAddress, feedbackIngestionServicePort);
+    }
+
+    @PreDestroy
+    public void shutdownRagExecutor() {
+        ragExecutor.shutdown();
+        try {
+            if (!ragExecutor.awaitTermination(30, TimeUnit.SECONDS)) {
+                ragExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            ragExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 
     @RequestMapping("/timeline")
@@ -171,6 +239,26 @@ public class MicroblogController {
         // decode JWT
         Claims claims = JwtTokensUtils.decodeTokenClaims(jwt);
         String postId = redisClient.newPost(claims.get("userid").toString(), postForm.getContent(), postForm.getImageUrl());
+
+        if (Boolean.TRUE.equals(this.ragServiceEnabled)) {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    String spamClassificationResult = ragServiceClient.getSpamClassification(postForm.getContent());
+                    if(spamClassificationResult == null || spamClassificationResult.trim().isEmpty()) {
+                        throw new InvalidSpamPredictionException("RAG spam classification result is null or empty for post with ID " + postId);
+                    } else if (spamClassificationResult.trim().equalsIgnoreCase("not_spam")) {
+                        redisClient.setSpamPredictedLabel(postId, false);
+                    } else if (spamClassificationResult.trim().equalsIgnoreCase("spam")) {
+                        redisClient.setSpamPredictedLabel(postId, true);
+                    } else {
+                        throw new InvalidSpamPredictionException("RAG spam classification result is invalid for post with ID " + postId + ": " + spamClassificationResult);
+                    }
+                } catch (Exception e) {
+                    logger.warn("RAG spam classification failed for post with ID {}", postId, e);
+                }
+            }, ragExecutor);
+        }
+
         return new PostId(postId);
     }
 
@@ -181,8 +269,34 @@ public class MicroblogController {
         if (post == null) {
             throw new ResponseStatusException(NOT_FOUND, "Post not found.");
         }
-        postSerializer.serializePost(new SerializedPost(postId, post.getUsername(), post.getBody(), post.getImageUrl(), post.getTimestamp(), UUID.randomUUID()));
+        postSerializer.serializePost(new SerializedPost(postId, post.getUsername(), post.getBody(), post.getImageUrl(), post.getTimestamp(), UUID.randomUUID(), post.getIsSpamPredictedLabel()));
         return post;
+    }
+
+
+    @GetMapping("/spam-prediction-user-rating/{postid}")
+    public SpamPredictionRatings getSpamPredictionUserRating(@PathVariable("postid") String postId, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
+        checkJwt(jwt);
+
+        SpamPredictionRatings spamPredictionUserRatings = redisClient.getSpamPredictionUserRatings(postId, decodeTokenUserId(jwt));
+        if (spamPredictionUserRatings == null) {
+            throw new ResponseStatusException(NOT_FOUND, "Spam prediction user ratings for post with ID " + postId + " not found.");
+        }
+        return spamPredictionUserRatings;
+    }
+
+    @PostMapping("/spam-prediction-user-rating/{postid}/upvote")
+    public void upvoteSpamPrediction(@PathVariable("postid") String postId, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
+        checkJwt(jwt);
+        redisClient.handleSpamPredictionUpvote(postId, decodeTokenUserId(jwt));
+        redisClient.processUserSpamFeedback(postId, feedbackIngestionServiceClient);
+    }
+
+    @PostMapping("/spam-prediction-user-rating/{postid}/downvote")
+    public void downvoteSpamPrediction(@PathVariable("postid") String postId, @CookieValue(value = "jwt", required = false) String jwt) throws InvalidJwtException, NotLoggedInException {
+        checkJwt(jwt);
+        redisClient.handleSpamPredictionDownvote(postId, decodeTokenUserId(jwt));
+        redisClient.processUserSpamFeedback(postId, feedbackIngestionServiceClient);
     }
 
     public void checkJwt(String jwt) throws InvalidJwtException, NotLoggedInException {

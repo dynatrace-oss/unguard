@@ -26,18 +26,21 @@ public class Post {
     private final String body;
     private final Date timestamp;
     private final String imageUrl;
+    private final Boolean isSpamPredictedLabel;
 
     public Post(
         @JsonProperty("postId") String postId,
         @JsonProperty("username") String username,
         @JsonProperty("body") String body,
         @JsonProperty("imageUrl") String imageUrl,
-        @JsonProperty("timestamp") Date timestamp) {
+        @JsonProperty("timestamp") Date timestamp,
+        @JsonProperty("isSpamPredictedLabel") Boolean isSpamPredictedLabel) {
         this.postId = postId;
         this.username = username;
         this.body = body;
         this.imageUrl = imageUrl;
         this.timestamp = timestamp;
+        this.isSpamPredictedLabel = isSpamPredictedLabel;
     }
 
     public String getPostId() {
@@ -59,4 +62,6 @@ public class Post {
     public Date getTimestamp() {
         return timestamp;
     }
+
+    public Boolean getIsSpamPredictedLabel() { return isSpamPredictedLabel; }
 }

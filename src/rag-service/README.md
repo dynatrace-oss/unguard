@@ -1,0 +1,121 @@
+# RAG Service
+
+A microservice for spam classification using Retrieval-Augmented Generation (RAG).
+
+## Architecture
+
+- **[FastAPI](https://fastapi.tiangolo.com/)**: REST API framework
+- **[LlamaIndex](https://www.llamaindex.ai/)**: RAG pipeline
+- **[ChromaDB](https://www.trychroma.com/)**: Vector database for knowledge base of RAG System
+- **[Langdock](https://www.langdock.com)**: OpenAI LLM and embeddings
+- **[Ollama](https://ollama.com/)**: Local open-source LLM and embeddings
+
+## Environment Variables
+| Name                                            | Example Value                    | Description                                                                                                                     |
+|-------------------------------------------------|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| LLM_MODEL                                       | llama3.2:latest                  | The LLM model that will be used by the RAG service                                                                              |
+| EMBEDDINGS_MODEL                                | nomic-embed-text                 | The embeddings model that will be used by the RAG service                                                                       |
+| MODEL_PROVIDER                                  | Ollama                           | Can be either "Ollama" or "LangDock"                                                                                            |
+| MODEL_PROVIDER_BASE_URL                         | http://localhost:11434           | Base url to your model                                                                                                          |
+| LANGDOCK_API_KEY                                | <your_langdock_api_key>          | (optional) Langdock API key, only needed when using LangDock as the model provider                                              |
+| EVALUATE_AFTER_ATTACK                           | false                            | Configure whether the RAG service performance should be evaluated after an attack                                               |
+| LIMIT_EVALUATION_SAMPLES                        | 0                                | Configure the size of the evaluation set, set 0 for no limit.                                                                   |
+| LIMIT_KEYWORD_ATTACK_SUCCESS_EVALUATION_SAMPLES | 0                                | Configure the size of the evaluation set for the keyword attack success rate evaluation. Set 0 for no limit.                    |
+| USE_DATA_POISONING_DETECTION                    | true                             | Configure whether data poisoning detection should be used before ingesting new data into the Knowledge Base.                    |
+| PREVENT_INGESTION_OF_DETECTED_POISONED_DATA     | false                            | Only relevant if data poisoning detection is enabled. If true, only logs detected poisoned data and does not prevent ingestion. |
+| DATA_POISONING_DETECTION_STRATEGY               | embedding_similarity_entry_level | The data poisoning detection strategy to use                                                                                    |
+| LABEL_CONSISTENCY_DETECTION_DECISION_VARIANT    | majority_voting                  | The variant of the label consistency detection strategy to use                                                                  |
+
+
+## Getting Started for running the RAG Service locally
+When starting for the first time, you need to create a Virtual Environment, activate it and install the dependencies:
+
+```bash
+python3 -m venv venv
+source ./venv/bin/activate
+pip install -r requirements.txt
+```
+
+Further, you need to decide which LLM and embeddings models you want to use.
+Currently, the RAG service supports OpenAI models via Langdock and local open-source models via Ollama.
+
+### Using OpenAI models via Langdock
+
+First, rename the `.env.langdock` file to `.env` and adapt the configuration values as needed.
+Before starting, you need to add your Langdock API Key and Base URL.
+Now, when running the service it will automatically use the OpenAI models via Langdock for the LLM and embeddings.
+
+### Using local open-source models via Ollama
+
+First, you need to install Ollama and set up the models you want to use locally by following the official documentation of [Ollama](https://github.com/ollama/ollama).
+Then, rename the `.env.local` file to `.env` and adapt the configuration values as needed.
+
+## Starting the service
+To run the RAG service locally, inside the `/src/rag-service` directory run:
+
+```bash
+fastapi run rag_service/main.py
+```
+or for auto-reload on code changes during development:
+
+```bash
+fastapi dev rag_service/main.py
+```
+
+Or using uvicorn directly:
+```bash
+uvicorn rag_service.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+When starting, the vector database will be created automatically under `rag_service/vector-store/`.
+The service will be available at http://localhost:8000.
+
+## Running the evaluation script
+To evaluate the performance of the model, you can run the evaluation script as follows:
+
+```bash
+python -m evaluation.evaluate_model
+```
+
+The evaluation results will be stored under `rag_service/evaluation_results/`.
+To limit the sample size used for evaluation, set the `LIMIT_EVALUATION_SAMPLES` environment variable in the `.env` file.
+
+## Data Preprocessing and Pre-computed Embeddings
+To reduce the startup time of the RAG service and avoid recomputing the embeddings for the initial KB content on each startup, the embeddings for the initial data of the KB are pre-computed and stored under `rag_service/data/base_data_embeddings/`.
+Furthermore, the datasets for the data poisoning attacks are prepared and their embeddings pre-computed and stored under `data_poisoning_attacks/[attack-type]/attack_data/`.
+
+Furthermore, the Data Preprocessor also takes care of preparing the datasets for the data poisoning attacks (more info
+in the [Data Poisoning Attacks README](./data_poisoning_attacks/README.md)).
+
+When necessary to recompute the embeddings (e.g. when changing the embeddings model or dataset), you can run the following script:
+
+```bash
+python -m data_preprocessing.prepare_datasets
+```
+
+## Running and evaluating the Data Poisoning Attacks
+To run and evaluate the data poisoning attacks, see the [Data Poisoning Attacks README](./data_poisoning_attacks/README.md).
+
+## Data Poisoning Detection Strategies
+To enable data poisoning detection in the RAG service, please set the `USE_DATA_POISONING_DETECTION` environment variable
+to `true`. When enabled, the RAG service will automatically apply the selected data poisoning detection strategy
+before ingesting new entries into the Knowledge Base (KB). To determine whether detected poisoned data should be prevented
+from being ingested into the KB or only logged, set the `PREVENT_INGESTION_OF_DETECTED_POISONED_DATA` environment variable.
+To configure the detection strategy, please set the `DATA_POISONING_DETECTION_STRATEGY` environment variable to one of the available strategies.
+
+For testing the detection, run the data poisoning attacks (as described in the
+[Data Poisoning Attacks README](./data_poisoning_attacks/README.md)) on the RAG Service with detection enabled.
+
+For more information about the detection strategies, see the [Data Poisoning Detection Strategies README](./data_poisoning_detection_strategies/README.md).
+
+## API Docs
+
+Automatically generated API documentation available at:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+Those can be used to explore and test the API endpoints of the RAG service.
+
+## Attribution
+
+This project uses the [Deysi/spam-detection-dataset](https://huggingface.co/datasets/Deysi/spam-detection-dataset) dataset from Huggingface.
