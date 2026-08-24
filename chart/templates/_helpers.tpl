@@ -34,7 +34,9 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{- define "renderLabels" -}}
+{{- if . -}}
 {{- toYaml . -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
