@@ -37,7 +37,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.adService.name }}
     app.kubernetes.io/part-of: unguard
-    {{ include "renderLabels" .Values.labels.common }}
+{{ include "renderLabels" .Values.labels.common | indent 4 }}
 spec:
   selector:
     matchLabels:
