@@ -26,6 +26,10 @@ jobs:
         run: |
           echo "FALLBACK_RELEASE_VERSION=$(grep 'appVersion' chart/Chart.yaml | cut -d " " -f2)" >> $GITHUB_ENV
 
+      - name: Set image list
+        run: |
+          echo "IMAGE_LIST=unguard-envoy-proxy unguard-frontend unguard-microblog-service unguard-proxy-service unguard-user-simulator unguard-user-auth-service unguard-ad-service unguard-membership-service unguard-malicious-load-generator unguard-status-service unguard-profile-service unguard-like-service unguard-payment-service unguard-exploit-toolkit" >> $GITHUB_ENV
+
       - name: Set build time
         run: echo "BUILD_TIME=$(date +%s)" >> $GITHUB_ENV
 
@@ -62,6 +66,21 @@ jobs:
           tag: ${{ env.IMAGE_TAG }}
           repository: ${{ vars.REGISTRY }}/${{ github.repository }}
           push: true
+
+      - name: Set up Docker Buildx
+        if: github.ref_name == 'main'
+        uses: docker/setup-buildx-action@v2
+
+      - name: Tag and push images with 'latest' tag (main branch)
+        if: github.ref_name == 'main'
+        run: |
+          for IMAGE in ${{ env.IMAGE_LIST }}; do
+            SOURCE_IMAGE="${{ vars.REGISTRY }}/${{ github.repository }}/${IMAGE}:${{ env.IMAGE_TAG }}"
+            TARGET_IMAGE="${{ vars.REGISTRY }}/${{ github.repository }}/${IMAGE}:latest"
+            
+            echo "Tagging ${SOURCE_IMAGE} as ${TARGET_IMAGE}"
+            docker buildx imagetools create --tag "${TARGET_IMAGE}" "${SOURCE_IMAGE}"
+          done
 
       - name: Update helm image tags
         uses: fjogeleit/yaml-update-action@main
