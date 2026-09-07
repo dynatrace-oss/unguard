@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */}}
 {{- if or .Values.localDev.enabled (and .Values.aws.enabled .Values.aws.ingress.enabled) -}}
+{{- $host := ternary "unguard.kube" .Values.aws.ingress.host .Values.localDev.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -31,10 +32,8 @@ spec:
   ingressClassName: {{ .Values.aws.ingress.className | quote }}
   {{ end }}
   rules:
-    - {{- if .Values.localDev.enabled }}
-      host: unguard.kube
-      {{- else if .Values.aws.ingress.host }}
-      host: {{ .Values.aws.ingress.host | quote }}
+    - {{- if $host }}
+      host: {{ $host | quote }}
       {{- end }}
       http:
         paths:
