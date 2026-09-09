@@ -52,7 +52,7 @@ jobs:
       - name: Set up Minikube
         uses: medyagh/setup-minikube@v0.0.14
         with:
-          minikube-version: v1.38.1
+          minikube-version: 1.38.1
           addons: ingress
           start-args: --memory=6144 --cpus=4 --disk-size=20g
 
