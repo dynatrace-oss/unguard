@@ -4,7 +4,7 @@ COPY --from=composer:2.6.5 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-RUN apt update
+RUN apt -o Acquire::Check-Valid-Until=false update
 
 RUN apt -y install git zip
 
