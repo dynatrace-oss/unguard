@@ -94,7 +94,10 @@ helm install unguard  oci://ghcr.io/dynatrace-oss/unguard/chart/unguard --versio
 | Name                             | Description                                                               | Default Value     |
 |----------------------------------|---------------------------------------------------------------------------|-------------------|
 | `localDev.enabled`               | Creates an Ingress and configures it for local (minikube/kind) deployment | `true`            |
-| `aws.enabled`                    | Creates an Ingress and configures it for AWS EKS cluster deployment       | `false`           |
+| `aws.enabled`                    | Configures the deployment for an AWS EKS cluster                          | `false`           |
+| `aws.ingress.enabled`            | Deploys an Ingress for AWS EKS, set `false` if you manage this yourself   | `true`            |
+| `aws.ingress.className`          | Overrides `ingressClassName` set on the Ingress                           | `alb`             |
+| `aws.ingress.host`               | Overrides `host` set on the Ingress rule                                  | `""`              |
 | `tracing.enabled`                | Activates tracing in services                                             | `false`           |
 | `maliciousLoadGenerator.enabled` | Deploys the malicious load generator                                      | `false`           |
 | `mariaDB.serviceName`            | Expected release-name of the MariaDB installation by Unguard              | `unguard-mariadb` |
@@ -153,6 +156,9 @@ helm install unguard -f aws.yaml oci://ghcr.io/dynatrace-oss/unguard/chart/ungua
 
 > **Note**:\
 Passing the `aws.yaml` values file removes and overrides ALL default annotations.
+
+If you want to manage the Ingress object outside of this chart, set `aws.ingress.enabled=false`.
+This keeps the rest of the AWS deployment shape (e.g. the `envoy-proxy` Service) unchanged but skips rendering the Ingress.
 
 
 ## Tracing and Jaeger
