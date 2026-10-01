@@ -15,6 +15,9 @@ localDev:
 aws:
   enabled: false
   ingress:
+    enabled: true
+    className: alb
+    host: ""  # catch-all rule
     annotations:
       alb.ingress.kubernetes.io/target-type: ip
       alb.ingress.kubernetes.io/scheme: internal
