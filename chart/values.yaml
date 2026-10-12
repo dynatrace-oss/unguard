@@ -105,6 +105,7 @@ profileService:
 
 # User Simulator
 userSimulator:
+  enabled: true
   name: user-simulator
 
   cronJob:
