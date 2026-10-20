@@ -96,12 +96,20 @@ profileService:
         SPRING_DATASOURCE_PASSWORD: password
         SPRING_DATASOURCE_URL: jdbc:h2:file:./database/bio
         SPRING_DATASOURCE_USERNAME: sa
+      # gives slow starts (e.g., with OneAgent injected) up to 3 minutes before liveness checks kick in
+      startupProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+        periodSeconds: 5
+        failureThreshold: 36
       livenessProbe:
         httpGet:
           path: /healthz
           port: 8080
         initialDelaySeconds: 20
         periodSeconds: 15
+        timeoutSeconds: 3
 
 # User Simulator
 userSimulator:
@@ -125,11 +133,11 @@ userSimulator:
 
         resources:
           requests:
-            cpu: 100m
-            memory: 512Mi
+            cpu: 10m
+            memory: 256Mi
           limits:
-            cpu: 2000m
-            memory: 2Gi
+            cpu: 750m
+            memory: 1280Mi
 
 # Membership Service
 membershipService:

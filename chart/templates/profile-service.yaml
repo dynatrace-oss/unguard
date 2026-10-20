@@ -57,12 +57,19 @@ spec:
           imagePullPolicy: {{ .Values.profileService.deployment.container.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.profileService.deployment.container.ports.containerPort }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.profileService.deployment.container.startupProbe.httpGet.path }}
+              port: {{ .Values.profileService.deployment.container.startupProbe.httpGet.port }}
+            periodSeconds: {{ .Values.profileService.deployment.container.startupProbe.periodSeconds }}
+            failureThreshold: {{ .Values.profileService.deployment.container.startupProbe.failureThreshold }}
           livenessProbe:
             httpGet:
               path: {{ .Values.profileService.deployment.container.livenessProbe.httpGet.path }}
               port: {{ .Values.profileService.deployment.container.livenessProbe.httpGet.port }}
             initialDelaySeconds: {{ .Values.profileService.deployment.container.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.profileService.deployment.container.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.profileService.deployment.container.livenessProbe.timeoutSeconds }}
           env:
             - name: SPRING_DATASOURCE_URL
               value: {{ quote .Values.profileService.deployment.container.env.SPRING_DATASOURCE_URL }}
