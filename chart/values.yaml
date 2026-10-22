@@ -118,7 +118,9 @@ userSimulator:
   cronJob:
     schedule: "*/3 * * * *"
     startingDeadlineSeconds: 180
+    concurrencyPolicy: Forbid
     jobTemplate:
+      activeDeadlineSeconds: 600
       restartPolicy: OnFailure
 
       container:
