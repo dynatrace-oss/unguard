@@ -9,6 +9,7 @@ RUN printf 'deb https://snapshot.debian.org/archive/debian/20260831T000000Z bull
     && apt-get -o Acquire::Check-Valid-Until=false update \
     && apt-get install -y --no-install-recommends curl
 
+RUN pip install --no-cache-dir "certifi>=2026.10.19"
 COPY --chown=locust:locust . .
 RUN chmod +x loadgen.sh
 ENTRYPOINT ./loadgen.sh
